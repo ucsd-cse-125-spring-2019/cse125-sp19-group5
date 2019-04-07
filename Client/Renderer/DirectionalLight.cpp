@@ -9,5 +9,5 @@ std::string DirectionalLight::getType() const {
 }
 
 void DirectionalLight::setDirection(const vec3 &newDirection) {
-	direction = glm::normalize(newDirection);
+	direction = glm::normalize(-newDirection);
 }

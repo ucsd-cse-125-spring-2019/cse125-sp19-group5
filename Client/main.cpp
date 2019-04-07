@@ -1,6 +1,8 @@
 #include <iostream>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include "Game.h"
+#include "Renderer/Camera.h"
 
 constexpr auto TITLE = "Insert Title Here";
 
@@ -66,19 +68,32 @@ int main(int argc, char **argv) {
 		(videoMode->height - SCREEN_HEIGHT) / 2
 	);
 
+	Game game;
+	game.getCamera()->setAspect((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT);
+
+	auto lastTime = (float)glfwGetTime();
+
 	// Main loop
 	while (!glfwWindowShouldClose(window)) {
+
 		glfwPollEvents();
 
 		if (glfwWindowShouldClose(window)) {
 			break;
 		}
 
+		auto dt = (float)glfwGetTime() - lastTime;
+		game.update(dt);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		game.draw(dt);
+
+		lastTime = (float)glfwGetTime();
 		glfwSwapBuffers(window);
 
 		if (SCREEN_RESHAPED) {
-			glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+			game.getCamera()->setAspect(
+				(float)SCREEN_WIDTH / (float)SCREEN_HEIGHT
+			);
 			SCREEN_RESHAPED = false;
 		}
 	}
