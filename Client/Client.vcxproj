@@ -159,4 +159,7 @@
     <Error Condition="!Exists('..\packages\soil.1.16.0\build\native\soil.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\soil.1.16.0\build\native\soil.props'))" />
     <Error Condition="!Exists('..\packages\nupengl.core.0.1.0.1\build\native\nupengl.core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\nupengl.core.0.1.0.1\build\native\nupengl.core.targets'))" />
   </Target>
+  <PropertyGroup>
+    <LocalDebuggerWorkingDirectory>../Assets</LocalDebuggerWorkingDirectory>
+  </PropertyGroup>
 </Project>
