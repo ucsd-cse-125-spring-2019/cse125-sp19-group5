@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include "Game.h"
 #include "Renderer/Camera.h"
+#include "Input.h"
 
 constexpr auto TITLE = "Insert Title Here";
 
@@ -68,6 +69,8 @@ int main(int argc, char **argv) {
 		(videoMode->height - SCREEN_HEIGHT) / 2
 	);
 
+	Input::init(window);
+
 	Game game;
 	game.getCamera()->setAspect((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT);
 
@@ -75,8 +78,11 @@ int main(int argc, char **argv) {
 
 	// Main loop
 	while (!glfwWindowShouldClose(window)) {
+		Input::poll();
 
-		glfwPollEvents();
+		if (game.shouldExit) {
+			glfwSetWindowShouldClose(window, true);
+		}
 
 		if (glfwWindowShouldClose(window)) {
 			break;

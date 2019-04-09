@@ -12,8 +12,10 @@ class Game {
 	Camera *camera = nullptr;
 	DirectionalLight *sun = nullptr;
 	float theta = 0.0f;
+	float phi = 0.0f;
 
 	public:
+	bool shouldExit = false;
 	Game();
 	~Game();
 

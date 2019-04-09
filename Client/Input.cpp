@@ -24,6 +24,11 @@ void Input::init(GLFWwindow *window) {
 	glfwSetMouseButtonCallback(window, mouseButtonCallback);
 }
 
+void Input::setMouseVisible(bool isVisible) {
+	auto newMode = isVisible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_HIDDEN;
+	glfwSetInputMode(curWindow, GLFW_CURSOR, newMode);
+}
+
 void Input::poll() {
 	glfwPollEvents();
 

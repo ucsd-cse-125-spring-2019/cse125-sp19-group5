@@ -5,6 +5,7 @@
 namespace Input {
 	static bool mouseLock = true;
 
+	void setMouseVisible(bool isVisible = true);
 	void init(GLFWwindow *window);
 	void poll();
 
