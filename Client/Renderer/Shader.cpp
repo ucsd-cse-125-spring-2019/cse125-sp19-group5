@@ -108,6 +108,10 @@ void Shader::setUniform(const char *name, const vec4 &v) {
 	glUniform4fv(getLocation(name), 1, glm::value_ptr(v));
 }
 
+void Shader::setUniform(const char *name, const mat3 &m) {
+	glUniformMatrix3fv(getLocation(name), 1, GL_FALSE, glm::value_ptr(m));
+}
+
 void Shader::setUniform(const char *name, const mat4 &m) {
 	glUniformMatrix4fv(getLocation(name), 1, GL_FALSE, glm::value_ptr(m));
 }

@@ -6,11 +6,11 @@ layout (location = 1) in vec3 normal;
 out vec3 fragPos;
 out vec3 fragNormal;
 
+uniform mat3 modelInvT;
 uniform mat4 mvp;
 
 void main() {
-	fragPos = position;
-	fragNormal = normal;
-
-	gl_Position = mvp * vec4(fragPos, 1.0f);
+	gl_Position = mvp * vec4(position, 1.0f);
+	fragPos = vec3(gl_Position);
+	fragNormal = mat3(modelInvT) * normal;
 }

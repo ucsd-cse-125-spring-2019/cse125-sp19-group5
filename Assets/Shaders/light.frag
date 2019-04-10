@@ -26,9 +26,9 @@ uniform DirectionalLight directionalLight[LIGHTS_MAX];
 uniform PointLight pointLight[LIGHTS_MAX];
 uniform int pointLightNum;
 uniform int directionalLightNum;
+uniform mat4 mvp;
 
 uniform vec3 eyePos;
-uniform mat4 modelInvT;
 
 in vec3 fragPos;
 in vec3 fragNormal;
@@ -75,7 +75,7 @@ vec3 getDirectionalLightIntensity(
 }
 
 void main() {
-	vec3 normal = normalize(modelInvT * vec4(fragNormal, 0.0f)).xyz;
+	vec3 normal = normalize(fragNormal);
 	vec3 eyeDir = normalize(eyePos - fragPos);
 	vec3 finalColor = vec3(0.0f);
 

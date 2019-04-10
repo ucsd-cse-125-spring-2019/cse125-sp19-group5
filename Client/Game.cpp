@@ -58,7 +58,7 @@ void Game::draw(float dt) const {
 	// model = glm::rotate(model, theta, vec3(0.0f, 1.0f, 0.0f));
 	// model = glm::rotate(model, phi, vec3(1.0f, 0.0f, 0.0f));
 
-	auto modelInvT = glm::transpose(glm::inverse(model));
+	auto modelInvT = glm::transpose(glm::inverse(mat3(model)));
 
 	// TODO (bhang): refactor this to some sort of renderer class so the game
 	// doesn't have to deal with all of this transformation + shader stuff?

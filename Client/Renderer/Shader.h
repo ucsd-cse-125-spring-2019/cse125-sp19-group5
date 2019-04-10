@@ -33,6 +33,7 @@ class Shader {
 	void setUniform(const char *name, GLfloat v0);
 	void setUniform(const char *name, const vec3 &v);
 	void setUniform(const char *name, const vec4 &v);
+	void setUniform(const char *name, const mat3 &m);
 	void setUniform(const char *name, const mat4 &m);
 
 	// Sets the current shader program to the one this class represents.
