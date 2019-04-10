@@ -29,7 +29,8 @@ int main(int argc, char **argv) {
 	// Create a window with OpenGL 3.3 core.
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);                
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_SAMPLES, 4);
 
 	auto window = glfwCreateWindow(
 		SCREEN_WIDTH, SCREEN_HEIGHT,
@@ -58,6 +59,7 @@ int main(int argc, char **argv) {
 	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
+	glEnable(GL_MULTISAMPLE); 
 	glCullFace(GL_BACK);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
