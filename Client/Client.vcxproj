@@ -126,6 +126,7 @@
     <ClCompile Include="Renderer\Model.cpp" />
     <ClCompile Include="Renderer\PointLight.cpp" />
     <ClCompile Include="Renderer\Shader.cpp" />
+    <ClCompile Include="Renderer\Texture2d.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -141,6 +142,7 @@
     <ClInclude Include="Renderer\Model.h" />
     <ClInclude Include="Renderer\PointLight.h" />
     <ClInclude Include="Renderer\Shader.h" />
+    <ClInclude Include="Renderer\Texture2d.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

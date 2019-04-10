@@ -58,6 +58,15 @@ Mesh Model::loadMesh(aiMesh *mesh, const aiScene *scene) {
 			vertex.normal.x = mesh->mNormals[i].x;
 			vertex.normal.y = mesh->mNormals[i].y;
 			vertex.normal.z = mesh->mNormals[i].z;
+		} else {
+			vertex.normal = vec3(0.0f, 0.0f, 1.0f);
+		}
+
+		if (mesh->mTextureCoords[0]) {
+			vertex.texCoords.x = mesh->mTextureCoords[0][i].x;
+			vertex.texCoords.y = mesh->mTextureCoords[0][i].y;
+		} else {
+			vertex.texCoords = vec2(0.0f);
 		}
 
 		vertices.push_back(vertex);

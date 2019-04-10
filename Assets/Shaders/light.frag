@@ -2,7 +2,6 @@
 
 // Lighting
 const int LIGHTS_MAX = 10;
-const vec3 diffuse = vec3(0.5f, 0.5f, 0.5f);
 const vec3 specular = vec3(0.2f, 0.2f, 0.2f);
 const float shininess = 32.0f;
 
@@ -27,23 +26,25 @@ uniform DirectionalLight directionalLight[LIGHTS_MAX];
 uniform PointLight pointLight[LIGHTS_MAX];
 uniform int pointLightNum;
 uniform int directionalLightNum;
-uniform mat4 mvp;
+uniform sampler2D diffuseTex;
 
 uniform vec3 eyePos;
 
 in vec3 fragPos;
 in vec3 fragNormal;
+in vec2 fragTexCoords;
 out vec4 fragColor;
 
 vec3 getPointLightIntensity(
 	PointLight light,
 	vec3 fragPos,
 	vec3 normal,
-	vec3 eyeDir
+	vec3 eyeDir,
+	vec3 diffuse
 ) {
 	vec3 dir = normalize(light.position - fragPos);
 	vec3 halfAng = normalize(dir + eyeDir);
-	vec3 lambert = light.color * max(dot(normal, dir), 0.0f);
+	vec3 lambert = diffuse * max(dot(normal, dir), 0.0f);
 	vec3 phong = vec3(pow(
 		max(dot(normal, halfAng), 0.0f),
 		shininess
@@ -56,36 +57,40 @@ vec3 getPointLightIntensity(
 		(light.quadratic * dist * dist)
 	);
 
-	return attenuation * (lambert + phong);
+	return attenuation * light.color * (lambert + phong);
 }
 
 vec3 getDirectionalLightIntensity(
 	DirectionalLight light,
 	vec3 fragPos,
 	vec3 normal,
-	vec3 eyeDir
+	vec3 eyeDir,
+	vec3 diffuse
 ) {
+	vec3 ambient = light.ambient * diffuse;
 	vec3 dir = light.direction;
 	vec3 halfAng = normalize(dir + eyeDir);
-	vec3 lambert = light.color * max(dot(normal, dir), 0.0f);
+	vec3 lambert = diffuse * max(dot(normal, dir), 0.0f);
 	vec3 phong = vec3(pow(
 		max(dot(normal, halfAng), 0.0f),
 		shininess
 	));
-	return light.ambient + lambert + phong;
+	return ambient + light.color * (lambert + phong);
 }
 
 void main() {
 	vec3 normal = normalize(fragNormal);
 	vec3 eyeDir = normalize(eyePos - fragPos);
 	vec3 finalColor = vec3(0.0f);
+	vec3 diffuse = vec3(texture(diffuseTex, fragTexCoords));
 
 	for (int i = 0; i < pointLightNum; i++) {
 		finalColor += getPointLightIntensity(
 			pointLight[i],
 			fragPos,
 			normal,
-			eyeDir
+			eyeDir,
+			diffuse
 		);
 	}
 	for (int i = 0; i < directionalLightNum; i++) {
@@ -93,7 +98,8 @@ void main() {
 			directionalLight[i],
 			fragPos,
 			normal,
-			eyeDir
+			eyeDir,
+			diffuse
 		);
 	}
 

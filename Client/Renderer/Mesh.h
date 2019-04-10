@@ -12,6 +12,7 @@ typedef unsigned int ElementIndex;
 struct Vertex {
 	vec3 pos;
 	vec3 normal;
+	vec2 texCoords;
 };
 
 // The Mesh class is used to draw a collection of vertices using triangles in the
