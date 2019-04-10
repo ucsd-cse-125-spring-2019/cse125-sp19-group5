@@ -2,6 +2,7 @@
 
 void DirectionalLight::bindValues(Shader &shader) const {
 	SET_LIGHT_UNIFORM(direction);
+	SET_LIGHT_UNIFORM(ambient);
 }
 
 std::string DirectionalLight::getType() const {
@@ -10,4 +11,8 @@ std::string DirectionalLight::getType() const {
 
 void DirectionalLight::setDirection(const vec3 &newDirection) {
 	direction = glm::normalize(-newDirection);
+}
+
+void DirectionalLight::setAmbient(const vec3 &newAmbient) {
+	ambient = newAmbient;
 }

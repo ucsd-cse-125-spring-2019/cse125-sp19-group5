@@ -20,6 +20,7 @@ struct PointLight {
 struct DirectionalLight {
 	vec3 direction;
 	vec3 color;
+	vec3 ambient;
 };
 
 uniform DirectionalLight directionalLight[LIGHTS_MAX];
@@ -71,7 +72,7 @@ vec3 getDirectionalLightIntensity(
 		max(dot(normal, halfAng), 0.0f),
 		shininess
 	));
-	return lambert + phong;
+	return light.ambient + lambert + phong;
 }
 
 void main() {
