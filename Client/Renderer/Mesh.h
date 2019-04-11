@@ -2,7 +2,7 @@
 
 #include <GL/glew.h>
 #include <vector>
-#include "Common.h"
+#include <Shared/Common.h>
 #include "Shader.h"
 
 // Type of number used for indices in the element buffer.

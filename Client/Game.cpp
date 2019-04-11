@@ -1,5 +1,5 @@
 #include "Game.h"
-#include "Renderer/Common.h"
+#include <Shared/Common.h>
 #include <glm/gtx/transform.hpp>
 #include "Input.h"
 

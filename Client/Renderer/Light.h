@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "Common.h"
+#include <Shared/Common.h>
 #include "Shader.h"
 
 #define SET_LIGHT_UNIFORM(value) (shader.setUniform((getType() + "[" + std::to_string(index) + "]." + #value).c_str(), (value)))
