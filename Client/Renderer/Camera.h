@@ -1,7 +1,7 @@
 #pragma once
 
 #include <GL/glew.h>
-#include "Common.h"
+#include <Shared/Common.h>
 
 class Camera {
 	private:

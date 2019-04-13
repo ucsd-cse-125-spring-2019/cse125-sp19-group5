@@ -3,7 +3,7 @@
 #include <GL/glew.h>
 #include <string>
 #include <unordered_map>
-#include "Common.h"
+#include <Shared/Common.h>
 
 // The Shader class is a shader program. It handles the loading and usage of/
 // shader programs.

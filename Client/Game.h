@@ -4,13 +4,17 @@
 #include "Renderer/Model.h"
 #include "Renderer/Camera.h"
 #include "Renderer/DirectionalLight.h"
+#include "Renderer/Texture2d.h"
 
 class Game {
 	private:
 	Shader *lightShader = nullptr;
 	Model *bear = nullptr;
+	Model *sphere = nullptr;
 	Camera *camera = nullptr;
 	DirectionalLight *sun = nullptr;
+	Texture2d *grass = nullptr;
+	Texture2d *white = nullptr;
 	float theta = 0.0f;
 	float phi = 0.0f;
 

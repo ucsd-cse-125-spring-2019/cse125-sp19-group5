@@ -39,6 +39,11 @@ Mesh::Mesh(
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), offset);
 	glEnableVertexAttribArray(1);
 
+	// Location 2: Texture Coordinates
+	offset = (const GLvoid*)offsetof(Vertex, texCoords);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), offset);
+	glEnableVertexAttribArray(2);
+
 	// Clean up
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);

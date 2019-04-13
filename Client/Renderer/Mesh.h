@@ -2,7 +2,7 @@
 
 #include <GL/glew.h>
 #include <vector>
-#include "Common.h"
+#include <Shared/Common.h>
 #include "Shader.h"
 
 // Type of number used for indices in the element buffer.
@@ -12,6 +12,7 @@ typedef unsigned int ElementIndex;
 struct Vertex {
 	vec3 pos;
 	vec3 normal;
+	vec2 texCoords;
 };
 
 // The Mesh class is used to draw a collection of vertices using triangles in the
