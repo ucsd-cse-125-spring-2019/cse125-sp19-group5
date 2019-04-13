@@ -2,6 +2,8 @@
 #include <Shared/Common.h>
 #include <glm/gtx/transform.hpp>
 #include "Input.h"
+#include <iostream>
+#include <glm/gtx/string_cast.hpp>
 
 Game::Game() {
 	lightShader = new Shader("Shaders/light");
@@ -9,8 +11,11 @@ Game::Game() {
 	sphere = new Model("Models/sphere.obj");
 	camera = new Camera(vec3(-7.5f, 2.5f, 0.0f), vec3(0.0f), 70, 1.0f);
 	sun = new DirectionalLight(0);
+	sun->setDirection(vec3(0.009395, -0.700647, -0.713446));
 	sun->setAmbient(vec3(0.04f, 0.05f, 0.13f));
 	sun->setColor(vec3(0.8f, 0.7f, 0.55f));
+
+	skybox = new Skybox("Textures/Skybox/cloudtop", *camera);
 
 	white = new Texture2d("Textures/white.png");
 	grass = new Texture2d("Textures/grass.png");
@@ -56,6 +61,10 @@ void Game::update(float dt) {
 	if (Input::isKeyDown(GLFW_KEY_ESCAPE)) {
 		shouldExit = true;
 	}
+
+	if (Input::wasKeyPressed(GLFW_KEY_P)) {
+		std::cout << glm::to_string(camera->getForward()) << std::endl;
+	}
 }
 
 void Game::draw(float dt) const {
@@ -88,4 +97,6 @@ void Game::draw(float dt) const {
 	lightShader->setUniform("mvp", camera->getMatrix() * model);
 	lightShader->setUniform("model", model);
 	sphere->draw(*lightShader);
+
+	skybox->draw();
 }

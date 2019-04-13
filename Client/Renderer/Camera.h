@@ -48,5 +48,7 @@ class Camera {
 	const vec3 &getAngles() const;
 
 	mat4 getMatrix() const;
+	const mat4 &getViewMatrix() const;
+	const mat4 &getProjectionMatrix() const;
 };
 
