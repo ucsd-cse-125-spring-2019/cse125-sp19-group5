@@ -81,9 +81,8 @@ void Game::draw(float dt) const {
 	bear->draw(*lightShader);
 	grass->bind(0);
 
-	model = mat4(1.0f);
-	model = glm::scale(model, vec3(0.1f));
-	model = glm::translate(model, vec3(50.0f, 25.0f, 0.0f));
+	model = glm::translate(vec3(5.0f, 0.0f, 0.0f))
+		* glm::scale(model, vec3(0.5f));
 	modelInvT = glm::transpose(glm::inverse(mat3(model)));
 	lightShader->setUniform("modelInvT", modelInvT);
 	lightShader->setUniform("mvp", camera->getMatrix() * model);
