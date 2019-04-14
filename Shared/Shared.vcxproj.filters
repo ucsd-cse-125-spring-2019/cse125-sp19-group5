@@ -21,8 +21,16 @@
     <ClInclude Include="Shared\GameObjectState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Shared\ConfigSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Shared\ConfigSettings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
