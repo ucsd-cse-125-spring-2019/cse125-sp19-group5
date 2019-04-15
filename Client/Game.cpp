@@ -1,5 +1,6 @@
 #include "Game.h"
 #include <Shared/Common.h>
+#include <Shared/ConfigSettings.h>
 #include <glm/gtx/transform.hpp>
 #include "Input.h"
 
@@ -16,6 +17,8 @@ Game::Game() {
 	grass = new Texture2d("Textures/grass.png");
 
 	Input::setMouseVisible(false);
+
+	ConfigSettings::get().getValue("MouseSensitivity", mouseSensitivity);
 }
 
 Game::~Game() {
@@ -30,8 +33,9 @@ Camera *Game::getCamera() const {
 }
 
 void Game::update(float dt) {
-	theta += dt * (float)Input::getMouseDeltaX() * 0.1f;
-	phi += dt * (float)Input::getMouseDeltaY() * 0.1f;
+	float mouseMoveScale = mouseSensitivity * 0.001f;
+	theta += (float)Input::getMouseDeltaX() * mouseMoveScale;
+	phi += (float)Input::getMouseDeltaY() * mouseMoveScale;
 
 	camera->setEyeAngles(vec3(-phi, theta, 0));
 
