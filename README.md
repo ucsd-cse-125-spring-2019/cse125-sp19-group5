@@ -28,7 +28,11 @@ To rebuild the library, do the following:
 1. cd rpclib
 1. mkdir build
 1. cd build
-1. ../../cmake-3.13.2-Linux-x86_64/bin/cmake ..
-1. ../../cmake-3.13.2-Linux-x86_64/bin/cmake --build .
+1. /usr/bin/cmake ..
+1. /usr/bin/cmake --build .
   * (note the dot after --build)
-1. cp librpc.a ../../../lib/
+1. cp librpc.a ../../../lib/  
+  
+###If you are on x86 (laptop) then steps 7 and 8 are instead:  
+../../cmake-3.13.2-Linux-x86_64/bin/cmake ..
+../../cmake-3.13.2-Linux-x86_64/bin/cmake --build .
