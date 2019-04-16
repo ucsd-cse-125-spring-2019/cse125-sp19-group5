@@ -130,7 +130,10 @@
     <ClCompile Include="Renderer\Model.cpp" />
     <ClCompile Include="Renderer\PointLight.cpp" />
     <ClCompile Include="Renderer\Shader.cpp" />
+    <ClCompile Include="Renderer\Skybox.cpp" />
+    <ClCompile Include="Renderer\Texture.cpp" />
     <ClCompile Include="Renderer\Texture2d.cpp" />
+    <ClCompile Include="Renderer\TextureCubemap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -145,7 +148,15 @@
     <ClInclude Include="Renderer\Model.h" />
     <ClInclude Include="Renderer\PointLight.h" />
     <ClInclude Include="Renderer\Shader.h" />
+    <ClInclude Include="Renderer\Skybox.h" />
+    <ClInclude Include="Renderer\Texture.h" />
     <ClInclude Include="Renderer\Texture2d.h" />
+    <ClInclude Include="Renderer\TextureCubemap.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Shared\Shared.vcxproj">
+      <Project>{d518e162-13f3-4eea-8c23-7f8d4e4ea398}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
