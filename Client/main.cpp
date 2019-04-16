@@ -1,6 +1,7 @@
 #include <iostream>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <Shared/ConfigSettings.h>
 #include "Game.h"
 #include "Renderer/Camera.h"
 #include "Input.h"
@@ -25,6 +26,9 @@ int main(int argc, char **argv) {
 		std::cerr << "Failed to initialize GLFW" << std::endl;
 		return -1;
 	}
+
+	ConfigSettings::get().getValue("ScreenWidth", SCREEN_WIDTH);
+	ConfigSettings::get().getValue("ScreenHeight", SCREEN_HEIGHT);
 
 	// Create a window with OpenGL 3.3 core.
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
