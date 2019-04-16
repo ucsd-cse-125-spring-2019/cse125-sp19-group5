@@ -6,6 +6,10 @@
 #include <vector>
 #include <tuple>
 
+
+using std::vector;
+using std::tuple;
+
 using glm::vec2;
 using glm::vec3;
 using glm::vec4;
@@ -40,10 +44,15 @@ struct Wall {
 };
 
 struct GameState {
-	std::vector<Player> players;
-	std::vector<Ball> balls;
-	std::vector<Wall> walls;
+	vector<Player> players;
+	vector<Ball> balls;
+	vector<Wall> walls;
 	long timeLeft;
-	std::tuple<int, int> score;
+	tuple<int, int> score;
 	bool in_progress;
+};
+
+struct PlayerInputs {
+	int inputs;
+	int id;
 };
