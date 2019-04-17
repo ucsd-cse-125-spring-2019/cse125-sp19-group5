@@ -5,6 +5,9 @@
 #include <Shared/Common.h>
 #include "Shader.h"
 
+// The maximum number of bones that can affect a vertex.
+constexpr auto BONES_PER_VERTEX = 4;
+
 // Type of number used for indices in the element buffer.
 typedef unsigned int ElementIndex;
 
@@ -13,6 +16,13 @@ struct Vertex {
 	vec3 pos;
 	vec3 normal;
 	vec2 texCoords;
+	GLuint bones[BONES_PER_VERTEX] = { 0 };
+	GLfloat weights[BONES_PER_VERTEX] = { 0.0f };
+};
+
+struct Bone {
+	std::string name;
+	mat4 offset;
 };
 
 // The Mesh class is used to draw a collection of vertices using triangles in the

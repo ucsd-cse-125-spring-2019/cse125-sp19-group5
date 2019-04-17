@@ -1,5 +1,6 @@
 #include "Model.h"
 #include <iostream>
+#include <glm/gtc/type_ptr.hpp>
 
 Model::Model(const std::string &path) {
 	// Create a scene from the given path to the model file.
@@ -43,10 +44,8 @@ void Model::loadNode(aiNode *node, const aiScene *scene) {
 	}
 }
 
-Mesh Model::loadMesh(aiMesh *mesh, const aiScene *scene) {
+std::vector<Vertex> Model::loadMeshVertices(aiMesh *mesh) {
 	std::vector<Vertex> vertices;
-	std::vector<ElementIndex> indices;
-
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
 		Vertex vertex;
 
@@ -71,13 +70,64 @@ Mesh Model::loadMesh(aiMesh *mesh, const aiScene *scene) {
 
 		vertices.push_back(vertex);
 	}
+	return vertices;
+}
 
+std::vector<ElementIndex> Model::loadMeshIndices(aiMesh *mesh) {
+	std::vector<ElementIndex> indices;
 	for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
 		auto face = mesh->mFaces[i];
 		for (unsigned int j = 0; j < face.mNumIndices; j++) {
 			indices.push_back(face.mIndices[j]);
 		}
 	}
+	return indices;
+}
 
+static mat4 toGlm(const aiMatrix4x4 &m) {
+	return glm::transpose(glm::make_mat4(&m.a1));
+}
+
+void Model::loadMeshBones(aiMesh *mesh, std::vector<Vertex> &vertices) {
+	std::unordered_map<std::string, int> boneIds;
+	std::vector<Bone> bones;
+
+	for (unsigned int i = 0; i < mesh->mNumBones; i++) {
+		auto boneInfo = mesh->mBones[i];
+		auto boneIndex = 0;
+
+		// Get the unique ID for the bone by name.
+		std::string boneName(boneInfo->mName.data);
+		auto boneIdIt = boneIds.find(boneName);
+		if (boneIdIt == boneIds.end()) {
+			boneIndex = bones.size();
+
+			Bone bone;
+			bone.name = boneName;
+			bone.offset = toGlm(boneInfo->mOffsetMatrix);
+
+			bones.push_back(bone);
+		} else {
+			boneIndex = boneIdIt->second;
+		}
+
+		for (unsigned int j = 0; j < boneInfo->mNumWeights; j++) {
+			auto vertexWeight = boneInfo->mWeights[j];
+			auto vertexId = vertexWeight.mVertexId;
+
+			for (int freeIndex = 0; freeIndex < BONES_PER_VERTEX; freeIndex++) {
+				if (vertices[vertexId].weights[freeIndex] != 0.0f) {
+					continue;
+				}
+				vertices[vertexId].bones[freeIndex] = boneIndex;
+				vertices[vertexId].weights[freeIndex] = vertexWeight.mWeight;
+			}
+		}
+	}
+}
+
+Mesh Model::loadMesh(aiMesh *mesh, const aiScene *scene) {
+	auto vertices = loadMeshVertices(mesh);
+	auto indices = loadMeshIndices(mesh);
 	return Mesh(vertices, indices);
 }

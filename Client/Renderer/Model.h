@@ -21,6 +21,15 @@ class Model
 	// Converts the Assimp representation of a mesh to a Mesh instance.
 	Mesh loadMesh(aiMesh *mesh, const aiScene *scene);
 
+	// Converts the vertices from the aiMesh to a list of Vertex instances.
+	std::vector<Vertex> loadMeshVertices(aiMesh *mesh);
+
+	// Gets a list of the vertex indices for an aiMesh.
+	std::vector<ElementIndex> loadMeshIndices(aiMesh *mesh);
+
+	// Loads the bones for a mesh.
+	void loadMeshBones(aiMesh *mesh, std::vector<Vertex> &vertices);
+
 	public:
 	Model(const std::string &path);
 	void draw(const Shader &shader) const;

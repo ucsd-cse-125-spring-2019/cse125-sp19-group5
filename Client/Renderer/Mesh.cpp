@@ -44,6 +44,10 @@ Mesh::Mesh(
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), offset);
 	glEnableVertexAttribArray(2);
 
+	// Location 3: Bone Indices for Weights
+	offset = (const GLvoid*)offsetof(Vertex, bones);
+	glVertexAttribIPointer();
+
 	// Clean up
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
