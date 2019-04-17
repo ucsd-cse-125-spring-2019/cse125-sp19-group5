@@ -100,7 +100,7 @@ void Model::loadMeshBones(aiMesh *mesh, std::vector<Vertex> &vertices) {
 		std::string boneName(boneInfo->mName.data);
 		auto boneIdIt = boneIds.find(boneName);
 		if (boneIdIt == boneIds.end()) {
-			boneIndex = bones.size();
+			boneIndex = (int)bones.size();
 
 			Bone bone;
 			bone.name = boneName;
@@ -129,5 +129,6 @@ void Model::loadMeshBones(aiMesh *mesh, std::vector<Vertex> &vertices) {
 Mesh Model::loadMesh(aiMesh *mesh, const aiScene *scene) {
 	auto vertices = loadMeshVertices(mesh);
 	auto indices = loadMeshIndices(mesh);
+	loadMeshBones(mesh, vertices);
 	return Mesh(vertices, indices);
 }
