@@ -1,13 +1,12 @@
 #include "GameObject.h"
 
 bool GameObject::collidesWith(GameObject &gameObject) {
-	return false;
+	return distanceFrom(gameObject) < (radius + gameObject.radius);
 }
 
 void GameObject::onCollision(GameObject &gameObject) {
-
 }
 
 double GameObject::distanceFrom(GameObject &gameObject) {
-	return 2;
+	return glm::distance(position, gameObject.position);
 }
