@@ -4,6 +4,9 @@
 #include <vector>
 #include <Shared/Common.h>
 #include "Shader.h"
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+#include <unordered_map>
 
 // The maximum number of bones that can affect a vertex.
 constexpr auto BONES_PER_VERTEX = 4;
@@ -31,14 +34,28 @@ class Mesh {
 	private:
 	GLuint VAO, VBO, EBO;
 	GLsizei numVertices;
+	std::vector<Bone> bones;
+	std::unordered_map<std::string, int> boneIds;
+	std::unordered_map<const char*, aiNodeAnim> nodeAnims;
+	std::vector<mat4> boneTransformations;
+	aiMesh *mesh;
+	const aiScene *scene;
+
+	void loadBones(std::vector<Vertex> &vertices);
+	void buildBoneTransformations(float time, aiNode *node, const mat4 &parentTransform);
+	aiNodeAnim *getNodeAnim(const aiAnimation *animation, const std::string &nodeName);
 
 	public:
 	Mesh(
-		const std::vector<Vertex> &vertices,
-		const std::vector<ElementIndex> indices
+		std::vector<Vertex> &vertices,
+		const std::vector<ElementIndex> indices,
+		aiMesh *mesh,
+		const aiScene *scene
 	);
 	~Mesh();
 
-	void draw(const Shader &shader) const;
+	void updateAnimation(float time);
+
+	void draw(Shader &shader) const;
 };
 

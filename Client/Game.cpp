@@ -8,7 +8,7 @@
 
 Game::Game() {
 	lightShader = new Shader("Shaders/light");
-	bear = new Model("Models/ucsd-bear-sp10.obj");
+	bear = new Model("Models/boblampclean.md5mesh");
 	sphere = new Model("Models/sphere.obj");
 	camera = new Camera(vec3(-7.5f, 2.5f, 0.0f), vec3(0.0f), 70, 1.0f);
 	sun = new DirectionalLight(0);
@@ -69,6 +69,8 @@ void Game::update(float dt) {
 	if (Input::wasKeyPressed(GLFW_KEY_P)) {
 		std::cout << glm::to_string(camera->getForward()) << std::endl;
 	}
+
+	bear->updateAnimation(glfwGetTime());
 }
 
 void Game::draw(float dt) const {

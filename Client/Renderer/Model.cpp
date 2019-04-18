@@ -4,8 +4,7 @@
 
 Model::Model(const std::string &path) {
 	// Create a scene from the given path to the model file.
-	Assimp::Importer importer;
-	auto scene = importer.ReadFile(
+	scene = importer.ReadFile(
 		path,
 		aiProcess_Triangulate | aiProcess_FlipUVs
 	);
@@ -25,7 +24,7 @@ Model::Model(const std::string &path) {
 	loadNode(scene->mRootNode, scene);
 }
 
-void Model::draw(const Shader &shader) const {
+void Model::draw(Shader &shader) const {
 	for (auto mesh : meshes) {
 		mesh.draw(shader);
 	}
@@ -88,47 +87,14 @@ static mat4 toGlm(const aiMatrix4x4 &m) {
 	return glm::transpose(glm::make_mat4(&m.a1));
 }
 
-void Model::loadMeshBones(aiMesh *mesh, std::vector<Vertex> &vertices) {
-	std::unordered_map<std::string, int> boneIds;
-	std::vector<Bone> bones;
-
-	for (unsigned int i = 0; i < mesh->mNumBones; i++) {
-		auto boneInfo = mesh->mBones[i];
-		auto boneIndex = 0;
-
-		// Get the unique ID for the bone by name.
-		std::string boneName(boneInfo->mName.data);
-		auto boneIdIt = boneIds.find(boneName);
-		if (boneIdIt == boneIds.end()) {
-			boneIndex = (int)bones.size();
-
-			Bone bone;
-			bone.name = boneName;
-			bone.offset = toGlm(boneInfo->mOffsetMatrix);
-
-			bones.push_back(bone);
-		} else {
-			boneIndex = boneIdIt->second;
-		}
-
-		for (unsigned int j = 0; j < boneInfo->mNumWeights; j++) {
-			auto vertexWeight = boneInfo->mWeights[j];
-			auto vertexId = vertexWeight.mVertexId;
-
-			for (int freeIndex = 0; freeIndex < BONES_PER_VERTEX; freeIndex++) {
-				if (vertices[vertexId].weights[freeIndex] != 0.0f) {
-					continue;
-				}
-				vertices[vertexId].bones[freeIndex] = boneIndex;
-				vertices[vertexId].weights[freeIndex] = vertexWeight.mWeight;
-			}
-		}
-	}
-}
-
 Mesh Model::loadMesh(aiMesh *mesh, const aiScene *scene) {
 	auto vertices = loadMeshVertices(mesh);
 	auto indices = loadMeshIndices(mesh);
-	loadMeshBones(mesh, vertices);
-	return Mesh(vertices, indices);
+	return Mesh(vertices, indices, mesh, scene);
+}
+
+void Model::updateAnimation(float time) {
+	for (auto &mesh : meshes) {
+		mesh.updateAnimation(time);
+	}
 }

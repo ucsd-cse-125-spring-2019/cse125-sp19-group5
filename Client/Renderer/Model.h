@@ -12,7 +12,11 @@
 class Model
 {
 	private:
+	Assimp::Importer importer;
+	const aiScene *scene;
 	std::vector<Mesh> meshes;
+	std::vector<mat4> boneTransforms;
+	int curAnimation = -1;
 
 	// The model is imported in a tree hierchy. This is used to recursively
 	// traverse the tree and convert the nodes into a Mesh instance.
@@ -32,6 +36,8 @@ class Model
 
 	public:
 	Model(const std::string &path);
-	void draw(const Shader &shader) const;
+	void draw(Shader &shader) const;
+
+	void updateAnimation(float time);
 };
 
