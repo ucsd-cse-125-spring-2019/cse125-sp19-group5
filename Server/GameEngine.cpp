@@ -1,9 +1,17 @@
 #include "GameEngine.h"
 
 void GameEngine::updateGameState(vector<PlayerInputs> playerInputs) {
-	// all players move
-	for (Player *player : gameState.players) {
-		player->setPosition(player->getPosition() + player->getVelocity());
+	vector<int> aggregatePlayerMovements;
+	for (int i = 0; i < NUM_PLAYERS; i++) {
+		aggregatePlayerMovements.push_back(0);
+	}
+
+	for (PlayerInputs playerInput : playerInputs) {
+		aggregatePlayerMovements[playerInput.id] = aggregatePlayerMovements[playerInput.id] | playerInput.inputs;
+	}
+
+	for (int i = 0; i < NUM_PLAYERS; i++) {
+		aggregatePlayerMovements[i] = aggregatePlayerMovements[i] & MOVEMENT_MASK;
 	}
 
 	// check collisions
