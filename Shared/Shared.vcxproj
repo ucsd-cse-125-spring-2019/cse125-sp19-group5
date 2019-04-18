@@ -127,9 +127,11 @@
     <ClInclude Include="Shared\Wall.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Shared\Ball.cpp" />
     <ClCompile Include="Shared\ConfigSettings.cpp" />
     <ClCompile Include="Shared\GameObject.cpp" />
     <ClCompile Include="Shared\Player.cpp" />
+    <ClCompile Include="Shared\Wall.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
