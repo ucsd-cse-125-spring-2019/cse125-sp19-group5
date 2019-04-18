@@ -1,6 +1,8 @@
 #pragma once
 
-#include "Common.h"
+#include <glm/glm.hpp>
+
+using glm::vec3;
 
 struct GameObjectState {
 	vec3 position;

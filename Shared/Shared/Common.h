@@ -5,6 +5,11 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include <tuple>
+#include <string>
+#include <iostream>
+#include <exception>
+
+#include "GameObjectState.h"
 
 using glm::vec2;
 using glm::vec3;
