@@ -34,7 +34,6 @@ Game::~Game() {
 	delete lightShader;
 	delete textShader;
 	delete textRenderer;
-	delete testText; // Remove later
 	delete bear;
 	delete camera;
 	delete sun;
@@ -51,16 +50,16 @@ void Game::update(float dt) {
 
 	camera->setEyeAngles(vec3(-phi, theta, 0));
 
-	//testTextChange += dt;
-	//if (testTextChange < 1.0f)
-	//{
-	//	testText->text = "hello";
-	//}
-	//else
-	//{
-	//	if (testTextChange > 2.0f) testTextChange = 0.0f;
-	//	testText->text = "world";
-	//}
+	testTextChange += dt;
+	if (testTextChange < 1.0f)
+	{
+		testText->text = "hello";
+	}
+	else
+	{
+		if (testTextChange > 2.0f) testTextChange = 0.0f;
+		testText->text = "world";
+	}
 
 	vec3 direction(0.0f);
 	if (Input::isKeyDown(GLFW_KEY_W)) {

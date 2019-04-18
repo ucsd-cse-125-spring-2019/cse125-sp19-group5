@@ -5,6 +5,10 @@ TextRenderer::TextRenderer(Shader &shader)
 	loadFont(DEFAULT_FONT_NAME, DEFAULT_FONT_FILEPATH);
 }
 
+TextRenderer::~TextRenderer() {
+
+}
+
 bool TextRenderer::loadFont(const std::string &name, const std::string &filepath) {
 	try {
 		Font font = Font(filepath, shader);
