@@ -52,3 +52,7 @@ string GameObject::getId() {
 string GameObject::getGameObjectType() {
 	return id.substr(0, id.find("_"));
 }
+
+void GameObject::move(vec3 movement) {
+	setPosition(getPosition() + movement);
+}

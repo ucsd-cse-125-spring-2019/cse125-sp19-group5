@@ -13,6 +13,7 @@ public:
 	vec3 getVelocity();
 	string getId();
 	string getGameObjectType();
+	void move(vec3 movement);
 
 protected:
 	vec3 position;
