@@ -27,11 +27,14 @@ Game::Game() {
 	ConfigSettings::get().getValue("MouseSensitivity", mouseSensitivity);
 
 	textRenderer = new TextRenderer(*textShader);
-	testText = textRenderer->addText(textRenderer->DEFAULT_FONT_NAME, "test test test test", 25.0f, 25.0f, 5.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+	testText = textRenderer->addText(textRenderer->DEFAULT_FONT_NAME, "test test test test", 200.0f, 200.0f, 3.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 Game::~Game() {
 	delete lightShader;
+	delete textShader;
+	delete textRenderer;
+	delete testText; // Remove later
 	delete bear;
 	delete camera;
 	delete sun;
@@ -48,16 +51,16 @@ void Game::update(float dt) {
 
 	camera->setEyeAngles(vec3(-phi, theta, 0));
 
-	testTextChange += dt;
-	if (testTextChange < 1.0f)
-	{
-		testText->text = "hello";
-	}
-	else
-	{
-		if (testTextChange > 2.0f) testTextChange = 0.0f;
-		testText->text = "world";
-	}
+	//testTextChange += dt;
+	//if (testTextChange < 1.0f)
+	//{
+	//	testText->text = "hello";
+	//}
+	//else
+	//{
+	//	if (testTextChange > 2.0f) testTextChange = 0.0f;
+	//	testText->text = "world";
+	//}
 
 	vec3 direction(0.0f);
 	if (Input::isKeyDown(GLFW_KEY_W)) {

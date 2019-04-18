@@ -7,7 +7,7 @@ TextRenderer::TextRenderer(Shader &shader)
 
 bool TextRenderer::loadFont(const std::string &name, const std::string &filepath) {
 	try {
-		Font font = Font(filepath);
+		Font font = Font(filepath, shader);
 		fonts.insert(std::pair<std::string, Font>(name, font));
 		return true;
 	}

@@ -1,3 +1,5 @@
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "Font.h"
 
 // https://learnopengl.com/In-Practice/Text-Rendering
@@ -10,8 +12,14 @@ Font::~Font() {
 
 }
 
-Font::Font(const std::string &filepath)
+Font::Font(const std::string &filepath, Shader &shader)
 {
+	// Setup shader
+	glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(800), 0.0f, static_cast<GLfloat>(600)); // TODO (kpan) remove hardcode
+	shader.use();
+	shader.setUniform("projection", projection);
+
+	// FreeType
 	FT_Library ft;
 	if (FT_Init_FreeType(&ft)) {
 		throw std::runtime_error("Failed to initialize FreeType Library");

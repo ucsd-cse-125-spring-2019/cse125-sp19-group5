@@ -17,7 +17,7 @@ struct Character {
 class Font {
 public:
 	Font();
-	Font(const std::string &filepath);
+	Font(const std::string &filepath, Shader &shader);
 	~Font();
 
 	void RenderText(Shader &shader, const std::string text, const GLfloat x, const GLfloat y, const GLfloat scale, const glm::vec3 color);
