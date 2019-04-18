@@ -6,7 +6,7 @@ Model::Model(const std::string &path) {
 	// Create a scene from the given path to the model file.
 	scene = importer.ReadFile(
 		path,
-		aiProcess_Triangulate | aiProcess_FlipUVs
+		aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals
 	);
 
 	// Report errors if any.

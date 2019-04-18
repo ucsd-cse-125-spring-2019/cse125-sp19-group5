@@ -4,6 +4,17 @@
 #include <glm/gtc/quaternion.hpp>
 #include <iostream>
 
+#define GET_FRAME_NUM(frame, size) \
+unsigned int frame = 0, _upperFrame = nodeAnim->mNum##size##Keys; \
+while (frame != _upperFrame) { \
+	auto mid = (frame + _upperFrame) / 2; \
+	if (keys[mid + 1].mTime <= time) { \
+		frame = mid + 1; \
+	} else { \
+		_upperFrame = mid; \
+	} \
+}
+
 Mesh::Mesh(
 	std::vector<Vertex>& vertices,
 	const std::vector<ElementIndex> indices,
@@ -110,9 +121,12 @@ void Mesh::loadBones(std::vector<Vertex> &vertices) {
 }
 
 aiNodeAnim *Mesh::getNodeAnim(const aiAnimation *animation, const std::string &nodeName) {
+	const auto nodeNameCStr = nodeName.c_str();
+	const auto size = nodeName.size();
+
 	for (unsigned int i = 0; i < animation->mNumChannels; i++) {
 		auto nodeAnim = animation->mChannels[i];
-		if (std::string(nodeAnim->mNodeName.data) == nodeName) {
+		if (strncmp(nodeAnim->mNodeName.data, nodeNameCStr, size) == 0) {
 			return nodeAnim;
 		}
 	}
@@ -138,12 +152,7 @@ void interpolateTranslation(float time, aiNodeAnim *nodeAnim, mat4 &transform) {
 	}
 
 	auto keys = nodeAnim->mPositionKeys;
-	unsigned int frame;
-	for (frame = 0; frame < nodeAnim->mNumPositionKeys - 1; frame++) {
-		if (time < keys[frame + 1].mTime) {
-			break;
-		}
-	}
+	GET_FRAME_NUM(frame, Position);
 
 	auto start = keys[frame], end = keys[frame + 1];
 	auto t = (time - start.mTime) / (end.mTime - start.mTime);
@@ -165,12 +174,7 @@ void interpolateRotation(float time, aiNodeAnim *nodeAnim, mat4 &transform) {
 	}
 
 	auto keys = nodeAnim->mRotationKeys;
-	unsigned int frame;
-	for (frame = 0; frame < nodeAnim->mNumRotationKeys - 1; frame++) {
-		if (time < keys[frame + 1].mTime) {
-			break;
-		}
-	}
+	GET_FRAME_NUM(frame, Position);
 
 	auto start = keys[frame], end = keys[frame + 1];
 	auto t = (time - start.mTime) / (end.mTime - start.mTime);
@@ -190,12 +194,7 @@ void interpolateScale(float time, aiNodeAnim *nodeAnim, mat4 &transform) {
 	}
 
 	auto keys = nodeAnim->mScalingKeys;
-	unsigned int frame;
-	for (frame = 0; frame < nodeAnim->mNumScalingKeys - 1; frame++) {
-		if (time < keys[frame + 1].mTime) {
-			break;
-		}
-	}
+	GET_FRAME_NUM(frame, Scaling);
 
 	auto start = keys[frame], end = keys[frame + 1];
 	auto t = (time - start.mTime) / (end.mTime - start.mTime);
