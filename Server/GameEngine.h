@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Shared/Common.h>
+#include <Shared/CommonStructs.h>
 
 class GameEngine {
 public:
-	void updateGameState();
+	void updateGameState(vector<PlayerInputs> playerInputs);
 	GameState & getGameState();
 
 private:
