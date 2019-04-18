@@ -11,6 +11,7 @@ public:
 	void addGameObject(Player *player);
 	void addGameObject(Ball *ball);
 	void addGameObject(Wall *wall);
+	vec3 movementInputToVector(Player *player, int movementInput);
 
 private:
 	GameState gameState;

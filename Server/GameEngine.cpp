@@ -42,3 +42,25 @@ void GameEngine::addGameObject(Wall *wall) {
 	gameState.gameObjects.push_back(wall);
 	gameState.walls.push_back(wall);
 }
+
+vec3 GameEngine::movementInputToVector(Player *player, int movementInput) {
+	vec3 direction = glm::normalize(vec3(player->getDirection().x, 0, player->getDirection().z));
+	vec3 movement = vec3(0, 0, 0);
+	vec3 up = vec3(0, 1, 0);
+	
+	if (movementInput & FORWARD) {
+		movement = movement + direction;
+	}
+	if (movementInput & BACKWARD) {
+		movement = movement - direction;
+	}
+	if (movementInput & LEFT) {
+		movement = movement + glm::cross(up, direction);
+	}
+	if (movementInput & RIGHT) {
+		movement = movement - glm::cross(up, direction);
+	}
+
+	return glm::normalize(movement); // * player->getSpeed();
+	// TODO: implement bhopping
+}

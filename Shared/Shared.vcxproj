@@ -115,9 +115,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="Shared\Ball.h" />
     <ClInclude Include="Shared\Common.h" />
     <ClInclude Include="Shared\CommonStructs.h" />
@@ -132,6 +129,9 @@
     <ClCompile Include="Shared\GameObject.cpp" />
     <ClCompile Include="Shared\Player.cpp" />
     <ClCompile Include="Shared\Wall.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
