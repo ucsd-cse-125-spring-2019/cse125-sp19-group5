@@ -23,9 +23,9 @@ void main() {
 		+ boneTransforms[bones[2]] * weights[2]
 		+ boneTransforms[bones[3]] * weights[3];
 	vec3 finalPos = vec3(boneTransform * vec4(position, 1.0f));
-	vec3 finalNorm = vec3(boneTransform * vec4(normal, 0.0f));
+	mat3 boneTransformInvT = transpose(inverse(mat3(boneTransform)));
 	fragPos = vec3(model * vec4(finalPos, 1.0f));
-	fragNormal = modelInvT * finalNorm;
+	fragNormal = modelInvT * boneTransformInvT * normal;
 	fragTexCoords = texCoords;
 	gl_Position = mvp * vec4(finalPos, 1.0f);
 }

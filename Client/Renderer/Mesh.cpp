@@ -79,7 +79,7 @@ void Mesh::loadBones(std::vector<Vertex> &vertices) {
 		std::string boneName(boneInfo->mName.data);
 		auto boneIdIt = boneIds.find(boneName);
 		if (boneIdIt == boneIds.end()) {
-			boneIds[boneName] = (int)bones.size();
+			boneIndex = boneIds[boneName] = (int)bones.size();
 
 			Bone bone;
 			bone.name = boneName;
@@ -202,7 +202,6 @@ void interpolateScale(float time, aiNodeAnim *nodeAnim, mat4 &transform) {
 	
 	auto startScale = vec3(start.mValue.x, start.mValue.y, start.mValue.z);
 	auto endScale = vec3(end.mValue.x, end.mValue.y, end.mValue.z);
-
 
 	transform *= glm::scale(mat4(1.0f), glm::mix(startScale, endScale, t));
 }
