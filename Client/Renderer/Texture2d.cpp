@@ -1,6 +1,6 @@
 #include "Texture2d.h"
 #include <iostream>
-#include <soil.h>
+#include <SOIL/soil2.h>
 
 Texture2d::Texture2d(const std::string &path, GLint format) {
 	glBindTexture(GL_TEXTURE_2D, texture);
