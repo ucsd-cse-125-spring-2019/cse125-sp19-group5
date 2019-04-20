@@ -4,6 +4,8 @@
 #include <glm/gtc/quaternion.hpp>
 #include <iostream>
 
+constexpr auto IDENTITY = mat4(1.0f);
+
 #define GET_FRAME_NUM(frame, size) \
 unsigned int frame = 0, _upperFrame = nodeAnim->mNum##size##Keys; \
 while (frame != _upperFrame) { \
@@ -67,7 +69,7 @@ Mesh::Mesh(aiMesh *mesh, const aiScene *scene): mesh(mesh), scene(scene) {
 
 	// Location 4: Bone Weights
 	offset = (const GLvoid*)offsetof(Vertex, weights);
-	glVertexAttribIPointer(4, BONES_PER_VERTEX, GL_FLOAT, sizeof(Vertex), offset);
+	glVertexAttribPointer(4, BONES_PER_VERTEX, GL_FLOAT, GL_FALSE, sizeof(Vertex), offset);
 	glEnableVertexAttribArray(4);
 
 	// Clean up
@@ -75,7 +77,7 @@ Mesh::Mesh(aiMesh *mesh, const aiScene *scene): mesh(mesh), scene(scene) {
 	glBindVertexArray(0);
 }
 
-mat4 toGlm(const aiMatrix4x4 &m) {
+inline mat4 toGlm(const aiMatrix4x4 &m) {
 	return glm::transpose(glm::make_mat4(&m.a1));
 }
 
@@ -151,7 +153,6 @@ void Mesh::loadBones(std::vector<Vertex> &vertices) {
 				vertices[vertexId].weights[freeIndex] = vertexWeight.mWeight;
 			}
 		}
-
 	}
 	for (size_t i = 0; i < bones.size(); i++) {
 		boneTransformations.push_back(mat4(1.0f));
@@ -172,7 +173,9 @@ aiNodeAnim *Mesh::getNodeAnim(const aiAnimation *animation, const std::string &n
 }
 
 void Mesh::updateAnimation(float time) {
-	auto animation = scene->mAnimations[0];
+	if (animationId < 0 || animationId >= scene->mNumAnimations) { return; }
+
+	auto animation = scene->mAnimations[animationId];
 	time = fmod(
 		time * (float)animation->mTicksPerSecond,
 		(float)animation->mDuration
@@ -277,6 +280,10 @@ void Mesh::draw(Shader &shader) const {
 	for (size_t i = 0; i < bones.size(); i++) {
 		const auto name = "boneTransforms[" + std::to_string(i) + "]";
 		shader.setUniform(name.c_str(), boneTransformations[i]);
+	}
+	for (size_t i = bones.size() - 1; i < BONES_PER_VERTEX; i++) {
+		const auto name = "boneTransform[" + std::to_string(i) + "]";
+		shader.setUniform(name.c_str(), IDENTITY);
 	}
 	if (VAO) {
 		glBindVertexArray(VAO);

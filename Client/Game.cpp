@@ -70,6 +70,10 @@ void Game::update(float dt) {
 		std::cout << glm::to_string(camera->getForward()) << std::endl;
 	}
 
+	if (Input::wasKeyPressed(GLFW_KEY_R)) {
+		bear->setAnimation(0);
+	}
+
 	bear->updateAnimation((float)glfwGetTime());
 }
 

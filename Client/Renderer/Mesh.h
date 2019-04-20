@@ -31,6 +31,8 @@ struct Bone {
 // The Mesh class is used to draw a collection of vertices using triangles in the
 // order given by indices.
 class Mesh {
+	friend class Model;
+
 	private:
 	GLuint VAO, VBO, EBO;
 	GLsizei numVertices;
@@ -40,6 +42,7 @@ class Mesh {
 	std::vector<mat4> boneTransformations;
 	aiMesh *mesh;
 	const aiScene *scene;
+	int animationId = -1;
 
 	// Gets the vertices of the aiMesh into a list of Vertex instances.
 	static std::vector<Vertex> loadVertices(aiMesh *mesh);
