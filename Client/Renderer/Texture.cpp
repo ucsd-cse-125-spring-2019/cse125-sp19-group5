@@ -1,5 +1,5 @@
 #include "Texture.h"
-#include <soil.h>
+#include <SOIL/soil2.h>
 #include <iostream>
 
 void Texture::loadTextureImage(
