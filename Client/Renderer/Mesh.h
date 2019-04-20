@@ -41,17 +41,21 @@ class Mesh {
 	aiMesh *mesh;
 	const aiScene *scene;
 
+	// Gets the vertices of the aiMesh into a list of Vertex instances.
+	static std::vector<Vertex> loadVertices(aiMesh *mesh);
+
+	// Gets the indices for the vertices into a list of numbers.
+	static std::vector<ElementIndex> loadIndices(aiMesh *mesh);
+
+	// Sets up which bones will affect which vertices for the model.
 	void loadBones(std::vector<Vertex> &vertices);
+
+	// Sets up the vertex transformations for the current animation.
 	void buildBoneTransformations(float time, aiNode *node, const mat4 &parentTransform);
 	aiNodeAnim *getNodeAnim(const aiAnimation *animation, const std::string &nodeName);
 
 	public:
-	Mesh(
-		std::vector<Vertex> &vertices,
-		const std::vector<ElementIndex> indices,
-		aiMesh *mesh,
-		const aiScene *scene
-	);
+	Mesh(aiMesh *mesh, const aiScene *scene);
 	~Mesh();
 
 	void updateAnimation(float time);

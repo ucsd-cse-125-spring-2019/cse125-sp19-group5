@@ -15,13 +15,11 @@ while (frame != _upperFrame) { \
 	} \
 }
 
-Mesh::Mesh(
-	std::vector<Vertex>& vertices,
-	const std::vector<ElementIndex> indices,
-	aiMesh *mesh,
-	const aiScene *scene
-): mesh(mesh), scene(scene) {
+Mesh::Mesh(aiMesh *mesh, const aiScene *scene): mesh(mesh), scene(scene) {
+	auto vertices = loadVertices(mesh);
+	auto indices = loadIndices(mesh);
 	loadBones(vertices);
+
 	VAO = 0;
 	numVertices = static_cast<GLsizei>(indices.size());
 
@@ -77,8 +75,48 @@ Mesh::Mesh(
 	glBindVertexArray(0);
 }
 
-static mat4 toGlm(const aiMatrix4x4 &m) {
+mat4 toGlm(const aiMatrix4x4 &m) {
 	return glm::transpose(glm::make_mat4(&m.a1));
+}
+
+std::vector<Vertex> Mesh::loadVertices(aiMesh *mesh) {
+	std::vector<Vertex> vertices;
+	for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
+		Vertex vertex;
+
+		vertex.pos.x = mesh->mVertices[i].x;
+		vertex.pos.y = mesh->mVertices[i].y;
+		vertex.pos.z = mesh->mVertices[i].z;
+
+		if (mesh->HasNormals()) {
+			vertex.normal.x = mesh->mNormals[i].x;
+			vertex.normal.y = mesh->mNormals[i].y;
+			vertex.normal.z = mesh->mNormals[i].z;
+		} else {
+			vertex.normal = vec3(0.0f, 0.0f, 1.0f);
+		}
+
+		if (mesh->mTextureCoords[0]) {
+			vertex.texCoords.x = mesh->mTextureCoords[0][i].x;
+			vertex.texCoords.y = mesh->mTextureCoords[0][i].y;
+		} else {
+			vertex.texCoords = vec2(0.0f);
+		}
+
+		vertices.push_back(vertex);
+	}
+	return vertices;
+}
+
+std::vector<ElementIndex> Mesh::loadIndices(aiMesh *mesh) {
+	std::vector<ElementIndex> indices;
+	for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
+		auto face = mesh->mFaces[i];
+		for (unsigned int j = 0; j < face.mNumIndices; j++) {
+			indices.push_back(face.mIndices[j]);
+		}
+	}
+	return indices;
 }
 
 void Mesh::loadBones(std::vector<Vertex> &vertices) {
@@ -206,8 +244,8 @@ void interpolateScale(float time, aiNodeAnim *nodeAnim, mat4 &transform) {
 }
 
 void Mesh::buildBoneTransformations(float time, aiNode *node, const mat4 &parentTransform) {
-	auto animation = scene->mAnimations[0];
-	auto transformation = toGlm(node->mTransformation);
+	const auto animation = scene->mAnimations[0];
+	mat4 transformation;
 	std::string nodeName(node->mName.data);
 
 	auto nodeAnim = getNodeAnim(animation, nodeName);
@@ -217,6 +255,8 @@ void Mesh::buildBoneTransformations(float time, aiNode *node, const mat4 &parent
 		interpolateTranslation(time, nodeAnim, transformation);
 		interpolateRotation(time, nodeAnim, transformation);
 		interpolateScale(time, nodeAnim, transformation);
+	} else {
+		transformation = toGlm(node->mTransformation);
 	}
 
 	auto boneIdIt = boneIds.find(nodeName);

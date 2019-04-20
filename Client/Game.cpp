@@ -70,7 +70,7 @@ void Game::update(float dt) {
 		std::cout << glm::to_string(camera->getForward()) << std::endl;
 	}
 
-	bear->updateAnimation(glfwGetTime());
+	bear->updateAnimation((float)glfwGetTime());
 }
 
 void Game::draw(float dt) const {
