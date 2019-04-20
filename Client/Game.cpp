@@ -8,7 +8,8 @@
 
 Game::Game() {
 	lightShader = new Shader("Shaders/light");
-	bear = new Model("Models/boblampclean.md5mesh");
+	textShader = new Shader("Shaders/text");
+	bear = new Model("Models/ucsd-bear-sp10.obj");
 	sphere = new Model("Models/sphere.obj");
 	camera = new Camera(vec3(-7.5f, 2.5f, 0.0f), vec3(0.0f), 70, 1.0f);
 	sun = new DirectionalLight(0);
@@ -24,10 +25,15 @@ Game::Game() {
 	Input::setMouseVisible(false);
 
 	ConfigSettings::get().getValue("MouseSensitivity", mouseSensitivity);
+
+	textRenderer = new TextRenderer(*textShader);
+	testText = textRenderer->addText(textRenderer->DEFAULT_FONT_NAME, "test test test test", 200.0f, 200.0f, 3.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 Game::~Game() {
 	delete lightShader;
+	delete textShader;
+	delete textRenderer;
 	delete bear;
 	delete camera;
 	delete sun;
@@ -43,6 +49,17 @@ void Game::update(float dt) {
 	phi += (float)Input::getMouseDeltaY() * mouseMoveScale;
 
 	camera->setEyeAngles(vec3(-phi, theta, 0));
+
+	testTextChange += dt;
+	if (testTextChange < 1.0f)
+	{
+		testText->text = "hello";
+	}
+	else
+	{
+		if (testTextChange > 2.0f) testTextChange = 0.0f;
+		testText->text = "world";
+	}
 
 	vec3 direction(0.0f);
 	if (Input::isKeyDown(GLFW_KEY_W)) {
@@ -69,12 +86,6 @@ void Game::update(float dt) {
 	if (Input::wasKeyPressed(GLFW_KEY_P)) {
 		std::cout << glm::to_string(camera->getForward()) << std::endl;
 	}
-
-	if (Input::wasKeyPressed(GLFW_KEY_R)) {
-		bear->setAnimation(0);
-	}
-
-	bear->updateAnimation((float)glfwGetTime());
 }
 
 void Game::draw(float dt) const {
@@ -84,6 +95,8 @@ void Game::draw(float dt) const {
 	// model = glm::rotate(model, phi, vec3(1.0f, 0.0f, 0.0f));
 
 	auto modelInvT = glm::transpose(glm::inverse(mat3(model)));
+
+	textRenderer->renderText();
 
 	// TODO (bhang): refactor this to some sort of renderer class so the game
 	// doesn't have to deal with all of this transformation + shader stuff?
