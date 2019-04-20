@@ -173,7 +173,7 @@ aiNodeAnim *Mesh::getNodeAnim(const aiAnimation *animation, const std::string &n
 }
 
 void Mesh::updateAnimation(float time) {
-	if (animationId < 0 || animationId >= scene->mNumAnimations) { return; }
+	if (animationId < 0 || animationId >= (int)scene->mNumAnimations) { return; }
 
 	auto animation = scene->mAnimations[animationId];
 	time = fmod(
