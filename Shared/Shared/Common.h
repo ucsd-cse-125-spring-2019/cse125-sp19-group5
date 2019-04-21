@@ -6,7 +6,9 @@
 #include <vector>
 #include <tuple>
 #include <string>
+#include <iostream>
 
+using std::cout;
 using std::vector;
 using std::tuple;
 using std::string;

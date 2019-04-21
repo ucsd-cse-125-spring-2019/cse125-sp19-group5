@@ -1,10 +1,10 @@
 #pragma once
 #include "Common.h"
-#include "GameObject.h"
+/*#include "GameObject.h"
 #include "Player.h"
 #include "Ball.h"
 #include "Wall.h"
-
+*/
 enum PlayerCommands {
 	FORWARD = 1 << 0,
 	BACKWARD = 1 << 1,
@@ -14,6 +14,10 @@ enum PlayerCommands {
 	WALL = 1 << 5,
 	SWING = 1 << 6
 };
+class GameObject;
+class Player;
+class Ball;
+class Wall;
 
 struct GameState {
 	vector<Player *> players;
