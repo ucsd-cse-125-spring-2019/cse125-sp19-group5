@@ -1,25 +1,39 @@
 #include "Game.h"
 #include <Shared/Common.h>
+#include <Shared/ConfigSettings.h>
 #include <glm/gtx/transform.hpp>
 #include "Input.h"
+#include <iostream>
+#include <glm/gtx/string_cast.hpp>
 
 Game::Game() {
 	lightShader = new Shader("Shaders/light");
-	bear = new Model("Models/ucsd-bear-sp10.obj");
+	textShader = new Shader("Shaders/text");
+	//bear = new Model("Models/ucsd-bear-sp10.obj");
 	sphere = new Model("Models/sphere.obj");
 	camera = new Camera(vec3(-7.5f, 2.5f, 0.0f), vec3(0.0f), 70, 1.0f);
 	sun = new DirectionalLight(0);
+	sun->setDirection(vec3(0.009395, -0.700647, -0.713446));
 	sun->setAmbient(vec3(0.04f, 0.05f, 0.13f));
 	sun->setColor(vec3(0.8f, 0.7f, 0.55f));
+
+	skybox = new Skybox("Textures/Skybox/cloudtop", *camera);
 
 	white = new Texture2d("Textures/white.png");
 	grass = new Texture2d("Textures/grass.png");
 
 	Input::setMouseVisible(false);
+
+	ConfigSettings::get().getValue("MouseSensitivity", mouseSensitivity);
+
+	textRenderer = new TextRenderer(*textShader);
+	testText = textRenderer->addText(textRenderer->DEFAULT_FONT_NAME, "test test test test", 200.0f, 200.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 Game::~Game() {
 	delete lightShader;
+	delete textShader;
+	delete textRenderer;
 	delete bear;
 	delete camera;
 	delete sun;
@@ -30,10 +44,22 @@ Camera *Game::getCamera() const {
 }
 
 void Game::update(float dt) {
-	theta += dt * (float)Input::getMouseDeltaX() * 0.1f;
-	phi += dt * (float)Input::getMouseDeltaY() * 0.1f;
+	float mouseMoveScale = mouseSensitivity * 0.001f;
+	theta += (float)Input::getMouseDeltaX() * mouseMoveScale;
+	phi += (float)Input::getMouseDeltaY() * mouseMoveScale;
 
 	camera->setEyeAngles(vec3(-phi, theta, 0));
+
+	testTextChange += dt;
+	if (testTextChange < 1.0f)
+	{
+		testText->text = "hello";
+	}
+	else
+	{
+		if (testTextChange > 2.0f) testTextChange = 0.0f;
+		testText->text = "world";
+	}
 
 	vec3 direction(0.0f);
 	if (Input::isKeyDown(GLFW_KEY_W)) {
@@ -56,6 +82,10 @@ void Game::update(float dt) {
 	if (Input::isKeyDown(GLFW_KEY_ESCAPE)) {
 		shouldExit = true;
 	}
+
+	if (Input::wasKeyPressed(GLFW_KEY_P)) {
+		std::cout << glm::to_string(camera->getForward()) << std::endl;
+	}
 }
 
 void Game::draw(float dt) const {
@@ -66,9 +96,9 @@ void Game::draw(float dt) const {
 
 	auto modelInvT = glm::transpose(glm::inverse(mat3(model)));
 
+
 	// TODO (bhang): refactor this to some sort of renderer class so the game
 	// doesn't have to deal with all of this transformation + shader stuff?
-	white->bind(0);
 	lightShader->use();
 	lightShader->setUniform("eyePos", camera->getPosition());
 	lightShader->setUniform("modelInvT", modelInvT);
@@ -78,7 +108,7 @@ void Game::draw(float dt) const {
 
 
 	sun->bind(*lightShader);
-	bear->draw(*lightShader);
+	//bear->draw(*lightShader);
 	grass->bind(0);
 
 	model = glm::translate(vec3(5.0f, 0.0f, 0.0f))
@@ -88,4 +118,10 @@ void Game::draw(float dt) const {
 	lightShader->setUniform("mvp", camera->getMatrix() * model);
 	lightShader->setUniform("model", model);
 	sphere->draw(*lightShader);
+	skybox->draw();
+
+	glDisable(GL_DEPTH_TEST);
+	textShader->use();
+	textRenderer->renderText();
+	glEnable(GL_DEPTH_TEST);
 }

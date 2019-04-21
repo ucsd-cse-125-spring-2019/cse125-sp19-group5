@@ -82,3 +82,11 @@ const vec3 &Camera::getAngles() const {
 mat4 Camera::getMatrix() const {
 	return projection * view;
 }
+
+const mat4 &Camera::getViewMatrix() const {
+	return view;
+}
+
+const mat4 &Camera::getProjectionMatrix() const {
+	return projection;
+}

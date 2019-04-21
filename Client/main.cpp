@@ -3,6 +3,7 @@
 #include <iostream>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <Shared/ConfigSettings.h>
 #include "Game.h"
 #include "Renderer/Camera.h"
 #include "Input.h"
@@ -63,6 +64,9 @@ int main(int argc, char **argv) {
 		return -1;
 	}
 
+	ConfigSettings::get().getValue("ScreenWidth", SCREEN_WIDTH);
+	ConfigSettings::get().getValue("ScreenHeight", SCREEN_HEIGHT);
+
 	// Create a window with OpenGL 3.3 core.
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -97,6 +101,8 @@ int main(int argc, char **argv) {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_MULTISAMPLE); 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glCullFace(GL_BACK);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -119,6 +125,9 @@ int main(int argc, char **argv) {
 
 	// Main loop
 	while (!glfwWindowShouldClose(window)) {
+		auto dt = (float)glfwGetTime() - lastTime;
+		lastTime = (float)glfwGetTime();
+
 		Input::poll();
 
 		if (game.shouldExit) {
@@ -129,12 +138,10 @@ int main(int argc, char **argv) {
 			break;
 		}
 
-		auto dt = (float)glfwGetTime() - lastTime;
 		game.update(dt);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		game.draw(dt);
 
-		lastTime = (float)glfwGetTime();
 		glfwSwapBuffers(window);
 
 		if (SCREEN_RESHAPED) {
