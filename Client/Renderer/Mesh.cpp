@@ -73,8 +73,9 @@ Mesh::Mesh(aiMesh *mesh, const aiScene *scene): mesh(mesh), scene(scene) {
 	glEnableVertexAttribArray(4);
 
 	// Clean up
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 inline mat4 toGlm(const aiMatrix4x4 &m) {
@@ -294,7 +295,7 @@ void Mesh::draw(Shader &shader) const {
 
 Mesh::~Mesh() {
 	if (VAO) {
-		glDeleteBuffers(1, &VAO);
+		glDeleteVertexArrays(1, &VAO);
 		glDeleteBuffers(1, &VBO);
 		glDeleteBuffers(1, &EBO);
 		VAO = 0;

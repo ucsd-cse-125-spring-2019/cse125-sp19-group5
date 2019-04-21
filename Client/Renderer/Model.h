@@ -14,7 +14,7 @@ class Model
 	private:
 	Assimp::Importer importer;
 	const aiScene *scene;
-	std::vector<Mesh> meshes;
+	std::vector<Mesh*> meshes;
 	std::vector<mat4> boneTransforms;
 	int curAnimation = -1;
 
@@ -22,22 +22,16 @@ class Model
 	// traverse the tree and convert the nodes into a Mesh instance.
 	void loadNode(aiNode *node, const aiScene *scene);
 
-	// Converts the Assimp representation of a mesh to a Mesh instance.
-	Mesh loadMesh(aiMesh *mesh, const aiScene *scene);
-
-	// Converts the vertices from the aiMesh to a list of Vertex instances.
-	std::vector<Vertex> loadMeshVertices(aiMesh *mesh);
-
-	// Gets a list of the vertex indices for an aiMesh.
-	std::vector<ElementIndex> loadMeshIndices(aiMesh *mesh);
-
-	// Loads the bones for a mesh.
-	void loadMeshBones(aiMesh *mesh, std::vector<Vertex> &vertices);
-
 	public:
+	// Creates a model given the path to the model file.
 	Model(const std::string &path);
+	~Model();
+
+	// Draws the model with the given shader.
 	void draw(Shader &shader) const;
 
+	// Continues the animations for the meshes of the model using the current
+	// time in seconds.
 	void updateAnimation(float time);
 };
 

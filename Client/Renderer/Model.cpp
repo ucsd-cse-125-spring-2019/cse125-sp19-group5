@@ -26,7 +26,7 @@ Model::Model(const std::string &path) {
 
 void Model::draw(Shader &shader) const {
 	for (auto mesh : meshes) {
-		mesh.draw(shader);
+		mesh->draw(shader);
 	}
 }
 
@@ -34,7 +34,7 @@ void Model::loadNode(aiNode *node, const aiScene *scene) {
 	// Convert the current node to meshes.
 	for (unsigned int i = 0; i < node->mNumMeshes; i++) {
 		auto mesh = scene->mMeshes[node->mMeshes[i]];
-		meshes.push_back(Mesh(mesh, scene));
+		meshes.push_back(new Mesh(mesh, scene));
 	}
 
 	// Then, recursively load the node's children.
@@ -44,7 +44,13 @@ void Model::loadNode(aiNode *node, const aiScene *scene) {
 }
 
 void Model::updateAnimation(float time) {
-	for (auto &mesh : meshes) {
-		mesh.updateAnimation(time);
+	for (auto mesh : meshes) {
+		mesh->updateAnimation(time);
+	}
+}
+
+Model::~Model() {
+	for (auto mesh : meshes) {
+		delete mesh;
 	}
 }
