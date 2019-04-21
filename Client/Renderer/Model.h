@@ -17,6 +17,7 @@ class Model
 	std::vector<Mesh*> meshes;
 	std::vector<mat4> boneTransforms;
 	int curAnimation = -1;
+	float animStartTime = 0.0;
 
 	// The model is imported in a tree hierchy. This is used to recursively
 	// traverse the tree and convert the nodes into a Mesh instance.
@@ -29,6 +30,9 @@ class Model
 
 	// Draws the model with the given shader.
 	void draw(Shader &shader) const;
+
+	// Sets the current animation for the meshes of this model.
+	void setAnimation(int id = -1, bool restart = true);
 
 	// Continues the animations for the meshes of the model using the current
 	// time in seconds.

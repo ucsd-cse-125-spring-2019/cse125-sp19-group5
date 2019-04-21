@@ -1,6 +1,7 @@
 #include "Model.h"
 #include <iostream>
 #include <glm/gtc/type_ptr.hpp>
+#include <GLFW/glfw3.h>
 
 Model::Model(const std::string &path) {
 	// Create a scene from the given path to the model file.
@@ -30,6 +31,16 @@ void Model::draw(Shader &shader) const {
 	}
 }
 
+void Model::setAnimation(int id, bool restart) {
+	curAnimation = id;
+	if (restart) {
+		animStartTime = (float)glfwGetTime();
+	}
+	for (auto mesh : meshes) {
+		mesh->animationId = id;
+	}
+}
+
 void Model::loadNode(aiNode *node, const aiScene *scene) {
 	// Convert the current node to meshes.
 	for (unsigned int i = 0; i < node->mNumMeshes; i++) {
@@ -45,7 +56,7 @@ void Model::loadNode(aiNode *node, const aiScene *scene) {
 
 void Model::updateAnimation(float time) {
 	for (auto mesh : meshes) {
-		mesh->updateAnimation(time);
+		mesh->updateAnimation(time - animStartTime);
 	}
 }
 

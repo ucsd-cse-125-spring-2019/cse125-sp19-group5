@@ -286,6 +286,7 @@ void Mesh::draw(Shader &shader) const {
 		const auto name = "boneTransform[" + std::to_string(i) + "]";
 		shader.setUniform(name.c_str(), IDENTITY);
 	}
+	shader.setUniform("animated", animationId >= 0);
 	if (VAO) {
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, numVertices, GL_UNSIGNED_INT, nullptr);
