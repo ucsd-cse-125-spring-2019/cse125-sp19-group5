@@ -20,10 +20,10 @@ public:
 	Font(const std::string &filepath, Shader &shader);
 	~Font();
 
-	void RenderText(Shader &shader, const std::string text, const GLfloat x, const GLfloat y, const GLfloat scale, const glm::vec3 color);
+	void RenderText(Shader &shader, const std::string &text, GLfloat x, GLfloat y, GLfloat scale, const glm::vec3 &color);
 
 private:
-	std::map<GLchar, Character> characters;
+	std::unordered_map<GLchar, Character> characters;
 	GLuint VAO;
 	GLuint VBO;
 };

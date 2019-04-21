@@ -72,7 +72,7 @@ Font::Font(const std::string &filepath, Shader &shader)
 			glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
 			(GLuint) face->glyph->advance.x
 		};
-		characters.insert(std::pair<GLchar, Character>(c, character));
+		characters[c] = character;
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 	// Destroy FreeType once we're finished
@@ -85,26 +85,25 @@ Font::Font(const std::string &filepath, Shader &shader)
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
-	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Font::RenderText(Shader &shader, const std::string text, const GLfloat x, const GLfloat y, const GLfloat scale, const glm::vec3 color)
+void Font::RenderText(Shader &shader, const std::string &text, GLfloat x, GLfloat y, GLfloat scale, const glm::vec3 &color)
 {
+	glBindVertexArray(VAO);
 	// Activate corresponding render state	
 	shader.use();
 	shader.setUniform("textColor", color);
 	glActiveTexture(GL_TEXTURE0);
-	glBindVertexArray(VAO);
+	shader.setUniform("text", 0);
 
 	// Iterate through all characters
-	std::string::const_iterator c;
-	GLfloat currX = x;
-	for (c = text.begin(); c != text.end(); c++)
+	for (auto c : text)
 	{
-		Character ch = characters[*c];
+		auto &ch = characters[c];
 
 		GLfloat xpos = x + ch.Bearing.x * scale;
 		GLfloat ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
@@ -131,8 +130,8 @@ void Font::RenderText(Shader &shader, const std::string text, const GLfloat x, c
 		// Render quad
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		// Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-		currX += (ch.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+		x += (ch.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
 	}
-	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindVertexArray(0);
 }

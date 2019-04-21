@@ -38,7 +38,8 @@ Text* TextRenderer::addText(const std::string &fontname, const std::string text,
 }
 
 void TextRenderer::renderText() {
-	for (Text text : texts) {
+	shader.use();
+	for (Text &text : texts) {
 		text.renderText(shader);
 	}
 }

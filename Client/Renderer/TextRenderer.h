@@ -23,7 +23,7 @@ struct Text {
 class TextRenderer
 {
 private:
-	Shader shader;
+	Shader &shader;
 	std::unordered_map<std::string, Font> fonts;
 	std::vector<Text> texts;
 
