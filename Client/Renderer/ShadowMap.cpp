@@ -50,9 +50,7 @@ void ShadowMap::prePass() {
 void ShadowMap::setupLight(Shader &shader, const DirectionalLight &light) {
 	const auto up = vec3(0.0f, 1.0f, 0.0f);
 	const auto origin = vec3(0.0f);
-
-	// TODO (bhang): adjust this to fit the scene.
-	auto proj = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 10.0f);
+	auto proj = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 100.0f);
 	auto view = glm::lookAt(light.getDirection(), origin, up);
 	shader.setUniform("toLightSpace", proj * view);
 }
