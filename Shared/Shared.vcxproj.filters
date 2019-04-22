@@ -24,6 +24,9 @@
     <ClInclude Include="Shared\ConfigSettings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Shared\GameMessage.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -7,6 +7,8 @@
 #include "Game.h"
 #include "Renderer/Camera.h"
 #include "Input.h"
+#include <Shared/GameMessage.hpp>
+#include <deque>
 
 using namespace boost::asio;
 using ip::tcp;
@@ -20,15 +22,103 @@ auto SCREEN_WIDTH = 800;
 auto SCREEN_HEIGHT = 600;
 auto SCREEN_RESHAPED = false;
 
-// Update the view port when the window has been resized.
-static void onResize(GLFWwindow *window, int width, int height) {
-	SCREEN_WIDTH = width;
-	SCREEN_HEIGHT = height;
-	SCREEN_RESHAPED = true;
+class game_client
+{
+public:
+	game_client(boost::asio::io_service& io_service)
+		: io_service_(io_service),
+		socket_(io_service)
+	{
+		socket_.connect(tcp::endpoint(boost::asio::ip::address::from_string("127.0.0.1"), 1234));
+	}
 
-	glViewport(0, 0, width, height);
-}
+	void write(const game_message& msg)
+	{
+		boost::asio::post(io_service_,
+			[this, msg]()
+		{
+			bool write_in_progress = !write_msgs_.empty();
+			write_msgs_.push_back(msg);
+			if (!write_in_progress)
+			{
+				do_write();
+			}
+		});
+	}
 
+	void close()
+	{
+		boost::asio::post(io_service_, [this]() { socket_.close(); });
+	}
+
+private:
+
+	void do_read_header()
+	{
+		boost::asio::async_read(socket_,
+			boost::asio::buffer(read_msg_.data(), game_message::header_length),
+			[this](boost::system::error_code ec, std::size_t /*length*/)
+		{
+			if (!ec && read_msg_.decode_header())
+			{
+				do_read_body();
+			}
+			else
+			{
+				socket_.close();
+			}
+		});
+	}
+
+	void do_read_body()
+	{
+		boost::asio::async_read(socket_,
+			boost::asio::buffer(read_msg_.body(), read_msg_.body_length()),
+			[this](boost::system::error_code ec, std::size_t /*length*/)
+		{
+			if (!ec)
+			{
+				std::cout.write(read_msg_.body(), read_msg_.body_length());
+				std::cout << "\n";
+				do_read_header();
+			}
+			else
+			{
+				socket_.close();
+			}
+		});
+	}
+
+	void do_write()
+	{
+		boost::asio::async_write(socket_,
+			boost::asio::buffer(write_msgs_.front().data(),
+				write_msgs_.front().length()),
+			[this](boost::system::error_code ec, std::size_t /*length*/)
+		{
+			if (!ec)
+			{
+				write_msgs_.pop_front();
+				if (!write_msgs_.empty())
+				{
+					do_write();
+				}
+			}
+			else
+			{
+				socket_.close();
+			}
+		});
+	}
+
+private:
+	boost::asio::io_service& io_service_;
+	tcp::socket socket_;
+	game_message read_msg_;
+	std::deque<game_message> write_msgs_;
+};
+
+/*
 int client() {
 	boost::asio::io_service io_service;
 	//socket creation
@@ -38,7 +128,7 @@ int client() {
 	// request/message from client
 	const string msg = "Hello from Client!\n";
 	boost::system::error_code error;
-	boost::asio::write(socket, boost::asio::buffer(msg), error);
+	boost::asio::write(socket, boost::asio::buffer(msg));
 	if (!error) {
 		cout << "Client sent hello message!" << endl;
 	}
@@ -47,7 +137,7 @@ int client() {
 	}
 	// getting response from server
 	boost::asio::streambuf receive_buffer;
-	boost::asio::read(socket, receive_buffer, boost::asio::transfer_all(), error);
+	boost::asio::async_read(socket, receive_buffer, boost::asio::transfer_all(), error);
 	if (error && error != boost::asio::error::eof) {
 		cout << "receive failed: " << error.message() << endl;
 	}
@@ -56,6 +146,38 @@ int client() {
 		cout << data << endl;
 	}
 	return 0;
+}*/
+
+int client() {
+	try
+	{
+		boost::asio::io_service io_service;
+		game_client c(io_service);
+		char line[game_message::max_body_length + 1];
+		while (std::cin.getline(line, game_message::max_body_length + 1))
+		{
+			game_message msg;
+			msg.body_length(std::strlen(line));
+			std::memcpy(msg.body(), line, msg.body_length());
+			msg.encode_header();
+			c.write(msg);
+		}
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << "Exception: " << e.what() << "\n";
+	}
+
+	return 0;
+}
+
+// Update the view port when the window has been resized.
+static void onResize(GLFWwindow *window, int width, int height) {
+	SCREEN_WIDTH = width;
+	SCREEN_HEIGHT = height;
+	SCREEN_RESHAPED = true;
+
+	glViewport(0, 0, width, height);
 }
 
 int main(int argc, char **argv) {

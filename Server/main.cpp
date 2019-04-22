@@ -29,8 +29,11 @@ int server() {
 		for (;;) {
 			//socket creation 
 			tcp::socket socket_(io_service);
+
 			//waiting for connection
 			acceptor_.accept(socket_);
+			cout << "Accept Returned" << endl;
+
 			//read operation
 			string message = read_(socket_);
 			cout << message << endl;

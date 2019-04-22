@@ -118,6 +118,7 @@
     <ClInclude Include="Shared\Common.h" />
     <ClInclude Include="Shared\ConfigSettings.h" />
     <ClInclude Include="Shared\GameObjectState.h" />
+    <ClInclude Include="Shared\GameMessage.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
