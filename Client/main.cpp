@@ -22,6 +22,8 @@ auto SCREEN_WIDTH = 800;
 auto SCREEN_HEIGHT = 600;
 auto SCREEN_RESHAPED = false;
 
+typedef std::deque<game_message> game_message_queue;
+
 class game_client
 {
 public:
@@ -34,9 +36,11 @@ public:
 
 	void write(const game_message& msg)
 	{
+		cout << "writing" << endl;
 		boost::asio::post(io_service_,
 			[this, msg]()
 		{
+			cout << "inside post" << endl;
 			bool write_in_progress = !write_msgs_.empty();
 			write_msgs_.push_back(msg);
 			if (!write_in_progress)
@@ -91,6 +95,7 @@ private:
 
 	void do_write()
 	{
+		cout << "do write" << endl;
 		boost::asio::async_write(socket_,
 			boost::asio::buffer(write_msgs_.front().data(),
 				write_msgs_.front().length()),
@@ -115,7 +120,7 @@ private:
 	boost::asio::io_service& io_service_;
 	tcp::socket socket_;
 	game_message read_msg_;
-	std::deque<game_message> write_msgs_;
+	game_message_queue write_msgs_;
 };
 
 /*
@@ -151,11 +156,13 @@ int client() {
 int client() {
 	try
 	{
+		cout << "creating client" << endl;
 		boost::asio::io_service io_service;
 		game_client c(io_service);
 		char line[game_message::max_body_length + 1];
 		while (std::cin.getline(line, game_message::max_body_length + 1))
 		{
+			cout << "inside while loop" << endl;
 			game_message msg;
 			msg.body_length(std::strlen(line));
 			std::memcpy(msg.body(), line, msg.body_length());
@@ -243,7 +250,8 @@ int main(int argc, char **argv) {
 
 	auto lastTime = (float)glfwGetTime();
 
-	client();
+	cout << "creating client" << endl;
+ 	client();
 
 	// Main loop
 	while (!glfwWindowShouldClose(window)) {

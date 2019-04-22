@@ -2,6 +2,7 @@
 #include <iostream>
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
+#include <Shared\GameMessage.hpp>
 
 using namespace boost::asio;
 using ip::tcp;
