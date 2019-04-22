@@ -16,3 +16,11 @@ void DirectionalLight::setDirection(const vec3 &newDirection) {
 void DirectionalLight::setAmbient(const vec3 &newAmbient) {
 	ambient = newAmbient;
 }
+
+vec3 DirectionalLight::getDirection() const {
+	return direction;
+}
+
+vec3 DirectionalLight::getAmbient() const {
+	return ambient;
+}
