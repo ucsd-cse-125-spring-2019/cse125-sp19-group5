@@ -6,6 +6,7 @@ layout (location = 2) in vec2 texCoords;
 layout (location = 3) in ivec4 bones;
 layout (location = 4) in vec4 weights;
 
+out vec4 lightSpacePos;
 out vec3 fragPos;
 out vec3 fragNormal;
 out vec2 fragTexCoords;
@@ -14,6 +15,7 @@ uniform bool animated;
 uniform mat3 modelInvT;
 uniform mat4 model;
 uniform mat4 mvp;
+uniform mat4 toLightSpace;
 
 const int MAX_BONES = 128;
 uniform mat4 boneTransforms[MAX_BONES] = mat4[MAX_BONES](1.0f);
@@ -32,6 +34,7 @@ void main() {
 		finalNorm = boneTransformInvT * normal;
 	}
 	fragPos = vec3(model * finalPos);
+	lightSpacePos = toLightSpace * vec4(fragPos, 1.0f);
 	fragNormal = modelInvT * finalNorm;
 	fragTexCoords = texCoords;
 	gl_Position = mvp * finalPos;

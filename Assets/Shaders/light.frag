@@ -27,9 +27,11 @@ uniform PointLight pointLight[LIGHTS_MAX];
 uniform int pointLightNum;
 uniform int directionalLightNum;
 uniform sampler2D diffuseTex;
+uniform sampler2D shadowMap;
 
 uniform vec3 eyePos;
 
+in vec4 lightSpacePos;
 in vec3 fragPos;
 in vec3 fragNormal;
 in vec2 fragTexCoords;
@@ -65,7 +67,8 @@ vec3 getDirectionalLightIntensity(
 	vec3 fragPos,
 	vec3 normal,
 	vec3 eyeDir,
-	vec3 diffuse
+	vec3 diffuse,
+	float intensity
 ) {
 	vec3 ambient = light.ambient * diffuse;
 	vec3 dir = light.direction;
@@ -75,7 +78,23 @@ vec3 getDirectionalLightIntensity(
 		max(dot(normal, halfAng), 0.0f),
 		shininess
 	));
-	return ambient + light.color * (lambert + phong);
+	return ambient + intensity * (light.color * (lambert + phong));
+}
+
+const float bias = 0.0005f;
+
+float getShadowIntensity(vec4 lightSpacePos) {
+	vec3 pos = lightSpacePos.xyz / lightSpacePos.w;
+	pos = pos * 0.5 + 0.5;
+
+	if (pos.z > 1.0f) {
+		return 0.0f;
+	}
+
+	if (texture(shadowMap, pos.xy).r < pos.z - bias) {
+		return 0.1f;
+	}
+	return 1.0f;
 }
 
 void main() {
@@ -83,9 +102,10 @@ void main() {
 	vec3 eyeDir = normalize(eyePos - fragPos);
 	vec3 finalColor = vec3(0.0f);
 	vec3 diffuse = vec3(texture(diffuseTex, fragTexCoords));
+	float intensity = getShadowIntensity(lightSpacePos);
 
 	for (int i = 0; i < pointLightNum; i++) {
-		finalColor += getPointLightIntensity(
+		finalColor += intensity * getPointLightIntensity(
 			pointLight[i],
 			fragPos,
 			normal,
@@ -99,7 +119,8 @@ void main() {
 			fragPos,
 			normal,
 			eyeDir,
-			diffuse
+			diffuse,
+			intensity
 		);
 	}
 
