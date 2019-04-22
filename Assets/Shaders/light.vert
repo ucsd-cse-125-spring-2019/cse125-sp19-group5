@@ -18,7 +18,7 @@ uniform mat4 mvp;
 uniform mat4 toLightSpace;
 
 const int MAX_BONES = 128;
-uniform mat4 boneTransforms[MAX_BONES] = mat4[MAX_BONES](1.0f);
+uniform mat4 boneTransforms[MAX_BONES];
 
 void main() {
 	vec4 finalPos = vec4(position, 1.0f);

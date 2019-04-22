@@ -9,7 +9,7 @@ uniform mat4 model;
 uniform bool animated;
 
 const int MAX_BONES = 128;
-uniform mat4 boneTransforms[MAX_BONES] = mat4[MAX_BONES](1.0f);
+uniform mat4 boneTransforms[MAX_BONES];
 
 void main() {
 	vec4 finalPos = vec4(position, 1.0f);
