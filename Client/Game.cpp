@@ -7,10 +7,12 @@
 #include <glm/gtx/string_cast.hpp>
 
 Game::Game() {
+	shadowMap = new ShadowMap();
 	lightShader = new Shader("Shaders/light");
 	textShader = new Shader("Shaders/text");
-	//bear = new Model("Models/ucsd-bear-sp10.obj");
+	bear = new Model("Models/ground.obj");
 	sphere = new Model("Models/sphere.obj");
+	sphere->setAnimation(0);
 	camera = new Camera(vec3(-7.5f, 2.5f, 0.0f), vec3(0.0f), 70, 1.0f);
 	sun = new DirectionalLight(0);
 	sun->setDirection(vec3(0.009395, -0.700647, -0.713446));
@@ -37,6 +39,7 @@ Game::~Game() {
 	delete bear;
 	delete camera;
 	delete sun;
+	delete shadowMap;
 }
 
 Camera *Game::getCamera() const {
@@ -86,42 +89,58 @@ void Game::update(float dt) {
 	if (Input::wasKeyPressed(GLFW_KEY_P)) {
 		std::cout << glm::to_string(camera->getForward()) << std::endl;
 	}
+
+	sphere->updateAnimation((float)glfwGetTime());
+}
+
+void Game::drawScene(Shader &shader) const {
+	auto model = mat4(1.0f);
+	model = glm::translate(model, vec3(0.0f, 0.5f, 0.0f));
+	model = glm::scale(model, vec3(0.2f));
+	auto modelInvT = glm::transpose(glm::inverse(mat3(model)));
+
+	shader.setUniform("model", model);
+	shader.setUniform("modelInvT", modelInvT);
+	shader.setUniform("mvp", camera->getMatrix() * model);
+
+	white->bind(0);
+	sphere->draw(shader);
+
+	model = mat4(1.0f);
+	modelInvT = glm::transpose(glm::inverse(model));
+	shader.setUniform("model", model);
+	shader.setUniform("modelInvT", modelInvT);
+	shader.setUniform("mvp", camera->getMatrix() * model);
+
+	bear->draw(shader);
+}
+
+void Game::drawUI() const {
+	textShader->use();
+	textRenderer->renderText();
 }
 
 void Game::draw(float dt) const {
-	auto model = mat4(1.0f);
-	model = glm::scale(model, vec3(0.3f));
-	// model = glm::rotate(model, theta, vec3(0.0f, 1.0f, 0.0f));
-	// model = glm::rotate(model, phi, vec3(1.0f, 0.0f, 0.0f));
+	// Shadow mapping render pass
+	shadowMap->prePass();
+	shadowMap->setupLight(shadowMap->getShader(), *sun);
+	drawScene(shadowMap->getShader());
+	shadowMap->postPass();
 
-	auto modelInvT = glm::transpose(glm::inverse(mat3(model)));
-
-
-	// TODO (bhang): refactor this to some sort of renderer class so the game
-	// doesn't have to deal with all of this transformation + shader stuff?
+	// Normal 3D render pass
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	lightShader->use();
 	lightShader->setUniform("eyePos", camera->getPosition());
-	lightShader->setUniform("modelInvT", modelInvT);
-	lightShader->setUniform("mvp", camera->getMatrix() * model);
-	lightShader->setUniform("model", model);
 	lightShader->setUniform("directionalLightNum", 1);
 
+	shadowMap->setupLight(*lightShader, *sun);
+	shadowMap->bindTexture(*lightShader);
 
 	sun->bind(*lightShader);
-	//bear->draw(*lightShader);
-	grass->bind(0);
-
-	model = glm::translate(vec3(5.0f, 0.0f, 0.0f))
-		* glm::scale(model, vec3(0.5f));
-	modelInvT = glm::transpose(glm::inverse(mat3(model)));
-	lightShader->setUniform("modelInvT", modelInvT);
-	lightShader->setUniform("mvp", camera->getMatrix() * model);
-	lightShader->setUniform("model", model);
-	sphere->draw(*lightShader);
+	drawScene(*lightShader);
 	skybox->draw();
 
 	glDisable(GL_DEPTH_TEST);
-	textShader->use();
-	textRenderer->renderText();
+	drawUI();
 	glEnable(GL_DEPTH_TEST);
 }

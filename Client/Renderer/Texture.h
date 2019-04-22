@@ -19,5 +19,7 @@ class Texture {
 
 	public:
 	Texture();
+	void bind(GLenum target = GL_TEXTURE_2D) const;
+	GLuint getID() const;
 	virtual ~Texture();
 };
