@@ -127,9 +127,6 @@ void Game::drawScene(Shader &shader) const {
 void Game::drawUI() const {
 	textShader->use();
 	textRenderer->renderText();
-
-	renderer2d->bindShader();
-	renderer2d->drawTexturedRect(shadowMap->getTexture(), 0.0f, 0.0f, 800.0f, 450.f);
 }
 
 void Game::draw(float dt) const {
