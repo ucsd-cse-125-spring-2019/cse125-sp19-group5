@@ -64,6 +64,8 @@ int main(int argc, char **argv) {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_MULTISAMPLE); 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glCullFace(GL_BACK);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -84,6 +86,9 @@ int main(int argc, char **argv) {
 
 	// Main loop
 	while (!glfwWindowShouldClose(window)) {
+		auto dt = (float)glfwGetTime() - lastTime;
+		lastTime = (float)glfwGetTime();
+
 		Input::poll();
 
 		if (game.shouldExit) {
@@ -94,12 +99,9 @@ int main(int argc, char **argv) {
 			break;
 		}
 
-		auto dt = (float)glfwGetTime() - lastTime;
 		game.update(dt);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		game.draw(dt);
 
-		lastTime = (float)glfwGetTime();
 		glfwSwapBuffers(window);
 
 		if (SCREEN_RESHAPED) {

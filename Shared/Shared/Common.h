@@ -7,6 +7,7 @@
 #include <tuple>
 #include <string>
 #include <iostream>
+#include <exception>
 
 using std::cout;
 using std::vector;

@@ -4,6 +4,9 @@
 # Game Config Settings
 Assets/Config.ini
 
+# Game assets - using Dropbox w/ symlinks instead
+Assets/Models
+
 # User-specific files
 *.suo
 *.user
