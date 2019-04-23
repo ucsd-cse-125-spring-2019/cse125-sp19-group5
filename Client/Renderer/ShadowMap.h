@@ -13,6 +13,7 @@ class ShadowMap {
 	int height; // Height of the depth map.
 	int viewport[4]; // Info about viewport before rendering to depth map.
 	GLuint FBO; // ID for depth map framebuffer.
+	GLuint RBO; // Render buffer object to also attach depth.
 	Texture depthMap; // Texture that stores depth of vertices from a light's POV.
 	Shader shadowShader; // Shader for drawing to depth map.
 
@@ -33,6 +34,8 @@ class ShadowMap {
 
 	// Returns the shadow shader.
 	Shader &getShader();
+
+	Texture &getTexture();
 
 	~ShadowMap();
 };

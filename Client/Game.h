@@ -8,9 +8,11 @@
 #include "Renderer/Skybox.h"
 #include "Renderer/TextRenderer.h"
 #include "Renderer/ShadowMap.h"
+#include "Renderer2D.h"
 
 class Game {
-private:
+	private:
+	Renderer2D *renderer2d = nullptr;
 	int screenWidth = 800;
 	int screenHeight = 600;
 
@@ -29,7 +31,7 @@ private:
 	ShadowMap *shadowMap = nullptr;
 	float theta = 0.0f;
 	float phi = 0.0f;
-
+	float ballX = 0.0f;
 	float mouseSensitivity = 1.0f;
 
 public:

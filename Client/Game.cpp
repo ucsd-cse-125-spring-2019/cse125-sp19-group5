@@ -7,6 +7,7 @@
 #include <glm/gtx/string_cast.hpp>
 
 Game::Game() {
+	renderer2d = new Renderer2D();
 	shadowMap = new ShadowMap();
 	lightShader = new Shader("Shaders/light");
 	textShader = new Shader("Shaders/text");
@@ -15,7 +16,7 @@ Game::Game() {
 	sphere->setAnimation(0);
 	camera = new Camera(vec3(-7.5f, 2.5f, 0.0f), vec3(0.0f), 70, 1.0f);
 	sun = new DirectionalLight(0);
-	sun->setDirection(vec3(0.009395, -0.700647, -0.713446));
+	sun->setDirection(vec3(0.009395, -0.200647, -0.713446));
 	sun->setAmbient(vec3(0.04f, 0.05f, 0.13f));
 	sun->setColor(vec3(0.8f, 0.7f, 0.55f));
 
@@ -40,6 +41,7 @@ Game::~Game() {
 	delete camera;
 	delete sun;
 	delete shadowMap;
+	delete renderer2d;
 }
 
 Camera *Game::getCamera() const {
@@ -96,12 +98,19 @@ void Game::update(float dt) {
 		std::cout << glm::to_string(camera->getForward()) << std::endl;
 	}
 
+	if (Input::isKeyDown(GLFW_KEY_LEFT)) {
+		ballX += dt * 5.0f;
+	}
+	if (Input::isKeyDown(GLFW_KEY_RIGHT)) {
+		ballX -= dt * 5.0f;
+	}
+
 	sphere->updateAnimation((float)glfwGetTime());
 }
 
 void Game::drawScene(Shader &shader) const {
 	auto model = mat4(1.0f);
-	model = glm::translate(model, vec3(0.0f, 0.5f, 0.0f));
+	model = glm::translate(model, vec3(ballX, 0.5f, 0.0f));
 	model = glm::scale(model, vec3(0.2f));
 	auto modelInvT = glm::transpose(glm::inverse(mat3(model)));
 
@@ -135,6 +144,7 @@ void Game::draw(float dt) const {
 
 	// Normal 3D render pass
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	lightShader->use();
 	lightShader->setUniform("eyePos", camera->getPosition());
 	lightShader->setUniform("directionalLightNum", 1);
