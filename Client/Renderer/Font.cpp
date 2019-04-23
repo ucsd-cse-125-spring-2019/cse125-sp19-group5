@@ -12,13 +12,8 @@ Font::~Font() {
 
 }
 
-Font::Font(const std::string &filepath, Shader &shader)
+Font::Font(const std::string &filepath)
 {
-	// Setup shader
-	glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(800), 0.0f, static_cast<GLfloat>(600)); // TODO (kpan) remove hardcode
-	shader.use();
-	shader.setUniform("projection", projection);
-
 	// FreeType
 	FT_Library ft;
 	if (FT_Init_FreeType(&ft)) {
@@ -91,11 +86,12 @@ Font::Font(const std::string &filepath, Shader &shader)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Font::RenderText(Shader &shader, const std::string &text, GLfloat x, GLfloat y, GLfloat scale, const glm::vec3 &color)
+void Font::renderText(Shader &shader, const int screenWidth, const int screenHeight, const std::string &text, GLfloat x, GLfloat y, GLfloat scale, const glm::vec3 &color)
 {
 	glBindVertexArray(VAO);
 	// Activate corresponding render state	
 	shader.use();
+	shader.setUniform("projection", glm::ortho(0.0f, static_cast<GLfloat>(screenWidth), 0.0f, static_cast<GLfloat>(screenHeight)));
 	shader.setUniform("textColor", color);
 	glActiveTexture(GL_TEXTURE0);
 	shader.setUniform("text", 0);

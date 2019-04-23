@@ -29,7 +29,7 @@ Game::Game() {
 	ConfigSettings::get().getValue("MouseSensitivity", mouseSensitivity);
 
 	textRenderer = new TextRenderer(*textShader);
-	testText = textRenderer->addText(textRenderer->DEFAULT_FONT_NAME, "test test test test", 200.0f, 200.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+	testText = textRenderer->addText(textRenderer->DEFAULT_FONT_NAME, "test", 0.1f, 0.1f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 Game::~Game() {
@@ -44,6 +44,12 @@ Game::~Game() {
 
 Camera *Game::getCamera() const {
 	return camera;
+}
+
+void Game::updateScreenDimensions(int width, int height) {
+	screenWidth = width;
+	screenHeight = height;
+	textRenderer->updateScreenDimensions(width, height);
 }
 
 void Game::update(float dt) {

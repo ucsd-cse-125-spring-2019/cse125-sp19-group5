@@ -10,7 +10,10 @@
 #include "Renderer/ShadowMap.h"
 
 class Game {
-	private:
+private:
+	int screenWidth = 800;
+	int screenHeight = 600;
+
 	Shader *lightShader = nullptr;
 	Shader *textShader = nullptr;
 	TextRenderer *textRenderer = nullptr;
@@ -29,7 +32,7 @@ class Game {
 
 	float mouseSensitivity = 1.0f;
 
-	public:
+public:
 	bool shouldExit = false;
 	Game();
 	~Game();
@@ -39,6 +42,7 @@ class Game {
 	void drawScene(Shader &shader) const;
 	void drawUI() const;
 
+	void updateScreenDimensions(int width, int height);
 	Camera *getCamera() const;
 };
 
