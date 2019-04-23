@@ -156,7 +156,6 @@ int client() {
 int client() {
 	try
 	{
-		cout << "creating client" << endl;
 		boost::asio::io_service io_service;
 		game_client c(io_service);
 		char line[game_message::max_body_length + 1];
@@ -170,6 +169,7 @@ int client() {
 			c.write(msg);
 			io_service.run();
 		}
+		cout << "end of loop" << endl;
 	}
 	catch (std::exception& e)
 	{
@@ -251,8 +251,8 @@ int main(int argc, char **argv) {
 
 	auto lastTime = (float)glfwGetTime();
 
-	cout << "creating client" << endl;
- 	client();
+ 	int return_val = client();
+	cout << return_val << endl;
 
 	// Main loop
 	while (!glfwWindowShouldClose(window)) {
