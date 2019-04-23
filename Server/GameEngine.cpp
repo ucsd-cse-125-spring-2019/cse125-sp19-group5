@@ -2,6 +2,7 @@
 
 void GameEngine::updateGameState(vector<PlayerInputs> playerInputs) {
 	vector<int> aggregatePlayerMovements;
+	// Use bitwise or to get all player inputs within one server tick
 	for (int i = 0; i < NUM_PLAYERS; i++) {
 		aggregatePlayerMovements.push_back(0);
 	}
@@ -12,6 +13,19 @@ void GameEngine::updateGameState(vector<PlayerInputs> playerInputs) {
 
 	for (int i = 0; i < NUM_PLAYERS; i++) {
 		aggregatePlayerMovements[i] = aggregatePlayerMovements[i] & MOVEMENT_MASK;
+	}
+
+	// Move all players
+	for (int i = 0; i < NUM_PLAYERS; i++) {
+		// TODO: prevent two players from moving to the same spot
+		gameState.players[i]->move(movementInputToVector(gameState.players[i], aggregatePlayerMovements[i]));
+	}
+
+	// Process player commands
+
+	// Move all balls
+	for (Ball *ball : gameState.balls) {
+		ball->move(ball->getVelocity());
 	}
 
 	// check collisions

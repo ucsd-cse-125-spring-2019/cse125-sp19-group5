@@ -15,8 +15,10 @@ vec3 Player::getDirection() {
 	return this->direction;
 }
 
-void Player::doAction(PlayerCommands action)
+GameObject Player::doAction(PlayerCommands action)
 {
+	// SHOULD THIS METHOD RETURN A REFERENCE?
+
 	switch (action)
 	{
 	case SWING:
@@ -26,6 +28,7 @@ void Player::doAction(PlayerCommands action)
 	default:
 		break;
 	}
+	return GameObject();
 }
 
 /*
@@ -35,11 +38,15 @@ void Player::doAction(PlayerCommands action)
 	Only one command can charge at one time.
 	Once a command has started charging, another cannot start until the action/command has been done.
 */
-void Player::processCommand(int inputs)
+GameObject Player::processCommand(int inputs)
 {
 	vector<PlayerCommands> chargeCommands = { SWING, WALL };
+	GameObject retval;
+
+	// SHOULD THIS METHOD RETURN A REFERENCE?
 
 	//TODO for command in chargable commands
+	//TODO return GameObject (Ball, Wall) based on input to be rendered by the GameEngine
 	// For now, only swing:
 	for (auto command : chargeCommands) {
 		if (command & inputs) {
@@ -52,9 +59,10 @@ void Player::processCommand(int inputs)
 		}
 		else {
 			if (actionCharge) {
-				doAction(command);
+				retval = doAction(command);
 				actionCharge = 0;
 			}
 		}
 	}
+	return retval;
 }

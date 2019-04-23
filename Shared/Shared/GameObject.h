@@ -3,6 +3,7 @@
 
 class GameObject {
 public:
+	GameObject();
 	GameObject(vec3 position, vec3 velocity, string id, int radius);
 	bool collidesWith(GameObject &gameObject);
 	virtual void onCollision(GameObject &gameObject);

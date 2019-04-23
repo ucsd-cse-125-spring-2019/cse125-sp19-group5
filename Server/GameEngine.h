@@ -1,6 +1,10 @@
 #pragma once
 
 #include <Shared/CommonStructs.h>
+#include <Shared/GameObject.h>
+#include <Shared/Player.h>
+#include <Shared/Ball.h>
+#include <Shared/Wall.h>
 #define NUM_PLAYERS 1
 #define MOVEMENT_MASK 0x11111
 

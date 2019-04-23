@@ -8,8 +8,8 @@ public:
 	Player(vec3 position, vec3 velocity, vec3 direction, string id, int radius);
 	void onCollision(GameObject &gameObject);
 	vec3 getDirection();
-	void doAction(PlayerCommands action);
-	void processCommand(int inputs);
+	GameObject doAction(PlayerCommands action);
+	GameObject processCommand(int inputs);
 private:
 	int team;
 	int actionCharge;
