@@ -81,6 +81,7 @@ int main(int argc, char **argv) {
 
 	Game game;
 	game.getCamera()->setAspect((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT);
+	game.updateScreenDimensions(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	auto lastTime = (float)glfwGetTime();
 
@@ -108,6 +109,7 @@ int main(int argc, char **argv) {
 			game.getCamera()->setAspect(
 				(float)SCREEN_WIDTH / (float)SCREEN_HEIGHT
 			);
+			game.updateScreenDimensions(SCREEN_WIDTH, SCREEN_HEIGHT);
 			SCREEN_RESHAPED = false;
 		}
 	}

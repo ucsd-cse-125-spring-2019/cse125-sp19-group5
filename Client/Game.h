@@ -13,6 +13,9 @@
 class Game {
 	private:
 	Renderer2D *renderer2d = nullptr;
+	int screenWidth = 800;
+	int screenHeight = 600;
+
 	Shader *lightShader = nullptr;
 	Shader *textShader = nullptr;
 	TextRenderer *textRenderer = nullptr;
@@ -31,7 +34,7 @@ class Game {
 	float ballX = 0.0f;
 	float mouseSensitivity = 1.0f;
 
-	public:
+public:
 	bool shouldExit = false;
 	Game();
 	~Game();
@@ -41,6 +44,7 @@ class Game {
 	void drawScene(Shader &shader) const;
 	void drawUI() const;
 
+	void updateScreenDimensions(int width, int height);
 	Camera *getCamera() const;
 };
 
