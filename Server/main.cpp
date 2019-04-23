@@ -2,10 +2,9 @@
 #include <iostream>
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
-#include <Shared\GameMessage.hpp>
+#include <Shared/GameMessage.hpp>
 
-using namespace boost::asio;
-using ip::tcp;
+using boost::asio::ip::tcp;
 using std::string;
 using std::cout;
 using std::endl;
@@ -24,7 +23,9 @@ void send_(tcp::socket & socket, const string& message) {
 
 int server() {
 	try {
+		game_message msg;
 		boost::asio::io_service io_service;
+		boost::system::error_code err;
 		//listen for new connection
 		tcp::acceptor acceptor_(io_service, tcp::endpoint(tcp::v4(), 1234));
 		for (;;) {
@@ -36,11 +37,14 @@ int server() {
 			cout << "Accept Returned" << endl;
 
 			//read operation
-			string message = read_(socket_);
-			cout << message << endl;
+			boost::asio::read(socket_, boost::asio::buffer(msg.data(), game_message::header_length), err);
+			msg.decode_header();
+			boost::asio::read(socket_, boost::asio::buffer(msg.body(), msg.body_length()), err);
+			cout << msg.body() << endl;
 			//write operation
 			send_(socket_, "Hello From Server!");
 			cout << "Servent sent Hello message to Client!" << endl;
+			io_service.run();
 		}
 	}
 	catch (std::exception& e){

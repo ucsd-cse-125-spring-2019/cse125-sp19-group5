@@ -168,6 +168,7 @@ int client() {
 			std::memcpy(msg.body(), line, msg.body_length());
 			msg.encode_header();
 			c.write(msg);
+			io_service.run();
 		}
 	}
 	catch (std::exception& e)
