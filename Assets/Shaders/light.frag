@@ -81,20 +81,24 @@ vec3 getDirectionalLightIntensity(
 	return ambient + intensity * (light.color * (lambert + phong));
 }
 
-const float bias = 0.0005f;
+const float SHADOW_BIAS = 0.0005f;
 
 float getShadowIntensity(vec4 lightSpacePos) {
 	vec3 pos = lightSpacePos.xyz / lightSpacePos.w;
 	pos = pos * 0.5 + 0.5;
 
-	if (pos.z > 1.0f) {
-		return 0.0f;
+	vec2 moments = texture(shadowMap, pos.xy).rg;
+
+	if (pos.z <= moments.x) {
+		return 1.0f;
 	}
 
-	if (texture(shadowMap, pos.xy).r < pos.z) {
-		return 0.1f;
-	}
-	return 1.0f;
+	float variance = max(
+		moments.y - (moments.x * moments.x),
+		SHADOW_BIAS
+	);
+	float d = pos.z - moments.x;
+	return variance / (variance + d*d);
 }
 
 void main() {
