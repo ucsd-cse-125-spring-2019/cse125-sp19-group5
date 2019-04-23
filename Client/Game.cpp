@@ -7,6 +7,7 @@
 #include <glm/gtx/string_cast.hpp>
 
 Game::Game() {
+	renderer2d = new Renderer2D();
 	shadowMap = new ShadowMap();
 	lightShader = new Shader("Shaders/light");
 	textShader = new Shader("Shaders/text");
@@ -40,6 +41,7 @@ Game::~Game() {
 	delete camera;
 	delete sun;
 	delete shadowMap;
+	delete renderer2d;
 }
 
 Camera *Game::getCamera() const {
@@ -118,6 +120,9 @@ void Game::drawScene(Shader &shader) const {
 void Game::drawUI() const {
 	textShader->use();
 	textRenderer->renderText();
+
+	renderer2d->bindShader();
+	renderer2d->drawTexturedRect(shadowMap->getTexture(), 0.0f, 0.0f, 800.0f, 450.f);
 }
 
 void Game::draw(float dt) const {
@@ -129,6 +134,7 @@ void Game::draw(float dt) const {
 
 	// Normal 3D render pass
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	lightShader->use();
 	lightShader->setUniform("eyePos", camera->getPosition());
 	lightShader->setUniform("directionalLightNum", 1);

@@ -91,7 +91,7 @@ float getShadowIntensity(vec4 lightSpacePos) {
 		return 0.0f;
 	}
 
-	if (texture(shadowMap, pos.xy).r < pos.z - bias) {
+	if (texture(shadowMap, pos.xy).r < pos.z) {
 		return 0.1f;
 	}
 	return 1.0f;

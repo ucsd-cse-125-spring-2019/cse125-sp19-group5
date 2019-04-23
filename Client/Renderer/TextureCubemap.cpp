@@ -10,6 +10,7 @@ TextureCubemap::TextureCubemap(const std::vector<std::string> &facePaths) {
 		return;
 	}
 
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
 
 	for (int i = 0; i < NUM_CUBE_FACES; i++) {
