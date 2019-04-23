@@ -92,12 +92,19 @@ void Game::update(float dt) {
 		std::cout << glm::to_string(camera->getForward()) << std::endl;
 	}
 
+	if (Input::isKeyDown(GLFW_KEY_LEFT)) {
+		ballX += dt * 5.0f;
+	}
+	if (Input::isKeyDown(GLFW_KEY_RIGHT)) {
+		ballX -= dt * 5.0f;
+	}
+
 	sphere->updateAnimation((float)glfwGetTime());
 }
 
 void Game::drawScene(Shader &shader) const {
 	auto model = mat4(1.0f);
-	model = glm::translate(model, vec3(0.0f, 0.5f, 0.0f));
+	model = glm::translate(model, vec3(ballX, 0.5f, 0.0f));
 	model = glm::scale(model, vec3(0.2f));
 	auto modelInvT = glm::transpose(glm::inverse(mat3(model)));
 

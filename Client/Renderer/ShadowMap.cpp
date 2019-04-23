@@ -52,7 +52,6 @@ ShadowMap::ShadowMap(int width, int height)
 }
 
 void ShadowMap::prePass() {
-	//glCullFace(GL_FRONT); // To prevent some artifacts.
 	shadowShader.use();
 
 	// Set up the viewport so stuff is drawn at the correct size.
@@ -67,14 +66,13 @@ void ShadowMap::prePass() {
 void ShadowMap::setupLight(Shader &shader, const DirectionalLight &light) {
 	const auto up = vec3(0.0f, 1.0f, 0.0f);
 	const auto origin = vec3(0.0f);
-	auto proj = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 100.0f);
+	auto proj = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, -10.0f, 100.0f);
 	auto view = glm::lookAt(light.getDirection(), origin, up);
 	shader.setUniform("toLightSpace", proj * view);
 }
 
 void ShadowMap::postPass() {
 	glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
-	glCullFace(GL_BACK);
 	glEnable(GL_BLEND);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);

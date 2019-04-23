@@ -28,7 +28,7 @@ class Game {
 	ShadowMap *shadowMap = nullptr;
 	float theta = 0.0f;
 	float phi = 0.0f;
-
+	float ballX = 0.0f;
 	float mouseSensitivity = 1.0f;
 
 	public:
