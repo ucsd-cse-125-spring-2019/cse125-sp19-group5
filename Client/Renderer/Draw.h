@@ -19,4 +19,5 @@ namespace Draw {
 	void setColor(float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f);
 	void rect(float x, float y, float w, float h, Texture &texture);
 	void rect(float x, float y, float w, float h);
+	void setupContext();
 }

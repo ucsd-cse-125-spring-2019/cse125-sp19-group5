@@ -8,11 +8,9 @@
 #include "Renderer/Skybox.h"
 #include "Renderer/TextRenderer.h"
 #include "Renderer/ShadowMap.h"
-#include "Renderer2D.h"
 
 class Game {
 	private:
-	Renderer2D *renderer2d = nullptr;
 	int screenWidth = 800;
 	int screenHeight = 600;
 

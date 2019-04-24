@@ -30,6 +30,7 @@ void Draw::init() {
 
 void Draw::setColor(const vec4 &newColor) {
 	color = newColor;
+	texturedQuadShader->setUniform("color", color);
 }
 
 void Draw::setColor(float r, float g, float b, float a) {
@@ -37,6 +38,7 @@ void Draw::setColor(float r, float g, float b, float a) {
 	color.g = g;
 	color.b = b;
 	color.a = a;
+	texturedQuadShader->setUniform("color", color);
 }
 
 void Draw::cleanUp() {
@@ -44,8 +46,6 @@ void Draw::cleanUp() {
 }
 
 void Draw::rect(float x, float y, float w, float h, Texture &texture) {
-	texturedQuadShader->use();
-	texturedQuadShader->setUniform("color", color);
 	glActiveTexture(GL_TEXTURE0);
 	texture.bind();
 	glBindVertexArray(quadVAO);
@@ -70,4 +70,8 @@ void Draw::rect(float x, float y, float w, float h, Texture &texture) {
 
 void Draw::rect(float x, float y, float w, float h) {
 	rect(x, y, w, h, *whiteTexture);
+}
+
+void Draw::setupContext() {
+	texturedQuadShader->use();
 }
