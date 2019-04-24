@@ -17,8 +17,8 @@ class Game {
 	Shader *lightShader = nullptr;
 	Shader *textShader = nullptr;
 	TextRenderer *textRenderer = nullptr;
-	float testTextChange = 0.0f; // Remove later
-	Text *testText = nullptr; // Remove later
+	float fpsTextTimer = 0.0f;
+	Text *fpsText = nullptr;
 	Model *bear = nullptr;
 	Model *sphere = nullptr;
 	Camera *camera = nullptr;

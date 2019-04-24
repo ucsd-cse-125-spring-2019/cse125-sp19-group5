@@ -32,7 +32,7 @@ Game::Game() {
 	ConfigSettings::get().getValue("MouseSensitivity", mouseSensitivity);
 
 	textRenderer = new TextRenderer(*textShader);
-	testText = textRenderer->addText(textRenderer->DEFAULT_FONT_NAME, "test", 0.1f, 0.1f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+	fpsText = textRenderer->addText(textRenderer->DEFAULT_FONT_NAME, "fps", 0.02f, 0.02f, 0.4f, glm::vec3(1.0f, 1.0f, 0.0f));
 }
 
 Game::~Game() {
@@ -64,15 +64,12 @@ void Game::update(float dt) {
 
 	camera->setEyeAngles(vec3(-phi, theta, 0));
 
-	testTextChange += dt;
-	if (testTextChange < 1.0f)
+	fpsTextTimer += dt;
+	int fps = (int) (1.0f / dt);
+	if (fpsTextTimer > 0.3f)
 	{
-		testText->text = "hello";
-	}
-	else
-	{
-		if (testTextChange > 2.0f) testTextChange = 0.0f;
-		testText->text = "world";
+		fpsTextTimer = 0.0f;
+		fpsText->text = "fps: " + std::to_string(fps);
 	}
 
 	vec3 direction(0.0f);
