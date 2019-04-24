@@ -131,6 +131,10 @@ ShadowMap::~ShadowMap() {
 		glDeleteFramebuffers(1, &FBO);
 		FBO = 0;
 	}
+	if (blurFBO) {
+		glDeleteFramebuffers(1, &blurFBO);
+		blurFBO = 0;
+	}
 	if (RBO) {
 		glDeleteRenderbuffers(1, &RBO);
 		RBO = 0;
