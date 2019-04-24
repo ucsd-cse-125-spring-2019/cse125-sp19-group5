@@ -71,11 +71,10 @@ int main(int argc, char **argv) {
 
 	// Center the window
 	auto videoMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-	glfwSetWindowPos(
-		window,
-		(videoMode->width - SCREEN_WIDTH) / 2,
-		(videoMode->height - SCREEN_HEIGHT) / 2
-	);
+	auto middleX = (videoMode->width - SCREEN_WIDTH) / 2;
+	auto middleY = (videoMode->height - SCREEN_HEIGHT) / 2;
+	glfwSetCursorPos(window, middleX, middleY);
+	glfwSetWindowPos(window, middleX, middleY);
 
 	Input::init(window);
 
