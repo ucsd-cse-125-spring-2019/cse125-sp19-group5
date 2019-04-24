@@ -5,9 +5,11 @@
 #include "Input.h"
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
+#include "Renderer/Draw.h"
 
 Game::Game() {
-	renderer2d = new Renderer2D();
+	Draw::init();
+
 	shadowMap = new ShadowMap();
 	lightShader = new Shader("Shaders/light");
 	textShader = new Shader("Shaders/text");
@@ -41,7 +43,8 @@ Game::~Game() {
 	delete camera;
 	delete sun;
 	delete shadowMap;
-	delete renderer2d;
+
+	Draw::cleanUp();
 }
 
 Camera *Game::getCamera() const {
@@ -157,6 +160,7 @@ void Game::draw(float dt) const {
 	skybox->draw();
 
 	glDisable(GL_DEPTH_TEST);
+	Draw::setupContext();
 	drawUI();
 	glEnable(GL_DEPTH_TEST);
 }

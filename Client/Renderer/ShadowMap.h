@@ -12,10 +12,15 @@ class ShadowMap {
 	int width; // Width of the depth map.
 	int height; // Height of the depth map.
 	int viewport[4]; // Info about viewport before rendering to depth map.
-	GLuint FBO; // ID for depth map framebuffer.
+	GLuint FBO, blurFBO; // ID for depth map framebuffer.
 	GLuint RBO; // Render buffer object to also attach depth.
 	Texture depthMap; // Texture that stores depth of vertices from a light's POV.
+	Texture blurredDepthMap; // depthMap + Gaussian Blur
 	Shader shadowShader; // Shader for drawing to depth map.
+	Shader blurFilter; // Shader that does Gaussian blur.
+
+	void setupTexture(Texture &texture);
+	void blurDepthMap(float amount = 0.5f);
 
 	public:
 	ShadowMap(int width = 1024, int height = 1024);
