@@ -127,6 +127,7 @@
     <ClCompile Include="Renderer2D.cpp" />
     <ClCompile Include="Renderer\Camera.cpp" />
     <ClCompile Include="Renderer\DirectionalLight.cpp" />
+    <ClCompile Include="Renderer\Draw.cpp" />
     <ClCompile Include="Renderer\Font.cpp" />
     <ClCompile Include="Renderer\Light.cpp" />
     <ClCompile Include="Renderer\Mesh.cpp" />
@@ -149,6 +150,7 @@
     <ClInclude Include="Renderer2D.h" />
     <ClInclude Include="Renderer\Camera.h" />
     <ClInclude Include="Renderer\DirectionalLight.h" />
+    <ClInclude Include="Renderer\Draw.h" />
     <ClInclude Include="Renderer\Font.h" />
     <ClInclude Include="Renderer\Light.h" />
     <ClInclude Include="Renderer\Mesh.h" />
