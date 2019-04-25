@@ -35,6 +35,14 @@ Texture::Texture(): texture(0) {
 	glGenTextures(1, &texture);
 }
 
+void Texture::bind(GLenum target) const {
+	glBindTexture(target, texture);
+}
+
+GLuint Texture::getID() const {
+	return texture;
+}
+
 Texture::~Texture() {
 	if (texture) {
 		glDeleteTextures(1, &texture);

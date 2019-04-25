@@ -6,15 +6,20 @@
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
 #include "Network.h"
+#include "Renderer/Draw.h"
 
 Game::Game() {
+	Draw::init();
+
+	shadowMap = new ShadowMap();
 	lightShader = new Shader("Shaders/light");
 	textShader = new Shader("Shaders/text");
-	//bear = new Model("Models/ucsd-bear-sp10.obj");
+	bear = new Model("Models/ground.obj");
 	sphere = new Model("Models/sphere.obj");
+	sphere->setAnimation(0);
 	camera = new Camera(vec3(-7.5f, 2.5f, 0.0f), vec3(0.0f), 70, 1.0f);
 	sun = new DirectionalLight(0);
-	sun->setDirection(vec3(0.009395, -0.700647, -0.713446));
+	sun->setDirection(vec3(0.009395, -0.200647, -0.713446));
 	sun->setAmbient(vec3(0.04f, 0.05f, 0.13f));
 	sun->setColor(vec3(0.8f, 0.7f, 0.55f));
 
@@ -28,7 +33,10 @@ Game::Game() {
 	ConfigSettings::get().getValue("MouseSensitivity", mouseSensitivity);
 
 	textRenderer = new TextRenderer(*textShader);
-	testText = textRenderer->addText(textRenderer->DEFAULT_FONT_NAME, "test test test test", 200.0f, 200.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+	fpsText = textRenderer->addText(textRenderer->DEFAULT_FONT_NAME, "fps", 0.02f, 0.02f, 0.4f, glm::vec3(1.0f, 1.0f, 0.0f));
+
+	audioPlayer = new AudioPlayer();
+	audioPlayer->playLoop("Sounds/minecraft_wet_hands.wav");
 }
 
 Game::~Game() {
@@ -38,13 +46,23 @@ Game::~Game() {
 	delete bear;
 	delete camera;
 	delete sun;
+	delete shadowMap;
+
+	Draw::cleanUp();
 }
 
 Camera *Game::getCamera() const {
 	return camera;
 }
 
+
 int num = 0;
+
+void Game::updateScreenDimensions(int width, int height) {
+	screenWidth = width;
+	screenHeight = height;
+	textRenderer->updateScreenDimensions(width, height);
+}
 
 void Game::update(float dt) {
 	float mouseMoveScale = mouseSensitivity * 0.001f;
@@ -53,15 +71,12 @@ void Game::update(float dt) {
 
 	camera->setEyeAngles(vec3(-phi, theta, 0));
 
-	testTextChange += dt;
-	if (testTextChange < 1.0f)
+	fpsTextTimer += dt;
+	int fps = (int) (1.0f / dt);
+	if (fpsTextTimer > 0.3f)
 	{
-		testText->text = "hello";
-	}
-	else
-	{
-		if (testTextChange > 2.0f) testTextChange = 0.0f;
-		testText->text = "world";
+		fpsTextTimer = 0.0f;
+		fpsText->text = "fps: " + std::to_string(fps);
 	}
 
 	vec3 direction(0.0f);
@@ -91,42 +106,67 @@ void Game::update(float dt) {
 		std::cout << num << std::endl;
 		num++;
 	}
+
+	if (Input::isKeyDown(GLFW_KEY_LEFT)) {
+		ballX += dt * 5.0f;
+	}
+	if (Input::isKeyDown(GLFW_KEY_RIGHT)) {
+		ballX -= dt * 5.0f;
+	}
+
+	sphere->updateAnimation((float)glfwGetTime());
+}
+
+void Game::drawScene(Shader &shader) const {
+	auto model = mat4(1.0f);
+	model = glm::translate(model, vec3(ballX, 0.5f, 0.0f));
+	model = glm::scale(model, vec3(0.2f));
+	auto modelInvT = glm::transpose(glm::inverse(mat3(model)));
+
+	shader.setUniform("model", model);
+	shader.setUniform("modelInvT", modelInvT);
+	shader.setUniform("mvp", camera->getMatrix() * model);
+
+	white->bind(0);
+	sphere->draw(shader);
+
+	model = mat4(1.0f);
+	modelInvT = glm::transpose(glm::inverse(model));
+	shader.setUniform("model", model);
+	shader.setUniform("modelInvT", modelInvT);
+	shader.setUniform("mvp", camera->getMatrix() * model);
+
+	bear->draw(shader);
+}
+
+void Game::drawUI() const {
+	textShader->use();
+	textRenderer->renderText();
 }
 
 void Game::draw(float dt) const {
-	auto model = mat4(1.0f);
-	model = glm::scale(model, vec3(0.3f));
-	// model = glm::rotate(model, theta, vec3(0.0f, 1.0f, 0.0f));
-	// model = glm::rotate(model, phi, vec3(1.0f, 0.0f, 0.0f));
+	// Shadow mapping render pass
+	shadowMap->prePass();
+	shadowMap->setupLight(shadowMap->getShader(), *sun);
+	drawScene(shadowMap->getShader());
+	shadowMap->postPass();
 
-	auto modelInvT = glm::transpose(glm::inverse(mat3(model)));
+	// Normal 3D render pass
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-	// TODO (bhang): refactor this to some sort of renderer class so the game
-	// doesn't have to deal with all of this transformation + shader stuff?
 	lightShader->use();
 	lightShader->setUniform("eyePos", camera->getPosition());
-	lightShader->setUniform("modelInvT", modelInvT);
-	lightShader->setUniform("mvp", camera->getMatrix() * model);
-	lightShader->setUniform("model", model);
 	lightShader->setUniform("directionalLightNum", 1);
 
+	shadowMap->setupLight(*lightShader, *sun);
+	shadowMap->bindTexture(*lightShader);
 
 	sun->bind(*lightShader);
-	//bear->draw(*lightShader);
-	grass->bind(0);
-
-	model = glm::translate(vec3(5.0f, 0.0f, 0.0f))
-		* glm::scale(model, vec3(0.5f));
-	modelInvT = glm::transpose(glm::inverse(mat3(model)));
-	lightShader->setUniform("modelInvT", modelInvT);
-	lightShader->setUniform("mvp", camera->getMatrix() * model);
-	lightShader->setUniform("model", model);
-	sphere->draw(*lightShader);
+	drawScene(*lightShader);
 	skybox->draw();
 
 	glDisable(GL_DEPTH_TEST);
-	textShader->use();
-	textRenderer->renderText();
+	Draw::setupContext();
+	drawUI();
 	glEnable(GL_DEPTH_TEST);
 }
