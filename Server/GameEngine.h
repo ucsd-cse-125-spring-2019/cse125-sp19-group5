@@ -23,6 +23,7 @@ public:
 	void doCollisionInteractions();
 	void removeDeadObjects();
 	void updateGameObjectsOnServerTick();
+	NetworkGameState & getNetworkGameState();
 
 private:
 	GameState gameState;
