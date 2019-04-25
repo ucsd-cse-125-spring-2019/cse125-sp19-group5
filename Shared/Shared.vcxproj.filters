@@ -36,6 +36,12 @@
     <ClInclude Include="Shared\Wall.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Shared\GameMessage.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\ConfigSettings.cpp">

@@ -5,12 +5,20 @@
 #include "Game.h"
 #include "Renderer/Camera.h"
 #include "Input.h"
+#include "Network.h"
+
+using namespace boost::asio;
+using ip::tcp;
+using std::string;
+using std::cout;
+using std::endl;
 
 constexpr auto TITLE = "Insert Title Here";
 
 auto SCREEN_WIDTH = 800;
 auto SCREEN_HEIGHT = 600;
 auto SCREEN_RESHAPED = false;
+
 
 // Update the view port when the window has been resized.
 static void onResize(GLFWwindow *window, int width, int height) {
@@ -77,6 +85,7 @@ int main(int argc, char **argv) {
 	glfwSetWindowPos(window, middleX, middleY);
 
 	Input::init(window);
+	Network::init("127.0.0.1", 1234);
 
 	Game game;
 	game.getCamera()->setAspect((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT);
@@ -84,12 +93,15 @@ int main(int argc, char **argv) {
 
 	auto lastTime = (float)glfwGetTime();
 
+	cout << "creating client" << endl;
+
 	// Main loop
 	while (!glfwWindowShouldClose(window)) {
 		auto dt = (float)glfwGetTime() - lastTime;
 		lastTime = (float)glfwGetTime();
 
 		Input::poll();
+		Network::poll();
 
 		if (game.shouldExit) {
 			glfwSetWindowShouldClose(window, true);
@@ -113,6 +125,7 @@ int main(int argc, char **argv) {
 		}
 	}
 
+	Network::cleanUp();
 	glfwTerminate();
 	return 0;
 }

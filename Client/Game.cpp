@@ -5,6 +5,7 @@
 #include "Input.h"
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
+#include "Network.h"
 #include "Renderer/Draw.h"
 
 Game::Game() {
@@ -54,6 +55,9 @@ Camera *Game::getCamera() const {
 	return camera;
 }
 
+
+int num = 0;
+
 void Game::updateScreenDimensions(int width, int height) {
 	screenWidth = width;
 	screenHeight = height;
@@ -98,7 +102,9 @@ void Game::update(float dt) {
 	}
 
 	if (Input::wasKeyPressed(GLFW_KEY_P)) {
-		std::cout << glm::to_string(camera->getForward()) << std::endl;
+		Network::send(std::to_string(num));
+		std::cout << num << std::endl;
+		num++;
 	}
 
 	if (Input::isKeyDown(GLFW_KEY_LEFT)) {
