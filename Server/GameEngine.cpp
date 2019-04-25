@@ -16,6 +16,7 @@ void GameEngine::updateGameState(vector<PlayerInputs> playerInputs) {
 	doCollisionInteractions();
 	updateGameObjectsOnServerTick();
 	removeDeadObjects();
+	// send getNetworkGameState() to client
 }
 
 GameState & GameEngine::getGameState() {
@@ -134,4 +135,22 @@ void GameEngine::updateGameObjectsOnServerTick() {
 	for (GameObject * gameObject : gameState.gameObjects) {
 		gameObject->updateOnServerTick();
 	}
+}
+
+NetworkGameState & GameEngine::getNetworkGameState() {
+	// not sure if this methhod should return a pointer or not?
+	// potential issue of returning reference to local variable
+	// if not a reference does send(getNetworkGameState()) create a duplicate?
+	// if it is a problem should we use pointers instead?
+	NetworkGameState networkGameState;
+
+	networkGameState.in_progress = gameState.in_progress;
+	networkGameState.score = gameState.score;
+	networkGameState.timeLeft = gameState.timeLeft;
+
+	for (GameObject * gameObject : gameState.gameObjects) {
+		networkGameState.gameObjects.push_back(*gameObject);
+	}
+
+	return networkGameState;
 }
