@@ -69,7 +69,6 @@
     <ClCompile Include="Renderer\Font.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Network.cpp">
     <ClCompile Include="Renderer\ShadowMap.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
@@ -77,6 +76,9 @@
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="AudioPlayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Network.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -129,7 +131,6 @@
     <ClInclude Include="Renderer\Font.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Network.h">
     <ClInclude Include="Renderer\ShadowMap.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
@@ -137,6 +138,9 @@
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="AudioPlayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Network.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

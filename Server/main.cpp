@@ -2,6 +2,7 @@
 #include <iostream>
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
+#include <Shared/Common.h>
 #include <Shared/GameMessage.hpp>
 #include "GameEngine.h"
 
