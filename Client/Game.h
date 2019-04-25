@@ -8,6 +8,7 @@
 #include "Renderer/Skybox.h"
 #include "Renderer/TextRenderer.h"
 #include "Renderer/ShadowMap.h"
+#include "AudioPlayer.h"
 
 class Game {
 	private:
@@ -31,6 +32,8 @@ class Game {
 	float phi = 0.0f;
 	float ballX = 0.0f;
 	float mouseSensitivity = 1.0f;
+
+	AudioPlayer *audioPlayer = nullptr;
 
 public:
 	bool shouldExit = false;
