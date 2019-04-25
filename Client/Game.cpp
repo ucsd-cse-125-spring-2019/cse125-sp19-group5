@@ -44,6 +44,8 @@ Camera *Game::getCamera() const {
 	return camera;
 }
 
+int num = 0;
+
 void Game::update(float dt) {
 	float mouseMoveScale = mouseSensitivity * 0.001f;
 	theta += (float)Input::getMouseDeltaX() * mouseMoveScale;
@@ -85,8 +87,9 @@ void Game::update(float dt) {
 	}
 
 	if (Input::wasKeyPressed(GLFW_KEY_P)) {
-		std::cout << glm::to_string(camera->getForward()) << std::endl;
-		Network::send("hello");
+		Network::send(std::to_string(num));
+		std::cout << num << std::endl;
+		num++;
 	}
 }
 

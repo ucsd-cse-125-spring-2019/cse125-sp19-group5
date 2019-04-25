@@ -20,7 +20,7 @@ void Network::poll() {
 
 void Network::send(const std::string &message) {
 	if (socket) {
-		socket->send(boost::asio::buffer(message));
+		socket->send(boost::asio::buffer(message + "\n"));
 	}
 }
 
