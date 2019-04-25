@@ -7,28 +7,29 @@ Player::Player(vec3 position, vec3 velocity, vec3 direction, string id, int radi
 	this->actionCharge = 0;
 }
 
-void Player::onCollision(GameObject &gameObject) {
-	std::cout << "Player: " + id + glm::to_string(position) + " collided with " + gameObject.getId() + glm::to_string(gameObject.getPosition()) << std::endl;
+void Player::onCollision(GameObject * gameObject) {
+	std::cout << "Player: " + id + glm::to_string(position) + " collided with " + gameObject->getId() + glm::to_string(gameObject->getPosition()) << std::endl;
 }
 
 vec3 Player::getDirection() {
 	return this->direction;
 }
 
-GameObject Player::doAction(PlayerCommands action)
-{
-	// SHOULD THIS METHOD RETURN A REFERENCE?
-
-	switch (action)
-	{
-	case SWING:
-		std::cout << "Swing with charge " << actionCharge << std::endl;
-		// TODO: do the swing
-		break;
-	default:
-		break;
+GameObject * Player::doAction(PlayerCommands action) {
+	switch (action) {
+		case SWING: {
+			std::cout << "Swing with charge " << actionCharge << std::endl;
+			// assumes direction is unit vector
+			vec3 paddlePosition = getPosition() + getDirection()*vec3(2 * radius);
+			string paddleId = "paddle_" + getId();
+			int paddleLifespan = 10;
+			return new Paddle(paddlePosition, getDirection(), paddleId, 1, paddleLifespan);
+			break;
+		}
+		default: {
+			return NULL;
+		}
 	}
-	return GameObject();
 }
 
 /*
@@ -38,12 +39,10 @@ GameObject Player::doAction(PlayerCommands action)
 	Only one command can charge at one time.
 	Once a command has started charging, another cannot start until the action/command has been done.
 */
-GameObject Player::processCommand(int inputs)
+GameObject * Player::processCommand(int inputs)
 {
 	vector<PlayerCommands> chargeCommands = { SWING, WALL };
-	GameObject retval;
-
-	// SHOULD THIS METHOD RETURN A REFERENCE?
+	GameObject * retval = new GameObject();
 
 	//TODO for command in chargable commands
 	//TODO return GameObject (Ball, Wall) based on input to be rendered by the GameEngine

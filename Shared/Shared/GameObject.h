@@ -5,9 +5,9 @@ class GameObject {
 public:
 	GameObject();
 	GameObject(vec3 position, vec3 velocity, string id, int radius);
-	bool collidesWith(GameObject &gameObject);
-	virtual void onCollision(GameObject &gameObject);
-	double distanceFrom(GameObject &gameObject);
+	bool collidesWith(GameObject * gameObject);
+	virtual void onCollision(GameObject * gameObject);
+	double distanceFrom(GameObject * gameObject);
 	vec3 setPosition(vec3 position);
 	vec3 getPosition();
 	vec3 setVelocity(vec3 velocity);
@@ -15,6 +15,7 @@ public:
 	string getId();
 	string getGameObjectType();
 	void move(vec3 movement);
+	virtual bool deleteOnServerTick();
 
 protected:
 	vec3 position;

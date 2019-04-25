@@ -8,7 +8,7 @@ int main(int argc, char **argv) {
 	gameEngine.addGameObject(new Ball(vec3(5, 0, 0), vec3(-1, 0, 0), "ball_1", 1));
 
 	vector<PlayerInputs> playerInputs;
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 10; i++) {
 		gameEngine.updateGameState(playerInputs);
 	}
 

@@ -13,25 +13,25 @@ GameObject::GameObject(vec3 position, vec3 velocity, string id, int radius) {
 	this->radius = radius;
 }
 
-bool GameObject::collidesWith(GameObject &gameObject) {
-	if (this == &gameObject) {
+bool GameObject::collidesWith(GameObject * gameObject) {
+	if (this == gameObject) {
 		return false;
 	}
-	return distanceFrom(gameObject) < (radius + gameObject.radius);
+	return distanceFrom(gameObject) < (radius + gameObject->radius);
 }
 
-void GameObject::onCollision(GameObject &gameObject) {
+void GameObject::onCollision(GameObject * gameObject) {
 	// Should only update your own state, gameObject's state will be updated when it calls onCollision
-	std::cout << "GameObject: " + id + glm::to_string(position) + " collided with " + gameObject.id + glm::to_string(gameObject.position) << std::endl;
+	std::cout << "GameObject: " + id + glm::to_string(position) + " collided with " + gameObject->id + glm::to_string(gameObject->position) << std::endl;
 }
 
-double GameObject::distanceFrom(GameObject &gameObject) {
-	return glm::distance(position, gameObject.position);
+double GameObject::distanceFrom(GameObject * gameObject) {
+	return glm::distance(position, gameObject->getPosition());
 }
 
-vec3 GameObject::setPosition(vec3 position) {
+vec3 GameObject::setPosition(vec3 pos) {
 	vec3 oldPosition = this->position;
-	this->position = position;
+	this->position = pos;
 	return oldPosition;
 }
 
@@ -59,4 +59,8 @@ string GameObject::getGameObjectType() {
 
 void GameObject::move(vec3 movement) {
 	setPosition(getPosition() + movement);
+}
+
+bool GameObject::deleteOnServerTick() {
+	return false;
 }
