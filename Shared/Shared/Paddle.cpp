@@ -5,5 +5,9 @@ Paddle::Paddle (vec3 position, vec3 velocity, string id, int radius, int lifespa
 }
 
 bool Paddle::deleteOnServerTick() {
-	return --lifespan == 0;
+	return lifespan == 0;
+}
+
+void Paddle::updateOnServerTick() {
+	--lifespan;
 }

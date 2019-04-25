@@ -18,12 +18,13 @@ vec3 Player::getDirection() {
 GameObject * Player::doAction(PlayerCommands action) {
 	switch (action) {
 		case SWING: {
-			std::cout << "Swing with charge " << actionCharge << std::endl;
+			// std::cout << "Swing with charge " << actionCharge << std::endl;
 			// assumes direction is unit vector
 			vec3 paddlePosition = getPosition() + getDirection()*vec3(2 * radius);
-			string paddleId = "paddle_" + getId();
+			vec3 paddleVelocity = getDirection() * vec3(actionCharge);
+			string paddleId = "paddle_" + std::to_string(getIntId());
 			int paddleLifespan = 10;
-			return new Paddle(paddlePosition, getDirection(), paddleId, 1, paddleLifespan);
+			return new Paddle(paddlePosition, paddleVelocity, paddleId, 1, paddleLifespan);
 			break;
 		}
 		default: {
@@ -42,7 +43,7 @@ GameObject * Player::doAction(PlayerCommands action) {
 GameObject * Player::processCommand(int inputs)
 {
 	vector<PlayerCommands> chargeCommands = { SWING, WALL };
-	GameObject * retval = new GameObject();
+	GameObject * retval = NULL;
 
 	//TODO for command in chargable commands
 	//TODO return GameObject (Ball, Wall) based on input to be rendered by the GameEngine
@@ -51,13 +52,14 @@ GameObject * Player::processCommand(int inputs)
 		if (command & inputs) {
 			if (!actionCharge) {
 				currentAction = command;
+				actionCharge = 1;
 			}
 			else if (command == currentAction) {
 				actionCharge++;
 			}
 		}
 		else {
-			if (actionCharge) {
+			if (actionCharge && command == currentAction) {
 				retval = doAction(command);
 				actionCharge = 0;
 			}

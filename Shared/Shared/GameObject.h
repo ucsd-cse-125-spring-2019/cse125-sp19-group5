@@ -14,8 +14,10 @@ public:
 	vec3 getVelocity();
 	string getId();
 	string getGameObjectType();
+	int getIntId();
 	void move(vec3 movement);
 	virtual bool deleteOnServerTick();
+	virtual void updateOnServerTick();
 
 protected:
 	vec3 position;

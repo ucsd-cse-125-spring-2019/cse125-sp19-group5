@@ -12,3 +12,7 @@ void Ball::onCollision(GameObject * gameObject) {
 		setVelocity(gameObject->getVelocity());
 	}
 }
+
+void Ball::updateOnServerTick() {
+	std::cout << getId() << glm::to_string(getPosition()) << std::endl;
+}

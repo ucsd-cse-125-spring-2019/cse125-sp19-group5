@@ -57,10 +57,18 @@ string GameObject::getGameObjectType() {
 	return id.substr(0, id.find("_"));
 }
 
+int GameObject::getIntId() {
+	return stoi(id.substr(id.find("_") + 1));
+}
+
 void GameObject::move(vec3 movement) {
 	setPosition(getPosition() + movement);
 }
 
 bool GameObject::deleteOnServerTick() {
 	return false;
+}
+
+void GameObject::updateOnServerTick() {
+	return;
 }

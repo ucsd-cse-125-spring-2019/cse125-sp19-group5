@@ -14,6 +14,7 @@ void GameEngine::updateGameState(vector<PlayerInputs> playerInputs) {
 	}
 
 	doCollisionInteractions();
+	updateGameObjectsOnServerTick();
 	removeDeadObjects();
 }
 
@@ -127,4 +128,10 @@ void GameEngine::removeDeadObjects() {
 		}
 	}
 	gameState.gameObjects = preservedGameObjects;
+}
+
+void GameEngine::updateGameObjectsOnServerTick() {
+	for (GameObject * gameObject : gameState.gameObjects) {
+		gameObject->updateOnServerTick();
+	}
 }
