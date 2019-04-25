@@ -37,13 +37,11 @@ int server() {
 		for (;;) {
 
 			//read operation
-			boost::asio::read(socket_, boost::asio::buffer(msg.data(), game_message::header_length), err);
-			msg.decode_header();
-			boost::asio::read(socket_, boost::asio::buffer(msg.body(), msg.body_length()), err);
-			cout << msg.body() << endl;
-			//write operation
-			send_(socket_, "Hello From Server!");
-			cout << "Servent sent Hello message to Client!" << endl;
+			boost::asio::streambuf buff;
+			boost::asio::read_until(socket_, buff, '\n');  // for example
+
+			std::string msg(std::istreambuf_iterator<char>(&buff), {});
+			cout << msg << endl;
 			io_service.run();
 		}
 	}
