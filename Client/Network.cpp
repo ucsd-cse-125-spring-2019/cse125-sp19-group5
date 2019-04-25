@@ -19,17 +19,12 @@ void Network::poll() {
 	ioService.poll();
 }
 
-void Network::send(const std::string &message) {
+void Network::send(const std::string &data) {
 	if (socket) {
-		socket->send(boost::asio::buffer(message + "\n"));
-	}
-}
+		std::stringstream ss(std::stringstream::binary);
+		ss << data.size() << data;
 
-void Network::sendStruct(const PlayerInputs &message) {
-
-	std::string msg ((char *)&message);
-	if (socket) {
-		socket->send(boost::asio::buffer(msg));
+		socket->send(boost::asio::buffer(ss.str()));
 	}
 }
 

@@ -5,93 +5,69 @@
 #include <Shared/Common.h>
 #include <Shared/GameMessage.hpp>
 #include "GameEngine.h"
+#include <chrono>
 
 using boost::asio::ip::tcp;
-using std::string;
-using std::cout;
-using std::endl;
 
-/*typedef boost::shared_ptr<tcp::socket> socket_ptr;
+boost::asio::io_service ioService;
+tcp::endpoint endpoint{ tcp::v4(), 1234 };
+tcp::acceptor acceptor{ ioService, endpoint };
+std::vector<tcp::socket> sockets;
 
-class session{
-	session(boost::asio::io_service& io_service)
-		: socket_(io_service)
-	{
-	}
+constexpr auto TICKS_PER_SECOND = 60;
 
-	tcp::socket& socket()
-	{
-		return socket_;
-	}
+void receiveHandler(std::error_code ec, std::size_t bytes) {
+	std::cout << ec.message() << std::endl;
+	std::cout << "Received message of size " << bytes << std::endl;
+		std::string blah;
 
-private:
-	tcp::socket socket_;
-	enum { max_length = 1024 };
-	char data_[max_length];
-};*/
-
-string read_(tcp::socket & socket) {
-	boost::asio::streambuf buf;
-	boost::asio::read_until(socket, buf, "\n");
-	string data = boost::asio::buffer_cast<const char*>(buf.data());
-	return data;
+		boost::asio::async_read(
+			newSocket,
+			boost::asio::buffer(blah, 4),
+			receiveHandler
+		);
 }
 
-void send_(tcp::socket & socket, const string& message) {
-	const string msg = message + "\n";
-	boost::asio::write(socket, boost::asio::buffer(message));
-}
-
-
-
-int server() {
-	try {
-		game_message msg;
-		boost::asio::io_service io_service;
-		boost::system::error_code err;
-		//listen for new connection
-		tcp::acceptor acceptor_(io_service, tcp::endpoint(tcp::v4(), 1234));
-
-	/*	for (;;)
-		{
-			socket_ptr sock(new tcp::socket(io_service));
-			acceptor_.async_accept(*sock);
-			boost::thread t(boost::bind(session, sock));
-		}*/
-		//socket creation 
-		tcp::socket socket_(io_service);
-
-		//waiting for connection
-		acceptor_.accept(socket_);
-		cout << "Accept Returned" << endl;
-
-		for (;;) {
-
-			//read operation
-			boost::asio::streambuf buff;
-			boost::asio::read_until(socket_, buff, '\n');  // for example
-
-			std::string msg(std::istreambuf_iterator<char>(&buff), {});
-			cout << msg << endl;
-			io_service.run();
+void handleIncomingConnections() {
+	acceptor.async_accept([](std::error_code ec, tcp::socket &&newSocket) {
+		if (ec) {
+			std::cerr << ec.message() << std::endl;
+			handleIncomingConnections();
+			return;
 		}
-	}
-	catch (std::exception& e){
-		std::cerr << e.what() << std::endl;
-	}
-	return 0;
+		newSocket.non_blocking(true);
+		sockets.push_back(std::move(newSocket));
+		std::cout << "A client has connected!" << std::endl;
+		handleIncomingConnections();
+
+		std::string blah;
+
+		boost::asio::async_read(
+			newSocket,
+			boost::asio::buffer(blah, 4),
+			receiveHandler
+		);
+	});
 }
 
 int main(int argc, char **argv) {
-	std::cout << "Hello world!" << std::endl;
 	GameEngine gameEngine;
 	gameEngine.addGameObject(new Player(vec3(0, 0, 0), vec3(1, 0, 0), vec3(1, 0, 0), "player_1", 1));
 	gameEngine.addGameObject(new Ball(vec3(5, 0, 0), vec3(-1, 0, 0), "ball_1", 1));
 
-	vector<PlayerInputs> playerInputs;
-	for (int i = 0; i < 4; i++) {
-		gameEngine.updateGameState(playerInputs);
+	handleIncomingConnections();
+
+	while (true) {
+		ioService.poll();
+
+		vector<PlayerInputs> playerInputs;
+		for (int i = 0; i < 4; i++) {
+			gameEngine.updateGameState(playerInputs);
+		}
+		std::this_thread::sleep_for(
+			std::chrono::milliseconds(1000 / TICKS_PER_SECOND)
+		);
 	}
-  server();
+
 	return 0;
 }
