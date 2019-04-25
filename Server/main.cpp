@@ -11,14 +11,24 @@ using std::string;
 using std::cout;
 using std::endl;
 
-//typedef boost::shared_ptr<tcp::socket> socket_ptr;
-//
-//class session{
-//session(boost::asio::io_service& io_service)
-//	: socket_(io_service)
-//{
-//}
-//};
+/*typedef boost::shared_ptr<tcp::socket> socket_ptr;
+
+class session{
+	session(boost::asio::io_service& io_service)
+		: socket_(io_service)
+	{
+	}
+
+	tcp::socket& socket()
+	{
+		return socket_;
+	}
+
+private:
+	tcp::socket socket_;
+	enum { max_length = 1024 };
+	char data_[max_length];
+};*/
 
 string read_(tcp::socket & socket) {
 	boost::asio::streambuf buf;
@@ -42,7 +52,7 @@ int server() {
 		//listen for new connection
 		tcp::acceptor acceptor_(io_service, tcp::endpoint(tcp::v4(), 1234));
 
-		/*for (;;)
+	/*	for (;;)
 		{
 			socket_ptr sock(new tcp::socket(io_service));
 			acceptor_.async_accept(*sock);

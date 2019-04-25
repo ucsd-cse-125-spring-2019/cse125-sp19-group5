@@ -1,4 +1,5 @@
 #include "Network.h"
+#include <sstream>
 
 boost::asio::io_service Network::ioService;
 TcpSocket *Network::socket = nullptr;
@@ -21,6 +22,14 @@ void Network::poll() {
 void Network::send(const std::string &message) {
 	if (socket) {
 		socket->send(boost::asio::buffer(message + "\n"));
+	}
+}
+
+void Network::sendStruct(const PlayerInputs &message) {
+
+	std::string msg ((char *)&message);
+	if (socket) {
+		socket->send(boost::asio::buffer(msg));
 	}
 }
 

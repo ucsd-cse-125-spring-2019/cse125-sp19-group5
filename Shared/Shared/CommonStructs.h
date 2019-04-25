@@ -15,7 +15,7 @@ enum PlayerCommands {
 	SWING = 1 << 6
 };
 
-struct GameState {
+struct GameState{
 	vector<Player *> players;
 	vector<Ball *> balls;
 	vector<Wall *> walls;
@@ -25,7 +25,19 @@ struct GameState {
 	bool in_progress;
 };
 
+struct GameStateNet{
+	vector<Player> players;
+	vector<Ball> balls;
+	vector<Wall> walls;
+	vector<GameObject> gameObjects;
+	long timeLeft;
+	tuple<int, int> score;
+	bool in_progress;
+
+};
+
 struct PlayerInputs {
 	int inputs;
 	int id;
 };
+

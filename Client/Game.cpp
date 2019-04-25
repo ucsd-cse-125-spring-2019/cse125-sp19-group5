@@ -102,7 +102,10 @@ void Game::update(float dt) {
 	}
 
 	if (Input::wasKeyPressed(GLFW_KEY_P)) {
-		Network::send(std::to_string(num));
+		PlayerInputs p;
+		p.id = 0;
+		p.inputs = num;
+		Network::sendStruct(p);
 		std::cout << num << std::endl;
 		num++;
 	}

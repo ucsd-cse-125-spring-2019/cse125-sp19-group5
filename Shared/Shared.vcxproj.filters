@@ -39,6 +39,9 @@
     <ClInclude Include="Shared\GameMessage.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="BoostSerializeStruct.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
