@@ -153,7 +153,7 @@ int client() {
 	return 0;
 }*/
 
-int client() {
+int main() {
 	try
 	{
 		cout << "creating client" << endl;
@@ -164,6 +164,7 @@ int client() {
 		{
 			cout << "inside while loop" << endl;
 			game_message msg;
+			std::memset(msg.data(), 'A', msg.max_body_length);
 			msg.body_length(std::strlen(line));
 			std::memcpy(msg.body(), line, msg.body_length());
 			msg.encode_header();
@@ -188,7 +189,7 @@ static void onResize(GLFWwindow *window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
-int main(int argc, char **argv) {
+int _main(int argc, char **argv) {
 	if (!glfwInit()) {
 		std::cerr << "Failed to initialize GLFW" << std::endl;
 		return -1;
@@ -252,7 +253,7 @@ int main(int argc, char **argv) {
 	auto lastTime = (float)glfwGetTime();
 
 	cout << "creating client" << endl;
- 	client();
+ 	//client();
 
 	// Main loop
 	while (!glfwWindowShouldClose(window)) {

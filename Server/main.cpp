@@ -28,13 +28,13 @@ int server() {
 		boost::system::error_code err;
 		//listen for new connection
 		tcp::acceptor acceptor_(io_service, tcp::endpoint(tcp::v4(), 1234));
-		for (;;) {
-			//socket creation 
+					//socket creation 
 			tcp::socket socket_(io_service);
 
 			//waiting for connection
 			acceptor_.accept(socket_);
 			cout << "Accept Returned" << endl;
+		for (;;) {
 
 			//read operation
 			boost::asio::read(socket_, boost::asio::buffer(msg.data(), game_message::header_length), err);
