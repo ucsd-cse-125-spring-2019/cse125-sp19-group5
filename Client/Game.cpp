@@ -5,6 +5,7 @@
 #include "Input.h"
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
+#include "Network.h"
 
 Game::Game() {
 	lightShader = new Shader("Shaders/light");
@@ -85,6 +86,7 @@ void Game::update(float dt) {
 
 	if (Input::wasKeyPressed(GLFW_KEY_P)) {
 		std::cout << glm::to_string(camera->getForward()) << std::endl;
+		Network::send("hello");
 	}
 }
 
