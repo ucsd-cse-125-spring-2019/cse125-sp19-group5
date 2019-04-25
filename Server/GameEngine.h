@@ -7,8 +7,8 @@
 #include <Shared/Wall.h>
 
 #define NUM_PLAYERS 1
-#define MOVEMENT_MASK 0x11111
-#define COMMAND_MASK 0x1100000
+#define MOVEMENT_MASK 0b11111
+#define COMMAND_MASK 0b1100000
 
 class GameEngine {
 public:
@@ -22,6 +22,7 @@ public:
 	void doPlayerCommands(vector<PlayerInputs> playerInputs);
 	void doCollisionInteractions();
 	void removeDeadObjects();
+	void updateGameObjectsOnServerTick();
 
 private:
 	GameState gameState;

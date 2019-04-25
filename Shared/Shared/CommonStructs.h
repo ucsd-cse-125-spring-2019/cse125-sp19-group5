@@ -26,6 +26,13 @@ struct GameState {
 	bool in_progress;
 };
 
+struct NetworkGameState {
+	vector<GameObject> gameObjects;
+	long timeLeft;
+	tuple<int, int> score;
+	bool in_progress;
+};
+
 struct PlayerInputs {
 	int inputs;
 	int id;
