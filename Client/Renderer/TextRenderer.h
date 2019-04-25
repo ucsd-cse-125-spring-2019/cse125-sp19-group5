@@ -10,19 +10,21 @@
 struct Text {
 	Font font;
 	std::string text;
-	GLfloat x;
-	GLfloat y;
+	GLfloat widthPercent;
+	GLfloat heightPercent;
 	GLfloat scale;
 	vec3 color;
 
-	void renderText(Shader &shader) {
-		font.RenderText(shader, text, x, y, scale, color);
+	void renderText(Shader &shader, int screenWidth, int screenHeight) {
+		font.renderText(shader, screenWidth, screenHeight, text, widthPercent * screenWidth, heightPercent * screenHeight, scale, color);
 	};
 };
 
 class TextRenderer
 {
 private:
+	int screenWidth = 800;
+	int screenHeight = 600;
 	Shader &shader;
 	std::unordered_map<std::string, Font> fonts;
 	std::vector<Text> texts;
@@ -34,7 +36,8 @@ public:
 	TextRenderer(Shader &shader);
 	~TextRenderer();
 
+	void updateScreenDimensions(int width, int height);
 	bool loadFont(const std::string &name, const std::string &filepath);
-	Text* addText(const std::string &fontname, const std::string text, const GLfloat x, const GLfloat y, const GLfloat scale, const glm::vec3 color);
+	Text* addText(const std::string &fontname, const std::string text, const GLfloat widthPercent, const GLfloat heightPercent, const GLfloat scale, const glm::vec3 color);
 	void renderText();
 };

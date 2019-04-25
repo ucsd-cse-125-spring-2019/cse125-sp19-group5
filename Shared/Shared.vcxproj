@@ -115,16 +115,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Shared\Ball.h" />
     <ClInclude Include="Shared\Common.h" />
-    <ClInclude Include="Shared\ConfigSettings.h" />
+    <ClInclude Include="Shared\CommonStructs.h" />
+    <ClInclude Include="Shared\GameObject.h" />
     <ClInclude Include="Shared\GameObjectState.h" />
     <ClInclude Include="Shared\GameMessage.hpp" />
+    <ClInclude Include="Shared\Player.h" />
+    <ClInclude Include="Shared\Wall.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Shared\Ball.cpp" />
+    <ClCompile Include="Shared\ConfigSettings.cpp" />
+    <ClCompile Include="Shared\GameObject.cpp" />
+    <ClCompile Include="Shared\Player.cpp" />
+    <ClCompile Include="Shared\Wall.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Shared\ConfigSettings.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

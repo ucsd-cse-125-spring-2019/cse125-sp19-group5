@@ -79,17 +79,17 @@ int main(int argc, char **argv) {
 
 	// Center the window
 	auto videoMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-	glfwSetWindowPos(
-		window,
-		(videoMode->width - SCREEN_WIDTH) / 2,
-		(videoMode->height - SCREEN_HEIGHT) / 2
-	);
+	auto middleX = (videoMode->width - SCREEN_WIDTH) / 2;
+	auto middleY = (videoMode->height - SCREEN_HEIGHT) / 2;
+	glfwSetCursorPos(window, middleX, middleY);
+	glfwSetWindowPos(window, middleX, middleY);
 
 	Input::init(window);
 	Network::init("127.0.0.1", 1234);
 
 	Game game;
 	game.getCamera()->setAspect((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT);
+	game.updateScreenDimensions(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	auto lastTime = (float)glfwGetTime();
 
@@ -112,7 +112,6 @@ int main(int argc, char **argv) {
 		}
 
 		game.update(dt);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		game.draw(dt);
 
 		glfwSwapBuffers(window);
@@ -121,6 +120,7 @@ int main(int argc, char **argv) {
 			game.getCamera()->setAspect(
 				(float)SCREEN_WIDTH / (float)SCREEN_HEIGHT
 			);
+			game.updateScreenDimensions(SCREEN_WIDTH, SCREEN_HEIGHT);
 			SCREEN_RESHAPED = false;
 		}
 	}
