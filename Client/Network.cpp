@@ -23,7 +23,7 @@ void Network::init(const std::string &address, int port) {
 }
 
 //the eventual place where data will go
-constexpr size_t messageHeaderLength = sizeof(int32_t);
+constexpr size_t messageHeaderLength = 1024;
 char theMessage[messageHeaderLength];
 
 /*
@@ -32,14 +32,19 @@ char theMessage[messageHeaderLength];
  * then from that buffer, we will transfer the data onto a "normal" buffer where
  * finally we write it into a normal looking string that we can print out.
  */
-void Network::read() {
+void Network::read(int length) {
 	if (!socket) { return; }
 	socket->async_read_some(
-		boost::asio::buffer(theMessage, messageHeaderLength),
-		[](auto error, auto bytes) {
+		boost::asio::buffer(theMessage, length),
+		[length](auto error, auto bytes) {
+			if (length != 4) {
+				auto buf = NetBuffer(theMessage);
+				auto gs = GameStateNet::deserialize(buf);
+				std::cout << gs.timeLeft << std::endl;
+			}
 			int32_t *headerSize = reinterpret_cast<int32_t*>(theMessage);
 			std::cout << *headerSize << std::endl;
-			Network::read();
+			Network::read(*headerSize + 4);
 		}
 	);
 }

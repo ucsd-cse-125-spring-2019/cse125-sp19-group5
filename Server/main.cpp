@@ -116,8 +116,7 @@ int main(int argc, char **argv) {
 
 	NetBuffer buf;
 	gameState.serialize(buf);
-
-	auto gs = GameStateNet::deserialize(buf);
+	buf.finish(); // Remember to call this when done writing to buf.
 
 
 	while (true) {
@@ -148,8 +147,7 @@ int main(int argc, char **argv) {
 			 * The client cuts off the message before the space.
 			 */
 			//This is the message
-			int32_t headerSize = 69420;
-			size_t data_length = sizeof(int32_t);
+			// Always call this before reading from buf.
 
 			/* -------
 			 * WARNING
@@ -157,7 +155,7 @@ int main(int argc, char **argv) {
 			 * C++ string doesn't play nice with boost::asio::buffer 
 			 * Use the char* instead! 
 			 */
-			client->async_send(boost::asio::buffer(&headerSize, data_length),[](const boost::system::error_code& ec,
+			client->async_send(boost::asio::buffer(buf.getData().c_str(), buf.getSize()),[](const boost::system::error_code& ec,
 				std::size_t bytes_transferred)
 			{
 				if (ec) {

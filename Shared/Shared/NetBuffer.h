@@ -5,14 +5,20 @@
 class NetBuffer {
 	private:
 	std::stringbuf buf;
+	int32_t size;
 	public:
-	NetBuffer() {
-		//write<int32_t>(0);
+	NetBuffer(): size(0) {
+		write<int32_t>(0);
+	}
+
+	NetBuffer(const char *data): size(0) {
+		buf = std::stringbuf(data);
 	}
 
 	template<typename T>
 	inline void write(const T &value) {
 		buf.sputn(reinterpret_cast<const char*>(&value), sizeof(value));
+		size += sizeof(value);
 	}
 
 	template<typename T>
@@ -23,14 +29,16 @@ class NetBuffer {
 	}
 
 	void finish() {
-		auto size = buf.str().size();
-		std::cout << size << std::endl;
 		buf.pubseekpos(0);
 		write<int32_t>(size);
 	}
 
+	std::string getData() const {
+		return buf.str();
+	}
+
 	int32_t getSize() {
-		return read<int32_t>();
+		return size;
 	}
 };
 
