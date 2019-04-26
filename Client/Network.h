@@ -25,6 +25,9 @@ namespace Network {
 	extern TcpSocket *socket;
 
 	void init(const std::string &address, int port);
+
+	void read();//addded ability to read Server Updates
+
 	void send(const std::string &data);
 	void poll();
 	void cleanUp();
