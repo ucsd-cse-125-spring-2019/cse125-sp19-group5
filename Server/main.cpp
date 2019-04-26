@@ -107,18 +107,18 @@ int main(int argc, char **argv) {
 
 	handleIncomingConnections();
 
-	PlayerInputs pi;
-	pi.id = 123;
-	pi.inputs = 456;
+	GameStateNet gameState;
+	auto origin = vec3(0.0f);
+	gameState.gameObjects.push_back(Player(origin, origin, origin, "idk", 1));
+	gameState.in_progress = false;
+	gameState.score = std::make_tuple(1, 2);
+	gameState.timeLeft = 30;
 
 	NetBuffer buf;
-	buf.write<int>(123);
-	buf.write<bool>(true);
-	buf.write<PlayerInputs>(pi);
+	gameState.serialize(buf);
 
-	std::cout << "int = " << buf.read<int>() << std::endl;
-	std::cout << "bool = " << buf.read<bool>() << std::endl;
-	std::cout << "bool = " << buf.read<PlayerInputs>().inputs << std::endl;
+	auto gs = GameStateNet::deserialize(buf);
+
 
 	while (true) {
 		ioService.poll();

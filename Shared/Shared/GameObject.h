@@ -1,7 +1,7 @@
 #pragma once
 #include "Common.h"
-
-class GameObject {
+#include "Serializable.h"
+class GameObject : public Serializable {
 public:
 	GameObject(vec3 position, vec3 velocity, string id, int radius);
 	bool collidesWith(GameObject &gameObject);
@@ -12,8 +12,10 @@ public:
 	vec3 setVelocity(vec3 velocity);
 	vec3 getVelocity();
 	string getId();
-	string getGameObjectType();
+	string getGameObjectType() const;
 	void move(vec3 movement);
+	void serialize(NetBuffer &buffer) const;
+	static GameObject deserialize(NetBuffer &buffer);
 
 protected:
 	vec3 position;

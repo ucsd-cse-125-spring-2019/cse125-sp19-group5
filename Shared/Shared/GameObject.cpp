@@ -49,10 +49,27 @@ string GameObject::getId() {
 	return this->id;
 }
 
-string GameObject::getGameObjectType() {
+string GameObject::getGameObjectType() const {
 	return id.substr(0, id.find("_"));
 }
 
 void GameObject::move(vec3 movement) {
 	setPosition(getPosition() + movement);
+}
+
+void GameObject::serialize(NetBuffer &buffer) const {
+	buffer.write<vec3>(position);
+	buffer.write<vec3>(velocity);
+	buffer.write<string>(id);
+	buffer.write<int>(radius);
+}
+
+GameObject GameObject::deserialize(NetBuffer & buffer) {
+	auto position = buffer.read<vec3>();
+	auto velocity = buffer.read<vec3>();
+	auto id = buffer.read<string>();
+	auto radius = buffer.read<int>();
+
+	GameObject deserialized(position, velocity, id, radius);
+	return deserialized;
 }

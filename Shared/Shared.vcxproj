@@ -124,6 +124,7 @@
     <ClInclude Include="Shared\GameMessage.hpp" />
     <ClInclude Include="Shared\NetBuffer.h" />
     <ClInclude Include="Shared\Player.h" />
+    <ClInclude Include="Shared\Serializable.h" />
     <ClInclude Include="Shared\Wall.h" />
   </ItemGroup>
   <ItemGroup>
