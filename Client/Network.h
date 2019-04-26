@@ -6,6 +6,7 @@
 #include <Shared\CommonStructs.h>
 
 using TcpSocket = boost::asio::ip::tcp::socket;
+using ByteVector = std::vector<unsigned char>;
 
 class NetworkMsg {
 	int id;

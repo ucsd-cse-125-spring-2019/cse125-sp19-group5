@@ -26,10 +26,9 @@ void Network::poll() {
 
 void Network::send(const std::string &data) {
 	if (socket) {
-		std::stringstream ss(std::stringstream::binary);
-		ss << data.size() << data;
-
-		socket->send(boost::asio::buffer(ss.str()));
+		socket->send(
+			boost::asio::buffer(data + "\n")
+		);
 	}
 }
 

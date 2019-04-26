@@ -102,7 +102,7 @@ void Game::update(float dt) {
 	}
 
 	if (Input::wasKeyPressed(GLFW_KEY_P)) {
-		Network::send("hello");
+		Network::send(glm::to_string(direction));
 		std::cout << num << std::endl;
 		num++;
 	}

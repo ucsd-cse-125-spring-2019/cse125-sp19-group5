@@ -12,42 +12,76 @@ using boost::asio::ip::tcp;
 boost::asio::io_service ioService;
 tcp::endpoint endpoint{ tcp::v4(), 1234 };
 tcp::acceptor acceptor{ ioService, endpoint };
-std::vector<tcp::socket> sockets;
+std::vector<tcp::socket*> sockets;
+tcp::socket *newSocket = nullptr;
 
 constexpr auto TICKS_PER_SECOND = 60;
+
+char messageData[128];
 
 void receiveHandler(std::error_code ec, std::size_t bytes) {
 	std::cout << ec.message() << std::endl;
 	std::cout << "Received message of size " << bytes << std::endl;
 		std::string blah;
+}
 
-		boost::asio::async_read(
-			newSocket,
-			boost::asio::buffer(blah, 4),
-			receiveHandler
-		);
+void handleIncomingConnections();
+void readMessageHeader(tcp::socket *socket);
+
+void onReceiveMessageHeader(
+	tcp::socket *socket,
+	const boost::system::error_code& error,
+	std::size_t bytes
+) {
+	if (error) {
+		std::cerr << error.message() << std::endl;
+		return;
+	}
+
+	std::cout << "Received " << bytes << " bytes long message" << std::endl;
+	readMessageHeader(socket);
+}
+
+void readMessageHeader(tcp::socket *socket) {
+	boost::asio::streambuf buffer;
+	/*
+	// TODO (bhang): change this to support a header size
+	socket->async_read_some(
+		boost::asio::buffer(messageData, 8),
+		[socket](const boost::system::error_code &error, std::size_t bytes) {
+			onReceiveMessageHeader(socket, error, bytes);
+		}
+	);
+	*/
+	boost::asio::async_read_until(
+		*socket,
+		buffer,
+		"\n",
+		[socket](const boost::system::error_code &error, std::size_t bytes) {
+			onReceiveMessageHeader(socket, error, bytes);
+		}
+	);
+}
+
+void onAccept(const std::error_code& error) {
+	if (!error) {
+		std::cout << "A client has connected!" << std::endl;
+	} else {
+		std::cout << error.message() << std::endl;
+	}
+
+	readMessageHeader(newSocket);
+
+	sockets.push_back(newSocket);
+	handleIncomingConnections();
 }
 
 void handleIncomingConnections() {
-	acceptor.async_accept([](std::error_code ec, tcp::socket &&newSocket) {
-		if (ec) {
-			std::cerr << ec.message() << std::endl;
-			handleIncomingConnections();
-			return;
-		}
-		newSocket.non_blocking(true);
-		sockets.push_back(std::move(newSocket));
-		std::cout << "A client has connected!" << std::endl;
-		handleIncomingConnections();
-
-		std::string blah;
-
-		boost::asio::async_read(
-			newSocket,
-			boost::asio::buffer(blah, 4),
-			receiveHandler
-		);
-	});
+	newSocket = new tcp::socket(ioService);
+	acceptor.async_accept(
+		*newSocket,
+		onAccept
+	);
 }
 
 int main(int argc, char **argv) {
