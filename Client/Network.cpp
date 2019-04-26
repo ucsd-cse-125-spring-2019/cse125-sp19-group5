@@ -13,11 +13,6 @@ void Network::init(const std::string &address, int port) {
 
 		socket = new TcpSocket(ioService);
 		socket->connect(endpoint);
-		/* HELP: commented out code
-		 * ----
-		 * It seemed that this was causing issues with the read() function, 
-		 * but we aren't too sure actually. If it's necessary, uncomment
-		 */
 		socket->non_blocking(true);
 
 		Network::read();
@@ -28,8 +23,8 @@ void Network::init(const std::string &address, int port) {
 }
 
 //the eventual place where data will go
-constexpr size_t incomingMessageLength = 11;
-char theMessage[incomingMessageLength];
+constexpr size_t messageHeaderLength = sizeof(int32_t);
+char theMessage[messageHeaderLength];
 
 /*
  * This function will read in the server's response in a two-phase process.
@@ -38,15 +33,15 @@ char theMessage[incomingMessageLength];
  * finally we write it into a normal looking string that we can print out.
  */
 void Network::read() {
-	if (socket) {
-		socket->async_read_some(
-			boost::asio::buffer(theMessage),
-			[](auto error, auto bytes) {
-				std::cout << theMessage << std::endl;
-				Network::read();
-			}
-		);
-	}
+	if (!socket) { return; }
+	socket->async_read_some(
+		boost::asio::buffer(theMessage, messageHeaderLength),
+		[](auto error, auto bytes) {
+			int32_t *headerSize = reinterpret_cast<int32_t*>(theMessage);
+			std::cout << *headerSize << std::endl;
+			Network::read();
+		}
+	);
 }
 
 void Network::poll() {
@@ -54,18 +49,13 @@ void Network::poll() {
 }
 
 void Network::send(const std::string &data) {
-	if (socket) {
-		socket->send(
-			boost::asio::buffer(data + "\n"),
-			0
-		);
-	}
+	if (!socket) { return; }
+	socket->send(boost::asio::buffer(data + "\n"), 0);
 }
 
 void Network::cleanUp() {
-	if (socket) {
-		socket->close();
-		delete socket;
-		socket = nullptr;
-	}
+	if (!socket) { return; }
+	socket->close();
+	delete socket;
+	socket = nullptr;
 }

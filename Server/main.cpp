@@ -6,6 +6,7 @@
 #include <Shared/GameMessage.hpp>
 #include "GameEngine.h"
 #include <chrono>
+#include <Shared/NetBuffer.h>
 
 using boost::asio::ip::tcp;
 
@@ -106,6 +107,19 @@ int main(int argc, char **argv) {
 
 	handleIncomingConnections();
 
+	PlayerInputs pi;
+	pi.id = 123;
+	pi.inputs = 456;
+
+	NetBuffer buf;
+	buf.write<int>(123);
+	buf.write<bool>(true);
+	buf.write<PlayerInputs>(pi);
+
+	std::cout << "int = " << buf.read<int>() << std::endl;
+	std::cout << "bool = " << buf.read<bool>() << std::endl;
+	std::cout << "bool = " << buf.read<PlayerInputs>().inputs << std::endl;
+
 	while (true) {
 		ioService.poll();
 
@@ -134,8 +148,8 @@ int main(int argc, char **argv) {
 			 * The client cuts off the message before the space.
 			 */
 			//This is the message
-			const char* data = "GAME STATE!";
-			size_t data_length = 11;
+			int32_t headerSize = 69420;
+			size_t data_length = sizeof(int32_t);
 
 			/* -------
 			 * WARNING
@@ -143,9 +157,13 @@ int main(int argc, char **argv) {
 			 * C++ string doesn't play nice with boost::asio::buffer 
 			 * Use the char* instead! 
 			 */
-			client->async_send(boost::asio::buffer(data, data_length),[](const boost::system::error_code& ec,
+			client->async_send(boost::asio::buffer(&headerSize, data_length),[](const boost::system::error_code& ec,
 				std::size_t bytes_transferred)
 			{
+				if (ec) {
+					std::cerr << ec.message() << std::endl;
+				}
+				std::cout << "sent " << bytes_transferred << std::endl;
 				/*TODO: handle errors*/
 			});
 		}

@@ -122,6 +122,7 @@
     <ClInclude Include="Shared\GameObject.h" />
     <ClInclude Include="Shared\GameObjectState.h" />
     <ClInclude Include="Shared\GameMessage.hpp" />
+    <ClInclude Include="Shared\NetBuffer.h" />
     <ClInclude Include="Shared\Player.h" />
     <ClInclude Include="Shared\Wall.h" />
   </ItemGroup>
