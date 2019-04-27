@@ -2,28 +2,37 @@
 
 #include <sstream>
 
+enum NetBufferType {
+	READ,
+	WRITE
+};
+
 class NetBuffer {
 	private:
 	std::stringbuf buf;
 	int32_t size;
 	public:
-	NetBuffer(): size(0) {
-		write<int32_t>(0);
+	NetBuffer(NetBufferType type = NetBufferType::WRITE): size(0) {
+		// Allocate size header if we will send this buffer (i.e. type = write).
+		if (type != NetBufferType::READ) {
+			write<int32_t>(0);
+		}
 	}
 
-	NetBuffer(const char *data): size(0) {
-		buf = std::stringbuf(data);
+	void setData(char *data, int size) {
+		this->size = size;
+		buf.sputn(data, size);
 	}
 
 	template<typename T>
 	inline void write(const T &value) {
-		buf.sputn(reinterpret_cast<const char*>(&value), sizeof(value));
-		size += sizeof(value);
+		buf.sputn(reinterpret_cast<const char*>(&value), sizeof(T));
+		size += sizeof(T);
 	}
 
 	template<typename T>
 	inline T read() {
-		char data[sizeof(T)];
+		char data[sizeof(T)] = { 0 };
 		buf.sgetn(data, sizeof(T));
 		return *reinterpret_cast<T*>(data);
 	}
