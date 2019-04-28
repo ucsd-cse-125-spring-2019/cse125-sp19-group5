@@ -5,6 +5,7 @@
 // A Serializable object is one that can be written into a NetBuffer and read
 // from a NetBuffer.
 class Serializable {
+	public:
 	// Writes a representation of the object into the given buffer.
 	virtual void serialize(NetBuffer &buffer) const = 0;
 
