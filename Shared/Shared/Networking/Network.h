@@ -3,7 +3,7 @@
 #include <string>
 #include <sstream>
 #include <boost/asio.hpp>
-#include <Shared\CommonStructs.h>
+#include "../CommonStructs.h"
 
 using TcpSocket = boost::asio::ip::tcp::socket;
 using ByteVector = std::vector<unsigned char>;

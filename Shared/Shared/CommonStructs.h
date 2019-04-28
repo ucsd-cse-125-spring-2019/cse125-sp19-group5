@@ -4,7 +4,7 @@
 #include "Player.h"
 #include "Ball.h"
 #include "Wall.h"
-#include "Serializable.h"
+#include "Networking/Serializable.h"
 
 enum PlayerCommands {
 	FORWARD = 1 << 0,
@@ -43,17 +43,17 @@ struct GameStateNet : Serializable {
 		buffer.write<bool>(in_progress);
 	}
 
-	static GameStateNet deserialize(NetBuffer &buffer) {
-		GameStateNet deserialized;
+	void deserialize(NetBuffer &buffer) {
 		auto numGameObjects = buffer.read<size_t>();
 		for (int i = 0; i < numGameObjects; i++) {
-			deserialized.gameObjects.push_back(GameObject::deserialize(buffer));
+			GameObject gameObject(vec3(0), vec3(0), "", 0);
+			gameObject.deserialize(buffer);
+			gameObjects.push_back(gameObject);
 		}
 
-		deserialized.timeLeft = buffer.read<long>();
-		deserialized.score = buffer.read<tuple<int, int>>();
-		deserialized.in_progress = buffer.read<bool>();
-		return deserialized;
+		timeLeft = buffer.read<long>();
+		score = buffer.read<tuple<int, int>>();
+		in_progress = buffer.read<bool>();
 	}
 };
 

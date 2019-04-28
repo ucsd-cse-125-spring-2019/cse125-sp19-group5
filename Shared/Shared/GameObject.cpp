@@ -64,12 +64,9 @@ void GameObject::serialize(NetBuffer &buffer) const {
 	buffer.write<int>(radius);
 }
 
-GameObject GameObject::deserialize(NetBuffer & buffer) {
-	auto position = buffer.read<vec3>();
-	auto velocity = buffer.read<vec3>();
-	auto id = buffer.read<string>();
-	auto radius = buffer.read<int>();
-
-	GameObject deserialized(position, velocity, id, radius);
-	return deserialized;
+void GameObject::deserialize(NetBuffer &buffer) {
+	position = buffer.read<vec3>();
+	velocity = buffer.read<vec3>();
+	id = buffer.read<string>();
+	radius = buffer.read<int>();
 }

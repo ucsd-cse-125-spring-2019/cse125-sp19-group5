@@ -5,7 +5,7 @@
 #include "Input.h"
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
-#include "Network.h"
+#include <Shared/Networking/Network.h>
 #include "Renderer/Draw.h"
 
 Game::Game() {

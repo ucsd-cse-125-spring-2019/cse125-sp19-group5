@@ -2,13 +2,11 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <Shared/ConfigSettings.h>
+#include <Shared/Networking/Network.h>
 #include "Game.h"
 #include "Renderer/Camera.h"
 #include "Input.h"
-#include "Network.h"
 
-using namespace boost::asio;
-using ip::tcp;
 using std::string;
 using std::cout;
 using std::endl;

@@ -6,7 +6,7 @@
 #include <Shared/GameMessage.hpp>
 #include "GameEngine.h"
 #include <chrono>
-#include <Shared/NetBuffer.h>
+#include <Shared/Networking/NetBuffer.h>
 
 using boost::asio::ip::tcp;
 

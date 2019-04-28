@@ -19,7 +19,7 @@ class NetBuffer {
 		}
 	}
 
-	void setData(char *data, int size) {
+	void setData(char *data, int32_t size) {
 		this->size = size;
 		buf.sputn(data, size);
 	}
