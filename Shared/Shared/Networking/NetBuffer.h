@@ -64,7 +64,7 @@ class NetBuffer {
 
 	// Writes the header to the beginning of the buffer, so the data can be read
 	// from a socket later, and makes the buffer read only.
-	void finish(NetMessage message) {
+	void finish() {
 		buf.pubseekpos(0);
 		write<NetBufferHeader>(header);
 		finished = true;
