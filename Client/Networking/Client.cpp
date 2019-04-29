@@ -42,7 +42,7 @@ void Network::on(NetMessage message, Connection::MessageHandler handler) {
 	}
 }
 
-void Network::send(const NetBuffer &buffer) {
+void Network::send(NetBuffer &buffer) {
 	if (connection) {
 		connection->send(buffer);
 	}

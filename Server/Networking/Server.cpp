@@ -71,7 +71,7 @@ void Network::init(int port) {
 	acceptIncomingConnections();
 }
 
-void Network::broadcast(const NetBuffer &buffer) {
+void Network::broadcast(NetBuffer &buffer) {
 	for (auto &connection : connections) {
 		if (connection) {
 			connection->send(buffer);

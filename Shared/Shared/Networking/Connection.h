@@ -43,7 +43,7 @@ class Connection {
 	Connection(int id, TcpSocket *socket);
 	void on(NetMessage message, MessageHandler handler);
 	void onDisconnected(DisconnectHandler handler);
-	void send(const NetBuffer &buffer);
+	void send(NetBuffer &buffer);
 	void send(NetMessage message, const Serializable &obj);
 	void close();
 	int getId() const;

@@ -72,10 +72,10 @@ void Connection::onDisconnected(DisconnectHandler handler) {
 	disconnectHandlers.push_back(handler);
 }
 
-void Connection::send(const NetBuffer &buffer) {
+void Connection::send(NetBuffer &buffer) {
 	if (!socket || !socket->is_open()) { return; }
 	if (!buffer.isFinished()) {
-		throw std::exception("Buffer must be finished before sending");
+		buffer.finish();
 	}
 
 	std::shared_ptr<std::string> data = std::make_shared<std::string>(

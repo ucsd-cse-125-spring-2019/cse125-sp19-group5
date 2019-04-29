@@ -15,7 +15,7 @@ namespace Network {
 	extern std::vector<DisconnectedHandler> disconnectedHandlers;
 
 	bool init(const std::string &address, int port);
-	void send(const NetBuffer &buffer);
+	void send(NetBuffer &buffer);
 	void send(NetMessage message, const Serializable &obj);
 	void on(NetMessage message, Connection::MessageHandler handler);
 	void onConnected(ConnectedHandler handler);

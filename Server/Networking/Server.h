@@ -20,7 +20,7 @@ namespace Network {
 	void handleIncomingConnection(const error_code &error);
 	void handleClientDisconnect(Connection *connection);
 	void acceptIncomingConnections();
-	void broadcast(const NetBuffer &buffer);
+	void broadcast(NetBuffer &buffer);
 	void broadcast(NetMessage message, const Serializable &obj);
 	void onClientConnected(ConnectionHandler handler);
 	int findFreeId();
