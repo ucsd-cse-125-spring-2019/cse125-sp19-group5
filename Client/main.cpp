@@ -2,7 +2,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <Shared/ConfigSettings.h>
-#include <Shared/Networking/Network.h>
+#include "Networking/Client.h"
 #include "Game.h"
 #include "Renderer/Camera.h"
 #include "Input.h"

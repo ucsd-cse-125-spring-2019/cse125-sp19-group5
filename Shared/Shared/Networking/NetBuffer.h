@@ -81,7 +81,7 @@ class NetBuffer {
 	}
 
 	// Returns which message this buffer is suppose to be used for.
-	NetMessage getMessageType() {
+	NetMessage getMessageType() const {
 		return (NetMessage)header.message;
 	}
 

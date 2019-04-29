@@ -57,6 +57,12 @@
     <ClInclude Include="Shared\Networking\NetBuffer.h">
       <Filter>Header Files\Networking</Filter>
     </ClInclude>
+    <ClInclude Include="Shared\Networking\NetMessage.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="Shared\Networking\Connection.h">
+      <Filter>Header Files\Networking</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -78,6 +84,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Shared\Networking\Network.cpp">
+      <Filter>Source Files\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="Shared\Networking\Connection.cpp">
       <Filter>Source Files\Networking</Filter>
     </ClCompile>
   </ItemGroup>

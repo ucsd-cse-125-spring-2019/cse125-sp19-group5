@@ -5,8 +5,9 @@
 #include "Input.h"
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
-#include <Shared/Networking/Network.h>
+#include "Networking/Client.h"
 #include "Renderer/Draw.h"
+#include <Shared/CommonStructs.h>
 
 Game::Game() {
 	Draw::init();
@@ -37,6 +38,12 @@ Game::Game() {
 
 	audioPlayer = new AudioPlayer();
 	audioPlayer->playLoop("Sounds/minecraft_wet_hands.wav");
+
+	Network::on(NetMessage::TEST, [](Connection *c, NetBuffer &buffer) {
+		GameStateNet gs;
+		gs.deserialize(buffer);
+		std::cout << gs.timeLeft << std::endl;
+	});
 }
 
 Game::~Game() {
@@ -102,7 +109,6 @@ void Game::update(float dt) {
 	}
 
 	if (Input::wasKeyPressed(GLFW_KEY_P)) {
-		Network::send(glm::to_string(direction));
 		std::cout << num << std::endl;
 		num++;
 	}
