@@ -41,10 +41,11 @@ Game::Game() {
 	ball->setScale(vec3(0.2f));
 	gameObjects.push_back(ball);
 
-	Network::on(NetMessage::TEST, [](Connection *c, NetBuffer &buffer) {
-		GameStateNet gs;
-		gs.deserialize(buffer);
-		std::cout << gs.timeLeft << std::endl;
+	Network::on(NetMessage::BALL_X, [ball](Connection *c, NetBuffer &buffer) {
+		auto newBallX = buffer.read<float>();
+		if (ball) {
+			ball->setPosition(vec3(newBallX, 0.0f, 0.0f));
+		}
 	});
 }
 
@@ -68,9 +69,6 @@ Game::~Game() {
 Camera *Game::getCamera() const {
 	return camera;
 }
-
-
-int num = 0;
 
 void Game::updateScreenDimensions(int width, int height) {
 	screenWidth = width;
@@ -115,16 +113,19 @@ void Game::update(float dt) {
 		shouldExit = true;
 	}
 
-	if (Input::wasKeyPressed(GLFW_KEY_P)) {
-		std::cout << num << std::endl;
-		num++;
-	}
-
+	// Arrow keys to move the ball.
+	float ballDX = 0.0f;
 	if (Input::isKeyDown(GLFW_KEY_LEFT)) {
-		ballX += dt * 5.0f;
+		ballDX += dt * 5.0f;
 	}
 	if (Input::isKeyDown(GLFW_KEY_RIGHT)) {
-		ballX -= dt * 5.0f;
+		ballDX -= dt * 5.0f;
+	}
+
+	if (ballDX != 0.0f) {
+		NetBuffer buffer(NetMessage::BALL_X);
+		buffer.write<float>(ballDX);
+		Network::send(buffer);
 	}
 
 	const auto curTime = (float)glfwGetTime();

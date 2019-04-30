@@ -23,11 +23,32 @@ int main(int argc, char **argv) {
 	gameState.score = std::make_tuple(1, 2);
 	gameState.timeLeft = 30;
 
-	Network::onClientConnected([](Connection *c) {
+	float ballX = 0.0f;
+
+	// Handle player requests to move the ball.
+	auto handleBallMove = [&](Connection *c, NetBuffer &buffer) {
+		ballX += buffer.read<float>();
+
+		// Replicate the changes so everyone sees the update.
+		NetBuffer updateBuffer(NetMessage::BALL_X);
+		updateBuffer.write<float>(ballX);
+		Network::broadcast(updateBuffer);
+	};
+
+	Network::onClientConnected([&ballX, &handleBallMove](Connection *c) {
 		std::cout << "Player " << c->getId() << " has connected." << std::endl;
 
+		// Sync up the current state of ballX.
+		NetBuffer buffer(NetMessage::BALL_X);
+		buffer.write<float>(ballX);
+		c->send(buffer);
+
+		// Allow the newly connected player to move the ball.
+		c->on(NetMessage::BALL_X, handleBallMove);
+
 		c->onDisconnected([](Connection *c) {
-			std::cout << "Player " << c->getId() << " has disconnected.";
+			std::cout << "Player " << c->getId() << " has disconnected."
+				<< std::endl;
 		});
 	});
 

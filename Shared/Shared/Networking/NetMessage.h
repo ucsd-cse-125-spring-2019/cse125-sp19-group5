@@ -1,5 +1,7 @@
 #pragma once
 
 enum NetMessage {
-	TEST
+	TEST,
+	PLAYER_INPUT,
+	BALL_X,
 };
