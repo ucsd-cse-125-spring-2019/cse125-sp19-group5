@@ -15,6 +15,32 @@ vec3 Player::getDirection() {
 	return this->direction;
 }
 
+void Player::move(vec3 movement) {
+	if (movement.x == 0.0f && movement.z == 0.0f) {
+		return;
+	}
+
+	vec3 direction = glm::normalize(vec3(getDirection().x, 0, getDirection().z));
+	vec3 directionalizedMovement = vec3(0, 0, 0);
+	vec3 up = vec3(0, 1, 0);
+
+	if (movement.z > 0) {
+		directionalizedMovement = directionalizedMovement + direction;
+	}
+	if (movement.z < 0) {
+		directionalizedMovement = directionalizedMovement - direction;
+	}
+	if (movement.x < 0) {
+		directionalizedMovement = directionalizedMovement + glm::cross(up, direction);
+	}
+	if (movement.x > 0) {
+		directionalizedMovement = directionalizedMovement - glm::cross(up, direction);
+	}
+
+	setPosition(glm::normalize(directionalizedMovement)); // * player->getSpeed();
+	// TODO: implement bhopping
+}
+
 GameObject * Player::doAction(PlayerCommands action) {
 	switch (action) {
 		case SWING: {

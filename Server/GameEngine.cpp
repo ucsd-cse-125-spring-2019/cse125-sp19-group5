@@ -38,30 +38,27 @@ void GameEngine::addGameObject(Wall *wall) {
 	gameState.walls.push_back(wall);
 }
 
-vec3 GameEngine::movementInputToVector(Player *player, int movementInput) {
-	if ((movementInput & MOVEMENT_MASK) == 0) {
-		return player->getPosition();
-	}
+vec3 GameEngine::movementInputToVector(int movementInput) {
+	vec3 movement = vec3(0.0f, 0.0f, 0.0f);
 
-	vec3 direction = glm::normalize(vec3(player->getDirection().x, 0, player->getDirection().z));
-	vec3 movement = vec3(0, 0, 0);
-	vec3 up = vec3(0, 1, 0);
+	if ((movementInput & MOVEMENT_MASK) == 0) {
+		return movement;
+	}
 	
 	if (movementInput & FORWARD) {
-		movement = movement + direction;
+		movement = movement + vec3(0, 0, 1);
 	}
 	if (movementInput & BACKWARD) {
-		movement = movement - direction;
+		movement = movement - vec3(0, 0, -1);
 	}
 	if (movementInput & LEFT) {
-		movement = movement + glm::cross(up, direction);
+		movement = movement + vec3(-1, 0, 0);
 	}
 	if (movementInput & RIGHT) {
-		movement = movement - glm::cross(up, direction);
+		movement = movement + vec3(1, 0, 0);
 	}
 
-	return glm::normalize(movement); // * player->getSpeed();
-	// TODO: implement bhopping
+	return glm::normalize(movement);
 }
 
 void GameEngine::movePlayers(vector<PlayerInputs> playerInputs) {
@@ -81,7 +78,7 @@ void GameEngine::movePlayers(vector<PlayerInputs> playerInputs) {
 	// Move all players
 	for (int i = 0; i < NUM_PLAYERS; i++) {
 		// TODO: prevent two players from moving to the same spot
-		gameState.players[i]->setPosition(movementInputToVector(gameState.players[i], aggregatePlayerMovements[i]));
+		gameState.players[i]->move(movementInputToVector(aggregatePlayerMovements[i]));
 	}
 }
 

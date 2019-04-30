@@ -19,7 +19,7 @@ public:
 	string getId();
 	string getGameObjectType() const;
 	int getIntId();
-	void move(vec3 movement);
+	virtual void move(vec3 movement);
 	void updateOnServerTick();
 	bool deleteOnServerTick();
 	void serialize(NetBuffer &buffer) const;
