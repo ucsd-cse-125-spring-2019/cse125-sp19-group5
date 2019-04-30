@@ -25,6 +25,12 @@
     <Filter Include="Source Files\Networking">
       <UniqueIdentifier>{1e0e4632-0b41-4247-b8b3-d9f8a4ae9421}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Game">
+      <UniqueIdentifier>{c6daff21-f2ec-404b-a832-cf277ac24193}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game">
+      <UniqueIdentifier>{61c84688-57cb-44ff-b8c7-f63e506c2a1f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -87,6 +93,9 @@
     <ClCompile Include="Networking\Client.cpp">
       <Filter>Source Files\Networking</Filter>
     </ClCompile>
+    <ClCompile Include="ClientGameObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -148,6 +157,9 @@
     </ClInclude>
     <ClInclude Include="Networking\Client.h">
       <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientGameObject.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

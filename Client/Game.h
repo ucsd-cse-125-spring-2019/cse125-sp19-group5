@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Renderer/Shader.h"
-#include "Renderer/Model.h"
 #include "Renderer/Camera.h"
 #include "Renderer/DirectionalLight.h"
 #include "Renderer/Texture2d.h"
@@ -9,6 +8,7 @@
 #include "Renderer/TextRenderer.h"
 #include "Renderer/ShadowMap.h"
 #include "AudioPlayer.h"
+#include "ClientGameObject.h"
 
 class Game {
 	private:
@@ -20,8 +20,6 @@ class Game {
 	TextRenderer *textRenderer = nullptr;
 	float fpsTextTimer = 0.0f;
 	Text *fpsText = nullptr;
-	Model *bear = nullptr;
-	Model *sphere = nullptr;
 	Camera *camera = nullptr;
 	DirectionalLight *sun = nullptr;
 	Texture2d *grass = nullptr;
@@ -32,6 +30,8 @@ class Game {
 	float phi = 0.0f;
 	float ballX = 0.0f;
 	float mouseSensitivity = 1.0f;
+
+	std::vector<ClientGameObject*> gameObjects;
 
 	AudioPlayer *audioPlayer = nullptr;
 

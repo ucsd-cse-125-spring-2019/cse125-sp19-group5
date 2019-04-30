@@ -9,6 +9,12 @@ GameObject::GameObject(vec3 position, vec3 velocity, string id, int radius) {
 	this->radius = radius;
 }
 
+GameObject::GameObject(const string &id) : id(id) {
+	position = vec3(0.0f);
+	velocity = vec3(0.0f);
+	radius = 1;
+}
+
 bool GameObject::collidesWith(GameObject &gameObject) {
 	if (this == &gameObject) {
 		return false;
@@ -43,6 +49,14 @@ vec3 GameObject::setVelocity(vec3 velocity) {
 
 vec3 GameObject::getVelocity() {
 	return this->velocity;
+}
+
+void GameObject::setScale(const vec3 &newScale) {
+	scale = newScale;
+}
+
+vec3 GameObject::getScale() const {
+	return scale;
 }
 
 string GameObject::getId() {

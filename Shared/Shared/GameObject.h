@@ -4,6 +4,7 @@
 
 class GameObject : public Serializable {
 public:
+	GameObject(const string &id);
 	GameObject(vec3 position, vec3 velocity, string id, int radius);
 	bool collidesWith(GameObject &gameObject);
 	virtual void onCollision(GameObject &gameObject);
@@ -12,6 +13,8 @@ public:
 	vec3 getPosition();
 	vec3 setVelocity(vec3 velocity);
 	vec3 getVelocity();
+	void setScale(const vec3 &newScale);
+	vec3 getScale() const;
 	string getId();
 	string getGameObjectType() const;
 	void move(vec3 movement);
@@ -21,6 +24,7 @@ public:
 protected:
 	vec3 position;
 	vec3 velocity;
+	vec3 scale = vec3(1.0f);
 	string id;
 	int radius;
 };

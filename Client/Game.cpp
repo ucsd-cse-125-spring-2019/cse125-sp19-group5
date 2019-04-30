@@ -15,10 +15,7 @@ Game::Game() {
 	shadowMap = new ShadowMap();
 	lightShader = new Shader("Shaders/light");
 	textShader = new Shader("Shaders/text");
-	bear = new Model("Models/ground.obj");
-	sphere = new Model("Models/sphere.obj");
-	sphere->setAnimation(0);
-	camera = new Camera(vec3(-7.5f, 2.5f, 0.0f), vec3(0.0f), 70, 1.0f);
+	camera = new Camera(vec3(-10.0f, 2.0f, 2.0f), vec3(0.0f), 70, 1.0f);
 	sun = new DirectionalLight(0);
 	sun->setDirection(vec3(0.009395, -0.200647, -0.713446));
 	sun->setAmbient(vec3(0.04f, 0.05f, 0.13f));
@@ -39,6 +36,11 @@ Game::Game() {
 	audioPlayer = new AudioPlayer();
 	audioPlayer->playLoop("Sounds/minecraft_wet_hands.wav");
 
+	ClientGameObject *ball = new ClientGameObject("ball");
+	ball->setModel("Models/sphere.obj");
+	ball->setScale(vec3(0.2f));
+	gameObjects.push_back(ball);
+
 	Network::on(NetMessage::TEST, [](Connection *c, NetBuffer &buffer) {
 		GameStateNet gs;
 		gs.deserialize(buffer);
@@ -50,10 +52,15 @@ Game::~Game() {
 	delete lightShader;
 	delete textShader;
 	delete textRenderer;
-	delete bear;
 	delete camera;
 	delete sun;
 	delete shadowMap;
+
+	for (auto gameObject : gameObjects) {
+		if (gameObject) {
+			delete gameObject;
+		}
+	}
 
 	Draw::cleanUp();
 }
@@ -120,29 +127,18 @@ void Game::update(float dt) {
 		ballX -= dt * 5.0f;
 	}
 
-	sphere->updateAnimation((float)glfwGetTime());
+	const auto curTime = (float)glfwGetTime();
+	for (auto gameObject : gameObjects) {
+		gameObject->updateAnimation(curTime);
+	}
 }
 
 void Game::drawScene(Shader &shader) const {
-	auto model = mat4(1.0f);
-	model = glm::translate(model, vec3(ballX, 0.5f, 0.0f));
-	model = glm::scale(model, vec3(0.2f));
-	auto modelInvT = glm::transpose(glm::inverse(mat3(model)));
-
-	shader.setUniform("model", model);
-	shader.setUniform("modelInvT", modelInvT);
-	shader.setUniform("mvp", camera->getMatrix() * model);
-
 	white->bind(0);
-	sphere->draw(shader);
 
-	model = mat4(1.0f);
-	modelInvT = glm::transpose(glm::inverse(model));
-	shader.setUniform("model", model);
-	shader.setUniform("modelInvT", modelInvT);
-	shader.setUniform("mvp", camera->getMatrix() * model);
-
-	bear->draw(shader);
+	for (auto gameObject : gameObjects) {
+		gameObject->draw(shader, camera);
+	}
 }
 
 void Game::drawUI() const {
