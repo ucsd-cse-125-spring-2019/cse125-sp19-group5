@@ -6,17 +6,19 @@
 #include "Input.h"
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
+#include "Networking/Client.h"
+#include "Renderer/Draw.h"
+#include <Shared/CommonStructs.h>
 
 Game::Game() {
+	Draw::init();
+
 	shadowMap = new ShadowMap();
 	lightShader = new Shader("Shaders/light");
 	textShader = new Shader("Shaders/text");
-	bear = new Model("Models/ground.obj");
-	sphere = new Model("Models/sphere.obj");
-	sphere->setAnimation(0);
-	camera = new Camera(vec3(-7.5f, 2.5f, 0.0f), vec3(0.0f), 70, 1.0f);
+	camera = new Camera(vec3(-10.0f, 2.0f, 2.0f), vec3(0.0f), 70, 1.0f);
 	sun = new DirectionalLight(0);
-	sun->setDirection(vec3(0.009395, -0.700647, -0.713446));
+	sun->setDirection(vec3(0.009395, -0.200647, -0.713446));
 	sun->setAmbient(vec3(0.04f, 0.05f, 0.13f));
 	sun->setColor(vec3(0.8f, 0.7f, 0.55f));
 
@@ -30,21 +32,49 @@ Game::Game() {
 	ConfigSettings::get().getValue("MouseSensitivity", mouseSensitivity);
 
 	textRenderer = new TextRenderer(*textShader);
-	testText = textRenderer->addText(textRenderer->DEFAULT_FONT_NAME, "test test test test", 200.0f, 200.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+	fpsText = textRenderer->addText(textRenderer->DEFAULT_FONT_NAME, "fps", 0.02f, 0.02f, 0.4f, glm::vec3(1.0f, 1.0f, 0.0f));
+
+	audioPlayer = new AudioPlayer();
+	audioPlayer->playLoop("Sounds/minecraft_wet_hands.wav");
+
+	ClientGameObject *ball = new ClientGameObject("ball");
+	ball->setModel("Models/sphere.obj");
+	ball->setScale(vec3(0.2f));
+	gameObjects.push_back(ball);
+
+	Network::on(NetMessage::BALL_X, [ball](Connection *c, NetBuffer &buffer) {
+		auto newBallX = buffer.read<float>();
+		if (ball) {
+			ball->setPosition(vec3(newBallX, 0.0f, 0.0f));
+		}
+	});
 }
 
 Game::~Game() {
 	delete lightShader;
 	delete textShader;
 	delete textRenderer;
-	delete bear;
 	delete camera;
 	delete sun;
 	delete shadowMap;
+
+	for (auto gameObject : gameObjects) {
+		if (gameObject) {
+			delete gameObject;
+		}
+	}
+
+	Draw::cleanUp();
 }
 
 Camera *Game::getCamera() const {
 	return camera;
+}
+
+void Game::updateScreenDimensions(int width, int height) {
+	screenWidth = width;
+	screenHeight = height;
+	textRenderer->updateScreenDimensions(width, height);
 }
 
 void Game::update(float dt) {
@@ -54,15 +84,12 @@ void Game::update(float dt) {
 
 	camera->setEyeAngles(vec3(-phi, theta, 0));
 
-	testTextChange += dt;
-	if (testTextChange < 1.0f)
+	fpsTextTimer += dt;
+	int fps = (int) (1.0f / dt);
+	if (fpsTextTimer > 0.3f)
 	{
-		testText->text = "hello";
-	}
-	else
-	{
-		if (testTextChange > 2.0f) testTextChange = 0.0f;
-		testText->text = "world";
+		fpsTextTimer = 0.0f;
+		fpsText->text = "fps: " + std::to_string(fps);
 	}
 
 	// bytes of input bits to be sent to server
@@ -93,33 +120,33 @@ void Game::update(float dt) {
 		shouldExit = true;
 	}
 
-	if (Input::wasKeyPressed(GLFW_KEY_P)) {
-		std::cout << glm::to_string(camera->getForward()) << std::endl;
+	// Arrow keys to move the ball.
+	float ballDX = 0.0f;
+	if (Input::isKeyDown(GLFW_KEY_LEFT)) {
+		ballDX += dt * 5.0f;
+	}
+	if (Input::isKeyDown(GLFW_KEY_RIGHT)) {
+		ballDX -= dt * 5.0f;
 	}
 
-	sphere->updateAnimation((float)glfwGetTime());
+	if (ballDX != 0.0f) {
+		NetBuffer buffer(NetMessage::BALL_X);
+		buffer.write<float>(ballDX);
+		Network::send(buffer);
+	}
+
+	const auto curTime = (float)glfwGetTime();
+	for (auto gameObject : gameObjects) {
+		gameObject->updateAnimation(curTime);
+	}
 }
 
 void Game::drawScene(Shader &shader) const {
-	auto model = mat4(1.0f);
-	model = glm::translate(model, vec3(0.0f, 0.5f, 0.0f));
-	model = glm::scale(model, vec3(0.2f));
-	auto modelInvT = glm::transpose(glm::inverse(mat3(model)));
-
-	shader.setUniform("model", model);
-	shader.setUniform("modelInvT", modelInvT);
-	shader.setUniform("mvp", camera->getMatrix() * model);
-
 	white->bind(0);
-	sphere->draw(shader);
 
-	model = mat4(1.0f);
-	modelInvT = glm::transpose(glm::inverse(model));
-	shader.setUniform("model", model);
-	shader.setUniform("modelInvT", modelInvT);
-	shader.setUniform("mvp", camera->getMatrix() * model);
-
-	bear->draw(shader);
+	for (auto gameObject : gameObjects) {
+		gameObject->draw(shader, camera);
+	}
 }
 
 void Game::drawUI() const {
@@ -136,6 +163,7 @@ void Game::draw(float dt) const {
 
 	// Normal 3D render pass
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	lightShader->use();
 	lightShader->setUniform("eyePos", camera->getPosition());
 	lightShader->setUniform("directionalLightNum", 1);
@@ -148,6 +176,7 @@ void Game::draw(float dt) const {
 	skybox->draw();
 
 	glDisable(GL_DEPTH_TEST);
+	Draw::setupContext();
 	drawUI();
 	glEnable(GL_DEPTH_TEST);
 }

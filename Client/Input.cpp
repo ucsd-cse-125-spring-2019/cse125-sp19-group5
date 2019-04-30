@@ -20,7 +20,7 @@ void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods) {
 	buttons[button] = action;
 }
 
-void windowFocusCallback(GLFWwindow *window, bool focused) {
+void windowFocusCallback(GLFWwindow *window, int focused) {
 	windowInFocus = focused;
 }
 
@@ -28,20 +28,27 @@ void Input::init(GLFWwindow *window) {
 	curWindow = window;
 	glfwSetKeyCallback(window, keyCallback);
 	glfwSetMouseButtonCallback(window, mouseButtonCallback);
+	glfwSetWindowFocusCallback(window, windowFocusCallback);
 }
 
 void Input::setMouseVisible(bool isVisible) {
-	auto newMode = isVisible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED;
+	auto newMode = isVisible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_HIDDEN;
 	glfwSetInputMode(curWindow, GLFW_CURSOR, newMode);
 }
 
+#include <iostream>
 void Input::poll() {
 	glfwPollEvents();
+
+	if (!windowInFocus) {
+		mouseDeltaX = mouseDeltaY = 0.0f;
+		return;
+	}
 
 	double mouseX, mouseY;
 	glfwGetCursorPos(curWindow, &mouseX, &mouseY);
 
-	if (mouseX == -1.0 || !windowInFocus) {
+	if (mouseX == -1.0) {
 		lastMouseX = mouseX;
 		lastMouseY = mouseY;
 	}

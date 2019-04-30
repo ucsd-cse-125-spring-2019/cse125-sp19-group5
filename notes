@@ -1,0 +1,6 @@
+//HERE IS HOW TO COMPILE THE SERVER CODE (MUST BE IN SERVER FOLDER)
+g++ -std=c++11 -ggdb -Wall -Wextra -pedantic -Werror -Wnon-virtual-dtor -I../dependencies/include -o network network-test-server.cpp -L../dependencies/lib -pthread -lrpc && clear && ./network
+
+//HERE IS HOW TO COMPILE THE CLIENT CODE (MUST BE IN CLIENT FOLDER)
+g++ -std=c++11 -ggdb -Wall -Wextra -pedantic -Werror -Wnon-virtual-dtor -I../dependencies/include -o client network-test-client.cpp -L../dependencies/lib -pthread -lrp
+c && clear && ./client

@@ -31,6 +31,7 @@ class Shader {
 	// Various ways to set uniforms.
 	void setUniform(const char *name, GLint v0);
 	void setUniform(const char *name, GLfloat v0);
+	void setUniform(const char *name, const vec2 &v);
 	void setUniform(const char *name, const vec3 &v);
 	void setUniform(const char *name, const vec4 &v);
 	void setUniform(const char *name, const mat3 &m);

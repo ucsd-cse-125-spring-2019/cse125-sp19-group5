@@ -13,6 +13,8 @@ using std::cout;
 using std::vector;
 using std::tuple;
 using std::string;
+using std::cout;
+using std::endl;
 
 using glm::vec2;
 using glm::vec3;

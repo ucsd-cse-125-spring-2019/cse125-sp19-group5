@@ -49,11 +49,19 @@ vec3 GameObject::getVelocity() {
 	return this->velocity;
 }
 
+void GameObject::setScale(const vec3 &newScale) {
+	scale = newScale;
+}
+
+vec3 GameObject::getScale() const {
+	return scale;
+}
+
 string GameObject::getId() {
 	return this->id;
 }
 
-string GameObject::getGameObjectType() {
+string GameObject::getGameObjectType() const {
 	return id.substr(0, id.find("_"));
 }
 
@@ -71,4 +79,18 @@ bool GameObject::deleteOnServerTick() {
 
 void GameObject::updateOnServerTick() {
 	return;
+}
+
+void GameObject::serialize(NetBuffer &buffer) const {
+	buffer.write<vec3>(position);
+	buffer.write<vec3>(velocity);
+	buffer.write<string>(id);
+	buffer.write<int>(radius);
+}
+
+void GameObject::deserialize(NetBuffer &buffer) {
+	position = buffer.read<vec3>();
+	velocity = buffer.read<vec3>();
+	id = buffer.read<string>();
+	radius = buffer.read<int>();
 }

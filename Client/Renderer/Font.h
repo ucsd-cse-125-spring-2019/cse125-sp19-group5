@@ -17,10 +17,10 @@ struct Character {
 class Font {
 public:
 	Font();
-	Font(const std::string &filepath, Shader &shader);
+	Font(const std::string &filepath);
 	~Font();
 
-	void RenderText(Shader &shader, const std::string &text, GLfloat x, GLfloat y, GLfloat scale, const glm::vec3 &color);
+	void renderText(Shader &shader, const int screenWidth, const int screenHeight, const std::string &text, GLfloat x, GLfloat y, GLfloat scale, const glm::vec3 &color);
 
 private:
 	std::unordered_map<GLchar, Character> characters;

@@ -100,6 +100,10 @@ void Shader::setUniform(const char *name, GLfloat v0) {
 	glUniform1f(getLocation(name), v0);
 }
 
+void Shader::setUniform(const char *name, const vec2 &v) {
+	glUniform2fv(getLocation(name), 1, glm::value_ptr(v));
+}
+
 void Shader::setUniform(const char *name, const vec3 &v) {
 	glUniform3fv(getLocation(name), 1, glm::value_ptr(v));
 }

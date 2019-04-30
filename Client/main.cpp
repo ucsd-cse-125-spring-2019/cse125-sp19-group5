@@ -2,15 +2,21 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <Shared/ConfigSettings.h>
+#include "Networking/Client.h"
 #include "Game.h"
 #include "Renderer/Camera.h"
 #include "Input.h"
+
+using std::string;
+using std::cout;
+using std::endl;
 
 constexpr auto TITLE = "Insert Title Here";
 
 auto SCREEN_WIDTH = 800;
 auto SCREEN_HEIGHT = 600;
 auto SCREEN_RESHAPED = false;
+
 
 // Update the view port when the window has been resized.
 static void onResize(GLFWwindow *window, int width, int height) {
@@ -71,18 +77,21 @@ int main(int argc, char **argv) {
 
 	// Center the window
 	auto videoMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-	glfwSetWindowPos(
-		window,
-		(videoMode->width - SCREEN_WIDTH) / 2,
-		(videoMode->height - SCREEN_HEIGHT) / 2
-	);
+	auto middleX = (videoMode->width - SCREEN_WIDTH) / 2;
+	auto middleY = (videoMode->height - SCREEN_HEIGHT) / 2;
+	glfwSetCursorPos(window, middleX, middleY);
+	glfwSetWindowPos(window, middleX, middleY);
 
 	Input::init(window);
+	Network::init("127.0.0.1", 1234);
 
 	Game game;
 	game.getCamera()->setAspect((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT);
+	game.updateScreenDimensions(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	auto lastTime = (float)glfwGetTime();
+
+	cout << "creating client" << endl;
 
 	// Main loop
 	while (!glfwWindowShouldClose(window)) {
@@ -90,6 +99,7 @@ int main(int argc, char **argv) {
 		lastTime = (float)glfwGetTime();
 
 		Input::poll();
+		Network::poll();
 
 		if (game.shouldExit) {
 			glfwSetWindowShouldClose(window, true);
@@ -108,10 +118,12 @@ int main(int argc, char **argv) {
 			game.getCamera()->setAspect(
 				(float)SCREEN_WIDTH / (float)SCREEN_HEIGHT
 			);
+			game.updateScreenDimensions(SCREEN_WIDTH, SCREEN_HEIGHT);
 			SCREEN_RESHAPED = false;
 		}
 	}
 
+	Network::cleanUp();
 	glfwTerminate();
 	return 0;
 }
