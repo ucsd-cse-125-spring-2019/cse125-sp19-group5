@@ -24,15 +24,19 @@ bool SoundEngine::isInitialized() {
 	return didInitialize;
 }
 
-Sound SoundEngine::loadFlatSound(const std::string &filepath) {
+Sound *SoundEngine::loadFlatSound(const std::string &filepath) {
+	if (!isInitialized()) {
+		return new Sound();
+	}
 	irrklang::ISound * sound = engine->play2D(filepath.c_str(), false, true, true, irrklang::ESM_AUTO_DETECT, true);
-	Sound soundObj = Sound(filepath, *sound);
-	return soundObj;
+	return new Sound(filepath, *sound);
 }
 
-Sound SoundEngine::loadSpatialSound(const std::string &filepath, const vec3 pos) {
+Sound *SoundEngine::loadSpatialSound(const std::string &filepath, const vec3 pos) {
+	if (!isInitialized()) {
+		return new Sound();
+	}
 	irrklang::vec3df soundPos = irrklang::vec3df(pos.x, pos.y, pos.z);
 	irrklang::ISound * sound = engine->play3D(filepath.c_str(), soundPos, false, true, true, irrklang::ESM_AUTO_DETECT, true);
-	Sound soundObj = Sound(filepath, *sound);
-	return soundObj;
+	return new Sound(filepath, *sound);
 }

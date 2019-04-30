@@ -20,8 +20,8 @@ GameObject * Player::doAction(PlayerCommands action) {
 		case SWING: {
 			// std::cout << "Swing with charge " << actionCharge << std::endl;
 			// assumes direction is unit vector
-			vec3 paddlePosition = getPosition() + getDirection()*vec3(2 * radius);
-			vec3 paddleVelocity = getDirection() * vec3(actionCharge);
+			vec3 paddlePosition = getPosition() + getDirection()*vec3(2.0f * radius);
+			vec3 paddleVelocity = getDirection() * vec3((float)actionCharge);
 			string paddleId = "paddle_" + std::to_string(getIntId());
 			int paddleLifespan = 10;
 			return new Paddle(paddlePosition, paddleVelocity, paddleId, 1, paddleLifespan);

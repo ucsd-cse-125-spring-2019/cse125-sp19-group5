@@ -34,7 +34,7 @@ class Game {
 	std::vector<ClientGameObject*> gameObjects;
 
 	SoundEngine *soundEngine = nullptr;
-	Sound soundtrack;
+	Sound *soundtrack = nullptr;
 
 public:
 	bool shouldExit = false;

@@ -36,7 +36,7 @@ Game::Game() {
 
 	soundEngine = new SoundEngine();
 	soundtrack = soundEngine->loadFlatSound("Sounds/minecraft_wet_hands.wav");
-	soundtrack.play(true);
+	soundtrack->play(true);
 
 	ClientGameObject *ball = new ClientGameObject("ball");
 	ball->setModel("Models/sphere.obj");
@@ -58,6 +58,7 @@ Game::~Game() {
 	delete camera;
 	delete sun;
 	delete shadowMap;
+	delete soundtrack;
 
 	for (auto gameObject : gameObjects) {
 		if (gameObject) {
