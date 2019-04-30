@@ -7,7 +7,7 @@
 #include "Renderer/Skybox.h"
 #include "Renderer/TextRenderer.h"
 #include "Renderer/ShadowMap.h"
-#include "AudioPlayer.h"
+#include "Sound/SoundEngine.h"
 #include "ClientGameObject.h"
 
 class Game {
@@ -33,7 +33,8 @@ class Game {
 
 	std::vector<ClientGameObject*> gameObjects;
 
-	AudioPlayer *audioPlayer = nullptr;
+	SoundEngine *soundEngine = nullptr;
+	Sound soundtrack;
 
 public:
 	bool shouldExit = false;

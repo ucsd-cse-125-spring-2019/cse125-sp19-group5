@@ -33,8 +33,9 @@ Game::Game() {
 	textRenderer = new TextRenderer(*textShader);
 	fpsText = textRenderer->addText(textRenderer->DEFAULT_FONT_NAME, "fps", 0.02f, 0.02f, 0.4f, glm::vec3(1.0f, 1.0f, 0.0f));
 
-	audioPlayer = new AudioPlayer();
-	audioPlayer->playLoop("Sounds/minecraft_wet_hands.wav");
+	soundEngine = new SoundEngine();
+	soundtrack = soundEngine->loadFlatSound("Sounds/minecraft_wet_hands.wav");
+	soundtrack.play(true);
 
 	ClientGameObject *ball = new ClientGameObject("ball");
 	ball->setModel("Models/sphere.obj");
