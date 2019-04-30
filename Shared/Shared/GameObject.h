@@ -4,11 +4,12 @@
 
 class GameObject : public Serializable {
 public:
+	GameObject();
 	GameObject(const string &id);
 	GameObject(vec3 position, vec3 velocity, string id, int radius);
-	bool collidesWith(GameObject &gameObject);
-	virtual void onCollision(GameObject &gameObject);
-	double distanceFrom(GameObject &gameObject);
+	bool collidesWith(GameObject * gameObject);
+	virtual void onCollision(GameObject * gameObject);
+	double distanceFrom(GameObject * gameObject);
 	vec3 setPosition(vec3 position);
 	vec3 getPosition();
 	vec3 setVelocity(vec3 velocity);
@@ -17,7 +18,10 @@ public:
 	vec3 getScale() const;
 	string getId();
 	string getGameObjectType() const;
+	int getIntId();
 	void move(vec3 movement);
+	void updateOnServerTick();
+	bool deleteOnServerTick();
 	void serialize(NetBuffer &buffer) const;
 	void deserialize(NetBuffer &buffer);
 

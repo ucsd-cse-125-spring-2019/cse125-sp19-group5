@@ -1,94 +1,31 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Header Files\Networking">
-      <UniqueIdentifier>{f75799b0-4437-4cec-a0da-ce9136e47c48}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Networking">
-      <UniqueIdentifier>{8899c69c-4522-42cb-a3c2-c0b47c997f71}</UniqueIdentifier>
-    </Filter>
+    <ClCompile Include="Shared\Ball.cpp" />
+    <ClCompile Include="Shared\ConfigSettings.cpp" />
+    <ClCompile Include="Shared\GameObject.cpp" />
+    <ClCompile Include="Shared\Paddle.cpp" />
+    <ClCompile Include="Shared\Networking\Connection.cpp" />
+    <ClCompile Include="Shared\Networking\Network.cpp" />
+    <ClCompile Include="Shared\Player.cpp" />
+    <ClCompile Include="Shared\Wall.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Shared\Ball.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shared\Common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shared\CommonStructs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shared\GameObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shared\GameObjectState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shared\Player.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shared\Wall.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shared\GameMessage.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BoostSerializeStruct.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shared\Networking\Serializable.h">
-      <Filter>Header Files\Networking</Filter>
-    </ClInclude>
-    <ClInclude Include="Shared\Networking\Network.h">
-      <Filter>Header Files\Networking</Filter>
-    </ClInclude>
-    <ClInclude Include="Shared\Networking\NetBuffer.h">
-      <Filter>Header Files\Networking</Filter>
-    </ClInclude>
-    <ClInclude Include="Shared\Networking\NetMessage.h">
-      <Filter>Header Files\Networking</Filter>
-    </ClInclude>
-    <ClInclude Include="Shared\Networking\Connection.h">
-      <Filter>Header Files\Networking</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Shared\ConfigSettings.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Shared\GameObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Shared\Player.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Shared\Ball.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Shared\Wall.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Shared\Networking\Network.cpp">
-      <Filter>Source Files\Networking</Filter>
-    </ClCompile>
-    <ClCompile Include="Shared\Networking\Connection.cpp">
-      <Filter>Source Files\Networking</Filter>
-    </ClCompile>
+    <ClInclude Include="BoostSerializeStruct.h" />
+    <ClInclude Include="Shared\Ball.h" />
+    <ClInclude Include="Shared\Common.h" />
+    <ClInclude Include="Shared\CommonStructs.h" />
+    <ClInclude Include="Shared\GameObject.h" />
+    <ClInclude Include="Shared\Paddle.h" />
+    <ClInclude Include="Shared\GameMessage.hpp" />
+    <ClInclude Include="Shared\Networking\Connection.h" />
+    <ClInclude Include="Shared\Networking\NetBuffer.h" />
+    <ClInclude Include="Shared\Networking\NetMessage.h" />
+    <ClInclude Include="Shared\Networking\Network.h" />
+    <ClInclude Include="Shared\Networking\Serializable.h" />
+    <ClInclude Include="Shared\Player.h" />
+    <ClInclude Include="Shared\Wall.h" />
+    <ClInclude Include="Shared\GameState.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

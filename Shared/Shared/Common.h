@@ -9,6 +9,7 @@
 #include <iostream>
 #include <exception>
 
+using std::cout;
 using std::vector;
 using std::tuple;
 using std::string;

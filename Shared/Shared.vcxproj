@@ -120,7 +120,8 @@
     <ClInclude Include="Shared\Common.h" />
     <ClInclude Include="Shared\CommonStructs.h" />
     <ClInclude Include="Shared\GameObject.h" />
-    <ClInclude Include="Shared\GameObjectState.h" />
+    <ClInclude Include="Shared\GameState.h" />
+    <ClInclude Include="Shared\Paddle.h" />
     <ClInclude Include="Shared\GameMessage.hpp" />
     <ClInclude Include="Shared\Networking\Connection.h" />
     <ClInclude Include="Shared\Networking\NetBuffer.h" />
@@ -134,6 +135,7 @@
     <ClCompile Include="Shared\Ball.cpp" />
     <ClCompile Include="Shared\ConfigSettings.cpp" />
     <ClCompile Include="Shared\GameObject.cpp" />
+    <ClCompile Include="Shared\Paddle.cpp" />
     <ClCompile Include="Shared\Networking\Connection.cpp" />
     <ClCompile Include="Shared\Networking\Network.cpp" />
     <ClCompile Include="Shared\Player.cpp" />

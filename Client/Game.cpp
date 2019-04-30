@@ -1,5 +1,6 @@
 #include "Game.h"
 #include <Shared/Common.h>
+#include <Shared/CommonStructs.h>
 #include <Shared/ConfigSettings.h>
 #include <glm/gtx/transform.hpp>
 #include "Input.h"
@@ -92,18 +93,24 @@ void Game::update(float dt) {
 		fpsText->text = "fps: " + std::to_string(fps);
 	}
 
+	// bytes of input bits to be sent to server
+	int inputs = 0;
 	vec3 direction(0.0f);
 	if (Input::isKeyDown(GLFW_KEY_W)) {
 		direction += camera->getForward();
+		inputs += FORWARD;
 	}
 	if (Input::isKeyDown(GLFW_KEY_S)) {
 		direction -= camera->getForward();
+		inputs += BACKWARD;
 	}
 	if (Input::isKeyDown(GLFW_KEY_A)) {
 		direction -= camera->getRight();
+		inputs += LEFT;
 	}
 	if (Input::isKeyDown(GLFW_KEY_D)) {
 		direction += camera->getRight();
+		inputs += RIGHT;
 	}
 	if (glm::length(direction) != 0) {
 		direction = glm::normalize(direction) * dt * 5.0f;
