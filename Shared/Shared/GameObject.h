@@ -18,8 +18,10 @@ public:
 	vec3 getScale() const;
 	string getId();
 	string getGameObjectType() const;
-  int getIntId();
+	int getIntId();
 	void move(vec3 movement);
+	void updateOnServerTick();
+	bool deleteOnServerTick();
 	void serialize(NetBuffer &buffer) const;
 	void deserialize(NetBuffer &buffer);
 

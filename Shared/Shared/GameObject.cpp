@@ -6,6 +6,11 @@ GameObject::GameObject() {
 	GameObject(vec3(0, 0, 0), vec3(0, 0, 0), "default", 1);
 }
 
+GameObject::GameObject(const string &id) {
+	GameObject();
+	this->id = id;
+}
+
 GameObject::GameObject(vec3 position, vec3 velocity, string id, int radius) {
 	this->position = position;
 	this->velocity = velocity;
