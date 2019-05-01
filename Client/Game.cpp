@@ -9,8 +9,13 @@
 #include "Networking/Client.h"
 #include "Renderer/Draw.h"
 #include <Shared/CommonStructs.h>
+#include "Renderer/Material.h"
+
+Material *testMat = nullptr;
 
 Game::Game() {
+	testMat = new Material("test");
+	testMat->setDiffuseTexture(new Texture2d("Textures/grass.png"));
 	Draw::init();
 
 	shadowMap = new ShadowMap();
@@ -143,10 +148,11 @@ void Game::update(float dt) {
 	}
 }
 
-void Game::drawScene(Shader &shader) const {
-	white->bind(0);
-
+void Game::drawScene(Shader &shader, DrawPass pass) const {
 	for (auto gameObject : gameObjects) {
+		if (pass == DrawPass::LIGHTING) {
+			testMat->bind(shader);
+		}
 		gameObject->draw(shader, camera);
 	}
 }
@@ -160,7 +166,7 @@ void Game::draw(float dt) const {
 	// Shadow mapping render pass
 	shadowMap->prePass();
 	shadowMap->setupLight(shadowMap->getShader(), *sun);
-	drawScene(shadowMap->getShader());
+	drawScene(shadowMap->getShader(), DrawPass::SHADOW);
 	shadowMap->postPass();
 
 	// Normal 3D render pass
@@ -174,7 +180,7 @@ void Game::draw(float dt) const {
 	shadowMap->bindTexture(*lightShader);
 
 	sun->bind(*lightShader);
-	drawScene(*lightShader);
+	drawScene(*lightShader, DrawPass::LIGHTING);
 	skybox->draw();
 
 	glDisable(GL_DEPTH_TEST);
