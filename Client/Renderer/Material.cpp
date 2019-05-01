@@ -11,7 +11,6 @@ Material::Material(const std::string &path) {
 	static const auto BLACK = new Texture2d("Textures/black.png");
 
 	diffuseTex = WHITE;
-	normalTex = BLACK;
 	specularTex = WHITE;
 	emissionTex = BLACK;
 }
@@ -20,9 +19,15 @@ void Material::bind(Shader &shader) const {
 	SET_MATERIAL_PARAM(shininess);
 
 	SET_MATERIAL_TEX_PARAM(0, diffuseTex);
-	SET_MATERIAL_TEX_PARAM(1, normalTex);
+
+	shader.setUniform("material.hasNormalMap", normalTex != nullptr);
+	if (normalTex) {
+		SET_MATERIAL_TEX_PARAM(1, normalTex);
+	}
+
 	SET_MATERIAL_TEX_PARAM(2, specularTex);
 	SET_MATERIAL_TEX_PARAM(3, emissionTex);
+
 }
 
 void Material::setShininess(float newShiniess) {

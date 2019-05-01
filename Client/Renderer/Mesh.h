@@ -18,6 +18,8 @@ typedef unsigned int ElementIndex;
 struct Vertex {
 	vec3 pos;
 	vec3 normal;
+	vec3 tangent = vec3(0.0f);
+	vec3 bitangent = vec3(0.0f);
 	vec2 texCoords;
 	GLuint bones[BONES_PER_VERTEX] = { 0 };
 	GLfloat weights[BONES_PER_VERTEX] = { 0.0f };

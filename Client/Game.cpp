@@ -15,7 +15,8 @@ Material *testMat = nullptr;
 
 Game::Game() {
 	testMat = new Material("test");
-	testMat->setDiffuseTexture(new Texture2d("Textures/grass.png"));
+	testMat->setDiffuseTexture(new Texture2d("Textures/brick.jpg"));
+	testMat->setNormalTexture(new Texture2d("Textures/brick_normal.jpg"));
 	Draw::init();
 
 	shadowMap = new ShadowMap();

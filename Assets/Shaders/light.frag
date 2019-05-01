@@ -21,6 +21,7 @@ struct DirectionalLight {
 };
 
 struct Material {
+	int hasNormalMap;
 	float shininess;
 	sampler2D diffuseTex;
 	sampler2D normalTex;
@@ -37,6 +38,7 @@ uniform int directionalLightNum;
 
 uniform vec3 eyePos;
 
+in mat3 tbn;
 in vec4 lightSpacePos;
 in vec3 fragPos;
 in vec3 fragNormal;
@@ -118,6 +120,11 @@ void main() {
 	vec3 normalMap = texture2D(material.normalTex, fragTexCoords).rgb;
 	vec3 specular = texture2D(material.specularTex, fragTexCoords).rgb;
 	vec3 emission = texture2D(material.emissionTex, fragTexCoords).rgb;
+
+	if (material.hasNormalMap > 0) {
+		normal = texture2D(material.normalTex, fragTexCoords).rgb;
+		normal = normalize(tbn * normalize(normal * 2.0 - 1.0));
+	}
 
 	for (int i = 0; i < pointLightNum; i++) {
 		finalColor += intensity * getPointLightIntensity(
