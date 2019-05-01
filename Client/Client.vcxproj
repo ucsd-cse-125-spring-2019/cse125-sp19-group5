@@ -132,6 +132,7 @@
     <ClCompile Include="Renderer\Font.cpp" />
     <ClCompile Include="Renderer\Light.cpp" />
     <ClCompile Include="Renderer\Mesh.cpp" />
+    <ClCompile Include="Renderer\MeshData.cpp" />
     <ClCompile Include="Renderer\Model.cpp" />
     <ClCompile Include="Renderer\PointLight.cpp" />
     <ClCompile Include="Renderer\Shader.cpp" />
@@ -158,6 +159,7 @@
     <ClInclude Include="Renderer\Font.h" />
     <ClInclude Include="Renderer\Light.h" />
     <ClInclude Include="Renderer\Mesh.h" />
+    <ClInclude Include="Renderer\MeshData.h" />
     <ClInclude Include="Renderer\Model.h" />
     <ClInclude Include="Renderer\PointLight.h" />
     <ClInclude Include="Renderer\Shader.h" />
