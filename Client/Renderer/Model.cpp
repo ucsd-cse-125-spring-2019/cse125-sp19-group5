@@ -48,7 +48,10 @@ void Model::loadNode(aiNode *node, const aiScene *scene) {
 	// Convert the current node to meshes.
 	for (unsigned int i = 0; i < node->mNumMeshes; i++) {
 		auto mesh = scene->mMeshes[node->mMeshes[i]];
-		meshes.push_back(new Mesh(mesh, scene));
+
+		// TODO (bhang): make this cachable.
+		auto meshData = new MeshData(mesh, scene);
+		meshes.push_back(new Mesh(meshData));
 	}
 
 	// Then, recursively load the node's children.
