@@ -16,10 +16,13 @@ Material::Material(const std::string &path) {
 }
 
 void Material::bind(Shader &shader) const {
+	// Set shininess float.
 	SET_MATERIAL_PARAM(shininess);
 
+	// Then, bind the diffuse, specular, emission, and normal maps.
 	SET_MATERIAL_TEX_PARAM(0, diffuseTex);
 
+	// If no normal map is set, fall back to the mesh's original normals.
 	shader.setUniform("material.hasNormalMap", normalTex != nullptr);
 	if (normalTex) {
 		SET_MATERIAL_TEX_PARAM(1, normalTex);
@@ -27,7 +30,6 @@ void Material::bind(Shader &shader) const {
 
 	SET_MATERIAL_TEX_PARAM(2, specularTex);
 	SET_MATERIAL_TEX_PARAM(3, emissionTex);
-
 }
 
 void Material::setShininess(float newShiniess) {
