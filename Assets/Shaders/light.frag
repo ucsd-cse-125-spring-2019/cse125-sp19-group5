@@ -78,11 +78,12 @@ vec3 getDirectionalLightIntensity(
 	vec3 diffuse, vec3 specular, vec3 emission, float shininess,
 	float intensity
 ) {
-	vec3 ambient = light.ambient * diffuse;
 	vec3 dir = light.direction;
+	float diff = max(dot(normal, dir), 0.0);
+	vec3 ambient = light.ambient * diffuse;
 	vec3 halfAng = normalize(dir + eyeDir);
-	vec3 lambert = diffuse * max(dot(normal, dir), 0.0f);
-	vec3 phong = specular * pow(
+	vec3 lambert = diffuse * diff;
+	vec3 phong = diff * specular * pow(
 		max(dot(normal, halfAng), 0.0f),
 		shininess
 	);

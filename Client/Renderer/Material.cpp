@@ -1,4 +1,7 @@
 #include "Material.h"
+#include <fstream>
+#include <iostream>
+#include <Shared/Util/json11.hpp>
 
 #define SET_MATERIAL_PARAM(param) shader.setUniform("material." #param, ##param)
 #define SET_MATERIAL_TEX_PARAM(position, tex) if (##tex) { \
@@ -6,13 +9,57 @@
 	shader.setUniform("material." #tex, position); \
 }
 
-Material::Material(const std::string &path) {
+Material::Material() {
 	static const auto WHITE = new Texture2d("Textures/white.png");
 	static const auto BLACK = new Texture2d("Textures/black.png");
 
 	diffuseTex = WHITE;
 	specularTex = WHITE;
 	emissionTex = BLACK;
+}
+
+void loadTextureFromConfig(
+	const std::string &key,
+	json11::Json &info,
+	Texture2d *&tex
+) {
+	auto value = info[key].string_value();
+	if (value != "") {
+		// TODO (bhang): use some resource cache for textures.
+		tex = new Texture2d(info[key].string_value());
+	}
+}
+
+Material::Material(const std::string &path): Material() {
+	std::ifstream f(path);
+
+	if (!f.is_open()) {
+		std::cerr << "Failed to open material (" << path << ")" << std::endl;
+		return;
+	}
+
+	std::string source(
+		(std::istreambuf_iterator<char>(f)),
+		std::istreambuf_iterator<char>()
+	);
+
+	std::string parseErr = "";
+	auto info = json11::Json::parse(source, parseErr);
+
+	if (parseErr != "") {
+		std::cerr << "Failed to parse material info (" << path << ")"
+			<< std::endl << parseErr << std::endl;
+		return;
+	}
+
+	loadTextureFromConfig("diffuse", info, diffuseTex);
+	loadTextureFromConfig("normal", info, normalTex);
+	loadTextureFromConfig("specular", info, specularTex);
+	loadTextureFromConfig("emission", info, emissionTex);
+
+	if (info["shininess"].is_number()) {
+		shininess = (float)info["shininess"].number_value();
+	}
 }
 
 void Material::bind(Shader &shader) const {
