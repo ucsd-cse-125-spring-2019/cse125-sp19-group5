@@ -5,7 +5,10 @@ layout (location = 1) in vec3 normal;
 layout (location = 2) in vec2 texCoords;
 layout (location = 3) in ivec4 bones;
 layout (location = 4) in vec4 weights;
+layout (location = 5) in vec3 tangent;
+layout (location = 6) in vec3 bitangent;
 
+out mat3 tbn;
 out vec4 lightSpacePos;
 out vec3 fragPos;
 out vec3 fragNormal;
@@ -38,4 +41,9 @@ void main() {
 	fragNormal = modelInvT * finalNorm;
 	fragTexCoords = texCoords;
 	gl_Position = mvp * finalPos;
+
+	vec3 t = normalize(vec3(model * vec4(tangent, 0.0)));
+	vec3 b = normalize(vec3(model * vec4(bitangent, 0.0)));
+	vec3 n = normalize(vec3(model * vec4(finalNorm, 0.0)));
+	tbn = mat3(t, b, n);
 }
