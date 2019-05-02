@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
 	vector<PlayerInputs> playerInputs;
 	PlayerInputs pi;
 	pi.id = 0;
-	pi.inputs = SWING;
+	pi.inputs = SWING + RIGHT + LEFT;
 	playerInputs.push_back(pi);
 
 	vector<PlayerInputs> noInputs;
