@@ -9,6 +9,7 @@
 #include "Renderer/ShadowMap.h"
 #include "Sound/SoundEngine.h"
 #include "ClientGameObject.h"
+#include <Shared/GameState.h>
 
 class Game {
 	private:

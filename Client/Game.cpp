@@ -48,11 +48,12 @@ Game::Game() {
 	ball->setScale(vec3(0.2f));
 	gameObjects.push_back(ball);
 
-	Network::on(NetMessage::BALL_X, [ball](Connection *c, NetBuffer &buffer) {
-		auto newBallX = buffer.read<float>();
-		if (ball) {
-			ball->setPosition(vec3(newBallX, 0.0f, 0.0f));
-		}
+	GameStateNet *gsn = new GameStateNet();
+
+	Network::on(NetMessage::GAME_STATE_UPDATE, [gsn](Connection *c, NetBuffer &buffer) {
+		gsn->deserialize(buffer);
+		/*TODO: graphics update based on the game state*/
+
 	});
 }
 
