@@ -34,8 +34,6 @@ void ModelData::loadNode(aiNode *node, const aiScene *scene) {
 	// Convert the current node to meshes.
 	for (unsigned int i = 0; i < node->mNumMeshes; i++) {
 		auto mesh = scene->mMeshes[node->mMeshes[i]];
-
-		// TODO (bhang): make this cachable.
 		meshes.push_back(new MeshData(mesh, scene));
 	}
 

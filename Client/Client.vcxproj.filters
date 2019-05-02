@@ -111,6 +111,9 @@
     <ClCompile Include="Renderer\ModelData.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="Assets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Renderer\Material.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
@@ -193,6 +196,9 @@
     </ClInclude>
     <ClInclude Include="Renderer\ModelData.h">
       <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Assets.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Renderer\Material.h">
       <Filter>Header Files\Renderer</Filter>
