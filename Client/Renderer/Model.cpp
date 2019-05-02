@@ -3,10 +3,10 @@
 #include <iostream>
 #include <glm/gtc/type_ptr.hpp>
 #include <GLFW/glfw3.h>
+#include "../Assets.h"
 
 Model::Model(const std::string &path) {
-	// TODO (bhang): use some resource cache for this model.
-	auto modelData = new ModelData(path);
+	auto modelData = Assets::getModelData(path);
 	for (auto meshData : modelData->getMeshData()) {
 		meshes.push_back(new Mesh(meshData));
 	}
