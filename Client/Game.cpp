@@ -47,7 +47,7 @@ Game::Game() {
 	spatialTest2 = soundEngine->loadSpatialSound("Sounds/minecraft_chicken_ambient.ogg", 1.0f);
 	spatialTest2->play(true);
 
-	ClientGameObject *ball = new ClientGameObject("ball");
+	ClientGameObject *ball = new ClientGameObject(0);
 	ball->setModel("Models/sphere.obj");
 	ball->setScale(vec3(0.2f));
 	gameObjects.push_back(ball);
