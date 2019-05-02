@@ -49,21 +49,46 @@ int main(int argc, char **argv) {
 		});
 	});
 
-	while (true) {
-		Network::poll();
+	//This is the total amount of time allowed for the server to update the game state
+	auto maxAllowabeServerTime = std::chrono::milliseconds(1000 / TICKS_PER_SECOND);
 
+	while (true) 
+	{
+
+		//time keeping stuff to know how long the server has been running for
+		auto startTime = std::chrono::high_resolution_clock::now();
+		Network::poll();//checking the network for client update messages
+		auto pollDone = std::chrono::high_resolution_clock::now();
+		auto networkPollDuration = std::chrono::duration_cast<std::chrono::milliseconds>(pollDone - startTime);
+
+		//updating the game state with each client message
 		vector<PlayerInputs> playerInputs;
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 4; i++) 
+		{
+			/*TODO: use the player input (Oliver)*/
 			gameEngine.updateGameState(playerInputs);
 		}
 
-		gameState.timeLeft -= 1;
+		//timekeeping stuff to check the duration so far
+		auto updateDone = std::chrono::high_resolution_clock::now();
+		auto updateDuration = std::chrono::duration_cast<std::chrono::milliseconds>(updateDone - pollDone);
+		auto totalDuration = std::chrono::duration_cast<std::chrono::milliseconds>(updateDone - startTime);
 
-		Network::broadcast(NetMessage::TEST, gameState);
+		//check if the server is running on schedule
+		if (totalDuration < maxAllowabeServerTime) 
+		{
+			//wait for the update time to broadcast the game state update
+			std::this_thread::sleep_for(maxAllowabeServerTime - totalDuration);
+		}
+		else 
+		{
+			//server has taken too long to process the update!
+			std::cerr << "SERVER TOOK TOO LONG TO UPDATE!" << endl;
+		}
 
-		std::this_thread::sleep_for(
-			std::chrono::milliseconds(1000 / TICKS_PER_SECOND)
-		);
+		//broadcast the updated game state
+		GameState updatedStated = gameEngine.getGameState();
+		Network::broadcast(NetMessage::GAME_STATE_UPDATE, gameState);
 	}
 
 	return 0;
