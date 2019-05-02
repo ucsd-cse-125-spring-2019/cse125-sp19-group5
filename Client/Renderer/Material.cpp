@@ -56,6 +56,10 @@ Material::Material(const std::string &path): Material() {
 	loadTextureFromConfig("normal", info, normalTex);
 	loadTextureFromConfig("specular", info, specularTex);
 	loadTextureFromConfig("emission", info, emissionTex);
+
+	if (info["shininess"].is_number()) {
+		shininess = (float)info["shininess"].number_value();
+	}
 }
 
 void Material::bind(Shader &shader) const {
