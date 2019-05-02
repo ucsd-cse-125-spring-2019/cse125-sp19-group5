@@ -87,8 +87,8 @@ int main(int argc, char **argv) {
 		}
 
 		//broadcast the updated game state
-		GameState updatedStated = gameEngine.getGameState();
-		Network::broadcast(NetMessage::GAME_STATE_UPDATE, gameState);
+		GameStateNet updatedState = gameEngine.getNetworkGameState();
+		Network::broadcast(NetMessage::GAME_STATE_UPDATE, updatedState);
 	}
 
 	return 0;
