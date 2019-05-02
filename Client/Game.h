@@ -40,6 +40,8 @@ class Game {
 
 	SoundEngine *soundEngine = nullptr;
 	Sound *soundtrack = nullptr;
+	Sound *spatialTest1 = nullptr;
+	Sound *spatialTest2 = nullptr;
 
 public:
 	bool shouldExit = false;
