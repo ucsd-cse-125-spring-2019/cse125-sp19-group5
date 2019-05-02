@@ -134,6 +134,7 @@
     <ClCompile Include="Renderer\Mesh.cpp" />
     <ClCompile Include="Renderer\MeshData.cpp" />
     <ClCompile Include="Renderer\Model.cpp" />
+    <ClCompile Include="Renderer\ModelData.cpp" />
     <ClCompile Include="Renderer\PointLight.cpp" />
     <ClCompile Include="Renderer\Shader.cpp" />
     <ClCompile Include="Renderer\ShadowMap.cpp" />
@@ -161,6 +162,7 @@
     <ClInclude Include="Renderer\Mesh.h" />
     <ClInclude Include="Renderer\MeshData.h" />
     <ClInclude Include="Renderer\Model.h" />
+    <ClInclude Include="Renderer\ModelData.h" />
     <ClInclude Include="Renderer\PointLight.h" />
     <ClInclude Include="Renderer\Shader.h" />
     <ClInclude Include="Renderer\ShadowMap.h" />
