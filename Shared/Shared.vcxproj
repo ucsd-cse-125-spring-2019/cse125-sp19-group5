@@ -129,6 +129,7 @@
     <ClInclude Include="Shared\Networking\Network.h" />
     <ClInclude Include="Shared\Networking\Serializable.h" />
     <ClInclude Include="Shared\Player.h" />
+    <ClInclude Include="Shared\Util\json11.hpp" />
     <ClInclude Include="Shared\Wall.h" />
   </ItemGroup>
   <ItemGroup>
@@ -139,6 +140,7 @@
     <ClCompile Include="Shared\Networking\Connection.cpp" />
     <ClCompile Include="Shared\Networking\Network.cpp" />
     <ClCompile Include="Shared\Player.cpp" />
+    <ClCompile Include="Shared\Util\json11.cpp" />
     <ClCompile Include="Shared\Wall.cpp" />
   </ItemGroup>
   <ItemGroup>

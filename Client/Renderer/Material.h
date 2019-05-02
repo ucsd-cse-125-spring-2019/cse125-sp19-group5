@@ -20,6 +20,7 @@ class Material {
 	Texture2d *emissionTex = nullptr;
 
 	public:
+	Material();
 	Material(const std::string &path);
 
 	// Setters for material parameters.
