@@ -36,9 +36,11 @@ int main(int argc, char **argv) {
 		std::cout << "Player " << c->getId() << " has connected." << std::endl;
 
 		// Sync up the current state of ballX.
-		NetBuffer buffer(NetMessage::BALL_X);
+		/*
+		NetBuffer buffer(NetMessage::GAME_STATE_UPDATE);
 		buffer.write<float>(ballX);
 		c->send(buffer);
+		*/
 
 		// Allow the newly connected player to move the ball.
 		c->on(NetMessage::BALL_X, handleBallMove);
