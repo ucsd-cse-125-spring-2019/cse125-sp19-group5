@@ -1,7 +1,11 @@
 #include "Paddle.h"
 
-Paddle::Paddle (vec3 position, vec3 velocity, string id, int radius, int lifespan) : GameObject(position, velocity, id, radius) {
+Paddle::Paddle (vec3 position, vec3 velocity, int id, int radius, int lifespan) : GameObject(position, velocity, id, radius) {
 	this->lifespan = lifespan;
+}
+
+int Paddle::getGameObjectType() const {
+	return PADDLE_TYPE;
 }
 
 bool Paddle::deleteOnServerTick() {

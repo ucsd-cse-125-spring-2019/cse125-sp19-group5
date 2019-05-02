@@ -9,14 +9,18 @@
 #include "Networking/Client.h"
 #include "Renderer/Draw.h"
 #include <Shared/CommonStructs.h>
+#include "Renderer/Material.h"
+
+Material *testMat = nullptr;
 
 Game::Game() {
+	testMat = new Material("Materials/brick.json");
 	Draw::init();
 
 	shadowMap = new ShadowMap();
 	lightShader = new Shader("Shaders/light");
 	textShader = new Shader("Shaders/text");
-	camera = new Camera(vec3(-10.0f, 2.0f, 2.0f), vec3(0.0f), 70, 1.0f);
+	camera = new Camera(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f), 70, 1.0f);
 	sun = new DirectionalLight(0);
 	sun->setDirection(vec3(0.009395, -0.200647, -0.713446));
 	sun->setAmbient(vec3(0.04f, 0.05f, 0.13f));
@@ -35,19 +39,25 @@ Game::Game() {
 	fpsText = textRenderer->addText(textRenderer->DEFAULT_FONT_NAME, "fps", 0.02f, 0.02f, 0.4f, glm::vec3(1.0f, 1.0f, 0.0f));
 
 	soundEngine = new SoundEngine();
-	soundtrack = soundEngine->loadFlatSound("Sounds/minecraft_wet_hands.wav");
+	soundEngine->setMasterVolume(1.0f);
+	soundtrack = soundEngine->loadFlatSound("Sounds/minecraft_wet_hands.wav", 0.5f);
 	soundtrack->play(true);
+	spatialTest1 = soundEngine->loadSpatialSound("Sounds/minecraft_sheep.ogg", 1.0f);
+	spatialTest1->play(true);
+	spatialTest2 = soundEngine->loadSpatialSound("Sounds/minecraft_chicken_ambient.ogg", 1.0f);
+	spatialTest2->play(true);
 
-	ClientGameObject *ball = new ClientGameObject("ball");
+	ClientGameObject *ball = new ClientGameObject(0);
 	ball->setModel("Models/sphere.obj");
 	ball->setScale(vec3(0.2f));
 	gameObjects.push_back(ball);
 
-	Network::on(NetMessage::BALL_X, [ball](Connection *c, NetBuffer &buffer) {
-		auto newBallX = buffer.read<float>();
-		if (ball) {
-			ball->setPosition(vec3(newBallX, 0.0f, 0.0f));
-		}
+	GameStateNet *gsn = new GameStateNet();
+
+	Network::on(NetMessage::GAME_STATE_UPDATE, [gsn](Connection *c, NetBuffer &buffer) {
+		gsn->deserialize(buffer);
+		/*TODO: graphics update based on the game state*/
+
 	});
 }
 
@@ -59,6 +69,8 @@ Game::~Game() {
 	delete sun;
 	delete shadowMap;
 	delete soundtrack;
+	delete spatialTest1;
+	delete spatialTest2;
 
 	for (auto gameObject : gameObjects) {
 		if (gameObject) {
@@ -85,6 +97,10 @@ void Game::update(float dt) {
 	phi += (float)Input::getMouseDeltaY() * mouseMoveScale;
 
 	camera->setEyeAngles(vec3(-phi, theta, 0));
+
+	spatialTest1->setPosition(camera->getPosition() + vec3(10.0f, 0.0f, 0.0f));
+	spatialTest2->setPosition(camera->getPosition() + vec3(10.0f, 0.0f, 0.0f));
+	soundEngine->update(camera->getPosition(), vec3(0.0f, 0.0f, 0.0f), camera->getForward());
 
 	fpsTextTimer += dt;
 	int fps = (int) (1.0f / dt);
@@ -143,10 +159,11 @@ void Game::update(float dt) {
 	}
 }
 
-void Game::drawScene(Shader &shader) const {
-	white->bind(0);
-
+void Game::drawScene(Shader &shader, DrawPass pass) const {
 	for (auto gameObject : gameObjects) {
+		if (pass == DrawPass::LIGHTING) {
+			testMat->bind(shader);
+		}
 		gameObject->draw(shader, camera);
 	}
 }
@@ -160,7 +177,7 @@ void Game::draw(float dt) const {
 	// Shadow mapping render pass
 	shadowMap->prePass();
 	shadowMap->setupLight(shadowMap->getShader(), *sun);
-	drawScene(shadowMap->getShader());
+	drawScene(shadowMap->getShader(), DrawPass::SHADOW);
 	shadowMap->postPass();
 
 	// Normal 3D render pass
@@ -174,7 +191,7 @@ void Game::draw(float dt) const {
 	shadowMap->bindTexture(*lightShader);
 
 	sun->bind(*lightShader);
-	drawScene(*lightShader);
+	drawScene(*lightShader, DrawPass::LIGHTING);
 	skybox->draw();
 
 	glDisable(GL_DEPTH_TEST);

@@ -4,12 +4,13 @@
 #include "Renderer/Shader.h"
 #include "Renderer/Model.h"
 #include "Renderer/Camera.h"
+#include "Sound/Sound.h"
 
 class ClientGameObject : public GameObject {
-	protected:
+protected:
 	Model *model = nullptr;
 
-	public:
+public:
 	using GameObject::GameObject;
 
 	virtual void draw(Shader &shader, const Camera *camera) const;

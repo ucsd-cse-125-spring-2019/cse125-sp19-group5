@@ -17,7 +17,7 @@ while (frame != _upperFrame) { \
 	} \
 }
 
-Mesh::Mesh(MeshData *data): data(data) {
+Mesh::Mesh(MeshData *data) : data(data) {
 	if (!data) {
 		throw std::runtime_error("Mesh created with null mesh data");
 	}

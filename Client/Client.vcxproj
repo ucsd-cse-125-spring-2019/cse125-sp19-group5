@@ -131,6 +131,7 @@
     <ClCompile Include="Renderer\Draw.cpp" />
     <ClCompile Include="Renderer\Font.cpp" />
     <ClCompile Include="Renderer\Light.cpp" />
+    <ClCompile Include="Renderer\Material.cpp" />
     <ClCompile Include="Renderer\Mesh.cpp" />
     <ClCompile Include="Renderer\MeshData.cpp" />
     <ClCompile Include="Renderer\Model.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="Renderer\Draw.h" />
     <ClInclude Include="Renderer\Font.h" />
     <ClInclude Include="Renderer\Light.h" />
+    <ClInclude Include="Renderer\Material.h" />
     <ClInclude Include="Renderer\Mesh.h" />
     <ClInclude Include="Renderer\MeshData.h" />
     <ClInclude Include="Renderer\Model.h" />
