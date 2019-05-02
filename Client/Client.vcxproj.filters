@@ -31,6 +31,12 @@
     <Filter Include="Source Files\Game">
       <UniqueIdentifier>{61c84688-57cb-44ff-b8c7-f63e506c2a1f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Sound">
+      <UniqueIdentifier>{beb5acfa-d571-4dbc-b1a6-101f88fbf24b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Sound">
+      <UniqueIdentifier>{f8b22b17-6e82-4b26-91ff-2607f444dcfb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -87,14 +93,17 @@
     <ClCompile Include="Renderer\Draw.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="AudioPlayer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Networking\Client.cpp">
       <Filter>Source Files\Networking</Filter>
     </ClCompile>
     <ClCompile Include="ClientGameObject.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sound\SoundEngine.cpp">
+      <Filter>Source Files\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="Sound\Sound.cpp">
+      <Filter>Source Files\Sound</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -152,14 +161,17 @@
     <ClInclude Include="Renderer\Draw.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="AudioPlayer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Networking\Client.h">
       <Filter>Header Files\Networking</Filter>
     </ClInclude>
     <ClInclude Include="ClientGameObject.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sound\SoundEngine.h">
+      <Filter>Header Files\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="Sound\Sound.h">
+      <Filter>Header Files\Sound</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

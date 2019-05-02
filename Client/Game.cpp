@@ -16,7 +16,7 @@ Game::Game() {
 	shadowMap = new ShadowMap();
 	lightShader = new Shader("Shaders/light");
 	textShader = new Shader("Shaders/text");
-	camera = new Camera(vec3(-10.0f, 2.0f, 2.0f), vec3(0.0f), 70, 1.0f);
+	camera = new Camera(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f), 70, 1.0f);
 	sun = new DirectionalLight(0);
 	sun->setDirection(vec3(0.009395, -0.200647, -0.713446));
 	sun->setAmbient(vec3(0.04f, 0.05f, 0.13f));
@@ -34,8 +34,14 @@ Game::Game() {
 	textRenderer = new TextRenderer(*textShader);
 	fpsText = textRenderer->addText(textRenderer->DEFAULT_FONT_NAME, "fps", 0.02f, 0.02f, 0.4f, glm::vec3(1.0f, 1.0f, 0.0f));
 
-	audioPlayer = new AudioPlayer();
-	audioPlayer->playLoop("Sounds/minecraft_wet_hands.wav");
+	soundEngine = new SoundEngine();
+	soundEngine->setMasterVolume(1.0f);
+	soundtrack = soundEngine->loadFlatSound("Sounds/minecraft_wet_hands.wav", 0.5f);
+	soundtrack->play(true);
+	spatialTest1 = soundEngine->loadSpatialSound("Sounds/minecraft_sheep.ogg", 1.0f);
+	spatialTest1->play(true);
+	spatialTest2 = soundEngine->loadSpatialSound("Sounds/minecraft_chicken_ambient.ogg", 1.0f);
+	spatialTest2->play(true);
 
 	ClientGameObject *ball = new ClientGameObject("ball");
 	ball->setModel("Models/sphere.obj");
@@ -57,6 +63,9 @@ Game::~Game() {
 	delete camera;
 	delete sun;
 	delete shadowMap;
+	delete soundtrack;
+	delete spatialTest1;
+	delete spatialTest2;
 
 	for (auto gameObject : gameObjects) {
 		if (gameObject) {
@@ -83,6 +92,10 @@ void Game::update(float dt) {
 	phi += (float)Input::getMouseDeltaY() * mouseMoveScale;
 
 	camera->setEyeAngles(vec3(-phi, theta, 0));
+
+	spatialTest1->setPosition(camera->getPosition() + vec3(10.0f, 0.0f, 0.0f));
+	spatialTest2->setPosition(camera->getPosition() + vec3(10.0f, 0.0f, 0.0f));
+	soundEngine->update(camera->getPosition(), vec3(0.0f, 0.0f, 0.0f), camera->getForward());
 
 	fpsTextTimer += dt;
 	int fps = (int) (1.0f / dt);
