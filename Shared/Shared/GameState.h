@@ -33,7 +33,7 @@ struct GameStateNet : public Serializable {
 	void deserialize(NetBuffer &buffer) {
 		auto numGameObjects = buffer.read<size_t>();
 		for (int i = 0; i < numGameObjects; i++) {
-			GameObject gameObject(vec3(0), vec3(0), "", 0);
+			GameObject gameObject(vec3(0), vec3(0), 0, 0);
 			gameObject.deserialize(buffer);
 			gameObjects.push_back(gameObject);
 		}

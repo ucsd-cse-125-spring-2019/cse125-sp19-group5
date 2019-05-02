@@ -20,6 +20,7 @@ public:
 	void addGameObject(Wall *wall);
 	vec3 movementInputToVector(int movementInput);
 	void movePlayers(vector<PlayerInputs> playerInputs);
+	void moveBalls();
 	void doPlayerCommands(vector<PlayerInputs> playerInputs);
 	void doCollisionInteractions();
 	void removeDeadObjects();

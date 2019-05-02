@@ -71,8 +71,8 @@ int main(int argc, char **argv) {
 	// testing code
 	std::cout << "Hello world!" << std::endl;
 	GameEngine gameEngine;
-	gameEngine.addGameObject(new Player(vec3(-2, 0, 0), vec3(1, 0, 0), vec3(1, 0, 0), "player_0", 1));
-	gameEngine.addGameObject(new Ball(vec3(5, 0, 0), vec3(-1, 0, 0), "ball_0", 1));
+	gameEngine.addGameObject(new Player(vec3(-2, 0, 0), vec3(1, 0, 0), vec3(1, 0, 0), 0, 1));
+	gameEngine.addGameObject(new Ball(vec3(5, 0, 0), vec3(-1, 0, 0), 0, 1));
 
 	vector<PlayerInputs> playerInputs;
 	PlayerInputs pi;

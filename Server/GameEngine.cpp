@@ -6,12 +6,7 @@ void GameEngine::updateGameState(vector<PlayerInputs> playerInputs) {
 	movePlayers(playerInputs);
 	doPlayerCommands(playerInputs);
 
-	// Move all balls
-	// this could potentially be performed by a gameObject's updateOnServerTick since it should
-	// be the same on every server tick -- ball's movement is only dependent on its velocity
-	for (Ball *ball : gameState.balls) {
-		noCollisionMove(ball, ball->getVelocity());
-	}
+	moveBalls();
 
 	doCollisionInteractions();
 	updateGameObjectsOnServerTick();
@@ -84,6 +79,12 @@ void GameEngine::movePlayers(vector<PlayerInputs> playerInputs) {
 		// TODO: prevent two players from moving to the same spot
 		// gameState.players[i]->move(movementInputToVector(aggregatePlayerMovements[i]));
 		noCollisionMove(gameState.players[i], movementInputToVector(aggregatePlayerMovements[i]));
+	}
+}
+
+void GameEngine::moveBalls() {
+	for (Ball *ball : gameState.balls) {
+		noCollisionMove(ball, ball->getVelocity());
 	}
 }
 
