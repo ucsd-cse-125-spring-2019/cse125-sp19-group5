@@ -121,7 +121,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AudioPlayer.cpp" />
     <ClCompile Include="ClientGameObject.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Input.cpp" />
@@ -142,12 +141,13 @@
     <ClCompile Include="Renderer\Texture.cpp" />
     <ClCompile Include="Renderer\Texture2d.cpp" />
     <ClCompile Include="Renderer\TextureCubemap.cpp" />
+    <ClCompile Include="Sound\Sound.cpp" />
+    <ClCompile Include="Sound\SoundEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AudioPlayer.h" />
     <ClInclude Include="ClientGameObject.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Input.h" />
@@ -167,6 +167,8 @@
     <ClInclude Include="Renderer\Texture.h" />
     <ClInclude Include="Renderer\Texture2d.h" />
     <ClInclude Include="Renderer\TextureCubemap.h" />
+    <ClInclude Include="Sound\Sound.h" />
+    <ClInclude Include="Sound\SoundEngine.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Shared\Shared.vcxproj">
