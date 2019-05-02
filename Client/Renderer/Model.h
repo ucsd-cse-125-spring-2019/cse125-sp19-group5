@@ -9,8 +9,7 @@
 #include "Shader.h"
 
 // The drawable 3D model. The model is specified by a file.
-class Model
-{
+class Model {
 	private:
 	std::vector<Mesh*> meshes;
 	int curAnimation = -1;
