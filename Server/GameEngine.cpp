@@ -10,7 +10,7 @@ void GameEngine::updateGameState(vector<PlayerInputs> playerInputs) {
 	// this could potentially be performed by a gameObject's updateOnServerTick since it should
 	// be the same on every server tick -- ball's movement is only dependent on its velocity
 	for (Ball *ball : gameState.balls) {
-		ball->move(ball->getVelocity());
+		noCollisionMove(ball, ball->getVelocity());
 	}
 
 	doCollisionInteractions();
@@ -78,7 +78,8 @@ void GameEngine::movePlayers(vector<PlayerInputs> playerInputs) {
 	// Move all players
 	for (int i = 0; i < NUM_PLAYERS; i++) {
 		// TODO: prevent two players from moving to the same spot
-		gameState.players[i]->move(movementInputToVector(aggregatePlayerMovements[i]));
+		// gameState.players[i]->move(movementInputToVector(aggregatePlayerMovements[i]));
+		noCollisionMove(gameState.players[i], movementInputToVector(aggregatePlayerMovements[i]));
 	}
 }
 
@@ -134,7 +135,7 @@ void GameEngine::updateGameObjectsOnServerTick() {
 	}
 }
 
-GameStateNet & GameEngine::getNetworkGameState() {
+GameStateNet & GameEngine::getGameStateNet() {
 	// not sure if this method should return a pointer or not?
 	// potential issue of returning reference to local variable
 	// if not a reference does send(getNetworkGameState()) create a duplicate?
@@ -150,4 +151,20 @@ GameStateNet & GameEngine::getNetworkGameState() {
 	}
 
 	return networkGameState;
+}
+
+bool GameEngine::noCollisionMove(GameObject * gameObject, vec3 movement) {
+	vec3 destination = gameObject->getMoveDestination(movement);
+
+	for (GameObject * otherGameObject : gameState.gameObjects) {
+		if (gameObject != gameObject) {
+			float distance = glm::distance(destination, otherGameObject->getPosition());
+			if (distance < (gameObject->getRadius() + otherGameObject->getRadius())) {
+				return false;
+			}
+		}
+	}
+
+	gameObject->setPosition(destination);
+	return true;
 }

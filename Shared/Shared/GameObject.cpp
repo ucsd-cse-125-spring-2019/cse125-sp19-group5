@@ -62,6 +62,10 @@ vec3 GameObject::getScale() const {
 	return scale;
 }
 
+int GameObject::getRadius() {
+	return this->radius;
+}
+
 string GameObject::getId() {
 	return this->id;
 }
@@ -74,8 +78,12 @@ int GameObject::getIntId() {
 	return stoi(id.substr(id.find("_") + 1));
 }
 
+vec3 GameObject::getMoveDestination(vec3 movement) {
+	return getPosition() + movement;
+}
+
 void GameObject::move(vec3 movement) {
-	setPosition(getPosition() + movement);
+	setPosition(getMoveDestination(movement));
 }
 
 bool GameObject::deleteOnServerTick() {

@@ -16,10 +16,12 @@ public:
 	vec3 getVelocity();
 	void setScale(const vec3 &newScale);
 	vec3 getScale() const;
+	int getRadius();
 	string getId();
 	string getGameObjectType() const;
 	int getIntId();
-	virtual void move(vec3 movement);
+	virtual vec3 getMoveDestination(vec3 movement);
+	void move(vec3 movement);
 	void updateOnServerTick();
 	bool deleteOnServerTick();
 	void serialize(NetBuffer &buffer) const;
