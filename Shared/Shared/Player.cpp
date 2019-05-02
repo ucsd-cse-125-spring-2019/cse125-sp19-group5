@@ -2,17 +2,47 @@
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
 
-Player::Player(vec3 position, vec3 velocity, vec3 direction, string id, int radius) : GameObject(position, velocity, id, radius) {
+Player::Player(vec3 position, vec3 velocity, vec3 direction, int id, int radius) : GameObject(position, velocity, id, radius) {
 	this->direction = direction;
 	this->actionCharge = 0;
 }
 
+int Player::getGameObjectType() const {
+	return PLAYER_TYPE;
+}
+
 void Player::onCollision(GameObject * gameObject) {
-	std::cout << "Player: " + id + glm::to_string(position) + " collided with " + gameObject->getId() + glm::to_string(gameObject->getPosition()) << std::endl;
+	std::cout << to_string() + " collided with " << gameObject->to_string() << std::endl;
 }
 
 vec3 Player::getDirection() {
 	return this->direction;
+}
+
+vec3 Player::getMoveDestination(vec3 movement) {
+	if (movement.x == 0.0f && movement.z == 0.0f) {
+		return getPosition();
+	}
+
+	vec3 direction = glm::normalize(vec3(getDirection().x, 0, getDirection().z));
+	vec3 directionalizedMovement = vec3(0, 0, 0);
+	vec3 up = vec3(0, 1, 0);
+
+	if (movement.z > 0) {
+		directionalizedMovement = directionalizedMovement + direction;
+	}
+	if (movement.z < 0) {
+		directionalizedMovement = directionalizedMovement - direction;
+	}
+	if (movement.x < 0) {
+		directionalizedMovement = directionalizedMovement + glm::cross(up, direction);
+	}
+	if (movement.x > 0) {
+		directionalizedMovement = directionalizedMovement - glm::cross(up, direction);
+	}
+
+	return glm::normalize(directionalizedMovement); // * player->getSpeed();
+	// TODO: implement bhopping
 }
 
 GameObject * Player::doAction(PlayerCommands action) {
@@ -21,10 +51,9 @@ GameObject * Player::doAction(PlayerCommands action) {
 			// std::cout << "Swing with charge " << actionCharge << std::endl;
 			// assumes direction is unit vector
 			vec3 paddlePosition = getPosition() + getDirection()*vec3(2.0f * radius);
-			vec3 paddleVelocity = getDirection() * vec3((float)actionCharge);
-			string paddleId = "paddle_" + std::to_string(getIntId());
+			vec3 paddleVelocity = getDirection() * vec3((float)(actionCharge));
 			int paddleLifespan = 10;
-			return new Paddle(paddlePosition, paddleVelocity, paddleId, 1, paddleLifespan);
+			return new Paddle(paddlePosition, paddleVelocity, getId(), 1, paddleLifespan);
 			break;
 		}
 		default: {

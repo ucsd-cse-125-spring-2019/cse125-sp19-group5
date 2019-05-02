@@ -12,8 +12,10 @@ public:
 	~SoundEngine();
 
 	bool isInitialized();
-	Sound *loadFlatSound(const std::string &filepath);
-	Sound *loadSpatialSound(const std::string &filepath, const vec3 pos);
+	Sound *loadFlatSound(const std::string &filepath, float volume);
+	Sound *loadSpatialSound(const std::string &filepath, float volume);
+	void setMasterVolume(float volume);
+	void update(vec3 pos, vec3 vel, vec3 lookDir);
 
 private:
 	irrklang::ISoundEngine * engine;

@@ -21,3 +21,7 @@ using glm::vec3;
 using glm::vec4;
 using glm::mat3;
 using glm::mat4;
+
+void static printVec3(vec3 vec) {
+	cout << "(" << vec.x << ", " << vec.y << ", " << vec.z << ")" << endl;
+}

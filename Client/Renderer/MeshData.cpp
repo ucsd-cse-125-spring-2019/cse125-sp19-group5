@@ -55,6 +55,16 @@ MeshData::MeshData(aiMesh *mesh, const aiScene *scene): mesh(mesh), scene(scene)
 	glVertexAttribPointer(4, BONES_PER_VERTEX, GL_FLOAT, GL_FALSE, sizeof(Vertex), offset);
 	glEnableVertexAttribArray(4);
 
+	// Location 5: Tangent
+	offset = (const GLvoid*)offsetof(Vertex, tangent);
+	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), offset);
+	glEnableVertexAttribArray(5);
+
+	// Location 5: Bitangent
+	offset = (const GLvoid*)offsetof(Vertex, bitangent);
+	glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), offset);
+	glEnableVertexAttribArray(6);
+
 	// Clean up
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -76,6 +86,15 @@ std::vector<Vertex> MeshData::loadVertices(aiMesh *mesh) {
 			vertex.normal.z = mesh->mNormals[i].z;
 		} else {
 			vertex.normal = vec3(0.0f, 0.0f, 1.0f);
+		}
+
+		if (mesh->HasTangentsAndBitangents()) {
+			vertex.tangent.x = mesh->mTangents[i].x;
+			vertex.tangent.y = mesh->mTangents[i].y;
+			vertex.tangent.z = mesh->mTangents[i].z;
+			vertex.bitangent.x = mesh->mBitangents[i].x;
+			vertex.bitangent.y = mesh->mBitangents[i].y;
+			vertex.bitangent.z = mesh->mBitangents[i].z;
 		}
 
 		if (mesh->mTextureCoords[0]) {

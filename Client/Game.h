@@ -9,6 +9,12 @@
 #include "Renderer/ShadowMap.h"
 #include "Sound/SoundEngine.h"
 #include "ClientGameObject.h"
+#include <Shared/GameState.h>
+
+enum DrawPass {
+	SHADOW,
+	LIGHTING
+};
 
 class Game {
 	private:
@@ -35,6 +41,8 @@ class Game {
 
 	SoundEngine *soundEngine = nullptr;
 	Sound *soundtrack = nullptr;
+	Sound *spatialTest1 = nullptr;
+	Sound *spatialTest2 = nullptr;
 
 public:
 	bool shouldExit = false;
@@ -43,7 +51,7 @@ public:
 
 	void update(float dt);
 	void draw(float dt) const;
-	void drawScene(Shader &shader) const;
+	void drawScene(Shader &shader, DrawPass pass) const;
 	void drawUI() const;
 
 	void updateScreenDimensions(int width, int height);

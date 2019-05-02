@@ -3,7 +3,8 @@
 
 class Ball : public GameObject {
 public:
-	Ball(vec3 position, vec3 velocity, string id, int radius);
+	Ball(vec3 position, vec3 velocity, int id, int radius);
+	int getGameObjectType() const;
 	void onCollision(GameObject * gameObject);
 	void updateOnServerTick();
 };
