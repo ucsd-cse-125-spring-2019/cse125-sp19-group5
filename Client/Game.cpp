@@ -95,23 +95,23 @@ void Game::update(float dt) {
 	}
 
 	// bytes of input bits to be sent to server
-	int inputs = 0;
+	int keyInputs = 0;
 	vec3 direction(0.0f);
 	if (Input::isKeyDown(GLFW_KEY_W)) {
 		direction += camera->getForward();
-		inputs += FORWARD;
+		keyInputs += FORWARD;
 	}
 	if (Input::isKeyDown(GLFW_KEY_S)) {
 		direction -= camera->getForward();
-		inputs += BACKWARD;
+		keyInputs += BACKWARD;
 	}
 	if (Input::isKeyDown(GLFW_KEY_A)) {
 		direction -= camera->getRight();
-		inputs += LEFT;
+		keyInputs += LEFT;
 	}
 	if (Input::isKeyDown(GLFW_KEY_D)) {
 		direction += camera->getRight();
-		inputs += RIGHT;
+		keyInputs += RIGHT;
 	}
 	if (glm::length(direction) != 0) {
 		direction = glm::normalize(direction) * dt * 5.0f;
@@ -121,6 +121,12 @@ void Game::update(float dt) {
 	if (Input::isKeyDown(GLFW_KEY_ESCAPE)) {
 		shouldExit = true;
 	}
+
+	tuple<int, float, float> allInput(keyInputs, theta, phi);
+	// Sending player input 
+	NetBuffer buffer(NetMessage::PLAYER_INPUT);
+	buffer.write< tuple<int,float,float> >(allInput);
+	Network::send(buffer);
 
 	// Arrow keys to move the ball.
 	float ballDX = 0.0f;

@@ -2,10 +2,10 @@
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
 
-void GameEngine::updateGameState(vector<PlayerInputs> playerInputs) {
+void GameEngine::updateGameState(vector<PlayerInputs> & playerInputs) {
 	movePlayers(playerInputs);
 	doPlayerCommands(playerInputs);
-
+	
 	// Move all balls
 	// this could potentially be performed by a gameObject's updateOnServerTick since it should
 	// be the same on every server tick -- ball's movement is only dependent on its velocity
@@ -59,48 +59,48 @@ vec3 GameEngine::movementInputToVector(Player *player, int movementInput) {
 	if (movementInput & RIGHT) {
 		movement = movement - glm::cross(up, direction);
 	}
-
+	cout << "movement: " << glm::to_string(movement) << endl;
 	return glm::normalize(movement); // * player->getSpeed();
 	// TODO: implement bhopping
 }
 
-void GameEngine::movePlayers(vector<PlayerInputs> playerInputs) {
+void GameEngine::movePlayers(vector<PlayerInputs> & playerInputs) {
 	vector<int> aggregatePlayerMovements;
-
+	//cout << "playerInputs size: " << playerInputs.size() << endl;
 	// Use bitwise or to get all player inputs within one server tick
-	for (int i = 0; i < NUM_PLAYERS; i++) {
+	for (int i = 0; i < gameState.players.size(); i++) {
 		aggregatePlayerMovements.push_back(0);
 	}
 	for (PlayerInputs playerInput : playerInputs) {
 		aggregatePlayerMovements[playerInput.id] = aggregatePlayerMovements[playerInput.id] | playerInput.inputs;
 	}
-	for (int i = 0; i < NUM_PLAYERS; i++) {
+	for (int i = 0; i < gameState.players.size(); i++) {
 		aggregatePlayerMovements[i] = aggregatePlayerMovements[i] & MOVEMENT_MASK;
-	}
-
+}
 	// Move all players
-	for (int i = 0; i < NUM_PLAYERS; i++) {
+	for (int i = 0; i < gameState.players.size(); i++) {
 		// TODO: prevent two players from moving to the same spot
 		gameState.players[i]->setPosition(movementInputToVector(gameState.players[i], aggregatePlayerMovements[i]));
+		cout << glm::to_string(gameState.players[i]->getPosition()) << endl;
 	}
 }
 
-void GameEngine::doPlayerCommands(vector<PlayerInputs> playerInputs) {
+void GameEngine::doPlayerCommands(vector<PlayerInputs> & playerInputs) {
 	vector<int> aggregatePlayerCommands;
 
 	// Use bitwise or to get all player inputs within one server tick
-	for (int i = 0; i < NUM_PLAYERS; i++) {
+	for (int i = 0; i < gameState.players.size(); i++) {
 		aggregatePlayerCommands.push_back(0);
 	}
 	for (PlayerInputs playerInput : playerInputs) {
 		aggregatePlayerCommands[playerInput.id] = aggregatePlayerCommands[playerInput.id] | playerInput.inputs;
 	}
-	for (int i = 0; i < NUM_PLAYERS; i++) {
+	for (int i = 0; i < gameState.players.size(); i++) {
 		aggregatePlayerCommands[i] = aggregatePlayerCommands[i] & COMMAND_MASK;
 	}
 
 	// Process player commands
-	for (int i = 0; i < NUM_PLAYERS; i++) {
+	for (int i = 0; i < gameState.players.size(); i++) {
 		GameObject * createdGameObject = gameState.players[i]->processCommand(aggregatePlayerCommands[i]);
 		if (createdGameObject) {
 			gameState.gameObjects.push_back(createdGameObject);
