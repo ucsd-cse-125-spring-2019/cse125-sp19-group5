@@ -31,6 +31,7 @@ struct GameStateNet : public Serializable {
 	}
 
 	void deserialize(NetBuffer &buffer) {
+		gameObjects.clear();
 		auto numGameObjects = buffer.read<size_t>();
 		for (int i = 0; i < numGameObjects; i++) {
 			GameObject gameObject(vec3(0), vec3(0), 0, 0);

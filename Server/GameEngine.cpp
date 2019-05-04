@@ -3,6 +3,7 @@
 #include <glm/gtx/string_cast.hpp>
 
 void GameEngine::updateGameState(vector<PlayerInputs> & playerInputs) {
+	
 	movePlayers(playerInputs);
 	doPlayerCommands(playerInputs);
 
@@ -41,10 +42,10 @@ vec3 GameEngine::movementInputToVector(int movementInput) {
 	}
 	
 	if (movementInput & FORWARD) {
-		movement = movement + vec3(0, 0, 1);
+		movement = movement + vec3(0, 0, -1);
 	}
 	if (movementInput & BACKWARD) {
-		movement = movement - vec3(0, 0, -1);
+		movement = movement + vec3(0, 0, 1);
 	}
 	if (movementInput & LEFT) {
 		movement = movement + vec3(-1, 0, 0);
@@ -79,6 +80,7 @@ void GameEngine::movePlayers(vector<PlayerInputs> & playerInputs) {
 
 		// gameState.players[i]->move(movementInputToVector(aggregatePlayerMovements[i]));
 		noCollisionMove(gameState.players[i], movementInputToVector(aggregatePlayerMovements[i]));
+		//cout << aggregatePlayerMovements[i] << "   " << glm::to_string(gameState.players[i]->getPosition()) << endl;
 	}
 }
 
@@ -140,19 +142,21 @@ void GameEngine::updateGameObjectsOnServerTick() {
 	}
 }
 
-GameStateNet & GameEngine::getGameStateNet() {
+GameStateNet * GameEngine::getGameStateNet(GameStateNet * networkGameState) {
 	// not sure if this method should return a pointer or not?
 	// potential issue of returning reference to local variable
 	// if not a reference does send(getNetworkGameState()) create a duplicate?
 	// if it is a problem should we use pointers instead?
-	GameStateNet networkGameState;
+	//GameStateNet * networkGameState = new GameStateNet();
 
-	networkGameState.in_progress = gameState.in_progress;
-	networkGameState.score = gameState.score;
-	networkGameState.timeLeft = gameState.timeLeft;
+	networkGameState->in_progress = gameState.in_progress;
+	networkGameState->score = gameState.score;
+	networkGameState->timeLeft = gameState.timeLeft;
+	networkGameState->gameObjects.clear();
 
 	for (GameObject * gameObject : gameState.gameObjects) {
-		networkGameState.gameObjects.push_back(*gameObject);
+		//cout << "COPYING GAME OBJECT!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
+		networkGameState->gameObjects.push_back(*gameObject);
 	}
 
 	return networkGameState;
@@ -169,7 +173,8 @@ bool GameEngine::noCollisionMove(GameObject * gameObject, vec3 movement) {
 			}
 		}
 	}
-
 	gameObject->setPosition(destination);
+	//cout << "destination=" << glm::to_string(destination) << "  movement=" << glm::to_string(movement) << endl;
+
 	return true;
 }

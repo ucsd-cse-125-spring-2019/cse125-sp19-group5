@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
 		auto networkPollDuration = std::chrono::duration_cast<std::chrono::milliseconds>(pollDone - startTime);
 
 		//updating the game state with each client message
-		vector<PlayerInputs> playerInputs;
+		//vector<PlayerInputs> playerInputs;
 			/*TODO: use the player input (Oliver)*/
 			gameEngine.updateGameState(playerInputs);
 			playerInputs.clear();
@@ -102,9 +102,10 @@ int main(int argc, char **argv) {
 			//server has taken too long to process the update!
 			std::cerr << "SERVER TOOK TOO LONG TO UPDATE!" << endl;
 		}
-
+	
+		GameStateNet updatedState;
 		//broadcast the updated game state
-		GameStateNet updatedState = gameEngine.getGameStateNet();
+		gameEngine.getGameStateNet(&updatedState);
 		Network::broadcast(NetMessage::GAME_STATE_UPDATE, updatedState);
 	}
 

@@ -27,7 +27,7 @@ public:
 	void doCollisionInteractions();
 	void removeDeadObjects();
 	void updateGameObjectsOnServerTick();
-	GameStateNet & getGameStateNet();
+	GameStateNet * getGameStateNet(GameStateNet * networkGameState);
 	bool noCollisionMove(GameObject * gameObject, vec3 movement);
 
 private:

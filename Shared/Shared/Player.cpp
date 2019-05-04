@@ -20,6 +20,8 @@ vec3 Player::getDirection() {
 }
 
 vec3 Player::getMoveDestination(vec3 movement) {
+	return GameObject::getMoveDestination(movement);
+	
 	if (movement.x == 0.0f && movement.z == 0.0f) {
 		return getPosition();
 	}

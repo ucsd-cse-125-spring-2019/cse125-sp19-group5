@@ -52,12 +52,21 @@ Game::Game() {
 	ball->setScale(vec3(0.2f));
 	gameObjects.push_back(ball);
 
+	//Network::on(NetMessage::CONNECTION_ID, []() {
+	//	//TODO send connection ID??
+	//});
+
 	GameStateNet *gsn = new GameStateNet();
 
-	Network::on(NetMessage::GAME_STATE_UPDATE, [gsn](Connection *c, NetBuffer &buffer) {
+	Network::on(NetMessage::GAME_STATE_UPDATE, [this,gsn](Connection *c, NetBuffer &buffer) {
+		cout << "State Received!" << endl;
 		gsn->deserialize(buffer);
 		/*TODO: graphics update based on the game state*/
+		if (gsn->gameObjects.size()) {
+			cout << glm::to_string(gsn->gameObjects[0].getPosition()) << endl;
+			this->camera->setPosition(gsn->gameObjects[0].getPosition());
 
+		}
 	});
 }
 
@@ -114,23 +123,23 @@ void Game::update(float dt) {
 	int keyInputs = 0;
 	vec3 direction(0.0f);
 	if (Input::isKeyDown(GLFW_KEY_W)) {
-		direction += camera->getForward();
+		//direction += camera->getForward();
 		keyInputs += FORWARD;
 	}
 	if (Input::isKeyDown(GLFW_KEY_S)) {
-		direction -= camera->getForward();
+		//direction -= camera->getForward();
 		keyInputs += BACKWARD;
 	}
 	if (Input::isKeyDown(GLFW_KEY_A)) {
-		direction -= camera->getRight();
+		//direction -= camera->getRight();
 		keyInputs += LEFT;
 	}
 	if (Input::isKeyDown(GLFW_KEY_D)) {
-		direction += camera->getRight();
+		//direction += camera->getRight();
 		keyInputs += RIGHT;
 	}
 	if (glm::length(direction) != 0) {
-		direction = glm::normalize(direction) * dt * 5.0f;
+		//direction = glm::normalize(direction) * dt * 5.0f;
 		camera->setPosition(camera->getPosition() + direction);
 	}
 
