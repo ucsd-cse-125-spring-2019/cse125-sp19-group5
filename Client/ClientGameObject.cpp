@@ -17,7 +17,6 @@ void ClientGameObject::draw(Shader &shader, const Camera *camera) const {
 }
 
 void ClientGameObject::setModel(const std::string &newModel) {
-	// TODO (bhang): add some sort of resource manager to reuse loaded models.
 	if (model) {
 		delete model;
 		model = nullptr;

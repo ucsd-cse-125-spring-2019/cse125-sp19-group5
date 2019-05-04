@@ -3,5 +3,6 @@
 
 class Wall : public GameObject {
 public:
-	Wall(vec3 position, vec3 velocity, string id, int radius);
+	Wall(vec3 position, vec3 velocity, int id, int radius);
+	int getGameObjectType() const;
 };

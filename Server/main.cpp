@@ -15,7 +15,8 @@ int main(int argc, char **argv) {
 	GameEngine gameEngine;
 	GameStateNet gameState;
 	auto origin = vec3(0.0f);
-	//gameState.gameObjects.push_back(Player(origin, origin, origin, "idk", 1));
+	gameState.gameObjects.push_back(Player(origin, origin, origin, 0, 1));
+
 	gameState.in_progress = false;
 	gameState.score = std::make_tuple(1, 2);
 	gameState.timeLeft = 30;
@@ -48,11 +49,13 @@ int main(int argc, char **argv) {
 		std::cout << "Player " << c->getId() << " has connected." << std::endl;
 
 		// Sync up the current state of ballX.
-		NetBuffer buffer(NetMessage::BALL_X);
+		/*
+		NetBuffer buffer(NetMessage::GAME_STATE_UPDATE);
 		buffer.write<float>(ballX);
 		c->send(buffer);
+		*/
 
-		gameEngine.addGameObject(new Player(vec3(0.0f), vec3(0.0f), vec3(0.0f,0.0f,-1.0f), "p0", 1));
+		gameEngine.addGameObject(new Player(vec3(0.0f), vec3(0.0f), vec3(0.0f,0.0f,-1.0f), c->getId(), 1));
 
 		// Allow the newly connected player to move the ball.
 		c->on(NetMessage::BALL_X, handleBallMove);
@@ -65,23 +68,76 @@ int main(int argc, char **argv) {
 		});
 	});
 
-	while (true) {
-		Network::poll();
+	//This is the total amount of time allowed for the server to update the game state
+	auto maxAllowabeServerTime = std::chrono::milliseconds(1000 / TICKS_PER_SECOND);
 
-		//vector<PlayerInputs> playerInputs;
-		//for (int i = 0; i < 4; i++) {
-		gameEngine.updateGameState(playerInputs);
-		//}
-		playerInputs.clear();
+	while (true) 
+	{
 
-		gameState.timeLeft -= 1;
+		//time keeping stuff to know how long the server has been running for
+		auto startTime = std::chrono::high_resolution_clock::now();
+		Network::poll();//checking the network for client update messages
+		auto pollDone = std::chrono::high_resolution_clock::now();
+		auto networkPollDuration = std::chrono::duration_cast<std::chrono::milliseconds>(pollDone - startTime);
 
-		Network::broadcast(NetMessage::TEST, gameState);
+		//updating the game state with each client message
+		vector<PlayerInputs> playerInputs;
+			/*TODO: use the player input (Oliver)*/
+			gameEngine.updateGameState(playerInputs);
+			playerInputs.clear();
 
-		std::this_thread::sleep_for(
-			std::chrono::milliseconds(1000 / TICKS_PER_SECOND)
-		);
+		//timekeeping stuff to check the duration so far
+		auto updateDone = std::chrono::high_resolution_clock::now();
+		auto updateDuration = std::chrono::duration_cast<std::chrono::milliseconds>(updateDone - pollDone);
+		auto totalDuration = std::chrono::duration_cast<std::chrono::milliseconds>(updateDone - startTime);
+
+		//check if the server is running on schedule
+		if (totalDuration < maxAllowabeServerTime) 
+		{
+			//wait for the update time to broadcast the game state update
+			std::this_thread::sleep_for(maxAllowabeServerTime - totalDuration);
+		}
+		else 
+		{
+			//server has taken too long to process the update!
+			std::cerr << "SERVER TOOK TOO LONG TO UPDATE!" << endl;
+		}
+
+		//broadcast the updated game state
+		GameStateNet updatedState = gameEngine.getGameStateNet();
+		Network::broadcast(NetMessage::GAME_STATE_UPDATE, updatedState);
 	}
+
+
+
+	// testing code
+	/*std::cout << "Hello world!" << std::endl;
+	GameEngine gameEngine;
+	gameEngine.addGameObject(new Player(vec3(-2, 0, 0), vec3(1, 0, 0), vec3(1, 0, 0), 0, 1));
+	gameEngine.addGameObject(new Ball(vec3(5, 0, 0), vec3(-1, 0, 0), 0, 1));
+
+	vector<PlayerInputs> playerInputs;
+	PlayerInputs pi;
+	pi.id = 0;
+	pi.inputs = SWING + RIGHT + LEFT;
+	playerInputs.push_back(pi);
+
+	vector<PlayerInputs> noInputs;
+	pi.id = 0;
+	pi.inputs = 0;
+	noInputs.push_back(pi);
+
+	for (int i = 0; i < 15; i++) {
+		if (i < 3) {
+			gameEngine.updateGameState(playerInputs);
+		}
+		else {
+			gameEngine.updateGameState(noInputs);
+
+		}
+	}
+
+	system("pause");*/
 
 	return 0;
 }

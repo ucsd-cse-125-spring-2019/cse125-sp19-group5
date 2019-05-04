@@ -9,6 +9,9 @@
     <ClCompile Include="Shared\Networking\Network.cpp" />
     <ClCompile Include="Shared\Player.cpp" />
     <ClCompile Include="Shared\Wall.cpp" />
+    <ClCompile Include="Shared\Util\json11.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoostSerializeStruct.h" />
@@ -26,8 +29,16 @@
     <ClInclude Include="Shared\Player.h" />
     <ClInclude Include="Shared\Wall.h" />
     <ClInclude Include="Shared\GameState.h" />
+    <ClInclude Include="Shared\Util\json11.hpp">
+      <Filter>Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Util">
+      <UniqueIdentifier>{629d504a-4410-414a-a5c0-4c8b4998cdf4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

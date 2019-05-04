@@ -3,9 +3,10 @@
 Sound::Sound(): sound(nullptr) {
 }
 
-Sound::Sound(std::string filepath, irrklang::ISound &sound)
-	: filepath(filepath)
-	, sound(&sound) {
+Sound::Sound(irrklang::ISound &sound, float volume, const bool isSpatial)
+	: sound(&sound)
+	, isSpatial(isSpatial) {
+	setVolume(volume);
 }
 
 Sound::~Sound() {
@@ -13,10 +14,6 @@ Sound::~Sound() {
 		sound->drop();
 		sound = nullptr;
 	}
-}
-
-void Sound::update() {
-
 }
 
 void Sound::play(const bool isLooping) {
@@ -30,9 +27,29 @@ void Sound::pause() {
 	sound->setIsPaused(true);
 }
 
-void Sound::setPosition(vec3 pos) {
+void Sound::setVolume(float volume) {
 	if (!sound) { return; }
+	sound->setVolume(volume);
+}
+
+void Sound::setPosition(vec3 pos) {
+	if (!sound || !isSpatial) { return; }
 	irrklang::vec3df soundPos = irrklang::vec3df(pos.x, pos.y, pos.z);
-	position = soundPos;
-	isSpatial = true;
+	sound->setPosition(soundPos);
+}
+
+void Sound::setVelocity(vec3 vel) {
+	if (!sound || !isSpatial) { return; }
+	irrklang::vec3df soundVel = irrklang::vec3df(vel.x, vel.y, vel.z);
+	sound->setVelocity(soundVel);
+}
+
+void Sound::setMinDist(float dist) {
+	if (!sound || !isSpatial) { return; }
+	sound->setMinDistance(dist);
+}
+
+void Sound::setMaxDist(float dist) {
+	if (!sound || !isSpatial) { return; }
+	sound->setMaxDistance(dist);
 }
