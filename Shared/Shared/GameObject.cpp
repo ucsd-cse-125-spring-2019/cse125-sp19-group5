@@ -11,7 +11,7 @@ GameObject::GameObject(const int &id) {
 	this->id = id;
 }
 
-GameObject::GameObject(vec3 position, vec3 velocity, int id, int radius) {
+GameObject::GameObject(vec3 position, vec3 velocity, int id, float radius) {
 	this->position = position;
 	this->velocity = velocity;
 	this->id = id;
@@ -62,7 +62,7 @@ vec3 GameObject::getScale() const {
 	return scale;
 }
 
-int GameObject::getRadius() {
+float GameObject::getRadius() {
 	return this->radius;
 }
 

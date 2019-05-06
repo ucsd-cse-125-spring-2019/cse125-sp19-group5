@@ -6,7 +6,7 @@
 
 class Player : public GameObject {
 public:
-	Player(vec3 position, vec3 velocity, vec3 direction, int id, int radius);
+	Player(vec3 position, vec3 velocity, vec3 direction, int id, float radius);
 	int getGameObjectType() const;
 	void onCollision(GameObject * gameObject);
 	vec3 getMoveDestination(vec3 movement);

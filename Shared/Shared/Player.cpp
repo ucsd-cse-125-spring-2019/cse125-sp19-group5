@@ -2,7 +2,7 @@
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
 
-Player::Player(vec3 position, vec3 velocity, vec3 direction, int id, int radius) : GameObject(position, velocity, id, radius) {
+Player::Player(vec3 position, vec3 velocity, vec3 direction, int id, float radius) : GameObject(position, velocity, id, radius) {
 	this->direction = direction;
 	this->actionCharge = 0;
 }
