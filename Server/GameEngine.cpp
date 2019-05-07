@@ -140,7 +140,7 @@ void GameEngine::updateGameObjectsOnServerTick() {
 	}
 }
 
-GameStateNet & GameEngine::getGameStateNet() {
+GameStateNet GameEngine::getGameStateNet() {
 	// not sure if this method should return a pointer or not?
 	// potential issue of returning reference to local variable
 	// if not a reference does send(getNetworkGameState()) create a duplicate?
