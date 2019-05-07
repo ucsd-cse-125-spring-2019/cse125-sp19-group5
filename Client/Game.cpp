@@ -52,12 +52,24 @@ Game::Game() {
 	ball->setScale(vec3(0.2f));
 	gameObjects.push_back(ball);
 
+	// Receive connection id / player id from server
+	Network::on(NetMessage::CONNECTION_ID, [this] (Connection *c, NetBuffer &buffer) {
+		playerId = buffer.read<int>();
+		cout << "I am Player " << playerId << "." << endl;
+	});
+
 	GameStateNet *gsn = new GameStateNet();
 
-	Network::on(NetMessage::GAME_STATE_UPDATE, [gsn](Connection *c, NetBuffer &buffer) {
+	Network::on(NetMessage::GAME_STATE_UPDATE, [this,gsn](Connection *c, NetBuffer &buffer) {
 		gsn->deserialize(buffer);
 		/*TODO: graphics update based on the game state*/
+		for (auto gObj : gsn->gameObjects) {
+			//cout << glm::to_string(gsn->gameObjects[0].getPosition()) << endl;
+			if (gObj.getId() == playerId) {
+				this->camera->setPosition(gObj.getPosition());
+			}
 
+		}
 	});
 }
 
@@ -111,32 +123,38 @@ void Game::update(float dt) {
 	}
 
 	// bytes of input bits to be sent to server
-	int inputs = 0;
+	int keyInputs = 0;
 	vec3 direction(0.0f);
 	if (Input::isKeyDown(GLFW_KEY_W)) {
-		direction += camera->getForward();
-		inputs += FORWARD;
+		//direction += camera->getForward();
+		keyInputs += FORWARD;
 	}
 	if (Input::isKeyDown(GLFW_KEY_S)) {
-		direction -= camera->getForward();
-		inputs += BACKWARD;
+		//direction -= camera->getForward();
+		keyInputs += BACKWARD;
 	}
 	if (Input::isKeyDown(GLFW_KEY_A)) {
-		direction -= camera->getRight();
-		inputs += LEFT;
+		//direction -= camera->getRight();
+		keyInputs += LEFT;
 	}
 	if (Input::isKeyDown(GLFW_KEY_D)) {
-		direction += camera->getRight();
-		inputs += RIGHT;
+		//direction += camera->getRight();
+		keyInputs += RIGHT;
 	}
 	if (glm::length(direction) != 0) {
-		direction = glm::normalize(direction) * dt * 5.0f;
+		//direction = glm::normalize(direction) * dt * 5.0f;
 		camera->setPosition(camera->getPosition() + direction);
 	}
 
 	if (Input::isKeyDown(GLFW_KEY_ESCAPE)) {
 		shouldExit = true;
 	}
+
+	tuple<int, float, float> allInput(keyInputs, theta, phi);
+	// Sending player input 
+	NetBuffer buffer(NetMessage::PLAYER_INPUT);
+	buffer.write< tuple<int,float,float> >(allInput);
+	Network::send(buffer);
 
 	// Arrow keys to move the ball.
 	float ballDX = 0.0f;
