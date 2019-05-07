@@ -7,7 +7,7 @@ Player::Player(vec3 position, vec3 velocity, vec3 direction, int id, int radius)
 	this->actionCharge = 0;
 }
 
-int Player::getGameObjectType() const {
+GAMEOBJECT_TYPES Player::getGameObjectType() const {
 	return PLAYER_TYPE;
 }
 

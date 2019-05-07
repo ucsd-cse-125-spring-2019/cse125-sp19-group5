@@ -56,6 +56,8 @@ public:
 	void drawScene(Shader &shader, DrawPass pass) const;
 	void drawUI() const;
 
+	void onGameObjectCreated(Connection *c, NetBuffer &buffer);
+
 	void updateScreenDimensions(int width, int height);
 	Camera *getCamera() const;
 };

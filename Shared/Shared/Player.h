@@ -6,8 +6,9 @@
 
 class Player : public GameObject {
 public:
+	using GameObject::GameObject;
 	Player(vec3 position, vec3 velocity, vec3 direction, int id, int radius);
-	int getGameObjectType() const;
+	GAMEOBJECT_TYPES getGameObjectType() const;
 	void onCollision(GameObject * gameObject);
 	vec3 getMoveDestination(vec3 movement);
 	vec3 getDirection();

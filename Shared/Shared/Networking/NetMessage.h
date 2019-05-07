@@ -6,4 +6,5 @@ enum NetMessage {
 	PLAYER_INPUT,
 	BALL_X,
 	GAME_STATE_UPDATE,
+	GAME_OBJ_CREATE,
 };

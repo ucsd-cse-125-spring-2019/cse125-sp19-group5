@@ -1,6 +1,7 @@
 #include "GameEngine.h"
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
+#include "Networking/Server.h"
 
 void GameEngine::updateGameState(vector<PlayerInputs> & playerInputs) {
 	
@@ -19,8 +20,17 @@ GameState & GameEngine::getGameState() {
 	return gameState;
 }
 
+void GameEngine::addGenericGameObject(GameObject *obj) {
+	gameState.gameObjects.push_back(obj);
+
+	NetBuffer buffer(NetMessage::GAME_OBJ_CREATE);
+	buffer.write<GAMEOBJECT_TYPES>(obj->getGameObjectType());
+	obj->serialize(buffer);
+	Network::broadcast(buffer);
+}
+
 void GameEngine::addGameObject(Player *player) {
-	gameState.gameObjects.push_back(player);
+	addGenericGameObject(player);
 	gameState.players.push_back(player);
 }
 

@@ -3,16 +3,17 @@
 #include <boost/asio.hpp>
 #include <Shared/Common.h>
 #include <Shared/GameMessage.hpp>
-#include "GameEngine.h"
 #include <chrono>
+#include "GameEngine.h"
 #include "Networking/Server.h"
 
 constexpr auto TICKS_PER_SECOND = 10; // How many updates per second.
 
+GameEngine gameEngine;
+
 int main(int argc, char **argv) {
 	Network::init(1234);
 
-	GameEngine gameEngine;
 	GameStateNet gameState;
 	auto origin = vec3(0.0f);
 	gameState.gameObjects.push_back(Player(origin, origin, origin, 0, 1));
@@ -45,7 +46,7 @@ int main(int argc, char **argv) {
 		//cout << "handlePlayerInput: " << input.inputs << endl;
 	};
 
-	Network::onClientConnected([&ballX, &gameEngine,&handleBallMove, &handlePlayerInput](Connection *c) {
+	Network::onClientConnected([&ballX, &handleBallMove, &handlePlayerInput](Connection *c) {
 		std::cout << "Player " << c->getId() << " has connected." << std::endl;
 
 		// Sync up the current state of ballX.

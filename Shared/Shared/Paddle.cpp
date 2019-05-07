@@ -4,7 +4,7 @@ Paddle::Paddle (vec3 position, vec3 velocity, int id, int radius, int lifespan) 
 	this->lifespan = lifespan;
 }
 
-int Paddle::getGameObjectType() const {
+GAMEOBJECT_TYPES Paddle::getGameObjectType() const {
 	return PADDLE_TYPE;
 }
 

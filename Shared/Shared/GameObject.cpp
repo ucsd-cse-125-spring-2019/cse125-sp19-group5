@@ -70,7 +70,7 @@ int GameObject::getId() {
 	return this->id;
 }
 
-int GameObject::getGameObjectType() const {
+GAMEOBJECT_TYPES GameObject::getGameObjectType() const {
 	return GAMEOBJECT_TYPE;
 }
 

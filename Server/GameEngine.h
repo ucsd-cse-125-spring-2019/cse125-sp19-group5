@@ -32,4 +32,5 @@ public:
 
 private:
 	GameState gameState;
+	void addGenericGameObject(GameObject *player);
 };

@@ -13,6 +13,22 @@
 
 Material *testMat = nullptr;
 
+void Game::onGameObjectCreated(Connection *c, NetBuffer &buffer) {
+	auto gameObjectType = buffer.read<GAMEOBJECT_TYPES>();
+	GameObject *obj = nullptr;
+	switch (gameObjectType) {
+		case GAMEOBJECT_TYPES::PLAYER_TYPE:
+			obj = new Player(-1);
+			break;
+		default:
+			std::cerr << "Unknown game object type (" << gameObjectType << ")"
+				<< std::endl;
+	}
+
+	obj->deserialize(buffer);
+	gameObjects.push_back(obj);
+}
+
 Game::Game() {
 	testMat = new Material("Materials/brick.json");
 	Draw::init();
@@ -51,6 +67,12 @@ Game::Game() {
 	ball->setModel("Models/sphere.obj");
 	ball->setScale(vec3(0.2f));
 	gameObjects.push_back(ball);
+
+	// Handle game object creation.
+	Network::on(
+		NetMessage::GAME_OBJ_CREATE,
+		boost::bind(&Game::onGameObjectCreated, this)
+	);
 
 	// Receive connection id / player id from server
 	Network::on(NetMessage::CONNECTION_ID, [this] (Connection *c, NetBuffer &buffer) {
