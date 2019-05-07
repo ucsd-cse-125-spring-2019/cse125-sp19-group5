@@ -52,19 +52,22 @@ Game::Game() {
 	ball->setScale(vec3(0.2f));
 	gameObjects.push_back(ball);
 
-	//Network::on(NetMessage::CONNECTION_ID, []() {
-	//	//TODO send connection ID??
-	//});
+	// Receive connection id / player id from server
+	Network::on(NetMessage::CONNECTION_ID, [this] (Connection *c, NetBuffer &buffer) {
+		playerId = buffer.read<int>();
+		cout << "I am Player " << playerId << "." << endl;
+	});
 
 	GameStateNet *gsn = new GameStateNet();
 
 	Network::on(NetMessage::GAME_STATE_UPDATE, [this,gsn](Connection *c, NetBuffer &buffer) {
-		cout << "State Received!" << endl;
 		gsn->deserialize(buffer);
 		/*TODO: graphics update based on the game state*/
-		if (gsn->gameObjects.size()) {
-			cout << glm::to_string(gsn->gameObjects[0].getPosition()) << endl;
-			this->camera->setPosition(gsn->gameObjects[0].getPosition());
+		for (auto gObj : gsn->gameObjects) {
+			//cout << glm::to_string(gsn->gameObjects[0].getPosition()) << endl;
+			if (gObj.getId() == playerId) {
+				this->camera->setPosition(gObj.getPosition());
+			}
 
 		}
 	});

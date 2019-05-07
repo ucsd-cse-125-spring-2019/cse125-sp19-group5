@@ -44,6 +44,8 @@ class Game {
 	Sound *spatialTest1 = nullptr;
 	Sound *spatialTest2 = nullptr;
 
+	int playerId;
+
 public:
 	bool shouldExit = false;
 	Game();

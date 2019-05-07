@@ -55,6 +55,11 @@ int main(int argc, char **argv) {
 		c->send(buffer);
 		*/
 
+		// Send Client the connection/player ID 
+		NetBuffer buffer(NetMessage::CONNECTION_ID);
+		buffer.write<int>(c->getId());
+		c->send(buffer);
+
 		gameEngine.addGameObject(new Player(vec3(0.0f), vec3(0.0f), vec3(0.0f,0.0f,-1.0f), c->getId(), 1));
 
 		// Allow the newly connected player to move the ball.
