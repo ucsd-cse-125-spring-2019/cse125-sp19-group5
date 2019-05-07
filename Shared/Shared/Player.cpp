@@ -20,7 +20,7 @@ vec3 Player::getDirection() {
 }
 
 vec3 Player::getMoveDestination(vec3 movement) {
-	return GameObject::getMoveDestination(movement);
+	//return GameObject::getMoveDestination(movement);
 	
 	if (movement.x == 0.0f && movement.z == 0.0f) {
 		return getPosition();
@@ -43,7 +43,7 @@ vec3 Player::getMoveDestination(vec3 movement) {
 		directionalizedMovement = directionalizedMovement - glm::cross(up, direction);
 	}
 
-	return glm::normalize(directionalizedMovement); // * player->getSpeed();
+	return getPosition() + glm::normalize(directionalizedMovement); // * player->getSpeed();
 	// TODO: implement bhopping
 }
 
