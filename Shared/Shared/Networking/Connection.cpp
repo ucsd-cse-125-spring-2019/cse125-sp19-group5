@@ -15,6 +15,7 @@ bool Connection::handleDisconnect(const ErrorCode &error) {
 		for (auto &handler : disconnectHandlers) {
 			handler(this);
 		}
+		disconnectHandlers.clear();
 		return true;
 	}
 	return false;
@@ -85,7 +86,8 @@ void Connection::send(NetBuffer &buffer) {
 	const auto message = buffer.getMessageType();
 	socket->async_send(
 		boost::asio::buffer(*data, buffer.getSize()),
-		[message, data](auto error, auto bytes) {
+		[this, message, data](auto error, auto bytes) {
+		if (handleDisconnect(error)) { return; }
 		if (error) {
 			std::cerr << "Failed to send message " << message << std::endl;
 			std::cerr << error.message() << std::endl;
