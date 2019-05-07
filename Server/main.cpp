@@ -40,9 +40,11 @@ int main(int argc, char **argv) {
 		auto inputTuple = buffer.read< tuple<int,float,float> >();
 		input.id = c->getId();
 		input.inputs = std::get<0>(inputTuple);
+		input.theta = std::get<1>(inputTuple);
+		input.phi = std::get<2>(inputTuple);
 		playerInputs.push_back(input);
 
-		//cout << "handlePlayerInput: " << input.inputs << endl;
+		//cout << "handlePlayerInput: " << input.phi << endl;
 	};
 
 	Network::onClientConnected([&ballX, &gameEngine,&handleBallMove, &handlePlayerInput](Connection *c) {
