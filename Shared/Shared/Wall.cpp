@@ -59,8 +59,11 @@ Wall::Wall(vec3 position, vec3 velocity, int id, float length, float width, floa
 		position - (widthDir * (width / 2)) + lengthDir
 	));
 
+	vec3 centerPoint = position + (heightDir * (height / 2));
 	for (Plane p : this->facePlanes) {
-		std::cout << p.to_string() << std::endl;
+		if (p.pointDistance(centerPoint)) {
+			p.invertNormal();
+		}
 	}
 }
 

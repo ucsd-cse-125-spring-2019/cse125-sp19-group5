@@ -41,7 +41,7 @@ vec3 Player::getMoveDestination(vec3 movement) {
 		directionalizedMovement = directionalizedMovement - glm::cross(up, direction);
 	}
 
-	return glm::normalize(directionalizedMovement); // * player->getSpeed();
+	return getPosition() + glm::normalize(directionalizedMovement); // * player->getSpeed();
 	// TODO: implement bhopping
 }
 

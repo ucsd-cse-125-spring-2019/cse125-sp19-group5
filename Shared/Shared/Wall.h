@@ -35,4 +35,15 @@ struct Plane {
 			", c: " + std::to_string(c )+ 
 			", d: " + std::to_string(d);
 	}
+
+	void invertNormal() {
+		this->a = -1 * this->a;
+		this->b = -1 * this->b;
+		this->c = -1 * this->c;
+		this->d = -1 * this->d;
+	}
+
+	float pointDistance(vec3 point) {
+		return (a*point.x + b*point.y + c*point.z + d) / (glm::sqrt(a*a + b*b + c*c));
+	}
 };
