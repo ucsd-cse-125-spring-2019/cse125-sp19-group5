@@ -12,6 +12,10 @@
     <ClCompile Include="Shared\Util\json11.cpp">
       <Filter>Util</Filter>
     </ClCompile>
+    <ClCompile Include="Shared\BoundingShape.cpp" />
+    <ClCompile Include="Shared\BoundingSphere.cpp" />
+    <ClCompile Include="Shared\BoundingBox.cpp" />
+    <ClCompile Include="Shared\CollisionDetection.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoostSerializeStruct.h" />
@@ -32,6 +36,10 @@
     <ClInclude Include="Shared\Util\json11.hpp">
       <Filter>Util</Filter>
     </ClInclude>
+    <ClInclude Include="Shared\BoundingShape.h" />
+    <ClInclude Include="Shared\BoundingSphere.h" />
+    <ClInclude Include="Shared\BoundingBox.h" />
+    <ClInclude Include="Shared\CollisionDetection.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Util">

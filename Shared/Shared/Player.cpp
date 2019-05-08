@@ -1,10 +1,14 @@
 #include "Player.h"
+#include "BoundingSphere.h"
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
 
-Player::Player(vec3 position, vec3 velocity, vec3 direction, int id, float radius) : GameObject(position, velocity, id, radius) {
+Player::Player(vec3 position, vec3 velocity, vec3 direction, int id, float radius, int team) : GameObject(position, velocity, id) {
 	this->direction = direction;
+	this->radius = radius;
 	this->actionCharge = 0;
+	this->team = team;
+	setBoundingShape(new BoundingSphere(position, radius));
 }
 
 int Player::getGameObjectType() const {
@@ -50,7 +54,7 @@ GameObject * Player::doAction(PlayerCommands action) {
 		case SWING: {
 			// std::cout << "Swing with charge " << actionCharge << std::endl;
 			// assumes direction is unit vector
-			vec3 paddlePosition = getPosition() + getDirection()*vec3(2.0f * radius);
+			vec3 paddlePosition = getPosition() + getDirection() * vec3(2.05f * this->radius);
 			vec3 paddleVelocity = getDirection() * vec3((float)(actionCharge));
 			int paddleLifespan = 10;
 			return new Paddle(paddlePosition, paddleVelocity, getId(), 1, paddleLifespan);
