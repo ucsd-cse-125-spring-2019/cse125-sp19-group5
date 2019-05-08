@@ -3,7 +3,7 @@
 #include "Ball.h"
 #include "Wall.h"
 
-struct GameState {
+struct GameState : public Serializable {
 	vector<Player *> players;
 	vector<Ball *> balls;
 	vector<Wall *> walls;
@@ -13,15 +13,6 @@ struct GameState {
 	bool in_progress;
 
 	GameState() : gameObjects(1024, nullptr) { }
-};
-
-struct GameStateNet : public Serializable {
-	vector<GameObject*> gameObjects;
-	long timeLeft;
-	tuple<int, int> score;
-	bool in_progress;
-
-	GameStateNet(): gameObjects(1024, nullptr) { }
 
 	void serialize(NetBuffer &buffer) const {
 		auto size = 0;
@@ -35,7 +26,7 @@ struct GameStateNet : public Serializable {
 			if (!gameObject) {
 				continue;
 			}
-			buffer.write<GAMEOBJECT_TYPES>(gameObject->getGameObjectType());
+			buffer.write(gameObject->getId());
 			gameObject->serialize(buffer);
 		}
 
@@ -49,29 +40,10 @@ struct GameStateNet : public Serializable {
 
 		auto numGameObjects = buffer.read<size_t>();
 		for (int i = 0; i < numGameObjects; i++) {
-			GameObject *gameObject;
-			switch (buffer.read<GAMEOBJECT_TYPES>()) {
-				case GAMEOBJECT_TYPES::BALL_TYPE:
-					gameObject = new Ball(origin, origin, -1, 0);
-					break;
-				case GAMEOBJECT_TYPES::PADDLE_TYPE:
-					gameObject = new Paddle(origin, origin, -1, 0, 0);
-				case GAMEOBJECT_TYPES::PLAYER_TYPE:
-					gameObject = new Player(-1);
-					break;
-				case GAMEOBJECT_TYPES::WALL_TYPE:
-					gameObject = new Wall(origin, origin, -1, 0);
-					break;
-				default:
-					gameObject = nullptr;
-					break;
+			auto gameObject = gameObjects[buffer.read<int>()];
+			if (gameObject) {
+				gameObject->deserialize(buffer);
 			}
-
-			if (!gameObject) { continue; }
-
-			gameObject->deserialize(buffer);
-
-			gameObjects[gameObject->getId()] = gameObject;
 		}
 
 		timeLeft = buffer.read<long>();

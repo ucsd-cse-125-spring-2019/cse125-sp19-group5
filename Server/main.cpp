@@ -13,25 +13,11 @@ int main(int argc, char **argv) {
 	Network::init(1234);
 
 	GameEngine gameEngine;
-	GameStateNet gameState;
+	gameEngine.init();
+
 	auto origin = vec3(0.0f);
 
-	gameState.in_progress = false;
-	gameState.score = std::make_tuple(1, 2);
-	gameState.timeLeft = 30;
 	vector<PlayerInputs> playerInputs;
-
-	float ballX = 0.0f;
-
-	// Handle player requests to move the ball.
-	auto handleBallMove = [&](Connection *c, NetBuffer &buffer) {
-		ballX += buffer.read<float>();
-
-		// Replicate the changes so everyone sees the update.
-		NetBuffer updateBuffer(NetMessage::BALL_X);
-		updateBuffer.write<float>(ballX);
-		Network::broadcast(updateBuffer);
-	};
 
 	// Handle player keyboard/mouse inputs
 	auto handlePlayerInput = [&playerInputs](Connection *c, NetBuffer &buffer) {
@@ -40,8 +26,6 @@ int main(int argc, char **argv) {
 		input.id = c->getId();
 		input.inputs = std::get<0>(inputTuple);
 		playerInputs.push_back(input);
-
-		//cout << "handlePlayerInput: " << input.inputs << endl;
 	};
 
 	Network::onClientConnected([&](Connection *c) {
@@ -68,10 +52,10 @@ int main(int argc, char **argv) {
 			std::cout << "sent object " << gameObject->getId() << " to " << c->getId() << std::endl;
 		}
 
-		gameEngine.addGameObject(new Player(vec3(0.0f), vec3(0.0f), vec3(0.0f,0.0f,-1.0f), c->getId(), 1));
-
-		// Allow the newly connected player to move the ball.
-		c->on(NetMessage::BALL_X, handleBallMove);
+		auto player = new Player(origin, origin, c->getId(), 1.0f);
+		player->setDirection(vec3(0, 0, -1));
+		player->setScale(vec3(0.2f));
+		gameEngine.addGameObject(player);
 
 		// Receive player keyboard and mouse(TODO) input
 		c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);
@@ -117,10 +101,7 @@ int main(int argc, char **argv) {
 			std::cerr << "SERVER TOOK TOO LONG TO UPDATE!" << endl;
 		}
 	
-		GameStateNet updatedState;
-		//broadcast the updated game state
-		gameEngine.getGameStateNet(&updatedState);
-		Network::broadcast(NetMessage::GAME_STATE_UPDATE, updatedState);
+		gameEngine.synchronizeGameState();
 	}
 
 

@@ -86,6 +86,7 @@ void GameObject::updateOnServerTick() {
 void GameObject::serialize(NetBuffer &buffer) const {
 	buffer.write<vec3>(position);
 	buffer.write<vec3>(velocity);
+	buffer.write<vec3>(scale);
 	buffer.write<int>(id);
 	buffer.write<int>(radius);
 }
@@ -93,6 +94,7 @@ void GameObject::serialize(NetBuffer &buffer) const {
 void GameObject::deserialize(NetBuffer &buffer) {
 	position = buffer.read<vec3>();
 	velocity = buffer.read<vec3>();
+	scale = buffer.read<vec3>();
 	id = buffer.read<int>();
 	radius = buffer.read<int>();
 }

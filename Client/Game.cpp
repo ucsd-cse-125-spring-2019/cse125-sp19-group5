@@ -31,15 +31,23 @@ void Game::onGameObjectCreated(Connection *c, NetBuffer &buffer) {
 	auto clientObj = new ClientGameObject(std::move(obj));
 	// Do not use `obj` after this, ownership transfered to clientObj.
 	clientObj->setModel("Models/sphere.obj");
-	gameObjects[clientObj->getGameObject()->getId()] = clientObj;
+
+	auto id = clientObj->getGameObject()->getId();
+	gameObjects[id] = clientObj;
+	gameState.gameObjects[id] = clientObj->getGameObject();
+
+	if (id == playerId) {
+		playerObj = static_cast<Player*>(clientObj->getGameObject());
+	}
 }
 
 void Game::onGameObjectDeleted(Connection *c, NetBuffer &buffer) {
 	auto id = buffer.read<int>();
 	if (gameObjects[id]) {
 		delete gameObjects[id];
-		gameObjects[id] = nullptr;
 	}
+	gameObjects[id] = nullptr;
+	gameState.gameObjects[id] = nullptr;
 }
 
 Game::Game(): gameObjects(1024, nullptr) {
@@ -92,25 +100,8 @@ Game::Game(): gameObjects(1024, nullptr) {
 		cout << "I am Player " << playerId << "." << endl;
 	});
 
-	GameStateNet *gsn = new GameStateNet();
-
-	Network::on(NetMessage::GAME_STATE_UPDATE, [this,gsn](Connection *c, NetBuffer &buffer) {
-		gsn->deserialize(buffer);
-		/*TODO: graphics update based on the game state*/
-		for (auto gObj : gsn->gameObjects) {
-			if (!gObj) { continue; }
-			auto clientObj = gameObjects[gObj->getId()];
-
-			if (clientObj) {
-				clientObj->getGameObject()->setPosition(gObj->getPosition());
-			}
-
-			//cout << glm::to_string(gsn->gameObjects[0].getPosition()) << endl;
-			if (gObj->getId() == playerId) {
-				this->camera->setPosition(gObj->getPosition());
-			}
-
-		}
+	Network::on(NetMessage::GAME_STATE_UPDATE, [&](Connection *c, NetBuffer &buffer) {
+		gameState.deserialize(buffer);
 	});
 }
 
@@ -182,10 +173,6 @@ void Game::update(float dt) {
 		//direction += camera->getRight();
 		keyInputs += RIGHT;
 	}
-	if (glm::length(direction) != 0) {
-		//direction = glm::normalize(direction) * dt * 5.0f;
-		camera->setPosition(camera->getPosition() + direction);
-	}
 
 	if (Input::isKeyDown(GLFW_KEY_ESCAPE)) {
 		shouldExit = true;
@@ -216,6 +203,11 @@ void Game::update(float dt) {
 	for (auto gameObject : gameObjects) {
 		if (!gameObject) { continue; }
 		gameObject->updateAnimation(curTime);
+	}
+
+	if (playerObj) {
+		auto offset = playerObj->getDirection() * -10.0f;
+		camera->setPosition(playerObj->getPosition() - offset);
 	}
 }
 

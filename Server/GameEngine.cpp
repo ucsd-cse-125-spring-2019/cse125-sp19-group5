@@ -26,6 +26,12 @@ void GameEngine::removeGameObjectById(int id) {
 	}
 }
 
+void GameEngine::init() {
+	gameState.in_progress = false;
+	gameState.score = std::make_tuple(1, 2);
+	gameState.timeLeft = 30;
+}
+
 void GameEngine::onPlayerDisconnected(Connection *c) {
 	removeGameObjectById(c->getId());
 }
@@ -41,6 +47,10 @@ void GameEngine::updateGameState(vector<PlayerInputs> & playerInputs) {
 	updateGameObjectsOnServerTick();
 	removeDeadObjects();
 	// send getNetworkGameState() to client
+}
+
+void GameEngine::synchronizeGameState() {
+	Network::broadcast(NetMessage::GAME_STATE_UPDATE, gameState);
 }
 
 GameState & GameEngine::getGameState() {
@@ -181,28 +191,6 @@ void GameEngine::updateGameObjectsOnServerTick() {
 	}
 }
 
-GameStateNet * GameEngine::getGameStateNet(GameStateNet * networkGameState) {
-	// not sure if this method should return a pointer or not?
-	// potential issue of returning reference to local variable
-	// if not a reference does send(getNetworkGameState()) create a duplicate?
-	// if it is a problem should we use pointers instead?
-	//GameStateNet * networkGameState = new GameStateNet();
-
-	networkGameState->in_progress = gameState.in_progress;
-	networkGameState->score = gameState.score;
-	networkGameState->timeLeft = gameState.timeLeft;
-	networkGameState->gameObjects.clear();
-
-	for (GameObject * gameObject : gameState.gameObjects) {
-		if (gameObject) {
-			//cout << "COPYING GAME OBJECT!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
-			networkGameState->gameObjects.push_back(gameObject);
-		}
-	}
-
-	return networkGameState;
-}
-
 bool GameEngine::noCollisionMove(GameObject * gameObject, vec3 movement) {
 	vec3 destination = gameObject->getMoveDestination(movement);
 
@@ -215,7 +203,6 @@ bool GameEngine::noCollisionMove(GameObject * gameObject, vec3 movement) {
 		}
 	}
 	gameObject->setPosition(destination);
-	//cout << "destination=" << glm::to_string(destination) << "  movement=" << glm::to_string(movement) << endl;
 
 	return true;
 }

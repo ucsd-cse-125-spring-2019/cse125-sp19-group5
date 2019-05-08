@@ -14,9 +14,12 @@
 
 class GameEngine {
 public:
+	void init();
+
 	void onPlayerDisconnected(Connection *c);
 
 	void updateGameState(vector<PlayerInputs> & playerInputs);
+	void synchronizeGameState();
 	GameState & getGameState();
 	void addGameObject(Player *player);
 	void addGameObject(Ball *ball);
@@ -31,7 +34,6 @@ public:
 	void doCollisionInteractions();
 	void removeDeadObjects();
 	void updateGameObjectsOnServerTick();
-	GameStateNet * getGameStateNet(GameStateNet * networkGameState);
 	bool noCollisionMove(GameObject * gameObject, vec3 movement);
 
 	const vector<GameObject*> &getGameObjects() const;

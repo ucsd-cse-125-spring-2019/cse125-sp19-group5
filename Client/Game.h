@@ -47,6 +47,9 @@ class Game {
 
 	int playerId;
 
+	GameState gameState;
+	Player *playerObj = nullptr;
+
 public:
 	bool shouldExit = false;
 	Game();
