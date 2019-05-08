@@ -29,10 +29,17 @@ void Game::onGameObjectCreated(Connection *c, NetBuffer &buffer) {
 	obj->deserialize(buffer);
 
 	auto clientObj = new ClientGameObject(std::move(obj));
-	std::cout << clientObj->getGameObject()->getId() << std::endl;
 	// Do not use `obj` after this, ownership transfered to clientObj.
 	clientObj->setModel("Models/sphere.obj");
 	gameObjects[clientObj->getGameObject()->getId()] = clientObj;
+}
+
+void Game::onGameObjectDeleted(Connection *c, NetBuffer &buffer) {
+	auto id = buffer.read<int>();
+	if (gameObjects[id]) {
+		delete gameObjects[id];
+		gameObjects[id] = nullptr;
+	}
 }
 
 Game::Game(): gameObjects(1024, nullptr) {
@@ -69,10 +76,14 @@ Game::Game(): gameObjects(1024, nullptr) {
 	spatialTest2 = soundEngine->loadSpatialSound("Sounds/minecraft_chicken_ambient.ogg", 1.0f);
 	spatialTest2->play(true);
 
-	// Handle game object creation.
+	// Handle game object creation and deletion.
 	Network::on(
 		NetMessage::GAME_OBJ_CREATE,
 		boost::bind(&Game::onGameObjectCreated, this, _1, _2)
+	);
+	Network::on(
+		NetMessage::GAME_OBJ_DELETE,
+		boost::bind(&Game::onGameObjectDeleted, this, _1, _2)
 	);
 
 	// Receive connection id / player id from server

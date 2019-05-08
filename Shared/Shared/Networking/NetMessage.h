@@ -7,4 +7,5 @@ enum NetMessage {
 	BALL_X,
 	GAME_STATE_UPDATE,
 	GAME_OBJ_CREATE,
+	GAME_OBJ_DELETE,
 };

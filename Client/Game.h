@@ -58,6 +58,7 @@ public:
 	void drawUI() const;
 
 	void onGameObjectCreated(Connection *c, NetBuffer &buffer);
+	void onGameObjectDeleted(Connection *c, NetBuffer &buffer);
 
 	void updateScreenDimensions(int width, int height);
 	Camera *getCamera() const;

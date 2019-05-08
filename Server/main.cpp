@@ -9,11 +9,10 @@
 
 constexpr auto TICKS_PER_SECOND = 60; // How many updates per second.
 
-GameEngine gameEngine;
-
 int main(int argc, char **argv) {
 	Network::init(1234);
 
+	GameEngine gameEngine;
 	GameStateNet gameState;
 	auto origin = vec3(0.0f);
 

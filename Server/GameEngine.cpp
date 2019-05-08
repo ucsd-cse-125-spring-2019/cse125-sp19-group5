@@ -19,6 +19,10 @@ void GameEngine::removeGameObjectById(int id) {
 		safeRemoveFromVec(gameState.walls, gameObject);
 		safeRemoveFromVec(gameState.balls, gameObject);
 		delete gameObject;
+
+		NetBuffer buffer(NetMessage::GAME_OBJ_DELETE);
+		buffer.write(id);
+		Network::broadcast(buffer);
 	}
 }
 
@@ -110,9 +114,6 @@ void GameEngine::movePlayers(vector<PlayerInputs> & playerInputs) {
 	// Move all players
 	for (int i = 0; i < gameState.players.size(); i++) {
 		// TODO: prevent two players from moving to the same spot
-		if (gameState.players[i] == nullptr) {
-			std::cerr << "Whoa" << std::endl;
-		}
 		// gameState.players[i]->move(movementInputToVector(aggregatePlayerMovements[i]));
 		noCollisionMove(gameState.players[i], movementInputToVector(aggregatePlayerMovements[i]));
 		//cout << aggregatePlayerMovements[i] << "   " << glm::to_string(gameState.players[i]->getPosition()) << endl;
