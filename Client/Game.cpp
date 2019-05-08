@@ -13,7 +13,44 @@
 
 Material *testMat = nullptr;
 
-Game::Game() {
+void Game::onGameObjectCreated(Connection *c, NetBuffer &buffer) {
+	auto gameObjectType = buffer.read<GAMEOBJECT_TYPES>();
+	std::unique_ptr<GameObject> obj = nullptr;
+	switch (gameObjectType) {
+		case GAMEOBJECT_TYPES::PLAYER_TYPE:
+			obj = std::make_unique<Player>(-1);
+			break;
+		default:
+			std::cerr << "Unknown game object type (" << gameObjectType << ")"
+				<< std::endl;
+			return;
+	}
+
+	obj->deserialize(buffer);
+
+	auto clientObj = new ClientGameObject(std::move(obj));
+	// Do not use `obj` after this, ownership transfered to clientObj.
+	clientObj->setModel("Models/sphere.obj");
+
+	auto id = clientObj->getGameObject()->getId();
+	gameObjects[id] = clientObj;
+	gameState.gameObjects[id] = clientObj->getGameObject();
+
+	if (id == playerId) {
+		playerObj = static_cast<Player*>(clientObj->getGameObject());
+	}
+}
+
+void Game::onGameObjectDeleted(Connection *c, NetBuffer &buffer) {
+	auto id = buffer.read<int>();
+	if (gameObjects[id]) {
+		delete gameObjects[id];
+	}
+	gameObjects[id] = nullptr;
+	gameState.gameObjects[id] = nullptr;
+}
+
+Game::Game(): gameObjects(1024, nullptr) {
 	testMat = new Material("Materials/brick.json");
 	Draw::init();
 
@@ -47,10 +84,15 @@ Game::Game() {
 	spatialTest2 = soundEngine->loadSpatialSound("Sounds/minecraft_chicken_ambient.ogg", 1.0f);
 	spatialTest2->play(true);
 
-	ClientGameObject *ball = new ClientGameObject(0);
-	ball->setModel("Models/sphere.obj");
-	ball->setScale(vec3(0.2f));
-	gameObjects.push_back(ball);
+	// Handle game object creation and deletion.
+	Network::on(
+		NetMessage::GAME_OBJ_CREATE,
+		boost::bind(&Game::onGameObjectCreated, this, _1, _2)
+	);
+	Network::on(
+		NetMessage::GAME_OBJ_DELETE,
+		boost::bind(&Game::onGameObjectDeleted, this, _1, _2)
+	);
 
 	// Receive connection id / player id from server
 	Network::on(NetMessage::CONNECTION_ID, [this] (Connection *c, NetBuffer &buffer) {
@@ -58,18 +100,8 @@ Game::Game() {
 		cout << "I am Player " << playerId << "." << endl;
 	});
 
-	GameStateNet *gsn = new GameStateNet();
-
-	Network::on(NetMessage::GAME_STATE_UPDATE, [this,gsn](Connection *c, NetBuffer &buffer) {
-		gsn->deserialize(buffer);
-		/*TODO: graphics update based on the game state*/
-		for (auto gObj : gsn->gameObjects) {
-			//cout << glm::to_string(gsn->gameObjects[0].getPosition()) << endl;
-			if (gObj.getId() == playerId) {
-				this->camera->setPosition(gObj.getPosition());
-			}
-
-		}
+	Network::on(NetMessage::GAME_STATE_UPDATE, [&](Connection *c, NetBuffer &buffer) {
+		gameState.deserialize(buffer);
 	});
 }
 
@@ -141,10 +173,6 @@ void Game::update(float dt) {
 		//direction += camera->getRight();
 		keyInputs += RIGHT;
 	}
-	if (glm::length(direction) != 0) {
-		//direction = glm::normalize(direction) * dt * 5.0f;
-		camera->setPosition(camera->getPosition() + direction);
-	}
 
 	if (Input::isKeyDown(GLFW_KEY_ESCAPE)) {
 		shouldExit = true;
@@ -173,12 +201,19 @@ void Game::update(float dt) {
 
 	const auto curTime = (float)glfwGetTime();
 	for (auto gameObject : gameObjects) {
+		if (!gameObject) { continue; }
 		gameObject->updateAnimation(curTime);
+	}
+
+	if (playerObj) {
+		auto offset = playerObj->getDirection() * -10.0f;
+		camera->setPosition(playerObj->getPosition() - offset);
 	}
 }
 
 void Game::drawScene(Shader &shader, DrawPass pass) const {
 	for (auto gameObject : gameObjects) {
+		if (!gameObject) { continue; }
 		if (pass == DrawPass::LIGHTING) {
 			testMat->bind(shader);
 		}

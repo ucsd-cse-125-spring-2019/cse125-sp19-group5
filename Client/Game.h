@@ -10,6 +10,7 @@
 #include "Sound/SoundEngine.h"
 #include "ClientGameObject.h"
 #include <Shared/GameState.h>
+#include "Networking/Client.h"
 
 enum DrawPass {
 	SHADOW,
@@ -46,6 +47,9 @@ class Game {
 
 	int playerId;
 
+	GameState gameState;
+	Player *playerObj = nullptr;
+
 public:
 	bool shouldExit = false;
 	Game();
@@ -55,6 +59,9 @@ public:
 	void draw(float dt) const;
 	void drawScene(Shader &shader, DrawPass pass) const;
 	void drawUI() const;
+
+	void onGameObjectCreated(Connection *c, NetBuffer &buffer);
+	void onGameObjectDeleted(Connection *c, NetBuffer &buffer);
 
 	void updateScreenDimensions(int width, int height);
 	Camera *getCamera() const;

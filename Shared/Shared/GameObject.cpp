@@ -2,12 +2,9 @@
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
 
-GameObject::GameObject() {
-	GameObject(vec3(0, 0, 0), vec3(0, 0, 0), 0, 1);
-}
+GameObject::GameObject(): GameObject(vec3(0.0f), vec3(0.0f), 0, 1) { }
 
-GameObject::GameObject(const int &id) {
-	GameObject();
+GameObject::GameObject(const int &id): GameObject() {
 	this->id = id;
 }
 
@@ -27,7 +24,7 @@ bool GameObject::collidesWith(GameObject * gameObject) {
 
 void GameObject::onCollision(GameObject * gameObject) {
 	// Should only update your own state, gameObject's state will be updated when it calls onCollision
-	std::cout << to_string() << " collided with " << gameObject->to_string() << std::endl;
+	//std::cout << to_string() << " collided with " << gameObject->to_string() << std::endl;
 }
 
 double GameObject::distanceFrom(GameObject * gameObject) {
@@ -70,11 +67,6 @@ int GameObject::getId() {
 	return this->id;
 }
 
-int GameObject::getGameObjectType() const {
-	return GAMEOBJECT_TYPE;
-}
-
-
 vec3 GameObject::getMoveDestination(vec3 movement) {
 	return getPosition() + movement;
 }
@@ -94,6 +86,7 @@ void GameObject::updateOnServerTick() {
 void GameObject::serialize(NetBuffer &buffer) const {
 	buffer.write<vec3>(position);
 	buffer.write<vec3>(velocity);
+	buffer.write<vec3>(scale);
 	buffer.write<int>(id);
 	buffer.write<int>(radius);
 }
@@ -101,6 +94,7 @@ void GameObject::serialize(NetBuffer &buffer) const {
 void GameObject::deserialize(NetBuffer &buffer) {
 	position = buffer.read<vec3>();
 	velocity = buffer.read<vec3>();
+	scale = buffer.read<vec3>();
 	id = buffer.read<int>();
 	radius = buffer.read<int>();
 }

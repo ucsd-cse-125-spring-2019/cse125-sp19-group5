@@ -3,36 +3,21 @@
 #include <boost/asio.hpp>
 #include <Shared/Common.h>
 #include <Shared/GameMessage.hpp>
-#include "GameEngine.h"
 #include <chrono>
+#include "GameEngine.h"
 #include "Networking/Server.h"
 
-constexpr auto TICKS_PER_SECOND = 10; // How many updates per second.
+constexpr auto TICKS_PER_SECOND = 60; // How many updates per second.
 
 int main(int argc, char **argv) {
 	Network::init(1234);
 
 	GameEngine gameEngine;
-	GameStateNet gameState;
+	gameEngine.init();
+
 	auto origin = vec3(0.0f);
-	gameState.gameObjects.push_back(Player(origin, origin, origin, 0, 1));
 
-	gameState.in_progress = false;
-	gameState.score = std::make_tuple(1, 2);
-	gameState.timeLeft = 30;
 	vector<PlayerInputs> playerInputs;
-
-	float ballX = 0.0f;
-
-	// Handle player requests to move the ball.
-	auto handleBallMove = [&](Connection *c, NetBuffer &buffer) {
-		ballX += buffer.read<float>();
-
-		// Replicate the changes so everyone sees the update.
-		NetBuffer updateBuffer(NetMessage::BALL_X);
-		updateBuffer.write<float>(ballX);
-		Network::broadcast(updateBuffer);
-	};
 
 	// Handle player keyboard/mouse inputs
 	auto handlePlayerInput = [&playerInputs](Connection *c, NetBuffer &buffer) {
@@ -41,11 +26,9 @@ int main(int argc, char **argv) {
 		input.id = c->getId();
 		input.inputs = std::get<0>(inputTuple);
 		playerInputs.push_back(input);
-
-		//cout << "handlePlayerInput: " << input.inputs << endl;
 	};
 
-	Network::onClientConnected([&ballX, &gameEngine,&handleBallMove, &handlePlayerInput](Connection *c) {
+	Network::onClientConnected([&](Connection *c) {
 		std::cout << "Player " << c->getId() << " has connected." << std::endl;
 
 		// Sync up the current state of ballX.
@@ -60,14 +43,24 @@ int main(int argc, char **argv) {
 		buffer.write<int>(c->getId());
 		c->send(buffer);
 
-		gameEngine.addGameObject(new Player(vec3(0.0f), vec3(0.0f), vec3(0.0f,0.0f,-1.0f), c->getId(), 1));
+		for (auto gameObject : gameEngine.getGameObjects()) {
+			if (!gameObject) { continue; }
+			NetBuffer buffer(NetMessage::GAME_OBJ_CREATE);
+			buffer.write<GAMEOBJECT_TYPES>(gameObject->getGameObjectType());
+			gameObject->serialize(buffer);
+			c->send(buffer);
+			std::cout << "sent object " << gameObject->getId() << " to " << c->getId() << std::endl;
+		}
 
-		// Allow the newly connected player to move the ball.
-		c->on(NetMessage::BALL_X, handleBallMove);
+		auto player = new Player(origin, origin, c->getId(), 1.0f);
+		player->setDirection(vec3(0, 0, -1));
+		player->setScale(vec3(0.2f));
+		gameEngine.addGameObject(player);
 
 		// Receive player keyboard and mouse(TODO) input
 		c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);
-		c->onDisconnected([](Connection *c) {
+		c->onDisconnected([&](Connection *c) {
+			gameEngine.onPlayerDisconnected(c);
 			std::cout << "Player " << c->getId() << " has disconnected."
 				<< std::endl;
 		});
@@ -108,10 +101,7 @@ int main(int argc, char **argv) {
 			std::cerr << "SERVER TOOK TOO LONG TO UPDATE!" << endl;
 		}
 	
-		GameStateNet updatedState;
-		//broadcast the updated game state
-		gameEngine.getGameStateNet(&updatedState);
-		Network::broadcast(NetMessage::GAME_STATE_UPDATE, updatedState);
+		gameEngine.synchronizeGameState();
 	}
 
 

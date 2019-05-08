@@ -4,6 +4,6 @@ Wall::Wall(vec3 position, vec3 velocity, int id, int radius) : GameObject(positi
 
 }
 
-int Wall::getGameObjectType() const {
+GAMEOBJECT_TYPES Wall::getGameObjectType() const {
 	return WALL_TYPE;
 }
