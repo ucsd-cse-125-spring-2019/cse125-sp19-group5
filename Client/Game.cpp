@@ -15,21 +15,27 @@ Material *testMat = nullptr;
 
 void Game::onGameObjectCreated(Connection *c, NetBuffer &buffer) {
 	auto gameObjectType = buffer.read<GAMEOBJECT_TYPES>();
-	GameObject *obj = nullptr;
+	std::unique_ptr<GameObject> obj = nullptr;
 	switch (gameObjectType) {
 		case GAMEOBJECT_TYPES::PLAYER_TYPE:
-			obj = new Player(-1);
+			obj = std::make_unique<Player>(-1);
 			break;
 		default:
 			std::cerr << "Unknown game object type (" << gameObjectType << ")"
 				<< std::endl;
+			return;
 	}
 
 	obj->deserialize(buffer);
-	gameObjects.push_back(obj);
+
+	auto clientObj = new ClientGameObject(std::move(obj));
+	std::cout << clientObj->getGameObject()->getId() << std::endl;
+	// Do not use `obj` after this, ownership transfered to clientObj.
+	clientObj->setModel("Models/sphere.obj");
+	gameObjects[clientObj->getGameObject()->getId()] = clientObj;
 }
 
-Game::Game() {
+Game::Game(): gameObjects(1024, nullptr) {
 	testMat = new Material("Materials/brick.json");
 	Draw::init();
 
@@ -63,15 +69,10 @@ Game::Game() {
 	spatialTest2 = soundEngine->loadSpatialSound("Sounds/minecraft_chicken_ambient.ogg", 1.0f);
 	spatialTest2->play(true);
 
-	ClientGameObject *ball = new ClientGameObject(0);
-	ball->setModel("Models/sphere.obj");
-	ball->setScale(vec3(0.2f));
-	gameObjects.push_back(ball);
-
 	// Handle game object creation.
 	Network::on(
 		NetMessage::GAME_OBJ_CREATE,
-		boost::bind(&Game::onGameObjectCreated, this)
+		boost::bind(&Game::onGameObjectCreated, this, _1, _2)
 	);
 
 	// Receive connection id / player id from server
@@ -86,9 +87,16 @@ Game::Game() {
 		gsn->deserialize(buffer);
 		/*TODO: graphics update based on the game state*/
 		for (auto gObj : gsn->gameObjects) {
+			if (!gObj) { continue; }
+			auto clientObj = gameObjects[gObj->getId()];
+
+			if (clientObj) {
+				clientObj->getGameObject()->setPosition(gObj->getPosition());
+			}
+
 			//cout << glm::to_string(gsn->gameObjects[0].getPosition()) << endl;
-			if (gObj.getId() == playerId) {
-				this->camera->setPosition(gObj.getPosition());
+			if (gObj->getId() == playerId) {
+				this->camera->setPosition(gObj->getPosition());
 			}
 
 		}
@@ -195,12 +203,14 @@ void Game::update(float dt) {
 
 	const auto curTime = (float)glfwGetTime();
 	for (auto gameObject : gameObjects) {
+		if (!gameObject) { continue; }
 		gameObject->updateAnimation(curTime);
 	}
 }
 
 void Game::drawScene(Shader &shader, DrawPass pass) const {
 	for (auto gameObject : gameObjects) {
+		if (!gameObject) { continue; }
 		if (pass == DrawPass::LIGHTING) {
 			testMat->bind(shader);
 		}

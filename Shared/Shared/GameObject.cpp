@@ -2,12 +2,9 @@
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
 
-GameObject::GameObject() {
-	GameObject(vec3(0, 0, 0), vec3(0, 0, 0), 0, 1);
-}
+GameObject::GameObject(): GameObject(vec3(0.0f), vec3(0.0f), 0, 1) { }
 
-GameObject::GameObject(const int &id) {
-	GameObject();
+GameObject::GameObject(const int &id): GameObject() {
 	this->id = id;
 }
 
@@ -27,7 +24,7 @@ bool GameObject::collidesWith(GameObject * gameObject) {
 
 void GameObject::onCollision(GameObject * gameObject) {
 	// Should only update your own state, gameObject's state will be updated when it calls onCollision
-	std::cout << to_string() << " collided with " << gameObject->to_string() << std::endl;
+	//std::cout << to_string() << " collided with " << gameObject->to_string() << std::endl;
 }
 
 double GameObject::distanceFrom(GameObject * gameObject) {
@@ -69,11 +66,6 @@ int GameObject::getRadius() {
 int GameObject::getId() {
 	return this->id;
 }
-
-GAMEOBJECT_TYPES GameObject::getGameObjectType() const {
-	return GAMEOBJECT_TYPE;
-}
-
 
 vec3 GameObject::getMoveDestination(vec3 movement) {
 	return getPosition() + movement;

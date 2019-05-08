@@ -12,7 +12,7 @@ GAMEOBJECT_TYPES Player::getGameObjectType() const {
 }
 
 void Player::onCollision(GameObject * gameObject) {
-	std::cout << to_string() + " collided with " << gameObject->to_string() << std::endl;
+	//std::cout << to_string() + " collided with " << gameObject->to_string() << std::endl;
 }
 
 vec3 Player::getDirection() {

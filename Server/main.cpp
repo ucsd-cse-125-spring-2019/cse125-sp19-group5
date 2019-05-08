@@ -7,7 +7,7 @@
 #include "GameEngine.h"
 #include "Networking/Server.h"
 
-constexpr auto TICKS_PER_SECOND = 10; // How many updates per second.
+constexpr auto TICKS_PER_SECOND = 60; // How many updates per second.
 
 GameEngine gameEngine;
 
@@ -16,7 +16,6 @@ int main(int argc, char **argv) {
 
 	GameStateNet gameState;
 	auto origin = vec3(0.0f);
-	gameState.gameObjects.push_back(Player(origin, origin, origin, 0, 1));
 
 	gameState.in_progress = false;
 	gameState.score = std::make_tuple(1, 2);
@@ -46,7 +45,7 @@ int main(int argc, char **argv) {
 		//cout << "handlePlayerInput: " << input.inputs << endl;
 	};
 
-	Network::onClientConnected([&ballX, &handleBallMove, &handlePlayerInput](Connection *c) {
+	Network::onClientConnected([&](Connection *c) {
 		std::cout << "Player " << c->getId() << " has connected." << std::endl;
 
 		// Sync up the current state of ballX.
@@ -61,6 +60,15 @@ int main(int argc, char **argv) {
 		buffer.write<int>(c->getId());
 		c->send(buffer);
 
+		for (auto gameObject : gameEngine.getGameObjects()) {
+			if (!gameObject) { continue; }
+			NetBuffer buffer(NetMessage::GAME_OBJ_CREATE);
+			buffer.write<GAMEOBJECT_TYPES>(gameObject->getGameObjectType());
+			gameObject->serialize(buffer);
+			c->send(buffer);
+			std::cout << "sent object " << gameObject->getId() << " to " << c->getId() << std::endl;
+		}
+
 		gameEngine.addGameObject(new Player(vec3(0.0f), vec3(0.0f), vec3(0.0f,0.0f,-1.0f), c->getId(), 1));
 
 		// Allow the newly connected player to move the ball.
@@ -68,7 +76,8 @@ int main(int argc, char **argv) {
 
 		// Receive player keyboard and mouse(TODO) input
 		c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);
-		c->onDisconnected([](Connection *c) {
+		c->onDisconnected([&](Connection *c) {
+			gameEngine.onPlayerDisconnected(c);
 			std::cout << "Player " << c->getId() << " has disconnected."
 				<< std::endl;
 		});

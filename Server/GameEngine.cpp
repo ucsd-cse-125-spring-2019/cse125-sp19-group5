@@ -3,6 +3,29 @@
 #include <glm/gtx/string_cast.hpp>
 #include "Networking/Server.h"
 
+template<class T, class V>
+void inline safeRemoveFromVec(std::vector<T> &v, V &val) {
+	auto it = std::find(v.begin(), v.end(), val);
+	if (it != v.end()) {
+		v.erase(it);
+	}
+}
+
+void GameEngine::removeGameObjectById(int id) {
+	auto gameObject = gameState.gameObjects[id];
+	if (gameObject) {
+		gameState.gameObjects[id] = nullptr;
+		safeRemoveFromVec(gameState.players, gameObject);
+		safeRemoveFromVec(gameState.walls, gameObject);
+		safeRemoveFromVec(gameState.balls, gameObject);
+		delete gameObject;
+	}
+}
+
+void GameEngine::onPlayerDisconnected(Connection *c) {
+	removeGameObjectById(c->getId());
+}
+
 void GameEngine::updateGameState(vector<PlayerInputs> & playerInputs) {
 	
 	movePlayers(playerInputs);
@@ -21,7 +44,7 @@ GameState & GameEngine::getGameState() {
 }
 
 void GameEngine::addGenericGameObject(GameObject *obj) {
-	gameState.gameObjects.push_back(obj);
+	gameState.gameObjects[obj->getId()] = obj;
 
 	NetBuffer buffer(NetMessage::GAME_OBJ_CREATE);
 	buffer.write<GAMEOBJECT_TYPES>(obj->getGameObjectType());
@@ -35,12 +58,12 @@ void GameEngine::addGameObject(Player *player) {
 }
 
 void GameEngine::addGameObject(Ball *ball) {
-	gameState.gameObjects.push_back(ball);
+	addGenericGameObject(ball);
 	gameState.balls.push_back(ball);
 }
 
 void GameEngine::addGameObject(Wall *wall) {
-	gameState.gameObjects.push_back(wall);
+	addGenericGameObject(wall);
 	gameState.walls.push_back(wall);
 }
 
@@ -87,7 +110,9 @@ void GameEngine::movePlayers(vector<PlayerInputs> & playerInputs) {
 	// Move all players
 	for (int i = 0; i < gameState.players.size(); i++) {
 		// TODO: prevent two players from moving to the same spot
-
+		if (gameState.players[i] == nullptr) {
+			std::cerr << "Whoa" << std::endl;
+		}
 		// gameState.players[i]->move(movementInputToVector(aggregatePlayerMovements[i]));
 		noCollisionMove(gameState.players[i], movementInputToVector(aggregatePlayerMovements[i]));
 		//cout << aggregatePlayerMovements[i] << "   " << glm::to_string(gameState.players[i]->getPosition()) << endl;
@@ -125,8 +150,9 @@ void GameEngine::doPlayerCommands(vector<PlayerInputs> & playerInputs) {
 
 void GameEngine::doCollisionInteractions() {
 	for (GameObject * gameObject1 : gameState.gameObjects) {
+		if (!gameObject1) { continue; }
 		for (GameObject * gameObject2 : gameState.gameObjects) {
-			if (gameObject1->collidesWith(gameObject2)) {
+			if (gameObject2 && gameObject1->collidesWith(gameObject2)) {
 				gameObject1->onCollision(gameObject2);
 			}
 		}
@@ -136,7 +162,7 @@ void GameEngine::doCollisionInteractions() {
 void GameEngine::removeDeadObjects() {
 	vector<GameObject *> preservedGameObjects;
 	for (GameObject * gameObject : gameState.gameObjects) {
-		if (gameObject->deleteOnServerTick()) {
+		if (gameObject && gameObject->deleteOnServerTick()) {
 			delete gameObject;
 		}
 		else {
@@ -148,7 +174,9 @@ void GameEngine::removeDeadObjects() {
 
 void GameEngine::updateGameObjectsOnServerTick() {
 	for (GameObject * gameObject : gameState.gameObjects) {
-		gameObject->updateOnServerTick();
+		if (gameObject) {
+			gameObject->updateOnServerTick();
+		}
 	}
 }
 
@@ -165,8 +193,10 @@ GameStateNet * GameEngine::getGameStateNet(GameStateNet * networkGameState) {
 	networkGameState->gameObjects.clear();
 
 	for (GameObject * gameObject : gameState.gameObjects) {
-		//cout << "COPYING GAME OBJECT!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
-		networkGameState->gameObjects.push_back(*gameObject);
+		if (gameObject) {
+			//cout << "COPYING GAME OBJECT!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
+			networkGameState->gameObjects.push_back(gameObject);
+		}
 	}
 
 	return networkGameState;
@@ -187,4 +217,8 @@ bool GameEngine::noCollisionMove(GameObject * gameObject, vec3 movement) {
 	//cout << "destination=" << glm::to_string(destination) << "  movement=" << glm::to_string(movement) << endl;
 
 	return true;
+}
+
+const std::vector<GameObject*> &GameEngine::getGameObjects() const {
+	return gameState.gameObjects;
 }

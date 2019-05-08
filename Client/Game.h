@@ -10,6 +10,7 @@
 #include "Sound/SoundEngine.h"
 #include "ClientGameObject.h"
 #include <Shared/GameState.h>
+#include "Networking/Client.h"
 
 enum DrawPass {
 	SHADOW,
