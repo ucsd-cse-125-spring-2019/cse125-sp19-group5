@@ -18,7 +18,6 @@
     <ClCompile Include="Shared\CollisionDetection.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BoostSerializeStruct.h" />
     <ClInclude Include="Shared\Ball.h" />
     <ClInclude Include="Shared\Common.h" />
     <ClInclude Include="Shared\CommonStructs.h" />

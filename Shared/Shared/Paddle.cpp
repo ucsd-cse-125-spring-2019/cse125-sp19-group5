@@ -6,7 +6,7 @@ Paddle::Paddle (vec3 position, vec3 velocity, int id, float radius, int lifespan
 	setBoundingShape(new BoundingSphere(position, radius));
 }
 
-int Paddle::getGameObjectType() const {
+GAMEOBJECT_TYPES Paddle::getGameObjectType() const {
 	return PADDLE_TYPE;
 }
 

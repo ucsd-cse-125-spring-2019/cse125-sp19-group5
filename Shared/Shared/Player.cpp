@@ -11,12 +11,19 @@ Player::Player(vec3 position, vec3 velocity, vec3 direction, int id, float radiu
 	setBoundingShape(new BoundingSphere(position, radius));
 }
 
-int Player::getGameObjectType() const {
+GAMEOBJECT_TYPES Player::getGameObjectType() const {
 	return PLAYER_TYPE;
 }
 
 void Player::onCollision(GameObject * gameObject) {
-	std::cout << to_string() + " collided with " << gameObject->to_string() << std::endl;
+	//std::cout << to_string() + " collided with " << gameObject->to_string() << std::endl;
+}
+
+void Player::setDirection(const vec3 &newDirection) {
+	if (glm::length(newDirection) == 0.0f) {
+		return;
+	}
+	direction = glm::normalize(newDirection);
 }
 
 vec3 Player::getDirection() {
@@ -24,8 +31,10 @@ vec3 Player::getDirection() {
 }
 
 vec3 Player::getMoveDestination(vec3 movement) {
+	//return GameObject::getMoveDestination(movement);
+	
 	if (movement.x == 0.0f && movement.z == 0.0f) {
-		return getPosition();
+		return position;
 	}
 
 	vec3 direction = glm::normalize(vec3(getDirection().x, 0, getDirection().z));
@@ -43,6 +52,10 @@ vec3 Player::getMoveDestination(vec3 movement) {
 	}
 	if (movement.x > 0) {
 		directionalizedMovement = directionalizedMovement - glm::cross(up, direction);
+	}
+
+	if (glm::length(directionalizedMovement) == 0) {
+		return position;
 	}
 
 	return getPosition() + glm::normalize(directionalizedMovement); // * player->getSpeed();
@@ -99,4 +112,14 @@ GameObject * Player::processCommand(int inputs)
 		}
 	}
 	return retval;
+}
+
+void Player::serialize(NetBuffer &buffer) const {
+	GameObject::serialize(buffer);
+	buffer.write(direction);
+}
+
+void Player::deserialize(NetBuffer &buffer) {
+	GameObject::deserialize(buffer);
+	direction = buffer.read<vec3>();
 }

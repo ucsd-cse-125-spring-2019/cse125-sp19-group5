@@ -3,6 +3,14 @@
 #include "Networking/Serializable.h"
 #include "BoundingShape.h"
 
+enum GAMEOBJECT_TYPES {
+	GAMEOBJECT_TYPE,
+	PLAYER_TYPE,
+	BALL_TYPE,
+	WALL_TYPE,
+	PADDLE_TYPE,
+};
+
 class GameObject : public Serializable {
 public:
 	GameObject();
@@ -21,7 +29,7 @@ public:
 	void setScale(const vec3 &newScale); 
 	vec3 getScale() const;
 
-	virtual int getGameObjectType() const;
+	virtual GAMEOBJECT_TYPES getGameObjectType() const;
 	int getId();
 
 	virtual vec3 getMoveDestination(vec3 movement);
@@ -39,18 +47,22 @@ public:
 
 	virtual string to_string();
 
+	void setAnimation(int id = -1, bool reset = true);
+	int getAnimation() const;
+
+	void setMaterial(const std::string &newMaterial);
+	string getMaterial() const;
+
+	void setModel(const std::string &newModel);
+	string getModel() const;
+
 protected:
 	vec3 position;
 	vec3 velocity;
 	vec3 scale = vec3(1.0f);
+	std::string model;
+	std::string material;
+	int animation;
 	int id;
 	BoundingShape * boundingShape;
-};
-
-enum GAMEOBJECT_TYPES {
-	GAMEOBJECT_TYPE,
-	PLAYER_TYPE,
-	BALL_TYPE,
-	WALL_TYPE,
-	PADDLE_TYPE,
 };

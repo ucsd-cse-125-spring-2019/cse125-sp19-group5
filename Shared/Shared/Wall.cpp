@@ -10,6 +10,6 @@ Wall::Wall(vec3 position, vec3 direction, int id, float length, float width, flo
 	setBoundingShape(new BoundingBox(position, direction, length, width, height));
 }
 
-int Wall::getGameObjectType() const {
+GAMEOBJECT_TYPES Wall::getGameObjectType() const {
 	return WALL_TYPE;
 }

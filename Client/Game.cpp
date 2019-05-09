@@ -11,10 +11,72 @@
 #include <Shared/CommonStructs.h>
 #include "Renderer/Material.h"
 
-Material *testMat = nullptr;
+void Game::onGameObjectCreated(Connection *c, NetBuffer &buffer) {
+	auto gameObjectType = buffer.read<GAMEOBJECT_TYPES>();
+	std::unique_ptr<GameObject> obj = nullptr;
+	switch (gameObjectType) {
+		case GAMEOBJECT_TYPES::PLAYER_TYPE:
+			obj = std::make_unique<Player>(-1);
+			break;
+		default:
+			obj = std::make_unique<GameObject>();
+			break;
+	}
 
-Game::Game() {
-	testMat = new Material("Materials/brick.json");
+	obj->deserialize(buffer);
+
+	auto clientObj = new ClientGameObject(std::move(obj));
+	// Do not use `obj` after this, ownership transfered to clientObj.
+
+	auto id = clientObj->getGameObject()->getId();
+	gameObjects[id] = clientObj;
+	gameState.gameObjects[id] = clientObj->getGameObject();
+
+	std::cout << "Created object " << id << std::endl;
+	if (id == playerId) {
+		playerObj = static_cast<Player*>(clientObj->getGameObject());
+	}
+}
+
+void Game::onGameObjectDeleted(Connection *c, NetBuffer &buffer) {
+	auto id = buffer.read<int>();
+	if (gameObjects[id]) {
+		delete gameObjects[id];
+	}
+	gameObjects[id] = nullptr;
+	gameState.gameObjects[id] = nullptr;
+}
+
+void Game::onGameObjectModelSet(Connection *c, NetBuffer &buffer) {
+	auto id = buffer.read<int>();
+	auto model = buffer.read<std::string>();
+	auto gameObject = gameObjects[id];
+
+	if (gameObject) {
+		gameObject->setModel(model);
+	}
+}
+
+void Game::onGameObjectAnimSet(Connection *c, NetBuffer &buffer) {
+	auto id = buffer.read<int>();
+	auto animationId = buffer.read<int>();
+	auto reset = buffer.read<bool>();
+	auto gameObject = gameObjects[id];
+	if (gameObject) {
+		gameObject->setAnimation(animationId, reset);
+	}
+}
+
+void Game::onGameObjectMaterialSet(Connection *c, NetBuffer &buffer) {
+	auto id = buffer.read<int>();
+	auto newMaterial = buffer.read<std::string>();
+	auto gameObject = gameObjects[id];
+	if (gameObject) {
+		gameObject->setMaterial(newMaterial);
+	}
+}
+
+Game::Game(): gameObjects(1024, nullptr) {
 	Draw::init();
 
 	shadowMap = new ShadowMap();
@@ -27,9 +89,6 @@ Game::Game() {
 	sun->setColor(vec3(0.8f, 0.7f, 0.55f));
 
 	skybox = new Skybox("Textures/Skybox/cloudtop", *camera);
-
-	white = new Texture2d("Textures/white.png");
-	grass = new Texture2d("Textures/grass.png");
 
 	Input::setMouseVisible(false);
 
@@ -47,17 +106,37 @@ Game::Game() {
 	spatialTest2 = soundEngine->loadSpatialSound("Sounds/minecraft_chicken_ambient.ogg", 1.0f);
 	spatialTest2->play(true);
 
-	ClientGameObject *ball = new ClientGameObject(0);
-	ball->setModel("Models/sphere.obj");
-	ball->setScale(vec3(0.2f));
-	gameObjects.push_back(ball);
+	// Handle game object creation and deletion.
+	Network::on(
+		NetMessage::GAME_OBJ_CREATE,
+		boost::bind(&Game::onGameObjectCreated, this, _1, _2)
+	);
+	Network::on(
+		NetMessage::GAME_OBJ_DELETE,
+		boost::bind(&Game::onGameObjectDeleted, this, _1, _2)
+	);
 
-	GameStateNet *gsn = new GameStateNet();
+	Network::on(
+		NetMessage::GAME_OBJ_MODEL,
+		boost::bind(&Game::onGameObjectModelSet, this, _1, _2)
+	);
+	Network::on(
+		NetMessage::GAME_OBJ_ANIM,
+		boost::bind(&Game::onGameObjectAnimSet, this, _1, _2)
+	);
+	Network::on(
+		NetMessage::GAME_OBJ_MAT,
+		boost::bind(&Game::onGameObjectMaterialSet, this, _1, _2)
+	);
 
-	Network::on(NetMessage::GAME_STATE_UPDATE, [gsn](Connection *c, NetBuffer &buffer) {
-		gsn->deserialize(buffer);
-		/*TODO: graphics update based on the game state*/
+	// Receive connection id / player id from server
+	Network::on(NetMessage::CONNECTION_ID, [this] (Connection *c, NetBuffer &buffer) {
+		playerId = buffer.read<int>();
+		cout << "I am Player " << playerId << "." << endl;
+	});
 
+	Network::on(NetMessage::GAME_STATE_UPDATE, [&](Connection *c, NetBuffer &buffer) {
+		gameState.deserialize(buffer);
 	});
 }
 
@@ -111,32 +190,34 @@ void Game::update(float dt) {
 	}
 
 	// bytes of input bits to be sent to server
-	int inputs = 0;
+	int keyInputs = 0;
 	vec3 direction(0.0f);
 	if (Input::isKeyDown(GLFW_KEY_W)) {
-		direction += camera->getForward();
-		inputs += FORWARD;
+		//direction += camera->getForward();
+		keyInputs += FORWARD;
 	}
 	if (Input::isKeyDown(GLFW_KEY_S)) {
-		direction -= camera->getForward();
-		inputs += BACKWARD;
+		//direction -= camera->getForward();
+		keyInputs += BACKWARD;
 	}
 	if (Input::isKeyDown(GLFW_KEY_A)) {
-		direction -= camera->getRight();
-		inputs += LEFT;
+		//direction -= camera->getRight();
+		keyInputs += LEFT;
 	}
 	if (Input::isKeyDown(GLFW_KEY_D)) {
-		direction += camera->getRight();
-		inputs += RIGHT;
-	}
-	if (glm::length(direction) != 0) {
-		direction = glm::normalize(direction) * dt * 5.0f;
-		camera->setPosition(camera->getPosition() + direction);
+		//direction += camera->getRight();
+		keyInputs += RIGHT;
 	}
 
 	if (Input::isKeyDown(GLFW_KEY_ESCAPE)) {
 		shouldExit = true;
 	}
+
+	tuple<int, float, float> allInput(keyInputs, theta, phi);
+	// Sending player input 
+	NetBuffer buffer(NetMessage::PLAYER_INPUT);
+	buffer.write< tuple<int,float,float> >(allInput);
+	Network::send(buffer);
 
 	// Arrow keys to move the ball.
 	float ballDX = 0.0f;
@@ -155,16 +236,20 @@ void Game::update(float dt) {
 
 	const auto curTime = (float)glfwGetTime();
 	for (auto gameObject : gameObjects) {
+		if (!gameObject) { continue; }
 		gameObject->updateAnimation(curTime);
+	}
+
+	if (playerObj) {
+		auto offset = playerObj->getDirection() * 10.0f + vec3(0, 2, 0);
+		camera->setPosition(playerObj->getPosition() + offset);
 	}
 }
 
 void Game::drawScene(Shader &shader, DrawPass pass) const {
 	for (auto gameObject : gameObjects) {
-		if (pass == DrawPass::LIGHTING) {
-			testMat->bind(shader);
-		}
-		gameObject->draw(shader, camera);
+		if (!gameObject) { continue; }
+		gameObject->draw(shader, camera, pass);
 	}
 }
 

@@ -7,14 +7,11 @@
 #include "Renderer/Skybox.h"
 #include "Renderer/TextRenderer.h"
 #include "Renderer/ShadowMap.h"
+#include "Renderer/DrawPass.h"
 #include "Sound/SoundEngine.h"
 #include "ClientGameObject.h"
 #include <Shared/GameState.h>
-
-enum DrawPass {
-	SHADOW,
-	LIGHTING
-};
+#include "Networking/Client.h"
 
 class Game {
 	private:
@@ -44,6 +41,11 @@ class Game {
 	Sound *spatialTest1 = nullptr;
 	Sound *spatialTest2 = nullptr;
 
+	int playerId;
+
+	GameState gameState;
+	Player *playerObj = nullptr;
+
 public:
 	bool shouldExit = false;
 	Game();
@@ -53,6 +55,12 @@ public:
 	void draw(float dt) const;
 	void drawScene(Shader &shader, DrawPass pass) const;
 	void drawUI() const;
+
+	void onGameObjectCreated(Connection *c, NetBuffer &buffer);
+	void onGameObjectDeleted(Connection *c, NetBuffer &buffer);
+	void onGameObjectModelSet(Connection *c, NetBuffer &buffer);
+	void onGameObjectAnimSet(Connection *c, NetBuffer &buffer);
+	void onGameObjectMaterialSet(Connection *c, NetBuffer &buffer);
 
 	void updateScreenDimensions(int width, int height);
 	Camera *getCamera() const;

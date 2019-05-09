@@ -7,7 +7,7 @@ Ball::Ball(vec3 position, vec3 velocity, int id, float radius) : GameObject(posi
 	setBoundingShape(new BoundingSphere(position, radius));
 }
 
-int Ball::getGameObjectType() const {
+GAMEOBJECT_TYPES Ball::getGameObjectType() const {
 	return BALL_TYPE;
 }
 
