@@ -25,3 +25,15 @@ void GameObject::setAnimation(int id, bool reset) {
 int GameObject::getAnimation() const {
 	return animation;
 }
+
+void GameObject::setMaterial(const std::string &newMaterial) {
+	material = newMaterial;
+	NetBuffer buffer(NetMessage::GAME_OBJ_MAT);
+	buffer.write(getId());
+	buffer.write(newMaterial);
+	Network::broadcast(buffer);
+}
+
+const std::string &GameObject::getMaterial() const {
+	return material;
+}

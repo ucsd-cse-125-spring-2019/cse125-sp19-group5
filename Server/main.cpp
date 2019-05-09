@@ -54,6 +54,17 @@ int main(int argc, char **argv) {
 			modelBuffer.write(gameObject->getId());
 			modelBuffer.write(gameObject->getModel());
 			c->send(modelBuffer);
+
+			NetBuffer animBuffer(NetMessage::GAME_OBJ_ANIM);
+			animBuffer.write(gameObject->getId());
+			animBuffer.write(gameObject->getAnimation());
+			animBuffer.write(true);
+			c->send(animBuffer);
+
+			NetBuffer matBuffer(NetMessage::GAME_OBJ_MAT);
+			matBuffer.write(gameObject->getId());
+			matBuffer.write(gameObject->getMaterial());
+			c->send(matBuffer);
 		}
 
 		auto player = new Player(origin, origin, c->getId(), 1.0f);
@@ -61,6 +72,7 @@ int main(int argc, char **argv) {
 
 		player->setDirection(vec3(0, 0, -1));
 		player->setModel("Models/player.obj");
+		player->setMaterial("Materials/brick.json");
 
 		// Receive player keyboard and mouse(TODO) input
 		c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);

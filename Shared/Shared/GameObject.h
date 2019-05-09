@@ -42,8 +42,12 @@ public:
 	public:
 	void setAnimation(int id = -1, bool reset = true);
 	int getAnimation() const;
+
+	void setMaterial(const std::string &newMaterial);
+	const std::string &getMaterial() const;
 	protected:
 	int animation = -1;
+	std::string material = "";
 #endif
 
 protected:

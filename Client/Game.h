@@ -60,6 +60,7 @@ public:
 	void onGameObjectDeleted(Connection *c, NetBuffer &buffer);
 	void onGameObjectModelSet(Connection *c, NetBuffer &buffer);
 	void onGameObjectAnimSet(Connection *c, NetBuffer &buffer);
+	void onGameObjectMaterialSet(Connection *c, NetBuffer &buffer);
 
 	void updateScreenDimensions(int width, int height);
 	Camera *getCamera() const;

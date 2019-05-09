@@ -10,4 +10,5 @@ enum NetMessage {
 	GAME_OBJ_DELETE,
 	GAME_OBJ_MODEL,
 	GAME_OBJ_ANIM,
+	GAME_OBJ_MAT,
 };

@@ -69,6 +69,15 @@ void Game::onGameObjectAnimSet(Connection *c, NetBuffer &buffer) {
 	}
 }
 
+void Game::onGameObjectMaterialSet(Connection *c, NetBuffer &buffer) {
+	auto id = buffer.read<int>();
+	auto newMaterial = buffer.read<std::string>();
+	auto gameObject = gameObjects[id];
+	if (gameObject) {
+		gameObject->setMaterial(newMaterial);
+	}
+}
+
 Game::Game(): gameObjects(1024, nullptr) {
 	Draw::init();
 
@@ -116,6 +125,10 @@ Game::Game(): gameObjects(1024, nullptr) {
 	Network::on(
 		NetMessage::GAME_OBJ_ANIM,
 		boost::bind(&Game::onGameObjectAnimSet, this, _1, _2)
+	);
+	Network::on(
+		NetMessage::GAME_OBJ_MAT,
+		boost::bind(&Game::onGameObjectMaterialSet, this, _1, _2)
 	);
 
 	// Receive connection id / player id from server
