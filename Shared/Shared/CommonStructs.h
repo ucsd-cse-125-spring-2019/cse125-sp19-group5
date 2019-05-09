@@ -14,6 +14,8 @@ enum PlayerCommands {
 
 struct PlayerInputs {
 	int inputs;
+	float theta;
+	float phi;
 	int id;
 };
 
