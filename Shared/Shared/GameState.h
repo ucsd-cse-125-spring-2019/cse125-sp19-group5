@@ -3,7 +3,7 @@
 #include "Ball.h"
 #include "Wall.h"
 
-struct GameState {
+struct GameState : public Serializable {
 	vector<Player *> players;
 	vector<Ball *> balls;
 	vector<Wall *> walls;
@@ -11,18 +11,23 @@ struct GameState {
 	long timeLeft;
 	tuple<int, int> score;
 	bool in_progress;
-};
 
-struct GameStateNet : public Serializable {
-	vector<GameObject> gameObjects;
-	long timeLeft;
-	tuple<int, int> score;
-	bool in_progress;
+	GameState() : gameObjects(1024, nullptr) { }
 
 	void serialize(NetBuffer &buffer) const {
-		buffer.write<size_t>(gameObjects.size());
-		for (auto &gameObject : gameObjects) {
-			gameObject.serialize(buffer);
+		auto size = 0;
+		for (auto gameObject : gameObjects) {
+			if (gameObject) {
+				size++;
+			}
+		}
+		buffer.write<size_t>(size);
+		for (auto gameObject : gameObjects) {
+			if (!gameObject) {
+				continue;
+			}
+			buffer.write(gameObject->getId());
+			gameObject->serialize(buffer);
 		}
 
 		buffer.write<long>(timeLeft);
@@ -31,12 +36,14 @@ struct GameStateNet : public Serializable {
 	}
 
 	void deserialize(NetBuffer &buffer) {
-		gameObjects.clear();
+		constexpr auto origin = vec3(0.0f);
+
 		auto numGameObjects = buffer.read<size_t>();
 		for (int i = 0; i < numGameObjects; i++) {
-			GameObject gameObject(vec3(0), vec3(0), 0, 0);
-			gameObject.deserialize(buffer);
-			gameObjects.push_back(gameObject);
+			auto gameObject = gameObjects[buffer.read<int>()];
+			if (gameObject) {
+				gameObject->deserialize(buffer);
+			}
 		}
 
 		timeLeft = buffer.read<long>();

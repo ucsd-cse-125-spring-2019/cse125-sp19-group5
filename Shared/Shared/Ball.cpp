@@ -5,7 +5,7 @@
 Ball::Ball(vec3 position, vec3 velocity, int id, int radius) : GameObject(position, velocity, id, radius) {
 }
 
-int Ball::getGameObjectType() const {
+GAMEOBJECT_TYPES Ball::getGameObjectType() const {
 	return BALL_TYPE;
 }
 

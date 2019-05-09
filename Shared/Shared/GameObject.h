@@ -2,6 +2,14 @@
 #include "Common.h"
 #include "Networking/Serializable.h"
 
+enum GAMEOBJECT_TYPES {
+	GAMEOBJECT_TYPE,
+	PLAYER_TYPE,
+	BALL_TYPE,
+	WALL_TYPE,
+	PADDLE_TYPE,
+};
+
 class GameObject : public Serializable {
 public:
 	GameObject();
@@ -17,7 +25,7 @@ public:
 	void setScale(const vec3 &newScale);
 	vec3 getScale() const;
 	int getRadius();
-	virtual int getGameObjectType() const;
+	virtual GAMEOBJECT_TYPES getGameObjectType() const = 0;
 	int getId();
 	virtual vec3 getMoveDestination(vec3 movement);
 	void move(vec3 movement);
@@ -33,12 +41,4 @@ protected:
 	vec3 scale = vec3(1.0f);
 	int id;
 	int radius;
-};
-
-enum GAMEOBJECT_TYPES {
-	GAMEOBJECT_TYPE,
-	PLAYER_TYPE,
-	BALL_TYPE,
-	WALL_TYPE,
-	PADDLE_TYPE,
 };
