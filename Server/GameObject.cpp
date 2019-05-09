@@ -1,7 +1,7 @@
 #include <Shared/GameObject.h>
 #include "Networking/Server.h"
 
-void GameObject::setModel(const string &newModel) {
+void GameObject::setModel(const std::string &newModel) {
 	model = newModel;
 	NetBuffer buffer(NetMessage::GAME_OBJ_MODEL);
 	buffer.write(getId());
@@ -34,6 +34,6 @@ void GameObject::setMaterial(const std::string &newMaterial) {
 	Network::broadcast(buffer);
 }
 
-const std::string &GameObject::getMaterial() const {
+string GameObject::getMaterial() const {
 	return material;
 }

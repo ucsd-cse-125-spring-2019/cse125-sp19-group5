@@ -71,8 +71,8 @@ int main(int argc, char **argv) {
 		gameEngine.addGameObject(player);
 
 		player->setDirection(vec3(0, 0, -1));
-		player->setModel("Models/player.obj");
 		player->setMaterial("Materials/brick.json");
+		player->setModel("Models/player.obj");
 
 		// Receive player keyboard and mouse(TODO) input
 		c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);

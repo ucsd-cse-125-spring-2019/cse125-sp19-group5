@@ -35,26 +35,22 @@ public:
 	void deserialize(NetBuffer &buffer);
 	virtual string to_string();
 
-	void setModel(const string &newModel);
-	string getModel() const;
-
-#ifdef _SERVER
-	public:
 	void setAnimation(int id = -1, bool reset = true);
 	int getAnimation() const;
 
 	void setMaterial(const std::string &newMaterial);
-	const std::string &getMaterial() const;
-	protected:
-	int animation = -1;
-	std::string material = "";
-#endif
+	string getMaterial() const;
+
+	void setModel(const std::string &newModel);
+	string getModel() const;
 
 protected:
-	string model = "";
 	vec3 position;
 	vec3 velocity;
 	vec3 scale = vec3(1.0f);
+	std::string model;
+	std::string material;
+	int animation;
 	int id;
 	int radius;
 };
