@@ -207,8 +207,7 @@ void Game::updateInputs() {
 	// Sending player input 
 	NetBuffer buffer(NetMessage::PLAYER_INPUT);
 	buffer.write(keyInputs);
-	buffer.write(theta);
-	buffer.write(phi);
+	buffer.write(camera->getForward());
 	Network::send(buffer);
 }
 
@@ -234,7 +233,7 @@ void Game::update(float dt) {
 	}
 
 	if (playerObj) {
-		auto offset = playerObj->getDirection() * 10.0f + vec3(0, 2, 0);
+		auto offset = camera->getForward() * -10.0f + vec3(0, 2, 0);
 		camera->setPosition(playerObj->getPosition() + offset);
 	}
 }

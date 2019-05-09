@@ -38,10 +38,10 @@ vec3 Player::getMoveDestination(vec3 movement) {
 	vec3 up = vec3(0, 1, 0);
 
 	if (movement.z > 0) {
-		directionalizedMovement = directionalizedMovement + direction;
+		directionalizedMovement = directionalizedMovement - direction;
 	}
 	if (movement.z < 0) {
-		directionalizedMovement = directionalizedMovement - direction;
+		directionalizedMovement = directionalizedMovement + direction;
 	}
 	if (movement.x < 0) {
 		directionalizedMovement = directionalizedMovement + glm::cross(up, direction);

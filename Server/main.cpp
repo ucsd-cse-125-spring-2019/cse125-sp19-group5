@@ -29,8 +29,7 @@ int main(int argc, char **argv) {
 		PlayerInputs input;
 		input.id = c->getId();
 		input.inputs = buffer.read<int>();
-		input.theta = buffer.read<float>();
-		input.phi = buffer.read<float>();
+		input.direction = buffer.read<vec3>();
 		playerInputs.push_back(input);
 	};
 
