@@ -27,11 +27,10 @@ int main(int argc, char **argv) {
 	// Handle player keyboard/mouse inputs
 	auto handlePlayerInput = [&playerInputs](Connection *c, NetBuffer &buffer) {
 		PlayerInputs input;
-		auto inputTuple = buffer.read< tuple<int,float,float> >();
 		input.id = c->getId();
-		input.inputs = std::get<0>(inputTuple);
-		input.theta = std::get<1>(inputTuple);
-		input.phi = std::get<2>(inputTuple);
+		input.inputs = buffer.read<int>();
+		input.theta = buffer.read<float>();
+		input.phi = buffer.read<float>();
 		playerInputs.push_back(input);
 	};
 

@@ -170,26 +170,13 @@ void Game::updateScreenDimensions(int width, int height) {
 	textRenderer->updateScreenDimensions(width, height);
 }
 
-void Game::update(float dt) {
+void Game::updateInputs() {
 	float mouseMoveScale = mouseSensitivity * 0.001f;
 	theta += (float)Input::getMouseDeltaX() * mouseMoveScale;
 	phi += (float)Input::getMouseDeltaY() * mouseMoveScale;
 
 	camera->setEyeAngles(vec3(-phi, theta, 0));
 
-	spatialTest1->setPosition(camera->getPosition() + vec3(10.0f, 0.0f, 0.0f));
-	spatialTest2->setPosition(camera->getPosition() + vec3(10.0f, 0.0f, 0.0f));
-	soundEngine->update(camera->getPosition(), vec3(0.0f, 0.0f, 0.0f), camera->getForward());
-
-	fpsTextTimer += dt;
-	int fps = (int) (1.0f / dt);
-	if (fpsTextTimer > 0.3f)
-	{
-		fpsTextTimer = 0.0f;
-		fpsText->text = "fps: " + std::to_string(fps);
-	}
-
-	// bytes of input bits to be sent to server
 	int keyInputs = 0;
 	vec3 direction(0.0f);
 	if (Input::isKeyDown(GLFW_KEY_W)) {
@@ -213,26 +200,28 @@ void Game::update(float dt) {
 		shouldExit = true;
 	}
 
-	tuple<int, float, float> allInput(keyInputs, theta, phi);
 	// Sending player input 
 	NetBuffer buffer(NetMessage::PLAYER_INPUT);
-	buffer.write< tuple<int,float,float> >(allInput);
+	buffer.write(keyInputs);
+	buffer.write(theta);
+	buffer.write(phi);
 	Network::send(buffer);
+}
 
-	// Arrow keys to move the ball.
-	float ballDX = 0.0f;
-	if (Input::isKeyDown(GLFW_KEY_LEFT)) {
-		ballDX += dt * 5.0f;
-	}
-	if (Input::isKeyDown(GLFW_KEY_RIGHT)) {
-		ballDX -= dt * 5.0f;
+void Game::update(float dt) {
+	spatialTest1->setPosition(camera->getPosition() + vec3(10.0f, 0.0f, 0.0f));
+	spatialTest2->setPosition(camera->getPosition() + vec3(10.0f, 0.0f, 0.0f));
+	soundEngine->update(camera->getPosition(), vec3(0.0f, 0.0f, 0.0f), camera->getForward());
+
+	fpsTextTimer += dt;
+	int fps = (int) (1.0f / dt);
+	if (fpsTextTimer > 0.3f)
+	{
+		fpsTextTimer = 0.0f;
+		fpsText->text = "fps: " + std::to_string(fps);
 	}
 
-	if (ballDX != 0.0f) {
-		NetBuffer buffer(NetMessage::BALL_X);
-		buffer.write<float>(ballDX);
-		Network::send(buffer);
-	}
+	updateInputs();
 
 	const auto curTime = (float)glfwGetTime();
 	for (auto gameObject : gameObjects) {
