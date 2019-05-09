@@ -3,6 +3,7 @@
 enum NetMessage {
 	TEST,
 	CONNECTION_ID,
+	TEAM,
 	PLAYER_INPUT,
 	BALL_X,
 	GAME_STATE_UPDATE,

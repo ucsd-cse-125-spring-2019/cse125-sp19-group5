@@ -100,6 +100,12 @@ Game::Game(): gameObjects(1024, nullptr) {
 		cout << "I am Player " << playerId << "." << endl;
 	});
 
+	Network::on(
+		NetMessage::TEAM, [this](Connection *c, NetBuffer &buffer) {
+		team = buffer.read<int>();
+		cout << "I am on Team " << team << "." << endl;
+	});
+
 	Network::on(NetMessage::GAME_STATE_UPDATE, [&](Connection *c, NetBuffer &buffer) {
 		gameState.deserialize(buffer);
 	});

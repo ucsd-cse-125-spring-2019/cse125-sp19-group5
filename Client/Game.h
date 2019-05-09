@@ -46,6 +46,7 @@ class Game {
 	Sound *spatialTest2 = nullptr;
 
 	int playerId;
+	int team;
 
 	GameState gameState;
 	Player *playerObj = nullptr;
