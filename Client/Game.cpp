@@ -171,10 +171,14 @@ void Game::updateScreenDimensions(int width, int height) {
 }
 
 void Game::updateInputs() {
+	// The camera can look up/down less than 90 degrees.
+	constexpr auto MAX_PITCH_OFFSET = glm::pi<float>() / 2.0f - 0.00001f;
+
 	float mouseMoveScale = mouseSensitivity * 0.001f;
 	theta += (float)Input::getMouseDeltaX() * mouseMoveScale;
 	phi += (float)Input::getMouseDeltaY() * mouseMoveScale;
 
+	phi = glm::clamp(phi, -MAX_PITCH_OFFSET, MAX_PITCH_OFFSET);
 	camera->setEyeAngles(vec3(-phi, theta, 0));
 
 	int keyInputs = 0;
