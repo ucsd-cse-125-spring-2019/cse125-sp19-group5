@@ -9,4 +9,5 @@ enum NetMessage {
 	GAME_OBJ_CREATE,
 	GAME_OBJ_DELETE,
 	GAME_OBJ_MODEL,
+	GAME_OBJ_ANIM,
 };

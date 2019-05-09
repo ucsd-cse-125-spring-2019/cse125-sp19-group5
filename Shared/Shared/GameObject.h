@@ -38,6 +38,14 @@ public:
 	void setModel(const string &newModel);
 	string getModel() const;
 
+#ifdef _SERVER
+	public:
+	void setAnimation(int id = -1, bool reset = true);
+	int getAnimation() const;
+	protected:
+	int animation = -1;
+#endif
+
 protected:
 	string model = "";
 	vec3 position;
