@@ -172,16 +172,11 @@ void GameEngine::doCollisionInteractions() {
 }
 
 void GameEngine::removeDeadObjects() {
-	vector<GameObject *> preservedGameObjects;
 	for (GameObject * gameObject : gameState.gameObjects) {
 		if (gameObject && gameObject->deleteOnServerTick()) {
 			delete gameObject;
 		}
-		else {
-			preservedGameObjects.push_back(gameObject);
-		}
 	}
-	gameState.gameObjects = preservedGameObjects;
 }
 
 void GameEngine::updateGameObjectsOnServerTick() {

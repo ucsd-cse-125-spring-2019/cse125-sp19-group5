@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
 	});
 
 	//This is the total amount of time allowed for the server to update the game state
-	auto maxAllowabeServerTime = std::chrono::milliseconds(1000 / TICKS_PER_SECOND);
+	auto maxAllowabeServerTime = std::chrono::milliseconds(1000 / TICKS_PER_SECOND + 10);
 
 	while (true) 
 	{
@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
 		auto totalDuration = std::chrono::duration_cast<std::chrono::milliseconds>(updateDone - startTime);
 
 		//check if the server is running on schedule
-		if (updateDuration < maxAllowabeServerTime) 
+		if (updateDuration <= maxAllowabeServerTime) 
 		{
 			//wait for the update time to broadcast the game state update
 			std::this_thread::sleep_for(maxAllowabeServerTime - totalDuration);
@@ -122,7 +122,7 @@ int main(int argc, char **argv) {
 		else 
 		{
 			//server has taken too long to process the update!
-			std::cerr << "SERVER TOOK TOO LONG TO UPDATE!" << endl;
+			//std::cerr << "SERVER TOOK TOO LONG TO UPDATE!" << endl;
 		}
 	
 		gameEngine.synchronizeGameState();

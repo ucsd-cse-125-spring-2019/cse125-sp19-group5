@@ -1,5 +1,6 @@
 #include "ClientGameObject.h"
 #include <glm/gtx/transform.hpp>
+#include <glm/gtx/euler_angles.hpp>
 
 ClientGameObject::ClientGameObject(std::unique_ptr<GameObject> gameObject)
 : gameObject(std::move(gameObject)) { }
@@ -16,6 +17,7 @@ void ClientGameObject::draw(
 
 		// TODO (bhang): add rotation support (quaternions or euler angles?)
 		auto modelTransform = glm::translate(gameObject->getPosition())
+			* glm::toMat4(gameObject->getOrientation())
 			* glm::scale(gameObject->getScale());
 		auto modelInvT = glm::transpose(glm::inverse(mat3(modelTransform)));
 

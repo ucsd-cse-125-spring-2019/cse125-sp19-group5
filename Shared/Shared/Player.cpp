@@ -1,6 +1,7 @@
 #include "Player.h"
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
+#include <glm/gtx/euler_angles.hpp>
 
 Player::Player(vec3 position, vec3 velocity, vec3 direction, int id, int radius) : GameObject(position, velocity, id, radius) {
 	this->direction = direction;
@@ -20,6 +21,7 @@ void Player::setDirection(const vec3 &newDirection) {
 		return;
 	}
 	direction = glm::normalize(newDirection);
+	setOrientation(glm::quatLookAt(direction, vec3(0, 1, 0)));
 }
 
 vec3 Player::getDirection() {
