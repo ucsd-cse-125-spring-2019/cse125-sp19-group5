@@ -49,13 +49,18 @@ int main(int argc, char **argv) {
 			buffer.write<GAMEOBJECT_TYPES>(gameObject->getGameObjectType());
 			gameObject->serialize(buffer);
 			c->send(buffer);
-			std::cout << "sent object " << gameObject->getId() << " to " << c->getId() << std::endl;
+
+			NetBuffer modelBuffer(NetMessage::GAME_OBJ_MODEL);
+			modelBuffer.write(gameObject->getId());
+			modelBuffer.write(gameObject->getModel());
+			c->send(modelBuffer);
 		}
 
 		auto player = new Player(origin, origin, c->getId(), 1.0f);
-		player->setDirection(vec3(0, 0, -1));
-		player->setScale(vec3(0.2f));
 		gameEngine.addGameObject(player);
+
+		player->setDirection(vec3(0, 0, -1));
+		player->setModel("Models/player.obj");
 
 		// Receive player keyboard and mouse(TODO) input
 		c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);
@@ -90,7 +95,7 @@ int main(int argc, char **argv) {
 		auto totalDuration = std::chrono::duration_cast<std::chrono::milliseconds>(updateDone - startTime);
 
 		//check if the server is running on schedule
-		if (totalDuration < maxAllowabeServerTime) 
+		if (updateDuration < maxAllowabeServerTime) 
 		{
 			//wait for the update time to broadcast the game state update
 			std::this_thread::sleep_for(maxAllowabeServerTime - totalDuration);

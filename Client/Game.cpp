@@ -30,7 +30,6 @@ void Game::onGameObjectCreated(Connection *c, NetBuffer &buffer) {
 
 	auto clientObj = new ClientGameObject(std::move(obj));
 	// Do not use `obj` after this, ownership transfered to clientObj.
-	clientObj->setModel("Models/sphere.obj");
 
 	auto id = clientObj->getGameObject()->getId();
 	gameObjects[id] = clientObj;
@@ -48,6 +47,16 @@ void Game::onGameObjectDeleted(Connection *c, NetBuffer &buffer) {
 	}
 	gameObjects[id] = nullptr;
 	gameState.gameObjects[id] = nullptr;
+}
+
+void Game::onGameObjectModelSet(Connection *c, NetBuffer &buffer) {
+	auto id = buffer.read<int>();
+	auto model = buffer.read<std::string>();
+	auto gameObject = gameObjects[id];
+
+	if (gameObject) {
+		gameObject->setModel(model);
+	}
 }
 
 Game::Game(): gameObjects(1024, nullptr) {
@@ -92,6 +101,11 @@ Game::Game(): gameObjects(1024, nullptr) {
 	Network::on(
 		NetMessage::GAME_OBJ_DELETE,
 		boost::bind(&Game::onGameObjectDeleted, this, _1, _2)
+	);
+
+	Network::on(
+		NetMessage::GAME_OBJ_MODEL,
+		boost::bind(&Game::onGameObjectModelSet, this, _1, _2)
 	);
 
 	// Receive connection id / player id from server

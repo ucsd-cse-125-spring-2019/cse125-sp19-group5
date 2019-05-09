@@ -124,6 +124,7 @@
     <ClCompile Include="Assets.cpp" />
     <ClCompile Include="ClientGameObject.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Networking\Client.cpp" />

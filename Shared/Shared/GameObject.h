@@ -35,7 +35,11 @@ public:
 	void deserialize(NetBuffer &buffer);
 	virtual string to_string();
 
+	void setModel(const string &newModel);
+	string getModel() const;
+
 protected:
+	string model = "";
 	vec3 position;
 	vec3 velocity;
 	vec3 scale = vec3(1.0f);
