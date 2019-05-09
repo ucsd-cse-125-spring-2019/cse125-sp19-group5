@@ -19,9 +19,8 @@ void Game::onGameObjectCreated(Connection *c, NetBuffer &buffer) {
 			obj = std::make_unique<Player>(-1);
 			break;
 		default:
-			std::cerr << "Unknown game object type (" << gameObjectType << ")"
-				<< std::endl;
-			return;
+			obj = std::make_unique<GameObject>();
+			break;
 	}
 
 	obj->deserialize(buffer);
@@ -33,8 +32,7 @@ void Game::onGameObjectCreated(Connection *c, NetBuffer &buffer) {
 	gameObjects[id] = clientObj;
 	gameState.gameObjects[id] = clientObj->getGameObject();
 
-	clientObj->setMaterial("Materials/brick.json");
-
+	std::cout << "Created object " << id << std::endl;
 	if (id == playerId) {
 		playerObj = static_cast<Player*>(clientObj->getGameObject());
 	}
@@ -243,8 +241,8 @@ void Game::update(float dt) {
 	}
 
 	if (playerObj) {
-		auto offset = playerObj->getDirection() * -10.0f;
-		camera->setPosition(playerObj->getPosition() - offset);
+		auto offset = playerObj->getDirection() * 10.0f + vec3(0, 2, 0);
+		camera->setPosition(playerObj->getPosition() + offset);
 	}
 }
 

@@ -25,7 +25,7 @@ public:
 	void setScale(const vec3 &newScale);
 	vec3 getScale() const;
 	int getRadius();
-	virtual GAMEOBJECT_TYPES getGameObjectType() const = 0;
+	virtual GAMEOBJECT_TYPES getGameObjectType() const;
 	int getId();
 	virtual vec3 getMoveDestination(vec3 movement);
 	void move(vec3 movement);

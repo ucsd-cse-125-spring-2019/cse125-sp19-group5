@@ -67,6 +67,10 @@ int GameObject::getRadius() {
 	return this->radius;
 }
 
+GAMEOBJECT_TYPES GameObject::getGameObjectType() const {
+	return GAMEOBJECT_TYPES::GAMEOBJECT_TYPE;
+}
+
 int GameObject::getId() {
 	return this->id;
 }

@@ -19,6 +19,11 @@ int main(int argc, char **argv) {
 
 	vector<PlayerInputs> playerInputs;
 
+	auto ground = new Wall(origin, origin, 100, 1);
+	gameEngine.addGameObject(ground);
+	ground->setModel("Models/ground.obj");
+	ground->setMaterial("Materials/grass.json");
+
 	// Handle player keyboard/mouse inputs
 	auto handlePlayerInput = [&playerInputs](Connection *c, NetBuffer &buffer) {
 		PlayerInputs input;
@@ -50,6 +55,8 @@ int main(int argc, char **argv) {
 			gameObject->serialize(buffer);
 			c->send(buffer);
 
+			std::cout << "Sent object " << gameObject->getId() << " to " << c->getId() << std::endl;
+
 			NetBuffer modelBuffer(NetMessage::GAME_OBJ_MODEL);
 			modelBuffer.write(gameObject->getId());
 			modelBuffer.write(gameObject->getModel());
@@ -70,9 +77,9 @@ int main(int argc, char **argv) {
 		auto player = new Player(origin, origin, c->getId(), 1.0f);
 		gameEngine.addGameObject(player);
 
+		player->setModel("Models/player.obj");
 		player->setDirection(vec3(0, 0, -1));
 		player->setMaterial("Materials/brick.json");
-		player->setModel("Models/player.obj");
 
 		// Receive player keyboard and mouse(TODO) input
 		c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);
