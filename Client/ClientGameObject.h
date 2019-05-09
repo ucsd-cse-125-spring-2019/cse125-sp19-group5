@@ -5,6 +5,7 @@
 #include "Renderer/Model.h"
 #include "Renderer/Camera.h"
 #include "Renderer/Material.h"
+#include "Renderer/DrawPass.h"
 #include "Sound/Sound.h"
 #include <memory>
 
@@ -16,7 +17,7 @@ protected:
 
 public:
 	ClientGameObject(std::unique_ptr<GameObject> gameObject);
-	virtual void draw(Shader &shader, const Camera *camera) const;
+	virtual void draw(Shader &shader, const Camera *camera, DrawPass pass) const;
 
 	void setModel(const std::string &newModel);
 	void setMaterial(const std::string &newMaterial);

@@ -11,8 +11,6 @@
 #include <Shared/CommonStructs.h>
 #include "Renderer/Material.h"
 
-Material *testMat = nullptr;
-
 void Game::onGameObjectCreated(Connection *c, NetBuffer &buffer) {
 	auto gameObjectType = buffer.read<GAMEOBJECT_TYPES>();
 	std::unique_ptr<GameObject> obj = nullptr;
@@ -34,6 +32,8 @@ void Game::onGameObjectCreated(Connection *c, NetBuffer &buffer) {
 	auto id = clientObj->getGameObject()->getId();
 	gameObjects[id] = clientObj;
 	gameState.gameObjects[id] = clientObj->getGameObject();
+
+	clientObj->setMaterial("Materials/brick.json");
 
 	if (id == playerId) {
 		playerObj = static_cast<Player*>(clientObj->getGameObject());
@@ -70,7 +70,6 @@ void Game::onGameObjectAnimSet(Connection *c, NetBuffer &buffer) {
 }
 
 Game::Game(): gameObjects(1024, nullptr) {
-	testMat = new Material("Materials/brick.json");
 	Draw::init();
 
 	shadowMap = new ShadowMap();
@@ -83,9 +82,6 @@ Game::Game(): gameObjects(1024, nullptr) {
 	sun->setColor(vec3(0.8f, 0.7f, 0.55f));
 
 	skybox = new Skybox("Textures/Skybox/cloudtop", *camera);
-
-	white = new Texture2d("Textures/white.png");
-	grass = new Texture2d("Textures/grass.png");
 
 	Input::setMouseVisible(false);
 
@@ -242,10 +238,7 @@ void Game::update(float dt) {
 void Game::drawScene(Shader &shader, DrawPass pass) const {
 	for (auto gameObject : gameObjects) {
 		if (!gameObject) { continue; }
-		if (pass == DrawPass::LIGHTING) {
-			testMat->bind(shader);
-		}
-		gameObject->draw(shader, camera);
+		gameObject->draw(shader, camera, pass);
 	}
 }
 

@@ -4,8 +4,16 @@
 ClientGameObject::ClientGameObject(std::unique_ptr<GameObject> gameObject)
 : gameObject(std::move(gameObject)) { }
 
-void ClientGameObject::draw(Shader &shader, const Camera *camera) const {
+void ClientGameObject::draw(
+	Shader &shader,
+	const Camera *camera,
+	DrawPass pass
+) const {
 	if (gameObject && model) {
+		if (pass == DrawPass::LIGHTING && material) {
+			material->bind(shader);
+		}
+
 		// TODO (bhang): add rotation support (quaternions or euler angles?)
 		auto modelTransform = glm::translate(gameObject->getPosition())
 			* glm::scale(gameObject->getScale());
