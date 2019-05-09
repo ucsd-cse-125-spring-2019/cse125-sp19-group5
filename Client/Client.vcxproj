@@ -161,6 +161,7 @@
     <ClInclude Include="Renderer\Camera.h" />
     <ClInclude Include="Renderer\DirectionalLight.h" />
     <ClInclude Include="Renderer\Draw.h" />
+    <ClInclude Include="Renderer\DrawPass.h" />
     <ClInclude Include="Renderer\Font.h" />
     <ClInclude Include="Renderer\Light.h" />
     <ClInclude Include="Renderer\Material.h" />

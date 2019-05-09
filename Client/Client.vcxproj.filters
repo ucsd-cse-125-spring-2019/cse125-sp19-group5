@@ -212,5 +212,8 @@
     <ClInclude Include="Renderer\ModelData.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Renderer\DrawPass.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
