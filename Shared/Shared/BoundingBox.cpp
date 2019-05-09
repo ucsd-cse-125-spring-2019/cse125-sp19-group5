@@ -12,54 +12,67 @@ BoundingBox::BoundingBox(vec3 position, vec3 direction, float length, float widt
 	if (heightDir.y < 0) {
 		heightDir.y = -1 * heightDir.y;
 	}
+	vec3 centerPoint = position + (heightDir * (height / 2));
 
 	// bottom face
-	this->facePlanes.push_back(Plane(
+	this->bottom = new Plane(
 		position,
 		position + lengthDir,
 		position + widthDir
-	));
+	);
+	if (bottom->pointDistance(centerPoint) > 0) {
+		bottom->invertNormal();
+	}
 
 	// top face
-	this->facePlanes.push_back(Plane(
+	this->top = new Plane(
 		position + (heightDir * height),
 		position + (heightDir * height) + lengthDir,
 		position + (heightDir * height) + widthDir
-	));
+	);
+	if (top->pointDistance(centerPoint) > 0) {
+		top->invertNormal();
+	}
 
-	// side1 -- width on bottom
-	this->facePlanes.push_back(Plane(
+
+	// front -- width on bottom
+	this->front = new Plane(
 		position + (lengthDir * (length / 2)),
 		position + (lengthDir * (length / 2)) + heightDir,
 		position + (lengthDir * (length / 2)) + widthDir
-	));
+	);
+	if (front->pointDistance(centerPoint) > 0) {
+		front->invertNormal();
+	}
 
-	// side 2 -- width on bottom but on the opposite face
-	this->facePlanes.push_back(Plane(
+	// back -- width on bottom but on the opposite face
+	this->back = new Plane(
 		position - (lengthDir * (length / 2)),
 		position - (lengthDir * (length / 2)) + heightDir,
 		position - (lengthDir * (length / 2)) + widthDir
-	));
+	);
+	if (back->pointDistance(centerPoint) > 0) {
+		back->invertNormal();
+	}
 
-	// side 3 -- length on bottom
-	this->facePlanes.push_back(Plane(
+	// left -- length on bottom
+	this->left = new Plane(
 		position + (widthDir * (width / 2)),
 		position + (widthDir * (width / 2)) + heightDir,
 		position + (widthDir * (width / 2)) + lengthDir
-	));
+	);
+	if (left->pointDistance(centerPoint) > 0) {
+		left->invertNormal();
+	}
 
-	// side 4 -- length on bottom but on the opposite face
-	this->facePlanes.push_back(Plane(
+	// right -- length on bottom but on the opposite face
+	this->right = new Plane(
 		position - (widthDir * (width / 2)),
 		position - (widthDir * (width / 2)) + heightDir,
 		position - (widthDir * (width / 2)) + lengthDir
-	));
-
-	vec3 centerPoint = position + (heightDir * (height / 2));
-	for (Plane p : this->facePlanes) {
-		if (p.pointDistance(centerPoint)) {
-			p.invertNormal();
-		}
+	);
+	if (right->pointDistance(centerPoint) > 0) {
+		right->invertNormal();
 	}
 }
 

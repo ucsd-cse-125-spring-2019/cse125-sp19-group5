@@ -5,6 +5,12 @@ struct Plane;
 
 class BoundingBox : public BoundingShape {
 public:
+	Plane * bottom;
+	Plane * top;
+	Plane * front;
+	Plane * back;
+	Plane * left;
+	Plane * right;
 	BoundingBox(vec3 position, vec3 direction, float length, float width, float height);
 
 	// collision stuff below
@@ -39,6 +45,10 @@ struct Plane {
 			", b: " + std::to_string(b) +
 			", c: " + std::to_string(c) +
 			", d: " + std::to_string(d);
+	}
+
+	vec3 getNormal() {
+		return vec3(a, b, c);
 	}
 
 	void invertNormal() {
