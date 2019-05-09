@@ -4,8 +4,16 @@
 ClientGameObject::ClientGameObject(std::unique_ptr<GameObject> gameObject)
 : gameObject(std::move(gameObject)) { }
 
-void ClientGameObject::draw(Shader &shader, const Camera *camera) const {
+void ClientGameObject::draw(
+	Shader &shader,
+	const Camera *camera,
+	DrawPass pass
+) const {
 	if (gameObject && model) {
+		if (pass == DrawPass::LIGHTING && material) {
+			material->bind(shader);
+		}
+
 		// TODO (bhang): add rotation support (quaternions or euler angles?)
 		auto modelTransform = glm::translate(gameObject->getPosition())
 			* glm::scale(gameObject->getScale());
@@ -30,6 +38,15 @@ void ClientGameObject::setModel(const std::string &newModel) {
 	model = new Model(newModel);
 }
 
+void ClientGameObject::setMaterial(const std::string &newMaterial) {
+	if (material) {
+		delete material;
+		material = nullptr;
+	}
+	if (newMaterial == "") { return; }
+	material = new Material(newMaterial);
+}
+
 void ClientGameObject::setAnimation(int id, bool restart) {
 	if (model) {
 		model->setAnimation(id, restart);
@@ -44,6 +61,10 @@ void ClientGameObject::updateAnimation(float time) {
 
 Model *ClientGameObject::getModel() const {
 	return model;
+}
+
+Material *ClientGameObject::getMaterial() const {
+	return material;
 }
 
 GameObject *ClientGameObject::getGameObject() const {

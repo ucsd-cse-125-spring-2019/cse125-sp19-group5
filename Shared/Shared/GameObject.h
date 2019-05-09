@@ -25,7 +25,7 @@ public:
 	void setScale(const vec3 &newScale);
 	vec3 getScale() const;
 	int getRadius();
-	virtual GAMEOBJECT_TYPES getGameObjectType() const = 0;
+	virtual GAMEOBJECT_TYPES getGameObjectType() const;
 	int getId();
 	virtual vec3 getMoveDestination(vec3 movement);
 	void move(vec3 movement);
@@ -35,10 +35,22 @@ public:
 	void deserialize(NetBuffer &buffer);
 	virtual string to_string();
 
+	void setAnimation(int id = -1, bool reset = true);
+	int getAnimation() const;
+
+	void setMaterial(const std::string &newMaterial);
+	string getMaterial() const;
+
+	void setModel(const std::string &newModel);
+	string getModel() const;
+
 protected:
 	vec3 position;
 	vec3 velocity;
 	vec3 scale = vec3(1.0f);
+	std::string model;
+	std::string material;
+	int animation;
 	int id;
 	int radius;
 };

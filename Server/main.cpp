@@ -19,6 +19,11 @@ int main(int argc, char **argv) {
 
 	vector<PlayerInputs> playerInputs;
 
+	auto ground = new Wall(origin, origin, 100, 1);
+	gameEngine.addGameObject(ground);
+	ground->setModel("Models/ground.obj");
+	ground->setMaterial("Materials/grass.json");
+
 	// Handle player keyboard/mouse inputs
 	auto handlePlayerInput = [&playerInputs](Connection *c, NetBuffer &buffer) {
 		PlayerInputs input;
@@ -51,13 +56,32 @@ int main(int argc, char **argv) {
 			buffer.write<GAMEOBJECT_TYPES>(gameObject->getGameObjectType());
 			gameObject->serialize(buffer);
 			c->send(buffer);
-			std::cout << "sent object " << gameObject->getId() << " to " << c->getId() << std::endl;
+
+			std::cout << "Sent object " << gameObject->getId() << " to " << c->getId() << std::endl;
+
+			NetBuffer modelBuffer(NetMessage::GAME_OBJ_MODEL);
+			modelBuffer.write(gameObject->getId());
+			modelBuffer.write(gameObject->getModel());
+			c->send(modelBuffer);
+
+			NetBuffer animBuffer(NetMessage::GAME_OBJ_ANIM);
+			animBuffer.write(gameObject->getId());
+			animBuffer.write(gameObject->getAnimation());
+			animBuffer.write(true);
+			c->send(animBuffer);
+
+			NetBuffer matBuffer(NetMessage::GAME_OBJ_MAT);
+			matBuffer.write(gameObject->getId());
+			matBuffer.write(gameObject->getMaterial());
+			c->send(matBuffer);
 		}
 
 		auto player = new Player(origin, origin, c->getId(), 1.0f);
-		player->setDirection(vec3(0, 0, -1));
-		player->setScale(vec3(0.2f));
 		gameEngine.addGameObject(player);
+
+		player->setModel("Models/player.obj");
+		player->setDirection(vec3(0, 0, -1));
+		player->setMaterial("Materials/brick.json");
 
 		// Receive player keyboard and mouse(TODO) input
 		c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);
@@ -92,7 +116,7 @@ int main(int argc, char **argv) {
 		auto totalDuration = std::chrono::duration_cast<std::chrono::milliseconds>(updateDone - startTime);
 
 		//check if the server is running on schedule
-		if (totalDuration < maxAllowabeServerTime) 
+		if (updateDuration < maxAllowabeServerTime) 
 		{
 			//wait for the update time to broadcast the game state update
 			std::this_thread::sleep_for(maxAllowabeServerTime - totalDuration);
