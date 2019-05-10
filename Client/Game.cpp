@@ -79,7 +79,6 @@ void Game::onGameObjectMaterialSet(Connection *c, NetBuffer &buffer) {
 Game::Game(): gameObjects(1024, nullptr) {
 	Draw::init();
 
-	shadowMap = new ShadowMap();
 	lightShader = new Shader("Shaders/light");
 	textShader = new Shader("Shaders/text");
 	camera = new Camera(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f), 70, 1.0f);
@@ -87,6 +86,8 @@ Game::Game(): gameObjects(1024, nullptr) {
 	sun->setDirection(vec3(0.009395, -0.500647, -0.713446));
 	sun->setAmbient(vec3(0.04f, 0.05f, 0.13f));
 	sun->setColor(vec3(0.8f, 0.7f, 0.55f));
+
+	shadowMap = new ShadowMap(camera);
 
 	skybox = new Skybox("Textures/Skybox/cloudtop", *camera);
 
@@ -252,9 +253,9 @@ void Game::drawUI() const {
 
 void Game::draw(float dt) const {
 	// Shadow mapping render pass
+	shadowMap->setupLight(*sun);
 	for (int i = 0; i < SHADOW_NUM_CASCADES; i++) {
 		shadowMap->prePass(i);
-		shadowMap->setupLight(shadowMap->getShader(), *sun);
 		drawScene(shadowMap->getShader(), DrawPass::SHADOW);
 	}
 	shadowMap->postPass();
@@ -266,7 +267,7 @@ void Game::draw(float dt) const {
 	lightShader->setUniform("eyePos", camera->getPosition());
 	lightShader->setUniform("directionalLightNum", 1);
 
-	shadowMap->setupLight(*lightShader, *sun);
+	shadowMap->bindLightTransforms(*lightShader);
 	shadowMap->bindTexture(*lightShader);
 
 	sun->bind(*lightShader);

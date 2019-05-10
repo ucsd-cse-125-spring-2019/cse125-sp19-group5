@@ -3,6 +3,8 @@
 // Lighting
 const int LIGHTS_MAX = 10;
 
+const int SHADOW_NUM_CASCADES = 1;
+
 const float gamma = 2.2;
 const vec3 gammaCorr = vec3(1.0 / gamma);
 
@@ -32,14 +34,14 @@ struct Material {
 uniform Material material;
 uniform DirectionalLight directionalLight[LIGHTS_MAX];
 uniform PointLight pointLight[LIGHTS_MAX];
-uniform sampler2D shadowMap;
+uniform sampler2D shadowMap[SHADOW_NUM_CASCADES];
 uniform int pointLightNum;
 uniform int directionalLightNum;
 
 uniform vec3 eyePos;
 
 in mat3 tbn;
-in vec4 lightSpacePos;
+in vec4 lightSpacePos[SHADOW_NUM_CASCADES];
 in vec3 fragPos;
 in vec3 fragNormal;
 in vec2 fragTexCoords;
@@ -96,7 +98,7 @@ float getShadowIntensity(vec4 lightSpacePos) {
 	vec3 pos = lightSpacePos.xyz / lightSpacePos.w;
 	pos = pos * 0.5 + 0.5;
 
-	vec2 moments = texture(shadowMap, pos.xy).rg;
+	vec2 moments = texture(shadowMap[0], pos.xy).rg;
 
 	if (pos.z <= moments.x) {
 		return 1.0f;
@@ -114,7 +116,7 @@ void main() {
 	vec3 normal = normalize(fragNormal);
 	vec3 eyeDir = normalize(eyePos - fragPos);
 	vec3 finalColor = vec3(0.0f);
-	float intensity = getShadowIntensity(lightSpacePos);
+	float intensity = getShadowIntensity(lightSpacePos[0]);
 
 	float shininess = material.shininess;
 	vec3 diffuse = texture2D(material.diffuseTex, fragTexCoords).rgb;

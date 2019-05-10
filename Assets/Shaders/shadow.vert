@@ -1,10 +1,13 @@
 #version 330 core
 
+const int SHADOW_NUM_CASADES = 1;
+
 layout (location = 0) in vec3 position;
 layout (location = 3) in ivec4 bones;
 layout (location = 4) in vec4 weights;
 
-uniform mat4 toLightSpace;
+uniform int casade;
+uniform mat4 toLightSpace[SHADOW_NUM_CASADES];
 uniform mat4 model;
 uniform bool animated;
 
@@ -23,6 +26,6 @@ void main() {
 		mat3 boneTransformInvT = transpose(inverse(mat3(boneTransform)));
 		finalPos = boneTransform * finalPos;
 	}
-	fragPos = toLightSpace * model * finalPos;
+	fragPos = toLightSpace[casade] * model * finalPos;
     gl_Position = fragPos;
 }

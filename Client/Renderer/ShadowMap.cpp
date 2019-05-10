@@ -3,6 +3,27 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 constexpr auto MAX_TEXTURE_UNITS = 32;
+constexpr auto FRUSTUM_NUM_CORNERS = 8;
+
+// The i_th and (i+1)_th z-values are used as the zNear and zFar for the i_th
+// light projection where i = 0, 1, ..., SHADOW_NUM_CASCADES.
+float ShadowMap::cascadeZCutoffs[SHADOW_NUM_CASCADES + 1] = {
+	0.5f, 20.0f
+};
+
+// Component wise min between 2 vectors u, v into u
+inline void vecMin(vec3 &u, const vec3 &v) {
+	u.x = fmin(u.x, v.x);
+	u.y = fmin(u.y, v.y);
+	u.z = fmin(u.z, v.z);
+}
+
+// Component wise max between 2 vectors u, v into u
+inline void vecMax(vec3 &u, const vec3 &v) {
+	u.x = fmax(u.x, v.x);
+	u.y = fmax(u.y, v.y);
+	u.z = fmax(u.z, v.z);
+}
 
 void ShadowMap::setupTexture(Texture &texture) {
 	static float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -26,9 +47,9 @@ void ShadowMap::setupTexture(Texture &texture) {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-ShadowMap::ShadowMap(int width, int height)
+ShadowMap::ShadowMap(Camera *camera, int width, int height)
 : width(width), height(height), shadowShader("Shaders/shadow")
-, blurFilter("Shaders/Filters/gaussblur") {
+, blurFilter("Shaders/Filters/gaussblur"), camera(camera) {
 	// Set up the original depth map and the blurred version of it.
 	for (auto &shadowMap : shadowMaps) {
 		setupTexture(shadowMap);
@@ -78,25 +99,73 @@ ShadowMap::ShadowMap(int width, int height)
 }
 
 void ShadowMap::prePass(int i) {
-	shadowShader.use();
-
 	// Set up the viewport so stuff is drawn at the correct size.
 	if (i == 0) {
+		shadowShader.use();
 		glGetIntegerv(GL_VIEWPORT, viewport);
+		bindLightTransforms(shadowShader);
+		glViewport(0, 0, width, height);
+		glDisable(GL_BLEND);
 	}
-	glViewport(0, 0, width, height);
 	glBindFramebuffer(GL_FRAMEBUFFER, FBOs[i]);
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glDisable(GL_BLEND);
+	shadowShader.setUniform("cascade", i);
+}
+#include <glm/gtx/string_cast.hpp>
+
+void ShadowMap::setupLightTransform(int i, const DirectionalLight &light) {
+	// `camViewInv` transforms from view space to world space.
+	auto camViewInv = glm::inverse(camera->getViewMatrix());
+
+	// `view` transforms from world space to light space.
+	constexpr auto up = vec3(0.0f, 1.0f, 0.0f);
+	constexpr auto origin = vec3(0.0f);
+	auto view = glm::lookAt(light.getDirection(), origin, up);
+
+	auto viewToLightSpace = view * camViewInv;
+
+	// Compute camera frustum vertices in view space.
+	auto halfFov = camera->getFov() * 0.5f;
+	auto horz = glm::tan(glm::radians(halfFov * camera->getAspect()));
+	auto vert = glm::tan(glm::radians(halfFov));
+	auto zNear = cascadeZCutoffs[i], zFar = cascadeZCutoffs[i + 1];
+	auto xNear = zNear * horz, xFar = zFar * horz;
+	auto yNear = zNear * vert, yFar = zFar * vert;
+
+	vec3 vertices[FRUSTUM_NUM_CORNERS] = {
+		vec3(xNear, yNear, zNear),
+		vec3(xNear, yFar,  zNear),
+		vec3(xFar,  yNear, zNear),
+		vec3(xFar,  yFar,  zNear),
+		vec3(xNear, yNear, zFar),
+		vec3(xNear, yFar,  zFar),
+		vec3(xFar,  yNear, zFar),
+		vec3(xFar,  yFar,  zFar),
+	};
+
+	// Get bounding box for the frustum.
+	vec3 mins = vertices[0], maxs = vertices[0];
+	for (int j = 1; j < FRUSTUM_NUM_CORNERS; j++) {
+		vertices[j] = vec3(viewToLightSpace * vec4(vertices[j], 1.0f));
+		vecMin(mins, vertices[j]);
+		vecMax(maxs, vertices[j]);
+	}
+
+	auto proj = glm::ortho(mins.x, maxs.x, mins.y, maxs.y, mins.z, maxs.z);
+	toLightSpace[i] = proj * view;
 }
 
-void ShadowMap::setupLight(Shader &shader, const DirectionalLight &light) {
-	const auto up = vec3(0.0f, 1.0f, 0.0f);
-	const auto origin = vec3(0.0f);
-	auto proj = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 100.0f);
-	auto view = glm::lookAt(light.getDirection(), origin, up);
-	shader.setUniform("toLightSpace", proj * view);
+void ShadowMap::setupLight(const DirectionalLight &light) {
+	for (int i = 0; i < SHADOW_NUM_CASCADES; i++) {
+		setupLightTransform(i, light);
+	}
+}
+
+void ShadowMap::bindLightTransforms(Shader &shader) const {
+	for (int i = 0; i < SHADOW_NUM_CASCADES; i++) {
+		auto name = "toLightSpace[" + std::to_string(i) + "]";
+		shader.setUniform(name.c_str(), toLightSpace[i]);
+	}
 }
 
 void ShadowMap::blurDepthMap(float amount) {
@@ -136,7 +205,8 @@ void ShadowMap::bindTexture(Shader &shader) const {
 	auto baseIndex = MAX_TEXTURE_UNITS - SHADOW_NUM_CASCADES;
 
 	for (int i = 0; i < SHADOW_NUM_CASCADES; i++) {
-		shader.setUniform("shadowMap", baseIndex + i);
+		auto name = "shadowMap[" + std::to_string(i) + "]";
+		shader.setUniform(name.c_str(), baseIndex + i);
 		glActiveTexture(baseTextureUnit + i);
 		shadowMaps[i].bind(GL_TEXTURE_2D);
 	}
