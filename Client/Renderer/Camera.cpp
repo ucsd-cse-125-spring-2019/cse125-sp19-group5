@@ -83,6 +83,10 @@ float Camera::getAspect() const {
 	return aspect;
 }
 
+float Camera::getFov() const {
+	return fov;
+}
+
 mat4 Camera::getMatrix() const {
 	return projection * view;
 }

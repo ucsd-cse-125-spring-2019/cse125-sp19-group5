@@ -47,6 +47,7 @@ class Camera {
 	const vec3 &getRight() const;
 	const vec3 &getAngles() const;
 	float getAspect() const;
+	float getFov() const;
 
 	mat4 getMatrix() const;
 	const mat4 &getViewMatrix() const;
