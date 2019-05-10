@@ -10,7 +10,7 @@ GameObject::GameObject(const int &id): GameObject() {
 	this->id = id;
 }
 
-GameObject::GameObject(vec3 position, vec3 velocity, int id) {
+GameObject::GameObject(vec3 position, vec3 velocity, int id)
 #ifdef _SERVER
 	: model(""), material(""), animation(-1)
 #endif

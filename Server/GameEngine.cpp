@@ -185,7 +185,9 @@ void GameEngine::removeDeadObjects() {
 
 void GameEngine::updateGameObjectsOnServerTick() {
 	for (GameObject * gameObject : gameState.gameObjects) {
-		gameObject->updateOnServerTick();
+		if (gameObject) {
+			gameObject->updateOnServerTick();
+		}
 	}
 }
 

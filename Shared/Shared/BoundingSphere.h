@@ -3,12 +3,6 @@
 
 class BoundingSphere : public BoundingShape {
 public:
-	Plane * bottom;
-	Plane * top;
-	Plane * front;
-	Plane * back;
-	Plane * left;
-	Plane * right;
 	BoundingSphere(vec3 position, float radius);
 	float getRadius();
 	void setRadius(float radius);
