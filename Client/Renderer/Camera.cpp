@@ -79,6 +79,10 @@ const vec3 &Camera::getAngles() const {
 	return angles;
 }
 
+float Camera::getAspect() const {
+	return aspect;
+}
+
 mat4 Camera::getMatrix() const {
 	return projection * view;
 }
