@@ -13,9 +13,8 @@ enum PlayerCommands {
 };
 
 struct PlayerInputs {
+	vec3 direction;
 	int inputs;
-	float theta;
-	float phi;
 	int id;
 };
 

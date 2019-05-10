@@ -2,6 +2,9 @@
 #include "Common.h"
 #include "Networking/Serializable.h"
 #include "BoundingShape.h"
+#include <glm/gtx/quaternion.hpp>
+
+using glm::quat;
 
 enum GAMEOBJECT_TYPES {
 	GAMEOBJECT_TYPE,
@@ -56,7 +59,11 @@ public:
 	void setModel(const std::string &newModel);
 	string getModel() const;
 
+	void setOrientation(const quat &newOrientation);
+	const quat &getOrientation() const;
+
 protected:
+	quat orientation = quat();
 	vec3 position;
 	vec3 velocity;
 	vec3 scale = vec3(1.0f);

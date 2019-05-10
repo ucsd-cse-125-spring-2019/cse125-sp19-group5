@@ -109,23 +109,24 @@ vec3 GameEngine::movementInputToVector(int movementInput) {
 }
 
 void GameEngine::movePlayers(vector<PlayerInputs> & playerInputs) {
-	vector<int> aggregatePlayerMovements;
-	//cout << "playerInputs size: " << playerInputs.size() << endl;
-	// Use bitwise or to get all player inputs within one server tick
-	for (int i = 0; i < gameState.players.size(); i++) {
-		aggregatePlayerMovements.push_back(0);
-	}
+	vector<int> aggregatePlayerMovements(gameState.players.size());
+	vector<vec3> directions(gameState.players.size());
+
 	for (PlayerInputs playerInput : playerInputs) {
-		aggregatePlayerMovements[playerInput.id] = aggregatePlayerMovements[playerInput.id] | playerInput.inputs;
+		aggregatePlayerMovements[playerInput.id] |= playerInput.inputs;
+		directions[playerInput.id] = playerInput.direction;
 	}
+
 	for (int i = 0; i < gameState.players.size(); i++) {
-		aggregatePlayerMovements[i] = aggregatePlayerMovements[i] & MOVEMENT_MASK;
-}
-	// Move all players
-	for (int i = 0; i < gameState.players.size(); i++) {
+		auto player = gameState.players[i];
+		if (!player) { continue; }
+		auto movement = aggregatePlayerMovements[i] & MOVEMENT_MASK;
+
+		player->setDirection(directions[i]);
+
 		// TODO: prevent two players from moving to the same spot
 		// gameState.players[i]->move(movementInputToVector(aggregatePlayerMovements[i]));
-		noCollisionMove(gameState.players[i], movementInputToVector(aggregatePlayerMovements[i]));
+		noCollisionMove(player, movementInputToVector(movement));
 		//cout << aggregatePlayerMovements[i] << "   " << glm::to_string(gameState.players[i]->getPosition()) << endl;
 	}
 }
@@ -171,16 +172,11 @@ void GameEngine::doCollisionInteractions() {
 }
 
 void GameEngine::removeDeadObjects() {
-	vector<GameObject *> preservedGameObjects;
 	for (GameObject * gameObject : gameState.gameObjects) {
 		if (gameObject && gameObject->deleteOnServerTick()) {
 			delete gameObject;
 		}
-		else {
-			preservedGameObjects.push_back(gameObject);
-		}
 	}
-	gameState.gameObjects = preservedGameObjects;
 }
 
 void GameEngine::updateGameObjectsOnServerTick() {
