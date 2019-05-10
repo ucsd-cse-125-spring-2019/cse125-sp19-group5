@@ -46,6 +46,8 @@ class Game {
 	GameState gameState;
 	Player *playerObj = nullptr;
 
+	void updateInputs();
+
 public:
 	bool shouldExit = false;
 	Game();

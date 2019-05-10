@@ -91,7 +91,16 @@ void GameObject::updateOnServerTick() {
 	return;
 }
 
+void GameObject::setOrientation(const quat &newOrientation) {
+	orientation = newOrientation;
+}
+
+const quat &GameObject::getOrientation() const {
+	return orientation;
+}
+
 void GameObject::serialize(NetBuffer &buffer) const {
+	buffer.write<quat>(orientation);
 	buffer.write<vec3>(position);
 	buffer.write<vec3>(velocity);
 	buffer.write<vec3>(scale);
@@ -100,6 +109,7 @@ void GameObject::serialize(NetBuffer &buffer) const {
 }
 
 void GameObject::deserialize(NetBuffer &buffer) {
+	orientation = buffer.read<quat>();
 	position = buffer.read<vec3>();
 	velocity = buffer.read<vec3>();
 	scale = buffer.read<vec3>();
