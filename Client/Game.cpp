@@ -84,7 +84,7 @@ Game::Game(): gameObjects(1024, nullptr) {
 	textShader = new Shader("Shaders/text");
 	camera = new Camera(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f), 70, 1.0f);
 	sun = new DirectionalLight(0);
-	sun->setDirection(vec3(0.009395, -0.200647, -0.713446));
+	sun->setDirection(vec3(0.009395, -0.500647, -0.713446));
 	sun->setAmbient(vec3(0.04f, 0.05f, 0.13f));
 	sun->setColor(vec3(0.8f, 0.7f, 0.55f));
 
@@ -252,9 +252,11 @@ void Game::drawUI() const {
 
 void Game::draw(float dt) const {
 	// Shadow mapping render pass
-	shadowMap->prePass();
-	shadowMap->setupLight(shadowMap->getShader(), *sun);
-	drawScene(shadowMap->getShader(), DrawPass::SHADOW);
+	for (int i = 0; i < SHADOW_NUM_CASCADES; i++) {
+		shadowMap->prePass(i);
+		shadowMap->setupLight(shadowMap->getShader(), *sun);
+		drawScene(shadowMap->getShader(), DrawPass::SHADOW);
+	}
 	shadowMap->postPass();
 
 	// Normal 3D render pass

@@ -5,6 +5,8 @@
 #include "Shader.h"
 #include "DirectionalLight.h"
 
+constexpr auto SHADOW_NUM_CASCADES = 4;
+
 // The ShadowMap class sets up a depth map that stores depths from a light
 // for use in calculating shadows.
 class ShadowMap {
@@ -12,10 +14,11 @@ class ShadowMap {
 	int width; // Width of the depth map.
 	int height; // Height of the depth map.
 	int viewport[4]; // Info about viewport before rendering to depth map.
-	GLuint FBO, blurFBO; // ID for depth map framebuffer.
-	GLuint RBO; // Render buffer object to also attach depth.
-	Texture depthMap; // Texture that stores depth of vertices from a light's POV.
-	Texture blurredDepthMap; // depthMap + Gaussian Blur
+	GLuint FBOs[SHADOW_NUM_CASCADES] = { 0 };
+	GLuint RBOs[SHADOW_NUM_CASCADES] = { 0 };
+	Texture shadowMaps[SHADOW_NUM_CASCADES];
+	GLuint blurFBO = 0;
+	Texture blurredShadowMap; // depthMap + Gaussian Blur
 	Shader shadowShader; // Shader for drawing to depth map.
 	Shader blurFilter; // Shader that does Gaussian blur.
 
@@ -26,7 +29,7 @@ class ShadowMap {
 	ShadowMap(int width = 1024, int height = 1024);
 
 	// Does some OpenGL setup before rendering the scene for the shadow pass.
-	void prePass();
+	void prePass(int i);
 
 	// Cleans up the set up stuff after rendering the scene for the shadow pass.
 	void postPass();
@@ -40,7 +43,7 @@ class ShadowMap {
 	// Returns the shadow shader.
 	Shader &getShader();
 
-	Texture &getTexture();
+	Texture &getTexture(int i);
 
 	~ShadowMap();
 };
