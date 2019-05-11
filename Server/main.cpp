@@ -6,11 +6,18 @@
 #include <chrono>
 #include "GameEngine.h"
 #include "Networking/Server.h"
+#include "main.h"
 
 constexpr auto TICKS_PER_SECOND = 60; // How many updates per second.
 
 int main(int argc, char **argv) {
+
+	//TODO: config file for the port number to be specified in
 	Network::init(1234);
+
+	//this is the message data sent right after a new player 
+	//has connected to the game
+	MenuOptions menuOptions;
 
 	GameEngine gameEngine;
 	gameEngine.init();
@@ -33,20 +40,39 @@ int main(int argc, char **argv) {
 		playerInputs.push_back(input);
 	};
 
+	//handle menu option selections made by the player
+	//TODO: need to verify this works. ran out of time today
+	auto handleMenuInput = [&menuOptions](Connection *c, NetBuffer &playerSelection){
+		int player_id = c->getId();
+		for (int i = 0; i < 4; i++) {
+			if (player_id == playerSelection.read<int>()) {
+				int* optionsArray = (int*)&menuOptions;
+				if (optionsArray[i] != -1) {
+					//this position has already been taken
+					NetBuffer pickAgain(NetMessage::MENU_OPTIONS);
+					pickAgain.write<MenuOptions>(menuOptions);
+					c->send(pickAgain);
+				}
+				else
+				{
+					optionsArray[i] = player_id;
+				}
+			}
+		}
+	};
+
 	Network::onClientConnected([&](Connection *c) {
 		std::cout << "Player " << c->getId() << " has connected." << std::endl;
-
-		// Sync up the current state of ballX.
-		/*
-		NetBuffer buffer(NetMessage::GAME_STATE_UPDATE);
-		buffer.write<float>(ballX);
-		c->send(buffer);
-		*/
 
 		// Send Client the connection/player ID 
 		NetBuffer buffer(NetMessage::CONNECTION_ID);
 		buffer.write<int>(c->getId());
 		c->send(buffer);
+
+		// send the menu options available for the game
+		NetBuffer menu_options(NetMessage::MENU_OPTIONS);
+		menu_options.write<MenuOptions>(menuOptions);
+		c->send(menu_options);
 
 		for (auto gameObject : gameEngine.getGameObjects()) {
 			if (!gameObject) { continue; }
@@ -81,6 +107,9 @@ int main(int argc, char **argv) {
 		player->setDirection(vec3(0, 0, -1));
 		player->setMaterial("Materials/brick.json");
 
+		//Here we handle the menu selections made by the player
+		c->on(NetMessage::MENU_INPUT, handleMenuInput);
+
 		// Receive player keyboard and mouse(TODO) input
 		c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);
 		c->onDisconnected([&](Connection *c) {
@@ -93,6 +122,7 @@ int main(int argc, char **argv) {
 	//This is the total amount of time allowed for the server to update the game state
 	auto maxAllowabeServerTime = std::chrono::milliseconds(1000 / TICKS_PER_SECOND + 10);
 
+	//now the game loop begins
 	while (true) 
 	{
 
@@ -127,37 +157,6 @@ int main(int argc, char **argv) {
 	
 		gameEngine.synchronizeGameState();
 	}
-
-
-
-	// testing code
-	/*std::cout << "Hello world!" << std::endl;
-	GameEngine gameEngine;
-	gameEngine.addGameObject(new Player(vec3(-2, 0, 0), vec3(1, 0, 0), vec3(1, 0, 0), 0, 1));
-	gameEngine.addGameObject(new Ball(vec3(5, 0, 0), vec3(-1, 0, 0), 0, 1));
-
-	vector<PlayerInputs> playerInputs;
-	PlayerInputs pi;
-	pi.id = 0;
-	pi.inputs = SWING + RIGHT + LEFT;
-	playerInputs.push_back(pi);
-
-	vector<PlayerInputs> noInputs;
-	pi.id = 0;
-	pi.inputs = 0;
-	noInputs.push_back(pi);
-
-	for (int i = 0; i < 15; i++) {
-		if (i < 3) {
-			gameEngine.updateGameState(playerInputs);
-		}
-		else {
-			gameEngine.updateGameState(noInputs);
-
-		}
-	}
-
-	system("pause");*/
 
 	return 0;
 }

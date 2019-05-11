@@ -6,6 +6,7 @@
 Player::Player(vec3 position, vec3 velocity, vec3 direction, int id, int radius) : GameObject(position, velocity, id, radius) {
 	this->direction = direction;
 	this->actionCharge = 0;
+	this->team = -1;
 }
 
 GAMEOBJECT_TYPES Player::getGameObjectType() const {
@@ -26,6 +27,27 @@ void Player::setDirection(const vec3 &newDirection) {
 
 vec3 Player::getDirection() {
 	return this->direction;
+}
+
+/*
+ * A getter for the team this player is on
+ */
+int Player::getTeam() {
+	return this->team;
+}
+
+/*
+ * A setter for the team a player is assigned to. 
+ * This currently does not allow for a player to 
+ * later change a team. TODO: Handle changing teams
+ */
+bool Player::setTeam(int team) {
+	if (this->team != -1 || team == -1) {
+		//it has a team already set
+		return false;
+	}
+	this->team = team;
+	return true;
 }
 
 vec3 Player::getMoveDestination(vec3 movement) {

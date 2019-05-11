@@ -16,6 +16,8 @@ public:
 	void onCollision(GameObject * gameObject);
 	vec3 getMoveDestination(vec3 movement);
 	vec3 getDirection();
+	int getTeam();
+	bool setTeam(int team);
 	GameObject * doAction(PlayerCommands action);
 	GameObject * processCommand(int inputs);
 
