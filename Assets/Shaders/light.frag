@@ -40,6 +40,7 @@ uniform int directionalLightNum;
 uniform float cascadeZCutoffs[SHADOW_NUM_CASCADES];
 
 uniform vec3 eyePos;
+uniform mat4 viewMat;
 
 in float clipSpaceZ;
 in mat3 tbn;
@@ -97,7 +98,7 @@ vec3 getDirectionalLightIntensity(
 const float SHADOW_BIAS = 0.0002f;
 
 float getShadowIntensity(int cascade, vec4 lightSpacePos) {
-	vec3 pos = lightSpacePos.xyz / lightSpacePos.w;
+	vec3 pos = lightSpacePos.xyz;
 	pos = pos * 0.5 + 0.5;
 
 	if (pos.z < 0.0 || pos.z > 1.0) {
@@ -124,9 +125,9 @@ void main() {
 	vec3 finalColor = vec3(0.0f);
 	float intensity = 1.0;
 	int cascade;	
-	float zPos = length(eyePos - fragPos);
+	float zPos = gl_FragCoord.z / gl_FragCoord.w;
 	for (cascade = 0; cascade < SHADOW_NUM_CASCADES; cascade++) {
-		if (zPos <= cascadeZCutoffs[cascade]) {
+		if (zPos < cascadeZCutoffs[cascade]) {
 			intensity = getShadowIntensity(cascade, lightSpacePos[cascade]);
 			break;
 		}
@@ -163,16 +164,5 @@ void main() {
 		);
 	}
 
-	if (cascade == 0) {
-		finalColor *= vec3(1.0, 0.0, 0.0);
-	} else if (cascade == 1) {
-		finalColor *= vec3(0.0, 1.0, 0.0);
-	} else if (cascade == 2) {
-		finalColor *= vec3(0.0, 0.0, 1.0);
-	} else if (cascade == 3) {
-		finalColor *= vec3(1.0, 1.0, 0.0);
-	} else {
-		finalColor = vec3(gl_FragCoord.z - cascadeZCutoffs[0]);
-	}
 	fragColor = vec4(pow(finalColor, gammaCorr), 1.0f);
 }

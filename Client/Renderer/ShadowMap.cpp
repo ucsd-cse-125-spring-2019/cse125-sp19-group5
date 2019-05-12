@@ -8,7 +8,7 @@ constexpr auto FRUSTUM_NUM_CORNERS = 8;
 // The i_th and (i+1)_th z-values are used as the zNear and zFar for the i_th
 // light projection where i = 0, 1, ..., SHADOW_NUM_CASCADES.
 float ShadowMap::cascadeZCutoffs[SHADOW_NUM_CASCADES + 1] = {
-	-10.0f, 20.0f, 25.0f, 75.0f, 250.0f
+	-10.0f, 20.0f, 45.0f, 75.0f, 100.0f
 };
 
 // Component wise min between 2 vectors u, v into u
@@ -61,6 +61,7 @@ ShadowMap::ShadowMap(Camera *camera, int width, int height)
 	glGenFramebuffers(1, &FBO);
 	glGenRenderbuffers(1, &RBO);
 
+	glEnable(GL_DEPTH_TEST);
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 	glFramebufferTexture2D(
 		GL_FRAMEBUFFER,
@@ -101,10 +102,10 @@ void ShadowMap::prePass(int i) {
 		glViewport(0, 0, width, height);
 		glDisable(GL_BLEND);
 	}
-	shadowShader.use();
-	shadowShader.setUniform("cascade", i);
-	bindLightTransforms(shadowShader);
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+	shadowShader.use();
+	bindLightTransforms(shadowShader);
+	shadowShader.setUniform("projview", toLightSpace[i]);
 	glFramebufferTexture2D(
 		GL_FRAMEBUFFER,
 		GL_COLOR_ATTACHMENT0,
@@ -116,47 +117,43 @@ void ShadowMap::prePass(int i) {
 #include <glm/gtx/string_cast.hpp>
 
 void ShadowMap::setupLightTransform(int i, const DirectionalLight &light) {
-	// `camViewInv` transforms from view space to world space.
-	auto camViewInv = glm::inverse(camera->getViewMatrix());
-
-	// `view` transforms from world space to light space.
-	constexpr auto up = vec3(0.0f, 1.0f, 0.0f);
-	constexpr auto origin = vec3(0.0f);
-	auto view = glm::lookAt(origin, -light.getDirection(), up);
-
-	auto viewToLightSpace = view * camViewInv;
-
-	// Compute camera frustum vertices in view space.
-	auto halfFov = camera->getFov() * 0.5f;
-	auto horz = glm::tan(glm::radians(halfFov * camera->getAspect()));
-	auto vert = glm::tan(glm::radians(halfFov));
 	auto zNear = cascadeZCutoffs[i], zFar = cascadeZCutoffs[i + 1];
-	auto xNear = zNear * horz, xFar = zFar * horz;
-	auto yNear = zNear * vert, yFar = zFar * vert;
+	auto tanFov = glm::tan(glm::radians(camera->getFov() * 0.5f));
+	auto aspect = camera->getAspect();
+	auto heightNear = 2.0f * tanFov * zNear, heightFar = 2.0f * tanFov * zFar;
+	auto widthNear = aspect * heightNear, widthFar = aspect * heightFar;
+	auto centerNear = camera->getPosition() + camera->getForward() * zNear;
+	auto centerFar = camera->getPosition() + camera->getForward() * zFar;
 
+	auto up = camera->getUp(), right = camera->getRight();
 	vec3 vertices[FRUSTUM_NUM_CORNERS] = {
-		vec3( xNear,  yNear, zNear),
-		vec3(-xNear,  yNear, zNear),
-		vec3( xNear, -yNear, zNear),
-		vec3(-xNear, -yNear, zNear),
-
-		vec3( xFar,  yFar, zFar),
-		vec3(-xFar,  yFar, zFar),
-		vec3( xFar, -yFar, zFar),
-		vec3(-xFar, -yFar, zFar),
+		centerNear + (up * heightNear * 0.5f) + (right * widthNear * 0.5f),
+		centerNear + (up * heightNear * 0.5f) - (right * widthNear * 0.5f),
+		centerNear - (up * heightNear * 0.5f) + (right * widthNear * 0.5f),
+		centerNear - (up * heightNear * 0.5f) - (right * widthNear * 0.5f),
+		centerFar + (up * heightFar * 0.5f) + (right * widthFar * 0.5f),
+		centerFar + (up * heightFar * 0.5f) - (right * widthFar * 0.5f),
+		centerFar - (up * heightFar * 0.5f) + (right * widthFar * 0.5f),
+		centerFar - (up * heightFar * 0.5f) - (right * widthFar * 0.5f)
 	};
 
-	// Get bounding box for the frustum.
-	vec3 mins = vertices[0], maxs = vertices[0];
-	for (int j = 1; j < FRUSTUM_NUM_CORNERS; j++) {
-		vertices[j] = vec3(viewToLightSpace * vec4(vertices[j], 1.0f));
+	constexpr auto ORIGIN = vec3(0.0f);
+	constexpr auto UP = vec3(0.0f, 1.0f, 0.0f);
+	auto view = glm::lookAt(ORIGIN, -light.getDirection(), UP);
+	vec3 mins, maxs;
+	for (int j = 0; j < FRUSTUM_NUM_CORNERS; j++) {
+		vertices[j] = vec3(view * vec4(vertices[j], 1.0f));
+		if (j == 0) {
+			maxs = mins = vertices[0];
+			continue;
+		}
 		vecMin(mins, vertices[j]);
 		vecMax(maxs, vertices[j]);
 	}
 
-	auto proj = glm::ortho(mins.x, maxs.x, mins.y, maxs.y, mins.z, maxs.z);
+	auto proj = glm::ortho(mins.x, maxs.x, mins.y, maxs.y, mins.z - 20.f, maxs.z + 20.0f);
 	if (i == 0) {
-		std::cout << mins.x << "\t" << maxs.x << "\t" << mins.y << "\t" << maxs.y << "\t" << mins.z << "\t" << maxs.z << std::endl;
+		std::cout << mins.x << " " << maxs.x << " " << mins.y << " " << maxs.y << " " << mins.z << " " << maxs.z << std::endl;
 	}
 	toLightSpace[i] = proj * view;
 }
@@ -175,44 +172,42 @@ void ShadowMap::bindLightTransforms(Shader &shader) const {
 }
 
 void ShadowMap::bindZCutoffs(Shader &shader) const {
-	auto projection = camera->getProjectionMatrix();
 	for (int i = 0; i < SHADOW_NUM_CASCADES; i++) {
 		auto name = "cascadeZCutoffs[" + std::to_string(i) + "]";
-		auto clipSpace = projection * vec4(0, 0, cascadeZCutoffs[i + 1], 1);
 		shader.setUniform(name.c_str(), cascadeZCutoffs[i + 1]);
 	}
 }
 
-void ShadowMap::blurDepthMap(float amount) {
+void ShadowMap::blurDepthMap(int i, float amount) {
 	Draw::setColor();
 	blurFilter.use();
 
-	for (int i = 0; i < SHADOW_NUM_CASCADES; i++) {
-		glBindFramebuffer(GL_FRAMEBUFFER, blurFBO);
-		glClear(GL_COLOR_BUFFER_BIT);
-		// Set the texture that will be blurred.
-		blurFilter.setUniform(
-			"blurSize",
-			vec2(1.0f / ((float)width * amount), 0.0f)
-		);
-		Draw::rect(-1.0f, -1.0f, 2.0f, 2.0f, shadowMaps[i]);
+	glBindFramebuffer(GL_FRAMEBUFFER, blurFBO);
+	glClear(GL_COLOR_BUFFER_BIT);
+	// Set the texture that will be blurred.
+	blurFilter.setUniform(
+		"blurSize",
+		vec2(1.0f / ((float)width * amount), 0.0f)
+	);
+	Draw::rect(-1.0f, -1.0f, 2.0f, 2.0f, shadowMaps[i]);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		blurFilter.setUniform(
-			"blurSize",
-			vec2(0.0f, 1.0f / ((float)height * amount))
-		);
-		Draw::rect(-1.0f, -1.0f, 2.0f, 2.0f, blurredShadowMap);
-	}
+	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	blurFilter.setUniform(
+		"blurSize",
+		vec2(0.0f, 1.0f / ((float)height * amount))
+	);
+	Draw::rect(-1.0f, -1.0f, 2.0f, 2.0f, blurredShadowMap);
 }
 
-void ShadowMap::postPass() {
-	//blurDepthMap();
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
-	glEnable(GL_BLEND);
-	glBindTexture(GL_TEXTURE_2D, 0);
+void ShadowMap::postPass(int i) {
+	blurDepthMap(i);
+	if (i == SHADOW_NUM_CASCADES - 1) {
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+		glEnable(GL_BLEND);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 }
 
 void ShadowMap::bindTexture(Shader &shader) const {

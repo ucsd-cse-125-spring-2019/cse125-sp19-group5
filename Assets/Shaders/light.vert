@@ -41,7 +41,7 @@ void main() {
 	}
 	fragPos = vec3(model * finalPos);
 
-	vec4 fragPos4 = vec4(fragPos, 1.0f);
+	vec4 fragPos4 = model * finalPos;
 	for (int cascade = 0; cascade < SHADOW_NUM_CASCADES; cascade++) {
 		lightSpacePos[cascade] = toLightSpace[cascade] * fragPos4;
 	}
@@ -49,7 +49,6 @@ void main() {
 	fragNormal = modelInvT * finalNorm;
 	fragTexCoords = texCoords;
 	gl_Position = mvp * finalPos;
-	clipSpaceZ = gl_Position.z;
 
 	vec3 t = normalize(vec3(model * vec4(tangent, 0.0)));
 	vec3 b = normalize(vec3(model * vec4(bitangent, 0.0)));

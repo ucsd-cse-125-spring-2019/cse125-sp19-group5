@@ -248,6 +248,8 @@ void Game::drawScene(Shader &shader, DrawPass pass) const {
 
 void Game::drawUI() const {
 	Draw::rect(-1.0f, -1.0f, 0.5f, 0.5f, shadowMap->getTexture(0));
+	Draw::rect(-0.5f, -1.0f, 0.5f, 0.5f, shadowMap->getTexture(1));
+	Draw::rect(-0.0f, -1.0f, 0.5f, 0.5f, shadowMap->getTexture(2));
 
 	textShader->use();
 	textRenderer->renderText();
@@ -259,8 +261,8 @@ void Game::draw(float dt) const {
 	for (int i = 0; i < SHADOW_NUM_CASCADES; i++) {
 		shadowMap->prePass(i);
 		drawScene(shadowMap->getShader(), DrawPass::SHADOW);
+		shadowMap->postPass(i);
 	}
-	shadowMap->postPass();
 
 	// Normal 3D render pass
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -268,7 +270,6 @@ void Game::draw(float dt) const {
 	lightShader->use();
 	lightShader->setUniform("eyePos", camera->getPosition());
 	lightShader->setUniform("directionalLightNum", 1);
-
 	shadowMap->bindLightTransforms(*lightShader);
 	shadowMap->bindTexture(*lightShader);
 	shadowMap->bindZCutoffs(*lightShader);

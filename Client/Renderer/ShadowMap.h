@@ -26,7 +26,7 @@ class ShadowMap {
 	mat4 toLightSpace[SHADOW_NUM_CASCADES];
 
 	void setupTexture(Texture &texture);
-	void blurDepthMap(float amount = 0.5f);
+	void blurDepthMap(int i, float amount = 0.5f);
 
 	// Set up the light space transformation for the i_th cascade.
 	void setupLightTransform(int i, const DirectionalLight &light);
@@ -34,13 +34,13 @@ class ShadowMap {
 	public:
 	static float cascadeZCutoffs[SHADOW_NUM_CASCADES + 1];
 
-	ShadowMap(Camera *camera, int width = 1024, int height = 1024);
+	ShadowMap(Camera *camera, int width = 4096, int height = 4096);
 
 	// Does some OpenGL setup before rendering the scene for the shadow pass.
 	void prePass(int i);
 
 	// Cleans up the set up stuff after rendering the scene for the shadow pass.
-	void postPass();
+	void postPass(int i);
 
 	// Sets texture 31 to be the depth map - used in lighting shader.
 	void bindTexture(Shader &shader) const;

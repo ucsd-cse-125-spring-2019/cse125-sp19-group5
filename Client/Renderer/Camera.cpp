@@ -87,6 +87,14 @@ float Camera::getFov() const {
 	return fov;
 }
 
+float Camera::getZNear() const {
+	return zNear;
+}
+
+float Camera::getZFar() const {
+	return zFar;
+}
+
 mat4 Camera::getMatrix() const {
 	return projection * view;
 }

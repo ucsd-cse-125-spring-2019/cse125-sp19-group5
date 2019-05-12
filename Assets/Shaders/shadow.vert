@@ -7,7 +7,7 @@ layout (location = 3) in ivec4 bones;
 layout (location = 4) in vec4 weights;
 
 uniform int casade;
-uniform mat4 toLightSpace[SHADOW_NUM_CASADES];
+uniform mat4 projview;
 uniform mat4 model;
 uniform bool animated;
 
@@ -24,5 +24,5 @@ void main() {
 		mat3 boneTransformInvT = transpose(inverse(mat3(boneTransform)));
 		finalPos = boneTransform * finalPos;
 	}
-    gl_Position = toLightSpace[casade] * model * finalPos;
+    gl_Position = projview * model * finalPos;
 }
