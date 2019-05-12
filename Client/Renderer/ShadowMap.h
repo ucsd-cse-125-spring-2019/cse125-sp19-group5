@@ -6,7 +6,7 @@
 #include "DirectionalLight.h"
 #include "Camera.h"
 
-constexpr auto SHADOW_NUM_CASCADES = 1;
+constexpr auto SHADOW_NUM_CASCADES = 4;
 
 // The ShadowMap class sets up a depth map that stores depths from a light
 // for use in calculating shadows.
@@ -15,8 +15,8 @@ class ShadowMap {
 	int width; // Width of the depth map.
 	int height; // Height of the depth map.
 	int viewport[4]; // Info about viewport before rendering to depth map.
-	GLuint FBOs[SHADOW_NUM_CASCADES] = { 0 };
-	GLuint RBOs[SHADOW_NUM_CASCADES] = { 0 };
+	GLuint FBO = 0;
+	GLuint RBO = 0;
 	Texture shadowMaps[SHADOW_NUM_CASCADES];
 	GLuint blurFBO = 0;
 	Texture blurredShadowMap; // depthMap + Gaussian Blur
@@ -47,6 +47,9 @@ class ShadowMap {
 
 	// Sets up the light space transform uniforms for the given shader.
 	void bindLightTransforms(Shader &shader) const;
+
+	// Binds the array of Z cutoffs to the given shader.
+	void bindZCutoffs(Shader &shader) const;
 
 	// Sets the light that will be used to create the depth map.
 	void setupLight(const DirectionalLight &light);

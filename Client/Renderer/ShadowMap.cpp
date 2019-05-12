@@ -8,7 +8,7 @@ constexpr auto FRUSTUM_NUM_CORNERS = 8;
 // The i_th and (i+1)_th z-values are used as the zNear and zFar for the i_th
 // light projection where i = 0, 1, ..., SHADOW_NUM_CASCADES.
 float ShadowMap::cascadeZCutoffs[SHADOW_NUM_CASCADES + 1] = {
-	0.5f, 20.0f
+	-10.0f, 20.0f, 25.0f, 75.0f, 250.0f
 };
 
 // Component wise min between 2 vectors u, v into u
@@ -43,6 +43,7 @@ void ShadowMap::setupTexture(Texture &texture) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
@@ -57,30 +58,25 @@ ShadowMap::ShadowMap(Camera *camera, int width, int height)
 	setupTexture(blurredShadowMap);
 
 	// Then create a framebuffer and attach the depth map texture to it.
-	glGenFramebuffers(SHADOW_NUM_CASCADES, FBOs);
-	for (int i = 0; i < SHADOW_NUM_CASCADES; i++) {
-		glBindFramebuffer(GL_FRAMEBUFFER, FBOs[i]);
-		glFramebufferTexture2D(
-			GL_FRAMEBUFFER,
-			GL_COLOR_ATTACHMENT0,
-			GL_TEXTURE_2D, shadowMaps[i].getID(),
-			0
-		);
-	}
+	glGenFramebuffers(1, &FBO);
+	glGenRenderbuffers(1, &RBO);
 
-	// Set up RBO for depth map so color + depth works correctly.
-	glGenRenderbuffers(SHADOW_NUM_CASCADES, RBOs);
-	for (int i = 0; i < SHADOW_NUM_CASCADES; i++) {
-		glBindRenderbuffer(GL_RENDERBUFFER, RBOs[i]);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
-		glFramebufferRenderbuffer(
-			GL_FRAMEBUFFER,
-			GL_DEPTH_ATTACHMENT,
-			GL_RENDERBUFFER,
-			RBOs[i]
-		);
-		glBindRenderbuffer(GL_RENDERBUFFER, 0);
-	}
+	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+	glFramebufferTexture2D(
+		GL_FRAMEBUFFER,
+		GL_COLOR_ATTACHMENT0,
+		GL_TEXTURE_2D, shadowMaps[0].getID(),
+		0
+	);
+	glBindRenderbuffer(GL_RENDERBUFFER, RBO);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+	glFramebufferRenderbuffer(
+		GL_FRAMEBUFFER,
+		GL_DEPTH_ATTACHMENT,
+		GL_RENDERBUFFER,
+		RBO
+	);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 	// Then, set up FBO so we can blur the depth map.
 	blurFBO = 0;
@@ -101,15 +97,21 @@ ShadowMap::ShadowMap(Camera *camera, int width, int height)
 void ShadowMap::prePass(int i) {
 	// Set up the viewport so stuff is drawn at the correct size.
 	if (i == 0) {
-		shadowShader.use();
 		glGetIntegerv(GL_VIEWPORT, viewport);
-		bindLightTransforms(shadowShader);
 		glViewport(0, 0, width, height);
 		glDisable(GL_BLEND);
 	}
-	glBindFramebuffer(GL_FRAMEBUFFER, FBOs[i]);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	shadowShader.use();
 	shadowShader.setUniform("cascade", i);
+	bindLightTransforms(shadowShader);
+	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+	glFramebufferTexture2D(
+		GL_FRAMEBUFFER,
+		GL_COLOR_ATTACHMENT0,
+		GL_TEXTURE_2D, shadowMaps[i].getID(),
+		0
+	);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 #include <glm/gtx/string_cast.hpp>
 
@@ -120,7 +122,7 @@ void ShadowMap::setupLightTransform(int i, const DirectionalLight &light) {
 	// `view` transforms from world space to light space.
 	constexpr auto up = vec3(0.0f, 1.0f, 0.0f);
 	constexpr auto origin = vec3(0.0f);
-	auto view = glm::lookAt(light.getDirection(), origin, up);
+	auto view = glm::lookAt(origin, -light.getDirection(), up);
 
 	auto viewToLightSpace = view * camViewInv;
 
@@ -133,14 +135,15 @@ void ShadowMap::setupLightTransform(int i, const DirectionalLight &light) {
 	auto yNear = zNear * vert, yFar = zFar * vert;
 
 	vec3 vertices[FRUSTUM_NUM_CORNERS] = {
-		vec3(xNear, yNear, zNear),
-		vec3(xNear, yFar,  zNear),
-		vec3(xFar,  yNear, zNear),
-		vec3(xFar,  yFar,  zNear),
-		vec3(xNear, yNear, zFar),
-		vec3(xNear, yFar,  zFar),
-		vec3(xFar,  yNear, zFar),
-		vec3(xFar,  yFar,  zFar),
+		vec3( xNear,  yNear, zNear),
+		vec3(-xNear,  yNear, zNear),
+		vec3( xNear, -yNear, zNear),
+		vec3(-xNear, -yNear, zNear),
+
+		vec3( xFar,  yFar, zFar),
+		vec3(-xFar,  yFar, zFar),
+		vec3( xFar, -yFar, zFar),
+		vec3(-xFar, -yFar, zFar),
 	};
 
 	// Get bounding box for the frustum.
@@ -152,6 +155,9 @@ void ShadowMap::setupLightTransform(int i, const DirectionalLight &light) {
 	}
 
 	auto proj = glm::ortho(mins.x, maxs.x, mins.y, maxs.y, mins.z, maxs.z);
+	if (i == 0) {
+		std::cout << mins.x << "\t" << maxs.x << "\t" << mins.y << "\t" << maxs.y << "\t" << mins.z << "\t" << maxs.z << std::endl;
+	}
 	toLightSpace[i] = proj * view;
 }
 
@@ -165,6 +171,15 @@ void ShadowMap::bindLightTransforms(Shader &shader) const {
 	for (int i = 0; i < SHADOW_NUM_CASCADES; i++) {
 		auto name = "toLightSpace[" + std::to_string(i) + "]";
 		shader.setUniform(name.c_str(), toLightSpace[i]);
+	}
+}
+
+void ShadowMap::bindZCutoffs(Shader &shader) const {
+	auto projection = camera->getProjectionMatrix();
+	for (int i = 0; i < SHADOW_NUM_CASCADES; i++) {
+		auto name = "cascadeZCutoffs[" + std::to_string(i) + "]";
+		auto clipSpace = projection * vec4(0, 0, cascadeZCutoffs[i + 1], 1);
+		shader.setUniform(name.c_str(), cascadeZCutoffs[i + 1]);
 	}
 }
 
@@ -182,7 +197,7 @@ void ShadowMap::blurDepthMap(float amount) {
 		);
 		Draw::rect(-1.0f, -1.0f, 2.0f, 2.0f, shadowMaps[i]);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, FBOs[i]);
+		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		blurFilter.setUniform(
 			"blurSize",
@@ -193,7 +208,7 @@ void ShadowMap::blurDepthMap(float amount) {
 }
 
 void ShadowMap::postPass() {
-	blurDepthMap();
+	//blurDepthMap();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
 	glEnable(GL_BLEND);
@@ -222,14 +237,14 @@ Texture &ShadowMap::getTexture(int i) {
 }
 
 ShadowMap::~ShadowMap() {
-	if (FBOs[0]) {
-		glDeleteFramebuffers(SHADOW_NUM_CASCADES, FBOs);
+	if (FBO) {
+		glDeleteFramebuffers(1, &FBO);
 	}
 	if (blurFBO) {
 		glDeleteFramebuffers(1, &blurFBO);
 		blurFBO = 0;
 	}
-	if (RBOs[0]) {
-		glDeleteRenderbuffers(SHADOW_NUM_CASCADES, RBOs);
+	if (RBO) {
+		glDeleteRenderbuffers(1, &RBO);
 	}
 }

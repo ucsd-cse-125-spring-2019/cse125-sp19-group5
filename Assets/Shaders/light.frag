@@ -3,7 +3,7 @@
 // Lighting
 const int LIGHTS_MAX = 10;
 
-const int SHADOW_NUM_CASCADES = 1;
+const int SHADOW_NUM_CASCADES = 4;
 
 const float gamma = 2.2;
 const vec3 gammaCorr = vec3(1.0 / gamma);
@@ -37,9 +37,11 @@ uniform PointLight pointLight[LIGHTS_MAX];
 uniform sampler2D shadowMap[SHADOW_NUM_CASCADES];
 uniform int pointLightNum;
 uniform int directionalLightNum;
+uniform float cascadeZCutoffs[SHADOW_NUM_CASCADES];
 
 uniform vec3 eyePos;
 
+in float clipSpaceZ;
 in mat3 tbn;
 in vec4 lightSpacePos[SHADOW_NUM_CASCADES];
 in vec3 fragPos;
@@ -94,11 +96,15 @@ vec3 getDirectionalLightIntensity(
 
 const float SHADOW_BIAS = 0.0002f;
 
-float getShadowIntensity(vec4 lightSpacePos) {
+float getShadowIntensity(int cascade, vec4 lightSpacePos) {
 	vec3 pos = lightSpacePos.xyz / lightSpacePos.w;
 	pos = pos * 0.5 + 0.5;
 
-	vec2 moments = texture(shadowMap[0], pos.xy).rg;
+	if (pos.z < 0.0 || pos.z > 1.0) {
+		return 1.0;
+	}
+
+	vec2 moments = texture(shadowMap[cascade], pos.xy).rg;
 
 	if (pos.z <= moments.x) {
 		return 1.0f;
@@ -116,7 +122,15 @@ void main() {
 	vec3 normal = normalize(fragNormal);
 	vec3 eyeDir = normalize(eyePos - fragPos);
 	vec3 finalColor = vec3(0.0f);
-	float intensity = getShadowIntensity(lightSpacePos[0]);
+	float intensity = 1.0;
+	int cascade;	
+	float zPos = length(eyePos - fragPos);
+	for (cascade = 0; cascade < SHADOW_NUM_CASCADES; cascade++) {
+		if (zPos <= cascadeZCutoffs[cascade]) {
+			intensity = getShadowIntensity(cascade, lightSpacePos[cascade]);
+			break;
+		}
+	}
 
 	float shininess = material.shininess;
 	vec3 diffuse = texture2D(material.diffuseTex, fragTexCoords).rgb;
@@ -149,5 +163,16 @@ void main() {
 		);
 	}
 
+	if (cascade == 0) {
+		finalColor *= vec3(1.0, 0.0, 0.0);
+	} else if (cascade == 1) {
+		finalColor *= vec3(0.0, 1.0, 0.0);
+	} else if (cascade == 2) {
+		finalColor *= vec3(0.0, 0.0, 1.0);
+	} else if (cascade == 3) {
+		finalColor *= vec3(1.0, 1.0, 0.0);
+	} else {
+		finalColor = vec3(gl_FragCoord.z - cascadeZCutoffs[0]);
+	}
 	fragColor = vec4(pow(finalColor, gammaCorr), 1.0f);
 }

@@ -1,7 +1,5 @@
 #version 330 core
 
-in vec4 fragPos;
-
 void main() {
     float depth = gl_FragCoord.z;
     float dx = dFdx(depth);

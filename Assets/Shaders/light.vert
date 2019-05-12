@@ -1,6 +1,6 @@
 #version 330 core
 
-const int SHADOW_NUM_CASCADES = 1;
+const int SHADOW_NUM_CASCADES = 4;
 
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 normal;
@@ -15,6 +15,7 @@ out vec4 lightSpacePos[SHADOW_NUM_CASCADES];
 out vec3 fragPos;
 out vec3 fragNormal;
 out vec2 fragTexCoords;
+out float clipSpaceZ;
 
 uniform bool animated;
 uniform mat3 modelInvT;
@@ -48,9 +49,11 @@ void main() {
 	fragNormal = modelInvT * finalNorm;
 	fragTexCoords = texCoords;
 	gl_Position = mvp * finalPos;
+	clipSpaceZ = gl_Position.z;
 
 	vec3 t = normalize(vec3(model * vec4(tangent, 0.0)));
 	vec3 b = normalize(vec3(model * vec4(bitangent, 0.0)));
 	vec3 n = normalize(vec3(model * vec4(finalNorm, 0.0)));
 	tbn = mat3(t, b, n);
+
 }

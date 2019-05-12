@@ -100,12 +100,12 @@ Game::Game(): gameObjects(1024, nullptr) {
 
 	soundEngine = new SoundEngine();
 	soundEngine->setMasterVolume(1.0f);
-	soundtrack = soundEngine->loadFlatSound("Sounds/minecraft_wet_hands.wav", 0.5f);
+	soundtrack = soundEngine->loadFlatSound("Sounds/minecraft_wet_hands.wav", 0.1f);
 	soundtrack->play(true);
 	spatialTest1 = soundEngine->loadSpatialSound("Sounds/minecraft_sheep.ogg", 1.0f);
-	spatialTest1->play(true);
+	spatialTest1->play(false);
 	spatialTest2 = soundEngine->loadSpatialSound("Sounds/minecraft_chicken_ambient.ogg", 1.0f);
-	spatialTest2->play(true);
+	spatialTest2->play(false);
 
 	// Handle game object creation and deletion.
 	Network::on(
@@ -247,6 +247,8 @@ void Game::drawScene(Shader &shader, DrawPass pass) const {
 }
 
 void Game::drawUI() const {
+	Draw::rect(-1.0f, -1.0f, 0.5f, 0.5f, shadowMap->getTexture(0));
+
 	textShader->use();
 	textRenderer->renderText();
 }
@@ -269,6 +271,7 @@ void Game::draw(float dt) const {
 
 	shadowMap->bindLightTransforms(*lightShader);
 	shadowMap->bindTexture(*lightShader);
+	shadowMap->bindZCutoffs(*lightShader);
 
 	sun->bind(*lightShader);
 	drawScene(*lightShader, DrawPass::LIGHTING);

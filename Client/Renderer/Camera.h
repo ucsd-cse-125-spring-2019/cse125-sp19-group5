@@ -33,7 +33,7 @@ class Camera {
 		const vec3 &position, const vec3 &angles,
 		GLfloat fov,
 		GLfloat aspect,
-		GLfloat zNear = 0.001f, GLfloat zFar = 1000.0f
+		GLfloat zNear = 0.001f, GLfloat zFar = 100.0f
 	);
 
 	void setPosition(const vec3 &newPos);
