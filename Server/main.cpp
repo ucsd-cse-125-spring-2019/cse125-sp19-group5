@@ -129,11 +129,21 @@ int main(int argc, char **argv) {
 
 
 
+	/*
 	// testing code
-	/*std::cout << "Hello world!" << std::endl;
+	std::cout << "Hello world!" << std::endl;
 	GameEngine gameEngine;
-	gameEngine.addGameObject(new Player(vec3(-2, 0, 0), vec3(1, 0, 0), vec3(1, 0, 0), 0, 1));
+	gameEngine.addGameObject(new Player(vec3(-2, 0, 0), vec3(1, 0, 0), vec3(1, 0, 0), 0, 1, 0));
 	gameEngine.addGameObject(new Ball(vec3(5, 0, 0), vec3(-1, 0, 0), 0, 1));
+
+	//gameEngine.addGameObject(new Wall(
+	//	vec3(0, 0, 0), // position
+	//	vec3(1, 0, 0), // velocity/direction
+	//	0, // id
+	//	2, // length
+	//	2, // width
+	//	1 // height
+	//));
 
 	vector<PlayerInputs> playerInputs;
 	PlayerInputs pi;
@@ -156,7 +166,8 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	system("pause");*/
+	system("pause");
 
 	return 0;
+	*/
 }
