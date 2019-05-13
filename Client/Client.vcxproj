@@ -132,6 +132,8 @@
     <ClCompile Include="Renderer\DirectionalLight.cpp" />
     <ClCompile Include="Renderer\Draw.cpp" />
     <ClCompile Include="Renderer\Font.cpp" />
+    <ClCompile Include="Renderer\Gui\GuiElement.cpp" />
+    <ClCompile Include="Renderer\Gui\GuiRect.cpp" />
     <ClCompile Include="Renderer\Light.cpp" />
     <ClCompile Include="Renderer\Material.cpp" />
     <ClCompile Include="Renderer\Mesh.cpp" />
@@ -163,6 +165,8 @@
     <ClInclude Include="Renderer\Draw.h" />
     <ClInclude Include="Renderer\DrawPass.h" />
     <ClInclude Include="Renderer\Font.h" />
+    <ClInclude Include="Renderer\Gui\GuiElement.h" />
+    <ClInclude Include="Renderer\Gui\GuiRect.h" />
     <ClInclude Include="Renderer\Light.h" />
     <ClInclude Include="Renderer\Material.h" />
     <ClInclude Include="Renderer\Mesh.h" />

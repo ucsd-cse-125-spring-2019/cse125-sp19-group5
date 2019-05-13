@@ -10,6 +10,7 @@
 #include "Renderer/Draw.h"
 #include <Shared/CommonStructs.h>
 #include "Renderer/Material.h"
+#include "Renderer/Gui/GuiRect.h"
 
 void Game::onGameObjectCreated(Connection *c, NetBuffer &buffer) {
 	auto gameObjectType = buffer.read<GAMEOBJECT_TYPES>();
@@ -74,6 +75,14 @@ void Game::onGameObjectMaterialSet(Connection *c, NetBuffer &buffer) {
 	if (gameObject) {
 		gameObject->setMaterial(newMaterial);
 	}
+}
+
+int Game::getScreenWidth() const {
+	return screenWidth;
+}
+
+int Game::getScreenHeight() const {
+	return screenHeight;
 }
 
 Game::Game(): gameObjects(1024, nullptr) {
@@ -246,6 +255,8 @@ void Game::drawScene(Shader &shader, DrawPass pass) const {
 }
 
 void Game::drawUI() const {
+	rect.drawElement();
+
 	textShader->use();
 	textRenderer->renderText();
 }
