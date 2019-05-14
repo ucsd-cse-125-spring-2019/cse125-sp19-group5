@@ -174,7 +174,7 @@ void GameEngine::doCollisionInteractions() {
 void GameEngine::removeDeadObjects() {
 	for (GameObject * gameObject : gameState.gameObjects) {
 		if (gameObject && gameObject->deleteOnServerTick()) {
-			delete gameObject;
+			removeGameObjectById(gameObject->getId());
 		}
 	}
 }
