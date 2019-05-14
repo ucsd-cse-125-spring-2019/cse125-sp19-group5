@@ -190,14 +190,14 @@ void GameEngine::updateGameObjectsOnServerTick() {
 bool GameEngine::noCollisionMove(GameObject * gameObject, vec3 movement) {
 	vec3 destination = gameObject->getMoveDestination(movement);
 
-	for (GameObject * otherGameObject : gameState.gameObjects) {
-		if (gameObject != gameObject) {
-			float distance = glm::distance(destination, otherGameObject->getPosition());
-			if (distance < (gameObject->getRadius() + otherGameObject->getRadius())) {
-				return false;
-			}
-		}
-	}
+	//for (GameObject * otherGameObject : gameState.gameObjects) {
+	//	if (gameObject != gameObject) {
+	//		float distance = glm::distance(destination, otherGameObject->getPosition());
+	//		if (distance < (gameObject->getRadius() + otherGameObject->getRadius())) {
+	//			return false;
+	//		}
+	//	}
+	//}
 	gameObject->setPosition(destination);
 
 	return true;
