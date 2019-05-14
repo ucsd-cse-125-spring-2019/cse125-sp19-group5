@@ -15,10 +15,6 @@ int main(int argc, char **argv) {
 	//TODO: config file for the port number to be specified in
 	Network::init(1234);
 
-	//this is the message data sent right after a new player 
-	//has connected to the game
-	MenuOptions menuOptions;
-
 	GameEngine gameEngine;
 	gameEngine.init();
 
@@ -26,7 +22,7 @@ int main(int argc, char **argv) {
 
 	vector<PlayerInputs> playerInputs;
 
-	auto ground = new Wall(origin, origin, 100, 1);
+	auto ground = new Wall(origin, origin, 100, 1, 2, 3);
 	gameEngine.addGameObject(ground);
 	ground->setModel("Models/ground.obj");
 	ground->setMaterial("Materials/grass.json");
@@ -41,27 +37,26 @@ int main(int argc, char **argv) {
 	};
 
 	//handle menu option selections made by the player
-	//TODO: need to verify this works. ran out of time today
-	auto handleMenuInput = [&menuOptions](Connection *c, NetBuffer &playerSelection){
-		int player_id = c->getId();
-		for (int i = 0; i < 4; i++) {
-			if (player_id == playerSelection.read<int>()) {
-				int* optionsArray = (int*)&menuOptions;
-				if (optionsArray[i] != -1) {
-					//this position has already been taken
-					NetBuffer pickAgain(NetMessage::MENU_OPTIONS);
-					pickAgain.write<MenuOptions>(menuOptions);
-					c->send(pickAgain);
-				}
-				else
-				{
-					optionsArray[i] = player_id;
-				}
-			}
+	auto handleMenuInput = [&gameEngine](Connection *c, NetBuffer &playerMenuInput){
+
+		MenuOptions playerMenuOptions = playerMenuInput.read<MenuOptions>();
+
+		//check if the update is allowed
+		if (gameEngine.updateMenuOptions(playerMenuOptions)) {
+			//the update was accepted, broadcast the changes to all clients
+			NetBuffer teamUpdate(NetMessage::MENU_OPTIONS);
+			teamUpdate.write<MenuOptions>(gameEngine.getTeams());
+			Network::broadcast(teamUpdate);
+		}
+		else {
+			//the update was rejected, notify the client affected
+			NetBuffer pickAgain(NetMessage::MENU_OPTIONS);
+			pickAgain.write<MenuOptions>(gameEngine.getTeams());
+			c->send(pickAgain);
 		}
 	};
 
-	Network::onClientConnected([&](Connection *c) {
+	Network::onClientConnected([&,&gameEngine](Connection *c) {
 		std::cout << "Player " << c->getId() << " has connected." << std::endl;
 
 		// Send Client the connection/player ID 
@@ -71,7 +66,7 @@ int main(int argc, char **argv) {
 
 		// send the menu options available for the game
 		NetBuffer menu_options(NetMessage::MENU_OPTIONS);
-		menu_options.write<MenuOptions>(menuOptions);
+		menu_options.write<MenuOptions>(gameEngine.getTeams);
 		c->send(menu_options);
 
 		for (auto gameObject : gameEngine.getGameObjects()) {
@@ -100,7 +95,7 @@ int main(int argc, char **argv) {
 			c->send(matBuffer);
 		}
 
-		auto player = new Player(origin, origin, c->getId(), 1.0f);
+		auto player = new Player(origin, origin, origin, c->getId(), 1.0f, 0);
 		gameEngine.addGameObject(player);
 
 		player->setModel("Models/player.obj");

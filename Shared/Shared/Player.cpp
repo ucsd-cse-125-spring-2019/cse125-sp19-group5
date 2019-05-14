@@ -41,16 +41,9 @@ int Player::getTeam() {
 
 /*
  * A setter for the team a player is assigned to. 
- * This currently does not allow for a player to 
- * later change a team. TODO: Handle changing teams
  */
-bool Player::setTeam(int team) {
-	if (this->team != -1 || team == -1) {
-		//it has a team already set
-		return false;
-	}
+void Player::setTeam(int team) {
 	this->team = team;
-	return true;
 }
 
 vec3 Player::getMoveDestination(vec3 movement) {
