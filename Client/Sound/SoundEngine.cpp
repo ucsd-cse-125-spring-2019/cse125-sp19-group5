@@ -5,7 +5,7 @@ const std::string ERRKLANG_ERROR_MSG = "Error: irrKlang audio failed to initiali
 SoundEngine::SoundEngine() {
 	engine = irrklang::createIrrKlangDevice();
 	if (!engine) {
-		std::cout << ERRKLANG_ERROR_MSG << std::endl;
+		//std::cout << ERRKLANG_ERROR_MSG << std::endl;
 		didInitialize = false;
 	}
 	else {
@@ -19,7 +19,7 @@ SoundEngine::~SoundEngine() {
 
 bool SoundEngine::isInitialized() {
 	if (!didInitialize)
-		std::cout << ERRKLANG_ERROR_MSG << std::endl;
+		//std::cout << ERRKLANG_ERROR_MSG << std::endl;
 
 	return didInitialize;
 }

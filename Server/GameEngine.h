@@ -8,7 +8,7 @@
 #include <Shared/GameState.h>
 #include <Shared/Networking/Connection.h>
 
-#define NUM_PLAYERS 1
+#define NUM_PLAYERS 4
 #define MOVEMENT_MASK 0b11111
 #define COMMAND_MASK 0b1100000
 
@@ -37,8 +37,10 @@ public:
 	bool noCollisionMove(GameObject * gameObject, vec3 movement);
 
 	const vector<GameObject*> &getGameObjects() const;
+	int getTeam();
 
 private:
+	int num_players = 0;
 	GameState gameState;
 	void addGenericGameObject(GameObject *player);
 };

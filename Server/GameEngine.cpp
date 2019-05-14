@@ -207,6 +207,19 @@ bool GameEngine::noCollisionMove(GameObject * gameObject, vec3 movement) {
 	return true;
 }
 
+int GameEngine::getTeam() {
+
+	int team = -1;
+
+	if (num_players < NUM_PLAYERS) {
+		 team = num_players % 2;
+		 num_players += 1;
+	}
+	return team;
+}
+
 const std::vector<GameObject*> &GameEngine::getGameObjects() const {
 	return gameState.gameObjects;
 }
+
+

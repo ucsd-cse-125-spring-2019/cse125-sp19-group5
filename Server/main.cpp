@@ -54,13 +54,22 @@ int main(int argc, char **argv) {
 			std::cout << "sent object " << gameObject->getId() << " to " << c->getId() << std::endl;
 		}
 
-		auto player = new Player(origin, origin, c->getId(), 1.0f);
-		player->setDirection(vec3(0, 0, -1));
-		player->setScale(vec3(0.2f));
-		gameEngine.addGameObject(player);
+		int team = gameEngine.getTeam();
+		std::cout << "team: " << team << endl;
+		NetBuffer team_buffer(NetMessage::TEAM);
+		team_buffer.write<int>(team);
+		c->send(team_buffer);
 
-		// Receive player keyboard and mouse(TODO) input
-		c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);
+			if (team != -1) {
+				auto player = new Player(origin, origin, c->getId(), 1.0f);
+				player->setDirection(vec3(0, 0, -1));
+				player->setScale(vec3(0.2f));
+				gameEngine.addGameObject(player);
+
+				// Receive player keyboard and mouse(TODO) input
+				c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);
+			}
+
 		c->onDisconnected([&](Connection *c) {
 			gameEngine.onPlayerDisconnected(c);
 			std::cout << "Player " << c->getId() << " has disconnected."
