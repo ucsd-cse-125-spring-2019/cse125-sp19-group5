@@ -15,9 +15,10 @@ void GuiElement::addChild(GuiElement *newChild) {
 void GuiElement::removeChild(GuiElement *child) {
 	auto it = std::find(children.begin(), children.end(), child);
 	if (it != children.end()) {
-		(*it)->parent = nullptr;
+		auto child = *it;
+		child->parent = nullptr;
 		children.erase(it);
-		Gui::onElementParentSet(*it, nullptr);
+		Gui::onElementParentSet(child, nullptr);
 	}
 }
 
