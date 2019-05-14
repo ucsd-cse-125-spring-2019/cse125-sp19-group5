@@ -10,6 +10,7 @@
 #include "Renderer/Draw.h"
 #include <Shared/CommonStructs.h>
 #include "Renderer/Material.h"
+#include "Renderer/Gui/Gui.h"
 #include "Renderer/Gui/GuiRect.h"
 
 void Game::onGameObjectCreated(Connection *c, NetBuffer &buffer) {
@@ -87,6 +88,16 @@ int Game::getScreenHeight() const {
 
 Game::Game(): gameObjects(1024, nullptr) {
 	Draw::init();
+
+	auto rect = Gui::create<GuiRect>();
+	rect->setColor(vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	rect->setPosition(vec2(-1.0f, -1.0f));
+	rect->setSize(vec2(0.5f, 0.5f));
+
+	auto rect2 = Gui::create<GuiRect>(rect);
+	rect2->setColor(vec4(0.0f, 1.0f, 0.0f, 1.0f));
+	rect2->setPosition(vec2(0.0f, 0.0f));
+	rect2->setSize(rect->getSize() * 0.5f);
 
 	shadowMap = new ShadowMap();
 	lightShader = new Shader("Shaders/light");
@@ -166,6 +177,7 @@ Game::~Game() {
 		}
 	}
 
+	Gui::cleanUp();
 	Draw::cleanUp();
 }
 
@@ -255,7 +267,7 @@ void Game::drawScene(Shader &shader, DrawPass pass) const {
 }
 
 void Game::drawUI() const {
-	rect.drawElement();
+	Gui::draw();
 
 	textShader->use();
 	textRenderer->renderText();

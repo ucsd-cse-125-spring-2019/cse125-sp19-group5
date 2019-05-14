@@ -1,5 +1,7 @@
 #include "GuiElement.h"
 
+#include "Gui.h"
+
 void GuiElement::addChild(GuiElement *newChild) {
 	if (newChild->getParent()) {
 		newChild->getParent()->removeChild(newChild);
@@ -7,6 +9,7 @@ void GuiElement::addChild(GuiElement *newChild) {
 
 	children.push_back(newChild);
 	newChild->parent = this;
+	Gui::onElementParentSet(newChild, this);
 }
 
 void GuiElement::removeChild(GuiElement *child) {
@@ -14,12 +17,14 @@ void GuiElement::removeChild(GuiElement *child) {
 	if (it != children.end()) {
 		(*it)->parent = nullptr;
 		children.erase(it);
+		Gui::onElementParentSet(*it, nullptr);
 	}
 }
 
 void GuiElement::clearChildren() {
 	for (auto child : children) {
 		child->parent = nullptr;
+		Gui::onElementParentSet(child, nullptr);
 	}
 	children.clear();
 }
@@ -58,6 +63,13 @@ void GuiElement::drawElement(const vec2 &offset) const {
 	for (auto &child : children) {
 		child->drawElement(realPosition);
 	}
+}
+
+void GuiElement::remove() {
+	if (parent) {
+		parent->removeChild(this);
+	}
+	Gui::onElementRemoved(this);
 }
 
 GuiElement::~GuiElement() {

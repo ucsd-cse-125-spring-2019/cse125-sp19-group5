@@ -24,6 +24,8 @@ class GuiElement {
 	virtual void draw(float x, float y, float w, float h) const;
 	void drawElement(const vec2 &offset = vec2(0.0f)) const;
 
+	void remove();
+
 	~GuiElement();
 
 	protected:
