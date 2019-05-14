@@ -135,6 +135,7 @@
     <ClCompile Include="Renderer\Gui\Gui.cpp" />
     <ClCompile Include="Renderer\Gui\GuiElement.cpp" />
     <ClCompile Include="Renderer\Gui\GuiRect.cpp" />
+    <ClCompile Include="Renderer\Gui\GuiText.cpp" />
     <ClCompile Include="Renderer\Light.cpp" />
     <ClCompile Include="Renderer\Material.cpp" />
     <ClCompile Include="Renderer\Mesh.cpp" />
@@ -169,6 +170,7 @@
     <ClInclude Include="Renderer\Gui\Gui.h" />
     <ClInclude Include="Renderer\Gui\GuiElement.h" />
     <ClInclude Include="Renderer\Gui\GuiRect.h" />
+    <ClInclude Include="Renderer\Gui\GuiText.h" />
     <ClInclude Include="Renderer\Light.h" />
     <ClInclude Include="Renderer\Material.h" />
     <ClInclude Include="Renderer\Mesh.h" />

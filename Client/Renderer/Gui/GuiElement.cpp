@@ -60,7 +60,11 @@ void GuiElement::draw(float x, float y, float w, float h) const { }
 
 void GuiElement::drawElement(const vec2 &offset) const {
 	auto realPosition = position + offset;
-	draw(realPosition.x, realPosition.y, size.x, size.y);
+	auto realSize = size;
+	if (parent) {
+		realSize *= parent->getSize();
+	}
+	draw(realPosition.x, realPosition.y, realSize.x, realSize.y);
 	for (auto &child : children) {
 		child->drawElement(realPosition);
 	}

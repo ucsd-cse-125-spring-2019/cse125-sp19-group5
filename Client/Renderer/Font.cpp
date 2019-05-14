@@ -1,6 +1,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Font.h"
+#include "Draw.h"
 
 // https://learnopengl.com/In-Practice/Text-Rendering
 
@@ -86,8 +87,14 @@ Font::Font(const std::string &filepath)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Font::renderText(Shader &shader, const int screenWidth, const int screenHeight, const std::string &text, GLfloat x, GLfloat y, GLfloat scale, const glm::vec3 &color)
+void Font::renderText(Shader &shader, const std::string &text, GLfloat x, GLfloat y, GLfloat scale, const glm::vec3 &color)
 {
+	const auto screenWidth = Draw::screenWidth;
+	const auto screenHeight = Draw::screenHeight;
+
+	x *= screenWidth;
+	y *= screenHeight;
+
 	glBindVertexArray(VAO);
 	// Activate corresponding render state	
 	shader.use();
