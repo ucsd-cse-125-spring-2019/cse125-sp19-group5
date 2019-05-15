@@ -19,8 +19,7 @@ int main(int argc, char **argv) {
 
 	vector<PlayerInputs> playerInputs;
 
-	auto ground = new Wall(origin, origin, 100, 1);
-	gameEngine.addGameObject(ground);
+	auto ground = gameEngine.addGameObject<Wall>();
 	ground->setModel("Models/ground.obj");
 	ground->setMaterial("Materials/grass.json");
 
