@@ -26,6 +26,73 @@ void GameEngine::removeGameObjectById(int id) {
 	}
 }
 
+/*
+ * Getter for the teams struct created
+ */
+MenuOptions GameEngine::getTeams() {
+	return teams;
+}
+
+/*
+ * This function takes in a MenuOptions struct that will replace the 
+ * current "teams" struct (this function is called when a player makes
+ * a selection for a team in the Server main.cpp file). We check for
+ * any conflicts (picking a spot that has already been picked by another
+ * player) and will return false if they were caught. It returns true 
+ * if there were no conflicts and replaces the teams. 
+ */
+bool GameEngine::updateMenuOptions(MenuOptions playerMenuOptions) {
+	//this is basically a big switcase to check the 4 spots in the struct
+	if (teams.team_A_1 != playerMenuOptions.team_A_1) {
+		if (teams.team_A_1 != -1) {
+			return false;
+		}
+	}
+	if (teams.team_B_1 != playerMenuOptions.team_B_1) {
+		if (teams.team_B_1 != -1) {
+			return false;
+		}
+	}
+	if (teams.team_A_2 != playerMenuOptions.team_A_2) {
+		if (teams.team_A_2 != -1) {
+			return false;
+		}
+	}
+	if (teams.team_B_2 != playerMenuOptions.team_B_2) {
+		if (teams.team_B_2 != -1) {
+			return false;
+		}
+	}
+	//no conflicts were caught
+	teams = playerMenuOptions;
+	return true;
+}
+
+/*
+ * This function will assign a default number that can be used for the team
+ * placement when making a player. Position returned is 1, 2, 3, 4 in order
+ * which maps to team positions A1, B1, A2, B2. 
+ */
+int GameEngine::nextAvailableSpot(int clientID) {
+	//this is basically a big switcase to check the 4 spots in the struct
+	if (teams.team_A_1 == -1) {
+		teams.team_A_1 = clientID;
+		return 1;
+	}else if (teams.team_B_1 == -1) {
+		teams.team_B_1 = clientID;
+		return 2;
+	}else if (teams.team_A_2 == -1) {
+		teams.team_A_2 = clientID;
+		return 3;
+	}else if (teams.team_B_2 == -1) {
+		teams.team_B_2 = clientID;
+		return 4;
+	}else {
+		//all spots are full, return "spectator" team
+		return -1;
+	}
+}
+
 void GameEngine::init() {
 	gameState.in_progress = false;
 	gameState.score = std::make_tuple(1, 2);
@@ -109,23 +176,24 @@ vec3 GameEngine::movementInputToVector(int movementInput) {
 }
 
 void GameEngine::movePlayers(vector<PlayerInputs> & playerInputs) {
-	vector<int> aggregatePlayerMovements;
-	//cout << "playerInputs size: " << playerInputs.size() << endl;
-	// Use bitwise or to get all player inputs within one server tick
-	for (int i = 0; i < gameState.players.size(); i++) {
-		aggregatePlayerMovements.push_back(0);
-	}
+	vector<int> aggregatePlayerMovements(gameState.players.size());
+	vector<vec3> directions(gameState.players.size());
+
 	for (PlayerInputs playerInput : playerInputs) {
-		aggregatePlayerMovements[playerInput.id] = aggregatePlayerMovements[playerInput.id] | playerInput.inputs;
+		aggregatePlayerMovements[playerInput.id] |= playerInput.inputs;
+		directions[playerInput.id] = playerInput.direction;
 	}
+
 	for (int i = 0; i < gameState.players.size(); i++) {
-		aggregatePlayerMovements[i] = aggregatePlayerMovements[i] & MOVEMENT_MASK;
-}
-	// Move all players
-	for (int i = 0; i < gameState.players.size(); i++) {
+		auto player = gameState.players[i];
+		if (!player) { continue; }
+		auto movement = aggregatePlayerMovements[i] & MOVEMENT_MASK;
+
+		player->setDirection(directions[i]);
+
 		// TODO: prevent two players from moving to the same spot
 		// gameState.players[i]->move(movementInputToVector(aggregatePlayerMovements[i]));
-		noCollisionMove(gameState.players[i], movementInputToVector(aggregatePlayerMovements[i]));
+		noCollisionMove(player, movementInputToVector(movement));
 		//cout << aggregatePlayerMovements[i] << "   " << glm::to_string(gameState.players[i]->getPosition()) << endl;
 	}
 }
@@ -171,16 +239,11 @@ void GameEngine::doCollisionInteractions() {
 }
 
 void GameEngine::removeDeadObjects() {
-	vector<GameObject *> preservedGameObjects;
 	for (GameObject * gameObject : gameState.gameObjects) {
 		if (gameObject && gameObject->deleteOnServerTick()) {
 			delete gameObject;
 		}
-		else {
-			preservedGameObjects.push_back(gameObject);
-		}
 	}
-	gameState.gameObjects = preservedGameObjects;
 }
 
 void GameEngine::updateGameObjectsOnServerTick() {
@@ -194,14 +257,14 @@ void GameEngine::updateGameObjectsOnServerTick() {
 bool GameEngine::noCollisionMove(GameObject * gameObject, vec3 movement) {
 	vec3 destination = gameObject->getMoveDestination(movement);
 
-	for (GameObject * otherGameObject : gameState.gameObjects) {
-		if (gameObject != gameObject) {
-			float distance = glm::distance(destination, otherGameObject->getPosition());
-			if (distance < (gameObject->getRadius() + otherGameObject->getRadius())) {
-				return false;
-			}
-		}
-	}
+	//for (GameObject * otherGameObject : gameState.gameObjects) {
+	//	if (gameObject != gameObject) {
+	//		float distance = glm::distance(destination, otherGameObject->getPosition());
+	//		if (distance < (gameObject->getRadius() + otherGameObject->getRadius())) {
+	//			return false;
+	//		}
+	//	}
+	//}
 	gameObject->setPosition(destination);
 
 	return true;

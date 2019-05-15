@@ -2,38 +2,40 @@
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
 
-GameObject::GameObject(): GameObject(vec3(0.0f), vec3(0.0f), 0, 1) { }
+GameObject::GameObject() {
+	GameObject(vec3(0, 0, 0), vec3(0, 0, 0), 0);
+}
 
 GameObject::GameObject(const int &id): GameObject() {
 	this->id = id;
 }
 
-GameObject::GameObject(vec3 position, vec3 velocity, int id, int radius) {
+GameObject::GameObject(vec3 position, vec3 velocity, int id)
+#ifdef _SERVER
+	: model(""), material(""), animation(-1)
+#endif
+{
 	this->position = position;
 	this->velocity = velocity;
 	this->id = id;
-	this->radius = radius;
+	setBoundingShape(NULL);
+}
+  
+BoundingShape * GameObject::getBoundingShape() {
+	return this->boundingShape;
 }
 
-bool GameObject::collidesWith(GameObject * gameObject) {
-	if (this == gameObject) {
-		return false;
+void GameObject::setBoundingShape(BoundingShape * boundingShape) {
+	if (getBoundingShape()) {
+		delete this->boundingShape;
 	}
-	return distanceFrom(gameObject) < (radius + gameObject->radius);
-}
-
-void GameObject::onCollision(GameObject * gameObject) {
-	// Should only update your own state, gameObject's state will be updated when it calls onCollision
-	//std::cout << to_string() << " collided with " << gameObject->to_string() << std::endl;
-}
-
-double GameObject::distanceFrom(GameObject * gameObject) {
-	return glm::distance(position, gameObject->getPosition());
+	this->boundingShape = boundingShape;
 }
 
 vec3 GameObject::setPosition(vec3 pos) {
 	vec3 oldPosition = this->position;
 	this->position = pos;
+	this->boundingShape->setPosition(pos);
 	return oldPosition;
 }
 
@@ -59,8 +61,8 @@ vec3 GameObject::getScale() const {
 	return scale;
 }
 
-int GameObject::getRadius() {
-	return this->radius;
+GAMEOBJECT_TYPES GameObject::getGameObjectType() const {
+	return GAMEOBJECT_TYPES::GAMEOBJECT_TYPE;
 }
 
 int GameObject::getId() {
@@ -75,6 +77,19 @@ void GameObject::move(vec3 movement) {
 	setPosition(getMoveDestination(movement));
 }
 
+bool GameObject::collidesWith(GameObject * gameObject) {
+	return this->getBoundingShape()->collideVisit(gameObject->getBoundingShape());
+}
+
+void GameObject::onCollision(GameObject * gameObject) {
+	// Should only update your own state, gameObject's state will be updated when it calls onCollision
+	std::cout << to_string() << " collided with " << gameObject->to_string() << std::endl;
+}
+
+double GameObject::distanceFrom(GameObject * gameObject) {
+	return glm::distance(position, gameObject->getPosition());
+}
+
 bool GameObject::deleteOnServerTick() {
 	return false;
 }
@@ -83,20 +98,32 @@ void GameObject::updateOnServerTick() {
 	return;
 }
 
+void GameObject::setOrientation(const quat &newOrientation) {
+	orientation = newOrientation;
+}
+
+const quat &GameObject::getOrientation() const {
+	return orientation;
+}
+
 void GameObject::serialize(NetBuffer &buffer) const {
+	buffer.write<quat>(orientation);
 	buffer.write<vec3>(position);
 	buffer.write<vec3>(velocity);
 	buffer.write<vec3>(scale);
 	buffer.write<int>(id);
-	buffer.write<int>(radius);
+	// NOT SURE NEED TO WRITE BOUNDING SHAPE TO NETBUFFER
+	// SHOULD ONLY BE SERVER SIDE, PLEASE CONFIRM IN CODE REVIEW
+	// buffer.write<int>(radius);
 }
 
 void GameObject::deserialize(NetBuffer &buffer) {
+	orientation = buffer.read<quat>();
 	position = buffer.read<vec3>();
 	velocity = buffer.read<vec3>();
 	scale = buffer.read<vec3>();
 	id = buffer.read<int>();
-	radius = buffer.read<int>();
+	// radius = buffer.read<int>();
 }
 
 string GameObject::to_string() {

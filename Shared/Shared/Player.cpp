@@ -1,10 +1,15 @@
 #include "Player.h"
+#include "BoundingSphere.h"
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
+#include <glm/gtx/euler_angles.hpp>
 
-Player::Player(vec3 position, vec3 velocity, vec3 direction, int id, int radius) : GameObject(position, velocity, id, radius) {
+Player::Player(vec3 position, vec3 velocity, vec3 direction, int id, float radius, int team) : GameObject(position, velocity, id) {
 	this->direction = direction;
+	this->radius = radius;
 	this->actionCharge = 0;
+	this->team = team;
+	setBoundingShape(new BoundingSphere(position, radius));
 }
 
 GAMEOBJECT_TYPES Player::getGameObjectType() const {
@@ -20,10 +25,25 @@ void Player::setDirection(const vec3 &newDirection) {
 		return;
 	}
 	direction = glm::normalize(newDirection);
+	setOrientation(glm::quatLookAt(direction, vec3(0, 1, 0)));
 }
 
 vec3 Player::getDirection() {
 	return this->direction;
+}
+
+/*
+ * A getter for the team this player is on
+ */
+int Player::getTeam() {
+	return this->team;
+}
+
+/*
+ * A setter for the team a player is assigned to. 
+ */
+void Player::setTeam(int team) {
+	this->team = team;
 }
 
 vec3 Player::getMoveDestination(vec3 movement) {
@@ -38,10 +58,10 @@ vec3 Player::getMoveDestination(vec3 movement) {
 	vec3 up = vec3(0, 1, 0);
 
 	if (movement.z > 0) {
-		directionalizedMovement = directionalizedMovement + direction;
+		directionalizedMovement = directionalizedMovement - direction;
 	}
 	if (movement.z < 0) {
-		directionalizedMovement = directionalizedMovement - direction;
+		directionalizedMovement = directionalizedMovement + direction;
 	}
 	if (movement.x < 0) {
 		directionalizedMovement = directionalizedMovement + glm::cross(up, direction);
@@ -63,7 +83,7 @@ GameObject * Player::doAction(PlayerCommands action) {
 		case SWING: {
 			// std::cout << "Swing with charge " << actionCharge << std::endl;
 			// assumes direction is unit vector
-			vec3 paddlePosition = getPosition() + getDirection()*vec3(2.0f * radius);
+			vec3 paddlePosition = getPosition() + getDirection() * vec3(2.05f * this->radius);
 			vec3 paddleVelocity = getDirection() * vec3((float)(actionCharge));
 			int paddleLifespan = 10;
 			return new Paddle(paddlePosition, paddleVelocity, getId(), 1, paddleLifespan);

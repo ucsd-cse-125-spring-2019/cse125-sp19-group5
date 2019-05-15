@@ -53,6 +53,17 @@ class NetBuffer {
 		header.size += (int32_t)sizeof(T);
 	}
 
+	template<>
+	inline void write(const std::string &value) {
+		if (finished) {
+			throw std::exception("Cannot write to finished buffer");
+		}
+		auto size = value.size();
+		write(size);
+		buf.sputn(value.c_str(), size);
+		header.size += (int32_t)size;
+	}
+
 	// Reads the given data type from the beginning of the buffer, then moves
 	// the beginning of the buffer to after the read data.
 	template<typename T>
@@ -60,6 +71,16 @@ class NetBuffer {
 		char data[sizeof(T)] = { 0 };
 		buf.sgetn(data, sizeof(T));
 		return *reinterpret_cast<T*>(data);
+	}
+
+	template<>
+	inline std::string read() {
+		auto size = read<size_t>();
+		auto data = new char[size];
+		buf.sgetn(data, size);
+		std::string res(data, size);
+		delete data;
+		return res;
 	}
 
 	// Writes the header to the beginning of the buffer, so the data can be read

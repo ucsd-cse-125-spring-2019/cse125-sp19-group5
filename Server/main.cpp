@@ -6,10 +6,13 @@
 #include <chrono>
 #include "GameEngine.h"
 #include "Networking/Server.h"
+#include "main.h"
 
 constexpr auto TICKS_PER_SECOND = 60; // How many updates per second.
 
 int main(int argc, char **argv) {
+
+	//TODO: config file for the port number to be specified in
 	Network::init(1234);
 
 	GameEngine gameEngine;
@@ -19,31 +22,52 @@ int main(int argc, char **argv) {
 
 	vector<PlayerInputs> playerInputs;
 
+	auto ground = new Wall(origin, origin, 100, 1, 2, 3);
+	gameEngine.addGameObject(ground);
+	ground->setModel("Models/ground.obj");
+	ground->setMaterial("Materials/grass.json");
+
 	// Handle player keyboard/mouse inputs
 	auto handlePlayerInput = [&playerInputs](Connection *c, NetBuffer &buffer) {
 		PlayerInputs input;
-		auto inputTuple = buffer.read< tuple<int,float,float> >();
 		input.id = c->getId();
-		input.inputs = std::get<0>(inputTuple);
-		input.theta = std::get<1>(inputTuple);
-		input.phi = std::get<2>(inputTuple);
+		input.inputs = buffer.read<int>();
+		input.direction = buffer.read<vec3>();
 		playerInputs.push_back(input);
 	};
 
-	Network::onClientConnected([&](Connection *c) {
-		std::cout << "Player " << c->getId() << " has connected." << std::endl;
+	//handle menu option selections made by the player
+	auto handleMenuInput = [&gameEngine](Connection *c, NetBuffer &playerMenuInput){
 
-		// Sync up the current state of ballX.
-		/*
-		NetBuffer buffer(NetMessage::GAME_STATE_UPDATE);
-		buffer.write<float>(ballX);
-		c->send(buffer);
-		*/
+		MenuOptions playerMenuOptions = playerMenuInput.read<MenuOptions>();
+
+		//check if the update is allowed
+		if (gameEngine.updateMenuOptions(playerMenuOptions)) {
+			//the update was accepted, broadcast the changes to all clients
+			NetBuffer teamUpdate(NetMessage::MENU_OPTIONS);
+			teamUpdate.write<MenuOptions>(gameEngine.getTeams());
+			Network::broadcast(teamUpdate);
+		}
+		else {
+			//the update was rejected, notify the client affected
+			NetBuffer pickAgain(NetMessage::MENU_OPTIONS);
+			pickAgain.write<MenuOptions>(gameEngine.getTeams());
+			c->send(pickAgain);
+		}
+	};
+
+	Network::onClientConnected([&,&gameEngine](Connection *c) {
+		std::cout << "Player " << c->getId() << " has connected." << std::endl;
 
 		// Send Client the connection/player ID 
 		NetBuffer buffer(NetMessage::CONNECTION_ID);
 		buffer.write<int>(c->getId());
 		c->send(buffer);
+
+		// send the menu options available for the game
+		NetBuffer menu_options(NetMessage::MENU_OPTIONS);
+		menu_options.write<MenuOptions>(gameEngine.getTeams);
+		c->send(menu_options);
 
 		for (auto gameObject : gameEngine.getGameObjects()) {
 			if (!gameObject) { continue; }
@@ -51,7 +75,24 @@ int main(int argc, char **argv) {
 			buffer.write<GAMEOBJECT_TYPES>(gameObject->getGameObjectType());
 			gameObject->serialize(buffer);
 			c->send(buffer);
-			std::cout << "sent object " << gameObject->getId() << " to " << c->getId() << std::endl;
+
+			std::cout << "Sent object " << gameObject->getId() << " to " << c->getId() << std::endl;
+
+			NetBuffer modelBuffer(NetMessage::GAME_OBJ_MODEL);
+			modelBuffer.write(gameObject->getId());
+			modelBuffer.write(gameObject->getModel());
+			c->send(modelBuffer);
+
+			NetBuffer animBuffer(NetMessage::GAME_OBJ_ANIM);
+			animBuffer.write(gameObject->getId());
+			animBuffer.write(gameObject->getAnimation());
+			animBuffer.write(true);
+			c->send(animBuffer);
+
+			NetBuffer matBuffer(NetMessage::GAME_OBJ_MAT);
+			matBuffer.write(gameObject->getId());
+			matBuffer.write(gameObject->getMaterial());
+			c->send(matBuffer);
 		}
 
 		int team = gameEngine.getTeam();
@@ -70,6 +111,18 @@ int main(int argc, char **argv) {
 				c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);
 			}
 
+		auto player = new Player(origin, origin, origin, c->getId(), 1.0f, 0);
+		gameEngine.addGameObject(player);
+
+		player->setModel("Models/player.obj");
+		player->setDirection(vec3(0, 0, -1));
+		player->setMaterial("Materials/brick.json");
+
+		//Here we handle the menu selections made by the player
+		c->on(NetMessage::MENU_INPUT, handleMenuInput);
+
+		// Receive player keyboard and mouse(TODO) input
+		c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);
 		c->onDisconnected([&](Connection *c) {
 			gameEngine.onPlayerDisconnected(c);
 			std::cout << "Player " << c->getId() << " has disconnected."
@@ -78,8 +131,9 @@ int main(int argc, char **argv) {
 	});
 
 	//This is the total amount of time allowed for the server to update the game state
-	auto maxAllowabeServerTime = std::chrono::milliseconds(1000 / TICKS_PER_SECOND);
+	auto maxAllowabeServerTime = std::chrono::milliseconds(1000 / TICKS_PER_SECOND + 10);
 
+	//now the game loop begins
 	while (true) 
 	{
 
@@ -101,7 +155,7 @@ int main(int argc, char **argv) {
 		auto totalDuration = std::chrono::duration_cast<std::chrono::milliseconds>(updateDone - startTime);
 
 		//check if the server is running on schedule
-		if (totalDuration < maxAllowabeServerTime) 
+		if (updateDuration <= maxAllowabeServerTime) 
 		{
 			//wait for the update time to broadcast the game state update
 			std::this_thread::sleep_for(maxAllowabeServerTime - totalDuration);
@@ -109,42 +163,11 @@ int main(int argc, char **argv) {
 		else 
 		{
 			//server has taken too long to process the update!
-			std::cerr << "SERVER TOOK TOO LONG TO UPDATE!" << endl;
+			//std::cerr << "SERVER TOOK TOO LONG TO UPDATE!" << endl;
 		}
 	
 		gameEngine.synchronizeGameState();
 	}
-
-
-
-	// testing code
-	/*std::cout << "Hello world!" << std::endl;
-	GameEngine gameEngine;
-	gameEngine.addGameObject(new Player(vec3(-2, 0, 0), vec3(1, 0, 0), vec3(1, 0, 0), 0, 1));
-	gameEngine.addGameObject(new Ball(vec3(5, 0, 0), vec3(-1, 0, 0), 0, 1));
-
-	vector<PlayerInputs> playerInputs;
-	PlayerInputs pi;
-	pi.id = 0;
-	pi.inputs = SWING + RIGHT + LEFT;
-	playerInputs.push_back(pi);
-
-	vector<PlayerInputs> noInputs;
-	pi.id = 0;
-	pi.inputs = 0;
-	noInputs.push_back(pi);
-
-	for (int i = 0; i < 15; i++) {
-		if (i < 3) {
-			gameEngine.updateGameState(playerInputs);
-		}
-		else {
-			gameEngine.updateGameState(noInputs);
-
-		}
-	}
-
-	system("pause");*/
 
 	return 0;
 }

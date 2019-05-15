@@ -7,15 +7,11 @@
 #include "Renderer/Skybox.h"
 #include "Renderer/TextRenderer.h"
 #include "Renderer/ShadowMap.h"
+#include "Renderer/DrawPass.h"
 #include "Sound/SoundEngine.h"
 #include "ClientGameObject.h"
 #include <Shared/GameState.h>
 #include "Networking/Client.h"
-
-enum DrawPass {
-	SHADOW,
-	LIGHTING
-};
 
 class Game {
 	private:
@@ -51,6 +47,8 @@ class Game {
 	GameState gameState;
 	Player *playerObj = nullptr;
 
+	void updateInputs();
+
 public:
 	bool shouldExit = false;
 	Game();
@@ -63,6 +61,9 @@ public:
 
 	void onGameObjectCreated(Connection *c, NetBuffer &buffer);
 	void onGameObjectDeleted(Connection *c, NetBuffer &buffer);
+	void onGameObjectModelSet(Connection *c, NetBuffer &buffer);
+	void onGameObjectAnimSet(Connection *c, NetBuffer &buffer);
+	void onGameObjectMaterialSet(Connection *c, NetBuffer &buffer);
 
 	void updateScreenDimensions(int width, int height);
 	Camera *getCamera() const;

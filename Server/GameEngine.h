@@ -26,6 +26,10 @@ public:
 	void addGameObject(Wall *wall);
 	void removeGameObjectById(int id);
 
+	MenuOptions getTeams();
+	bool updateMenuOptions(MenuOptions playerMenuOptions);//will return true if an update was legal, false if illegal
+	int nextAvailableSpot(int clientID);//will return the next available spot in the game (default team picking) 
+
 	vec3 movementInputToVector(int movementInput);
 	void movePlayers(vector<PlayerInputs> & playerInputs);
 	void moveBalls();
@@ -41,6 +45,7 @@ public:
 
 private:
 	int num_players = 0;
+	MenuOptions teams;
 	GameState gameState;
 	void addGenericGameObject(GameObject *player);
 };
