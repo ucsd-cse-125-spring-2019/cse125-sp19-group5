@@ -3,9 +3,17 @@
 #include <Shared/Common.h>
 #include <vector>
 
+enum GuiState {
+	HOVERED,
+};
+
 class GuiElement {
 	public:
 	using Children = std::vector<GuiElement*>;
+
+	void dispatchClick(float x, float y, int button, int action);
+	void dispatchCursorPos(float x, float y);
+	void dispatchKey(std::string c);
 
 	void addChild(GuiElement *newChild);
 	void removeChild(GuiElement *child);

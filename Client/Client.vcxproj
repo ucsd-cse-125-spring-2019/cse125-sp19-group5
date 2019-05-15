@@ -133,6 +133,7 @@
     <ClCompile Include="Renderer\Draw.cpp" />
     <ClCompile Include="Renderer\Font.cpp" />
     <ClCompile Include="Renderer\Gui\Gui.cpp" />
+    <ClCompile Include="Renderer\Gui\GuiButton.cpp" />
     <ClCompile Include="Renderer\Gui\GuiElement.cpp" />
     <ClCompile Include="Renderer\Gui\GuiRect.cpp" />
     <ClCompile Include="Renderer\Gui\GuiText.cpp" />
@@ -168,6 +169,7 @@
     <ClInclude Include="Renderer\DrawPass.h" />
     <ClInclude Include="Renderer\Font.h" />
     <ClInclude Include="Renderer\Gui\Gui.h" />
+    <ClInclude Include="Renderer\Gui\GuiButton.h" />
     <ClInclude Include="Renderer\Gui\GuiElement.h" />
     <ClInclude Include="Renderer\Gui\GuiRect.h" />
     <ClInclude Include="Renderer\Gui\GuiText.h" />

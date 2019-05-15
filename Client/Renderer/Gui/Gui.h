@@ -23,6 +23,9 @@ namespace Gui {
 
 	void onElementParentSet(GuiElement *element, GuiElement *parent);
 	void onElementRemoved(GuiElement *element);
+	void dispatchClick(float x, float y, int button, int action);
+	void dispatchCursorPos(float x, float y);
+	void dispatchKey(std::string c);
 	void draw();
 	void cleanUp();
 }

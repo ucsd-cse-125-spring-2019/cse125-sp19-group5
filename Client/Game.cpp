@@ -12,7 +12,7 @@
 #include "Renderer/Material.h"
 #include "Renderer/Gui/Gui.h"
 #include "Renderer/Gui/GuiRect.h"
-#include "Renderer/Gui/GuiText.h"
+#include "Renderer/Gui/GuiButton.h"
 
 void Game::onGameObjectCreated(Connection *c, NetBuffer &buffer) {
 	auto gameObjectType = buffer.read<GAMEOBJECT_TYPES>();
@@ -90,16 +90,20 @@ int Game::getScreenHeight() const {
 Game::Game(): gameObjects(1024, nullptr) {
 	Draw::init();
 
+	Input::mouseLock = false;
+	Input::setMouseVisible(true);
+
 	auto rect = Gui::create<GuiRect>();
 	rect->setColor(vec4(1.0f, 0.0f, 0.0f, 1.0f));
 	rect->setPosition(vec2(0.0f, 0.0f));
 	rect->setSize(vec2(0.5f, 0.5f));
 
-	auto text = Gui::create<GuiText>(rect);
-	text->setColor(vec4(0.0f, 1.0f, 0.0f, 1.0f));
+	auto text = Gui::create<GuiButton>(rect);
+	text->setBgColor(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	text->setPosition(vec2(0.0f, 0.0f));
 	text->setText("Hello, world!");
 	text->setFont("Arial");
+	text->setSize(vec2(1.0f, 0.25f));
 
 	shadowMap = new ShadowMap();
 	lightShader = new Shader("Shaders/light");
@@ -110,8 +114,6 @@ Game::Game(): gameObjects(1024, nullptr) {
 	sun->setColor(vec3(0.8f, 0.7f, 0.55f));
 
 	skybox = new Skybox("Textures/Skybox/cloudtop", *camera);
-
-	Input::setMouseVisible(false);
 
 	ConfigSettings::get().getValue("MouseSensitivity", mouseSensitivity);
 

@@ -3,7 +3,7 @@
 #include <GLFW/glfw3.h>
 
 namespace Input {
-	static bool mouseLock = true;
+	extern bool mouseLock;
 
 	void setMouseVisible(bool isVisible = true);
 	void init(GLFWwindow *window);

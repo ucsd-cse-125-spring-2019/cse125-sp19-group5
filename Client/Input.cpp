@@ -2,6 +2,8 @@
 
 GLFWwindow *curWindow;
 
+bool Input::mouseLock = true;
+
 bool windowInFocus = true;
 
 double lastMouseX = -1.0;
@@ -64,9 +66,7 @@ void Input::poll() {
 
 		glfwSetCursorPos(curWindow, halfWidth, halfHeight);
 	} else {
-		mouseDeltaX = mouseX - lastMouseX;
-		mouseDeltaY = mouseY - lastMouseY;
-
+		mouseDeltaX = mouseDeltaY = 0;
 		lastMouseX = mouseX;
 		lastMouseY = mouseY;
 	}
