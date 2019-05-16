@@ -71,5 +71,5 @@ protected:
 	std::string material;
 	int animation;
 	int id;
-	BoundingShape * boundingShape;
+	BoundingShape * boundingShape = nullptr;
 };

@@ -18,7 +18,7 @@ GameObject::GameObject(vec3 position, vec3 velocity, int id)
 	this->position = position;
 	this->velocity = velocity;
 	this->id = id;
-	setBoundingShape(NULL);
+	setBoundingShape(nullptr);
 }
   
 BoundingShape * GameObject::getBoundingShape() {

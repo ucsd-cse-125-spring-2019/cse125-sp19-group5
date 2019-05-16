@@ -46,6 +46,7 @@ void GameEngine::updateGameState(vector<PlayerInputs> & playerInputs) {
 	doCollisionInteractions();
 	updateGameObjectsOnServerTick();
 	removeDeadObjects();
+
 	// send getNetworkGameState() to client
 }
 

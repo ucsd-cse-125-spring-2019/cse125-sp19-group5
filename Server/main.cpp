@@ -3,6 +3,8 @@
 #include <boost/asio.hpp>
 #include <Shared/Common.h>
 #include <Shared/GameMessage.hpp>
+#include <Shared/BoundingSphere.h>
+#include <Shared/BoundingBox.h>
 #include <chrono>
 #include "GameEngine.h"
 #include "Networking/Server.h"
@@ -20,8 +22,18 @@ int main(int argc, char **argv) {
 	vector<PlayerInputs> playerInputs;
 
 	auto ground = gameEngine.addGameObject<Wall>();
+	ground->setBoundingShape(new BoundingBox(vec3(0, 0, 0), vec3(1, 0, 0), 1, 1, 1));
 	ground->setModel("Models/ground.obj");
 	ground->setMaterial("Materials/grass.json");
+
+	auto ball = gameEngine.addGameObject<Ball>();
+	ball->setBoundingShape(new BoundingSphere(origin, 1));
+	ball->setScale(vec3(1.0f/4.0f));
+	ball->setPosition(vec3(0, 4, 0));
+	ball->setVelocity(vec3(0, 0, 0));
+	ball->setModel("Models/sphere.obj");
+	ball->setMaterial("Materials/brick.json");
+
 
 	// Handle player keyboard/mouse inputs
 	auto handlePlayerInput = [&playerInputs](Connection *c, NetBuffer &buffer) {
@@ -73,7 +85,7 @@ int main(int argc, char **argv) {
 			c->send(matBuffer);
 		}
 
-		auto player = new Player(origin, origin, c->getId(), 1.0f);
+		auto player = new Player(origin, origin, origin, c->getId(), 1.0f, 0);
 		gameEngine.addGameObject(player);
 
 		player->setModel("Models/player.obj");
