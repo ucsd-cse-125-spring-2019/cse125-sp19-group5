@@ -157,11 +157,9 @@ void MeshData::loadBones(std::vector<Vertex> &vertices) {
 
 aiNodeAnim *MeshData::getNodeAnim(const aiAnimation *animation, const std::string &nodeName) {
 	const auto nodeNameCStr = nodeName.c_str();
-	const auto size = nodeName.size();
-
 	for (unsigned int i = 0; i < animation->mNumChannels; i++) {
 		auto nodeAnim = animation->mChannels[i];
-		if (strncmp(nodeAnim->mNodeName.data, nodeNameCStr, size) == 0) {
+		if (strcmp(nodeAnim->mNodeName.data, nodeNameCStr) == 0) {
 			return nodeAnim;
 		}
 	}

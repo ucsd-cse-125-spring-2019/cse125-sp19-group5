@@ -88,9 +88,11 @@ int main(int argc, char **argv) {
 		auto player = new Player(origin, origin, origin, c->getId(), 1.0f, 0);
 		gameEngine.addGameObject(player);
 
-		player->setModel("Models/player.obj");
+		player->setModel("Models/BearTiltAnimation.fbx");
 		player->setDirection(vec3(0, 0, -1));
 		player->setMaterial("Materials/brick.json");
+		player->setScale(vec3(0.2f));
+		player->setAnimation(0);
 
 		// Receive player keyboard and mouse(TODO) input
 		c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);

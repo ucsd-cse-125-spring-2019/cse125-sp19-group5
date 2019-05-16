@@ -34,7 +34,6 @@ void Mesh::updateAnimation(float time) {
 		time * (float)animation->mTicksPerSecond,
 		(float)animation->mDuration
 	);
-
 	mat4 identity(1.0f);
 	buildBoneTransformations(time, data->getSceneRoot(), identity);
 }
@@ -69,16 +68,15 @@ void interpolateRotation(float time, aiNodeAnim *nodeAnim, mat4 &transform) {
 	}
 
 	auto keys = nodeAnim->mRotationKeys;
-	GET_FRAME_NUM(frame, Position);
+	GET_FRAME_NUM(frame, Rotation);
 
 	auto start = keys[frame], end = keys[frame + 1];
 	auto t = (time - start.mTime) / (end.mTime - start.mTime);
 
-	auto startVal = start.mValue, endVal = end.mValue;
-	glm::quat startQ(startVal.w, startVal.x, startVal.y, startVal.z);
-	glm::quat endQ(endVal.w, endVal.x, endVal.y, endVal.z);
-	
-	transform *= glm::mat4_cast(glm::slerp(startQ, endQ, (float)t));
+	aiQuaternion res;
+	aiQuaternion::Interpolate(res, start.mValue, end.mValue, (float)t);
+
+	transform *= glm::mat4_cast(glm::quat(res.w, res.x, res.y, res.z));
 }
 
 void interpolateScale(float time, aiNodeAnim *nodeAnim, mat4 &transform) {
@@ -99,7 +97,7 @@ void interpolateScale(float time, aiNodeAnim *nodeAnim, mat4 &transform) {
 
 	transform *= glm::scale(mat4(1.0f), glm::mix(startScale, endScale, t));
 }
-
+#include <glm/gtx/string_cast.hpp>
 void Mesh::buildBoneTransformations(float time, aiNode *node, const mat4 &parentTransform) {
 	const auto animation = data->getAnimation(animationId);
 	mat4 transformation;
@@ -108,7 +106,6 @@ void Mesh::buildBoneTransformations(float time, aiNode *node, const mat4 &parent
 	auto nodeAnim = data->getNodeAnim(animation, nodeName);
 	if (nodeAnim) {
 		transformation = mat4(1.0f);
-
 		interpolateTranslation(time, nodeAnim, transformation);
 		interpolateRotation(time, nodeAnim, transformation);
 		interpolateScale(time, nodeAnim, transformation);
