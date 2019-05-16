@@ -6,7 +6,6 @@
 #include <chrono>
 #include "GameEngine.h"
 #include "Networking/Server.h"
-#include "main.h"
 
 constexpr auto TICKS_PER_SECOND = 60; // How many updates per second.
 
@@ -36,27 +35,45 @@ int main(int argc, char **argv) {
 		playerInputs.push_back(input);
 	};
 
-	//handle menu option selections made by the player
-	auto handleMenuInput = [&gameEngine](Connection *c, NetBuffer &playerMenuInput){
-
+	//handle menu option selections made by the client 
+	auto handleMenuInput = [&](Connection *c, NetBuffer &playerMenuInput) 
+	{
 		MenuOptions playerMenuOptions = playerMenuInput.read<MenuOptions>();
 
 		//check if the update is allowed
-		if (gameEngine.updateMenuOptions(playerMenuOptions)) {
-			//the update was accepted, broadcast the changes to all clients
-			NetBuffer teamUpdate(NetMessage::MENU_OPTIONS);
+		if (gameEngine.updateMenuOptions(playerMenuOptions)) 
+		{
+			//the update was accepted, broadcast the confirmation to all clients
+			NetBuffer teamUpdate(NetMessage::MENU_CONFIRM);
 			teamUpdate.write<MenuOptions>(gameEngine.getTeams());
 			Network::broadcast(teamUpdate);
+
+			cout << "broadcast complete" << endl;
+
+			//create a new player
+			auto player = new Player(origin, origin, origin, c->getId(), 1.0f, gameEngine.getTeamOf(c->getId()));
+			player->setDirection(vec3(0, 0, -1));
+			player->setScale(vec3(0.2f));
+			player->setModel("Models/player.obj");
+			player->setDirection(vec3(0, 0, -1));
+			player->setMaterial("Materials/brick.json");
+
+			//add this player to the game
+			gameEngine.addGameObject(player);
+
+			//listen for player input at this point
+			c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);
 		}
-		else {
+		else 
+		{
 			//the update was rejected, notify the client affected
-			NetBuffer pickAgain(NetMessage::MENU_OPTIONS);
+			NetBuffer pickAgain(NetMessage::MENU_INPUT);
 			pickAgain.write<MenuOptions>(gameEngine.getTeams());
 			c->send(pickAgain);
 		}
 	};
 
-	Network::onClientConnected([&,&gameEngine](Connection *c) {
+	Network::onClientConnected([&](Connection *c) {
 		std::cout << "Player " << c->getId() << " has connected." << std::endl;
 
 		// Send Client the connection/player ID 
@@ -65,9 +82,13 @@ int main(int argc, char **argv) {
 		c->send(buffer);
 
 		// send the menu options available for the game
-		NetBuffer menu_options(NetMessage::MENU_OPTIONS);
-		menu_options.write<MenuOptions>(gameEngine.getTeams);
+		NetBuffer menu_options(NetMessage::MENU_INPUT);
+		menu_options.write<MenuOptions>(gameEngine.getTeams());
 		c->send(menu_options);
+		c->on(NetMessage::MENU_INPUT, handleMenuInput);//callback for the client reply
+		/*DEBUG*/
+		cout << "send menu options" << endl;
+		/*END_DEBUG*/
 
 		for (auto gameObject : gameEngine.getGameObjects()) {
 			if (!gameObject) { continue; }
@@ -95,34 +116,33 @@ int main(int argc, char **argv) {
 			c->send(matBuffer);
 		}
 
+		//the following codeblock does the same thing as the code on line 73
 		int team = gameEngine.getTeam();
 		std::cout << "team: " << team << endl;
 		NetBuffer team_buffer(NetMessage::TEAM);
 		team_buffer.write<int>(team);
 		c->send(team_buffer);
+		//end of the codeblock that does the same thing as the code on line 73
 
-			if (team != -1) {
-				auto player = new Player(origin, origin, c->getId(), 1.0f);
-				player->setDirection(vec3(0, 0, -1));
-				player->setScale(vec3(0.2f));
-				gameEngine.addGameObject(player);
-
-				// Receive player keyboard and mouse(TODO) input
-				c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);
-			}
-
-		auto player = new Player(origin, origin, origin, c->getId(), 1.0f, 0);
-		gameEngine.addGameObject(player);
+		//the following codeblock has been incorporated into the callback function "handleMenuInput"
+		if (team != -1) {
+			auto player = new Player(origin, origin, origin, c->getId(), 1.0f, team);
+			player->setDirection(vec3(0, 0, -1));
+			player->setScale(vec3(0.2f));
+			gameEngine.addGameObject(player);
 
 		player->setModel("Models/player.obj");
 		player->setDirection(vec3(0, 0, -1));
 		player->setMaterial("Materials/brick.json");
 
-		//Here we handle the menu selections made by the player
-		c->on(NetMessage::MENU_INPUT, handleMenuInput);
+			// Receive player keyboard and mouse(TODO) input
+			c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);
+		}
+		//end of the codeblock that has been incorporated into the callback function "handleMenuInput"
+
+
 
 		// Receive player keyboard and mouse(TODO) input
-		c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);
 		c->onDisconnected([&](Connection *c) {
 			gameEngine.onPlayerDisconnected(c);
 			std::cout << "Player " << c->getId() << " has disconnected."
@@ -134,7 +154,7 @@ int main(int argc, char **argv) {
 	auto maxAllowabeServerTime = std::chrono::milliseconds(1000 / TICKS_PER_SECOND + 10);
 
 	//now the game loop begins
-	while (true) 
+	while (true)
 	{
 
 		//time keeping stuff to know how long the server has been running for
@@ -146,8 +166,8 @@ int main(int argc, char **argv) {
 		//updating the game state with each client message
 		//vector<PlayerInputs> playerInputs;
 			/*TODO: use the player input (Oliver)*/
-			gameEngine.updateGameState(playerInputs);
-			playerInputs.clear();
+		gameEngine.updateGameState(playerInputs);
+		playerInputs.clear();
 
 		//timekeeping stuff to check the duration so far
 		auto updateDone = std::chrono::high_resolution_clock::now();
@@ -155,17 +175,17 @@ int main(int argc, char **argv) {
 		auto totalDuration = std::chrono::duration_cast<std::chrono::milliseconds>(updateDone - startTime);
 
 		//check if the server is running on schedule
-		if (updateDuration <= maxAllowabeServerTime) 
+		if (updateDuration <= maxAllowabeServerTime)
 		{
 			//wait for the update time to broadcast the game state update
 			std::this_thread::sleep_for(maxAllowabeServerTime - totalDuration);
 		}
-		else 
+		else
 		{
 			//server has taken too long to process the update!
 			//std::cerr << "SERVER TOOK TOO LONG TO UPDATE!" << endl;
 		}
-	
+
 		gameEngine.synchronizeGameState();
 	}
 

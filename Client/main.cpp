@@ -17,6 +17,39 @@ auto SCREEN_WIDTH = 800;
 auto SCREEN_HEIGHT = 600;
 auto SCREEN_RESHAPED = false;
 
+/*
+ * This is a function stub
+ */
+static MenuOptions menuPrompt(int playerId, MenuOptions currentMenuOptions) {
+	int selection = 0;
+	while (0 >= selection || selection >= 5)
+	{
+		cout << "-------------------------- " << endl;
+		cout << "HERE ARE THE MENU OPTIONS: " << endl << endl;
+		cout << "Team A (1):             " << (int)currentMenuOptions.team_A_1 << endl;
+		cout << "Team A (2):             " << (int)currentMenuOptions.team_A_2 << endl << endl;
+		cout << "Team B (1):             " << (int)currentMenuOptions.team_B_1 << endl;
+		cout << "Team B (2):             " << (int)currentMenuOptions.team_B_2 << endl;
+		cout << "-------------------------- " << endl;
+		cout << "Type '1', '2', '3', or '4' to make a selection: ";
+		cin >> selection;
+		cout << selection << endl;
+	}
+	switch (selection) {
+	case 1: currentMenuOptions.team_A_1 = playerId; break;
+	case 2: currentMenuOptions.team_B_1 = playerId; break;
+	case 3: currentMenuOptions.team_A_2 = playerId; break;
+	case 4: currentMenuOptions.team_B_2 = playerId; break;
+	}
+	return currentMenuOptions;
+}
+
+/*
+ * This is a function stub
+ */
+static void clearMenuPrompt() {
+	cout << "clearing the menu prompt!" << endl;
+}
 
 // Update the view port when the window has been resized.
 static void onResize(GLFWwindow *window, int width, int height) {
@@ -69,7 +102,7 @@ int main(int argc, char **argv) {
 	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-	glEnable(GL_MULTISAMPLE); 
+	glEnable(GL_MULTISAMPLE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glCullFace(GL_BACK);
@@ -93,8 +126,71 @@ int main(int argc, char **argv) {
 
 	cout << "creating client" << endl;
 
-	// Main loop
-	while (!glfwWindowShouldClose(window)) {
+	/*
+	 * This is the callback function that is responsible for displaying all
+	 * the menu options available before the game session has started.
+	 * Currently there is only team selection support
+	 */
+	auto handleMenuInput = [&](Connection *server, NetBuffer &incomingMessage)
+	{
+		cout << "DEBUG" << endl;
+		//read in the current menu options from the server
+		MenuOptions currentMenuOptions = incomingMessage.read<MenuOptions>();
+
+		//display these options and allow the client to make a selection
+		MenuOptions clientOptions = menuPrompt(game.getPlayerId(), currentMenuOptions);
+
+		NetBuffer menuInput(NetMessage::MENU_INPUT);
+		menuInput.write<MenuOptions>(clientOptions);
+
+		//send the client's selections to the server for confirmation
+		server->send(menuInput);
+	};
+
+	/*
+	 * This is the callback function that is responsible for handling confirmation
+	 * from the server about the menu options selected by a client
+	 */
+	auto handleMenuConfirmed = [&](Connection *server, NetBuffer &serverMenuOptions)
+	{
+		cout << "server sent confirmation" << endl;
+		MenuOptions currentMenuOptions = serverMenuOptions.read<MenuOptions>();
+		
+		// Now we check if the Server has confirmed our selection or if it was 
+		// confirming for another client instead
+		if (game.serverConfirmed(currentMenuOptions))
+		{
+			// The game is ready to start, so clear the Menu prompt from the screen
+			clearMenuPrompt();
+		}
+		else //The client selection window needs to update
+		{
+			//display these options and allow the client to make a selection
+			MenuOptions clientOptions = menuPrompt(game.getPlayerId(), currentMenuOptions);
+
+			NetBuffer menuInput(NetMessage::MENU_INPUT);
+			menuInput.write<MenuOptions>(clientOptions);
+
+			//send the client's selections to the server for confirmation
+			server->send(menuInput);
+
+		}
+	};
+
+	// this handles the broadcast for the general menu option negotiations 
+	// with the server (server will send a MENU_CONFRIM when accepted)
+	Network::on(NetMessage::MENU_INPUT, handleMenuInput);
+
+	// this is the server confirming a new selection to all connected clients 
+	Network::on(NetMessage::MENU_CONFIRM, handleMenuConfirmed);
+
+	while (1)
+	{
+		Network::poll();
+	}
+
+	// Main loop /* TODO: re-enable */
+	while (1 == 2) {//!glfwWindowShouldClose(window)) {
 		auto dt = (float)glfwGetTime() - lastTime;
 		lastTime = (float)glfwGetTime();
 
@@ -123,7 +219,7 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	Network::cleanUp();
-	glfwTerminate();
+	//Network::cleanUp();
+	//glfwTerminate();
 	return 0;
 }

@@ -15,12 +15,12 @@ void Game::onGameObjectCreated(Connection *c, NetBuffer &buffer) {
 	auto gameObjectType = buffer.read<GAMEOBJECT_TYPES>();
 	std::unique_ptr<GameObject> obj = nullptr;
 	switch (gameObjectType) {
-		case GAMEOBJECT_TYPES::PLAYER_TYPE:
-			obj = std::make_unique<Player>(-1);
-			break;
-		default:
-			obj = std::make_unique<GameObject>();
-			break;
+	case GAMEOBJECT_TYPES::PLAYER_TYPE:
+		obj = std::make_unique<Player>(-1);
+		break;
+	default:
+		obj = std::make_unique<GameObject>();
+		break;
 	}
 
 	obj->deserialize(buffer);
@@ -76,7 +76,8 @@ void Game::onGameObjectMaterialSet(Connection *c, NetBuffer &buffer) {
 	}
 }
 
-Game::Game(): gameObjects(1024, nullptr) {
+
+Game::Game() : gameObjects(1024, nullptr) {
 	Draw::init();
 
 	shadowMap = new ShadowMap();
@@ -130,7 +131,7 @@ Game::Game(): gameObjects(1024, nullptr) {
 	);
 
 	// Receive connection id / player id from server
-	Network::on(NetMessage::CONNECTION_ID, [this] (Connection *c, NetBuffer &buffer) {
+	Network::on(NetMessage::CONNECTION_ID, [this](Connection *c, NetBuffer &buffer) {
 		playerId = buffer.read<int>();
 		cout << "I am Player " << playerId << "." << endl;
 	});
@@ -223,7 +224,7 @@ void Game::update(float dt) {
 	soundEngine->update(camera->getPosition(), vec3(0.0f, 0.0f, 0.0f), camera->getForward());
 
 	fpsTextTimer += dt;
-	int fps = (int) (1.0f / dt);
+	int fps = (int)(1.0f / dt);
 	if (fpsTextTimer > 0.3f)
 	{
 		fpsTextTimer = 0.0f;
@@ -281,4 +282,52 @@ void Game::draw(float dt) const {
 	Draw::setupContext();
 	drawUI();
 	glEnable(GL_DEPTH_TEST);
+}
+
+/*
+ * Standard getter for the player ID assigned 
+ */
+int Game::getPlayerId() {
+	return this->playerId;
+}
+
+/*
+ * This function will replace the current MenuOptions with the 
+ * one passed in as the argument. Then it will check if this 
+ * menu selection was any different from the previous one. If it's
+ * not different, then the server confirmed this client's selection. 
+ * If it is different, then the server confirmed a different client's
+ * selection instead. 
+ */
+bool Game::serverConfirmed(MenuOptions serverMenuOptions)
+{
+	//flag set to true, and will be set to false if at least one check fails
+	bool serverConfirmedMySelection = true;
+
+	//basically check each part of the menu options struct matches
+	if (serverMenuOptions.team_A_1 != this->clientMenuOptions.team_A_1) 
+	{
+		serverConfirmedMySelection = false;
+	} 
+	else if (serverMenuOptions.team_B_1 != this->clientMenuOptions.team_B_1) 
+	{
+		serverConfirmedMySelection = false;
+	} 
+	else if (serverMenuOptions.team_A_2 != this->clientMenuOptions.team_A_2) 
+	{
+		serverConfirmedMySelection = false;
+	} 
+	else if (serverMenuOptions.team_B_2 != this->clientMenuOptions.team_B_2) 
+	{
+		serverConfirmedMySelection = false;
+	} 
+	this->clientMenuOptions = serverMenuOptions;
+	return serverConfirmedMySelection;
+}
+
+/*
+ * This Function is a getter for the clientMenuOptions
+ */
+MenuOptions Game::getCurrentMenuOptions() {
+	return this->clientMenuOptions;
 }

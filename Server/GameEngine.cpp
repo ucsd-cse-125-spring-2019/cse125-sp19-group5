@@ -27,10 +27,29 @@ void GameEngine::removeGameObjectById(int id) {
 }
 
 /*
+ * This function is for confirming the team placement of the given client. 
+ * Since we want the Game Engine to be the single source of truth, this function 
+ * was necessary when writing the code in Server/main.cpp to create the new
+ * player -- the player needs to be created with a team so we ask the Game
+ * Engine what team the player is on (line 53 in main.cpp)
+ */
+int GameEngine::getTeamOf(int clientID) {
+	if (serverMenuOptions.team_A_1 == clientID || serverMenuOptions.team_A_2 == clientID) {
+		return 1;//this client is on team 1
+	}
+	else if (serverMenuOptions.team_B_1 == clientID || serverMenuOptions.team_B_2 == clientID) {
+		return 2;//this client is on team 2
+	}
+	else {
+		return -1;//this client is not on a team
+	}
+}
+
+/*
  * Getter for the teams struct created
  */
 MenuOptions GameEngine::getTeams() {
-	return teams;
+	return serverMenuOptions;
 }
 
 /*
@@ -41,30 +60,54 @@ MenuOptions GameEngine::getTeams() {
  * player) and will return false if they were caught. It returns true 
  * if there were no conflicts and replaces the teams. 
  */
-bool GameEngine::updateMenuOptions(MenuOptions playerMenuOptions) {
+bool GameEngine::updateMenuOptions(MenuOptions playerMenuOptions) 
+{
+	/*DEBUG: Printout the updated menu options */
+	MenuOptions currentMenuOptions = serverMenuOptions;
+	cout << "-------------------------- " << endl;
+	cout << "HERE ARE THE CURRENT MENU OPTIONS: " << endl << endl;
+	cout << "Team A (1):             " << (int)currentMenuOptions.team_A_1 << endl;
+	cout << "Team A (2):             " << (int)currentMenuOptions.team_A_2 << endl << endl;
+	cout << "Team B (1):             " << (int)currentMenuOptions.team_B_1 << endl;
+	cout << "Team B (2):             " << (int)currentMenuOptions.team_B_2 << endl;
+	cout << "-------------------------- " << endl;
+	/*END_DEBUG*/
+
 	//this is basically a big switcase to check the 4 spots in the struct
-	if (teams.team_A_1 != playerMenuOptions.team_A_1) {
-		if (teams.team_A_1 != -1) {
+	if (serverMenuOptions.team_A_1 != playerMenuOptions.team_A_1) {
+		if (serverMenuOptions.team_A_1 != -1) {
 			return false;
 		}
 	}
-	if (teams.team_B_1 != playerMenuOptions.team_B_1) {
-		if (teams.team_B_1 != -1) {
+	if (serverMenuOptions.team_B_1 != playerMenuOptions.team_B_1) {
+		if (serverMenuOptions.team_B_1 != -1) {
 			return false;
 		}
 	}
-	if (teams.team_A_2 != playerMenuOptions.team_A_2) {
-		if (teams.team_A_2 != -1) {
+	if (serverMenuOptions.team_A_2 != playerMenuOptions.team_A_2) {
+		if (serverMenuOptions.team_A_2 != -1) {
 			return false;
 		}
 	}
-	if (teams.team_B_2 != playerMenuOptions.team_B_2) {
-		if (teams.team_B_2 != -1) {
+	if (serverMenuOptions.team_B_2 != playerMenuOptions.team_B_2) {
+		if (serverMenuOptions.team_B_2 != -1) {
 			return false;
 		}
 	}
-	//no conflicts were caught
-	teams = playerMenuOptions;
+	
+	/*DEBUG: Printout the updated menu options */
+	currentMenuOptions = playerMenuOptions;
+	cout << "-------------------------- " << endl;
+	cout << "HERE ARE THE UPDATED MENU OPTIONS: " << endl << endl;
+	cout << "Team A (1):             " << (int)currentMenuOptions.team_A_1 << endl;
+	cout << "Team A (2):             " << (int)currentMenuOptions.team_A_2 << endl << endl;
+	cout << "Team B (1):             " << (int)currentMenuOptions.team_B_1 << endl;
+	cout << "Team B (2):             " << (int)currentMenuOptions.team_B_2 << endl;
+	cout << "-------------------------- " << endl;
+	/*END_DEBUG*/
+
+	//no conflicts were caught, accept the update
+	serverMenuOptions = playerMenuOptions;
 	return true;
 }
 
@@ -75,17 +118,17 @@ bool GameEngine::updateMenuOptions(MenuOptions playerMenuOptions) {
  */
 int GameEngine::nextAvailableSpot(int clientID) {
 	//this is basically a big switcase to check the 4 spots in the struct
-	if (teams.team_A_1 == -1) {
-		teams.team_A_1 = clientID;
+	if (serverMenuOptions.team_A_1 == -1) {
+		serverMenuOptions.team_A_1 = clientID;
 		return 1;
-	}else if (teams.team_B_1 == -1) {
-		teams.team_B_1 = clientID;
+	}else if (serverMenuOptions.team_B_1 == -1) {
+		serverMenuOptions.team_B_1 = clientID;
 		return 2;
-	}else if (teams.team_A_2 == -1) {
-		teams.team_A_2 = clientID;
+	}else if (serverMenuOptions.team_A_2 == -1) {
+		serverMenuOptions.team_A_2 = clientID;
 		return 3;
-	}else if (teams.team_B_2 == -1) {
-		teams.team_B_2 = clientID;
+	}else if (serverMenuOptions.team_B_2 == -1) {
+		serverMenuOptions.team_B_2 = clientID;
 		return 4;
 	}else {
 		//all spots are full, return "spectator" team

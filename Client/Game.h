@@ -44,6 +44,8 @@ class Game {
 	int playerId;
 	int team;
 
+	MenuOptions clientMenuOptions;
+
 	GameState gameState;
 	Player *playerObj = nullptr;
 
@@ -67,5 +69,10 @@ public:
 
 	void updateScreenDimensions(int width, int height);
 	Camera *getCamera() const;
+
+	/* Functions for handling the MenuOptions */
+	int getPlayerId();//
+	bool serverConfirmed(MenuOptions serverMenuOptions);//setter for the clientMenuOptions
+	MenuOptions getCurrentMenuOptions();//getter for the clientMenuOptions
 };
 
