@@ -34,12 +34,19 @@ int main(int argc, char **argv) {
 	ball->setModel("Models/sphere.obj");
 	ball->setMaterial("Materials/brick.json");
 
-	auto wall = gameEngine.addGameObject<Wall>();
-	wall->setBoundingShape(new BoundingBox(vec3(0, 0, 100), vec3(1, 0, 0), 1, 50, 300));
-	wall->setScale(vec3(300, 100, 1));
-	wall->setPosition(vec3(0, 0, 100));
-	wall->setModel("Models/unit_cube.obj");
-	wall->setMaterial("Materials/grass.json");
+	auto wall1 = gameEngine.addGameObject<Wall>();
+	wall1->setBoundingShape(new BoundingBox(vec3(0, 0, 100), vec3(1, 0, 0), 1, 50, 300));
+	wall1->setScale(vec3(300, 100, 1));
+	wall1->setPosition(vec3(0, 0, 100));
+	wall1->setModel("Models/unit_cube.obj");
+	wall1->setMaterial("Materials/grass.json");
+
+	/*auto wall2 = gameEngine.addGameObject<Wall>();
+	wall2->setBoundingShape(new BoundingBox(vec3(0, 0, 100), vec3(1, 0, 0), 1, 50, 300));
+	wall2->setScale(vec3(300, 100, 1));
+	wall2->setPosition(vec3(0, 0, 100));
+	wall2->setModel("Models/unit_cube.obj");
+	wall2->setMaterial("Materials/grass.json");*/
 
 
 	// Handle player keyboard/mouse inputs

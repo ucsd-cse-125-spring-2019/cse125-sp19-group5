@@ -74,6 +74,17 @@ BoundingBox::BoundingBox(vec3 position, vec3 direction, float length, float widt
 	if (right->pointDistance(centerPoint) > 0) {
 		right->invertNormal();
 	}
+
+	this->facePlanes.push_back(bottom);
+	this->facePlanes.push_back(top);
+	this->facePlanes.push_back(front);
+	this->facePlanes.push_back(back);
+	this->facePlanes.push_back(left);
+	this->facePlanes.push_back(right);
+}
+
+vector<Plane *> & BoundingBox::getFacePlanes() {
+	return this->facePlanes;
 }
 
 bool BoundingBox::collideVisit(BoundingShape * boundingShape) {

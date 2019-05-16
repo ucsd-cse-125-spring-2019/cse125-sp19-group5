@@ -20,7 +20,8 @@ void Ball::onCollision(GameObject * gameObject) {
 		break;
 	case WALL_TYPE:
 		std::cout << to_string() + " collided with " << gameObject->to_string() << std::endl;
-		setVelocity(getVelocity() * vec3(-1.0f));
+		vector<vec3> planeNormals;
+		break;
 	}
 }
 
