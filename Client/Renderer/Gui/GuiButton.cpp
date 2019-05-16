@@ -37,10 +37,20 @@ void GuiButton::draw(float x, float y, float w, float h) const {
 	GuiText::draw(x, y, w, h);
 }
 
+void GuiButton::addCallback(const std::function<void()> callback) {
+	callbacks.push_back(callback);
+}
+
 void GuiButton::onMouseButton(float x, float y, int button, int action) {
 	if (action == 1) {
 		onMousePressed();
 	} else if (action == 0) {
 		onMouseReleased();
+	}
+}
+
+void GuiButton::onMousePressed() {
+	for (auto &callback : callbacks) {
+		callback();
 	}
 }

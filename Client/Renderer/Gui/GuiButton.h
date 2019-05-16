@@ -1,9 +1,11 @@
 #pragma once
 
 #include "GuiText.h"
+#include <functional>
 
 class GuiButton : public GuiText {
 	private:
+	std::vector<std::function<void()>> callbacks;
 	vec4 bgColor = vec4(1.0f);
 	vec4 hoverColor = vec4(1.0f, 1.0f, 1.0f, 0.1f);
 	vec4 clickColor = vec4(0.0f, 0.0f, 0.0f, 0.1f);
@@ -20,7 +22,9 @@ class GuiButton : public GuiText {
 
 	void draw(float x, float y, float w, float h) const override;
 
+	void addCallback(const std::function<void()> callback);
+
 	void onMouseButton(float x, float y, int button, int action) override;
-	virtual void onMousePressed() { };
+	virtual void onMousePressed();
 	virtual void onMouseReleased() { };
 };

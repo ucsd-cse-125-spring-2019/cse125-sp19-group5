@@ -105,6 +105,9 @@ Game::Game(): gameObjects(1024, nullptr) {
 	text->setFont("Arial");
 	text->setSize(vec2(1.0f, 0.25f));
 	text->setAlignment(TextAlign::CENTER);
+	text->addCallback([]() {
+		std::cout << "HEH" << std::endl;
+	});
 
 	shadowMap = new ShadowMap();
 	lightShader = new Shader("Shaders/light");
