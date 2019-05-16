@@ -28,5 +28,19 @@ const vec4 &GuiButton::getClickColor() const {
 void GuiButton::draw(float x, float y, float w, float h) const {
 	Draw::setColor(bgColor);
 	Draw::rect(x, y, w, h);
+
+	if (isMouseHovering) {
+		Draw::setColor(hoverColor);
+		Draw::rect(x, y, w, h);
+	}
+
 	GuiText::draw(x, y, w, h);
+}
+
+void GuiButton::onMouseButton(float x, float y, int button, int action) {
+	if (action == 1) {
+		onMousePressed();
+	} else if (action == 0) {
+		onMouseReleased();
+	}
 }

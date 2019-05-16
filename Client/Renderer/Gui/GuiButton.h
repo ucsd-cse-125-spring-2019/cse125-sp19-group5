@@ -19,4 +19,8 @@ class GuiButton : public GuiText {
 	const vec4 &getClickColor() const;
 
 	void draw(float x, float y, float w, float h) const override;
+
+	void onMouseButton(float x, float y, int button, int action) override;
+	virtual void onMousePressed() { };
+	virtual void onMouseReleased() { };
 };

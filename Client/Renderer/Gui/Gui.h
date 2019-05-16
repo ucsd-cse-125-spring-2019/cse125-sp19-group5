@@ -1,6 +1,8 @@
 #pragma once
 
 #include <vector>
+#include <string>
+#include <GLFW/glfw3.h>
 
 class GuiElement;
 #include "GuiElement.h"
@@ -23,9 +25,10 @@ namespace Gui {
 
 	void onElementParentSet(GuiElement *element, GuiElement *parent);
 	void onElementRemoved(GuiElement *element);
-	void dispatchClick(float x, float y, int button, int action);
-	void dispatchCursorPos(float x, float y);
-	void dispatchKey(std::string c);
+	void setupInputListeners(GLFWwindow *window);
+	void dispatchMouseButton(float x, float y, int button, int action);
+	void dispatchMousePos(float x, float y);
+	void dispatchKey(const std::string &key);
 	void draw();
 	void cleanUp();
 }

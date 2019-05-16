@@ -93,6 +93,8 @@ int main(int argc, char **argv) {
 	Input::init(window);
 	Network::init("127.0.0.1", 1234);
 
+	Gui::setupInputListeners(window);
+
 	Game game;
 	game.getCamera()->setAspect((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT);
 	game.updateScreenDimensions(SCREEN_WIDTH, SCREEN_HEIGHT);

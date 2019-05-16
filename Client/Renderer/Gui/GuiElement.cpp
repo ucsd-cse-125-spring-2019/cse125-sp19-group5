@@ -1,5 +1,6 @@
 #include "GuiElement.h"
 
+#include "../Draw.h"
 #include "Gui.h"
 
 void GuiElement::addChild(GuiElement *newChild) {
@@ -82,4 +83,77 @@ GuiElement::~GuiElement() {
 		delete *it;
 	}
 	children.clear();
+}
+
+vec2 GuiElement::getScreenPos(const vec2 &pos) const {
+	if (parent) {
+		return parent->getScreenPos(position) + pos;
+	}
+	return position + pos;
+}
+
+vec2 GuiElement::getScreenSize() const {
+	vec2 absSize = size;
+	auto curParent = parent;
+	while (curParent) {
+		absSize *= curParent->getSize();
+		curParent = curParent->getParent();
+	}
+	return absSize;
+}
+
+bool GuiElement::isAbsPosWithin(float posX, float posY) const {
+	auto absPos = getScreenPos();
+	auto absSize = getScreenSize();
+	return posX >= absPos.x
+		&& posY >= absPos.y
+		&& posX <= (absPos.x + absSize.x)
+		&& posY <= (absPos.y + absSize.y);
+}
+
+bool GuiElement::dispatchKey(const std::string &key) {
+	for (auto child : children) {
+		if (child->dispatchKey(key)) {
+			return true;
+		}
+	}
+	onKeyPressed(key);
+	return false;
+}
+
+bool GuiElement::dispatchMousePos(float x, float y) {
+	if (children.empty()) {
+		auto mouseInside = isAbsPosWithin(x, y);
+		if (mouseInside && !isMouseHovering) {
+			isMouseHovering = true;
+			onMouseEntered(x, y);
+		} else if (!mouseInside && isMouseHovering) {
+			isMouseHovering = false;
+			onMouseLeft(x, y);
+		}
+		return true;
+	}
+
+	for (auto child : children) {
+		if (child->dispatchMousePos(x, y)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool GuiElement::dispatchMouseButton(float x, float y, int button, int action) {
+	if (isMouseHovering) {
+		onMouseButton(x, y, button, action);
+		return true;
+	}
+
+	for (auto child : children) {
+		if (child->dispatchMouseButton(x, y, button, action)) {
+			return true;
+		}
+	}
+
+	return false;
 }
