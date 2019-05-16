@@ -183,25 +183,28 @@ int main(int argc, char **argv) {
 
 	// this handles the broadcast for the general menu option negotiations 
 	// with the server (server will send a MENU_CONFRIM when accepted)
-	//Network::onConnected([&](Connection *s) {
+	//Network::onConnected([&]() {
 	//	
-	//	s->on(NetMessage::MENU_INPUT, handleMenuInput);//callback for the client reply
-	//	/*DEBUG*/
+	//	Network::on(NetMessage::MENU_INPUT, handleMenuInput);//callback for the client reply
+	//	/*debug*/
 	//	cout << "send menu options" << endl;
-	//	/*END_DEBUG*/
+	//	/*end_debug*/
 
-	//	// Receive player keyboard and mouse(TODO) input
-	//	s->onDisconnected([&](Connection *c) {
-	//		std::cout << "Player has disconnected."
+	//	// receive player keyboard and mouse(todo) input
+	//	Network::onDisconnected([&]() {
+	//		std::cout << "player has disconnected."
 	//			<< std::endl;
 	//	});
 	//});
 
 	// this is the server confirming a new selection to all connected clients 
-	Network::on(NetMessage::MENU_CONFIRM, handleMenuConfirmed);
+	Network::on(NetMessage::MENU_OPTIONS, handleMenuInput);
 
+	while (1) {
+		Network::poll();
+	}
 	// Main loop /* TODO: re-enable */
-	while (1) {//!glfwWindowShouldClose(window)) {
+	while (1==2) {//!glfwWindowShouldClose(window)) {
 		auto dt = (float)glfwGetTime() - lastTime;
 		lastTime = (float)glfwGetTime();
 

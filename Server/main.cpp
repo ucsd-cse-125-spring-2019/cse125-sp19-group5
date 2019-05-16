@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
 		c->send(buffer);
 
 		// send the menu options available for the game
-		NetBuffer menu_options(NetMessage::MENU_INPUT);
+		NetBuffer menu_options(NetMessage::MENU_OPTIONS);
 		menu_options.write<MenuOptions>(gameEngine.getTeams());
 		c->send(menu_options);
 		c->on(NetMessage::MENU_INPUT, handleMenuInput);//callback for the client reply
