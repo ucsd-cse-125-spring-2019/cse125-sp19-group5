@@ -21,10 +21,10 @@ int main(int argc, char **argv) {
 
 	vector<PlayerInputs> playerInputs;
 
-	auto ground = gameEngine.addGameObject<Wall>();
+	/*auto ground = gameEngine.addGameObject<Wall>();
 	ground->setBoundingShape(new BoundingBox(vec3(0, 0, 0), vec3(1, 0, 0), 1, 1, 100));
 	ground->setModel("Models/ground.obj");
-	ground->setMaterial("Materials/grass.json");
+	ground->setMaterial("Materials/grass.json");*/
 
 	auto ball = gameEngine.addGameObject<Ball>();
 	ball->setBoundingShape(new BoundingSphere(origin, 4));
@@ -33,6 +33,13 @@ int main(int argc, char **argv) {
 	ball->setVelocity(vec3(0, 0, 0));
 	ball->setModel("Models/sphere.obj");
 	ball->setMaterial("Materials/brick.json");
+
+	auto wall = gameEngine.addGameObject<Wall>();
+	wall->setBoundingShape(new BoundingBox(vec3(0, 0, 100), vec3(1, 0, 0), 1, 50, 300));
+	wall->setScale(vec3(300, 100, 1));
+	wall->setPosition(vec3(0, 0, 100));
+	wall->setModel("Models/unit_cube.obj");
+	wall->setMaterial("Materials/grass.json");
 
 
 	// Handle player keyboard/mouse inputs

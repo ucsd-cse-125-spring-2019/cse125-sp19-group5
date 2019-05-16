@@ -157,6 +157,8 @@ void GameEngine::doPlayerCommands(vector<PlayerInputs> & playerInputs) {
 		GameObject * createdGameObject = gameState.players[i]->processCommand(aggregatePlayerCommands[i]);
 		if (createdGameObject) {
 			createdGameObject->setId(gameState.getFreeId());
+			createdGameObject->setModel("Models/sphere.obj");
+			createdGameObject->setMaterial("Materials/brick.json");
 			addGenericGameObject(createdGameObject);
 		}
 	}

@@ -14,10 +14,13 @@ GAMEOBJECT_TYPES Ball::getGameObjectType() const {
 void Ball::onCollision(GameObject * gameObject) {
 	switch (gameObject->getGameObjectType()) {
 	case PADDLE_TYPE:
-		std::cout << to_string() + " collided with " + gameObject->to_string() << std::endl;
-		std::cout << to_string() + " velocity changing from " + glm::to_string(getVelocity()) + " to " + glm::to_string(gameObject->getVelocity()) << std::endl;
+		std::cout << to_string() << " collided with " << gameObject->to_string() << std::endl;
+		std::cout << to_string() << " velocity changing from " << glm::to_string(getVelocity()) << " to " << glm::to_string(gameObject->getVelocity()) << std::endl;
 		setVelocity(gameObject->getVelocity());
 		break;
+	case WALL_TYPE:
+		std::cout << to_string() + " collided with " << gameObject->to_string() << std::endl;
+		setVelocity(getVelocity() * vec3(-1.0f));
 	}
 }
 
