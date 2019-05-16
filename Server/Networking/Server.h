@@ -4,7 +4,7 @@
 #include <vector>
 #include <Shared/Networking/Connection.h>
 
-constexpr auto MAX_PLAYERS = 256;
+constexpr auto MAX_CONNECTIONS = 256;
 
 using boost::asio::ip::tcp;
 using boost::system::error_code;
@@ -14,7 +14,7 @@ namespace Network {
 
 	extern tcp::endpoint *endpoint;
 	extern tcp::acceptor *acceptor;
-	extern Connection *connections[MAX_PLAYERS];
+	extern Connection *connections[MAX_CONNECTIONS];
 
 	void init(int port);
 	void handleIncomingConnection(const error_code &error);

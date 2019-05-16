@@ -4,14 +4,14 @@
 
 tcp::endpoint *Network::endpoint = nullptr;
 tcp::acceptor *Network::acceptor = nullptr;
-Connection* Network::connections[MAX_PLAYERS]; // Array of active connections.
+Connection* Network::connections[MAX_CONNECTIONS]; // Array of active connections.
 
 tcp::socket *newSocket = nullptr; // Reserve a socket for the next new connection.
 
 std::vector<Network::ConnectionHandler> connectionHandlers;
 
 int Network::findFreeId() {
-	for (int i = 0; i < MAX_PLAYERS; i++) {
+	for (int i = 0; i < MAX_CONNECTIONS; i++) {
 		if (!connections[i]) {
 			return i;
 		}
@@ -20,7 +20,7 @@ int Network::findFreeId() {
 }
 
 void Network::handleClientDisconnect(Connection *connection) {
-	for (int i = 0; i < MAX_PLAYERS; i++) {
+	for (int i = 0; i < MAX_CONNECTIONS; i++) {
 		if (connections[i] == connection) {
 			// TODO: change this so the connection is deleted in the next tick
 			// since other handlers still need the connection to exist.

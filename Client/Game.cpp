@@ -206,6 +206,9 @@ void Game::updateInputs() {
 		//direction += camera->getRight();
 		keyInputs += RIGHT;
 	}
+	if (Input::isKeyDown(GLFW_KEY_E)) {
+		keyInputs += SWING;
+	}
 
 	if (Input::isKeyDown(GLFW_KEY_ESCAPE)) {
 		shouldExit = true;

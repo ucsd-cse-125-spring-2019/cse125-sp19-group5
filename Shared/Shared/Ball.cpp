@@ -26,7 +26,7 @@ void Ball::updateOnServerTick() {
 		vec3 direction = glm::normalize(getVelocity());
 		vec3 updatedVelocity = getVelocity() - (direction * 0.1f);
 		vec3 updatedDirection = glm::normalize(updatedVelocity);
-		if (glm::length(glm::dot(direction, updatedDirection)) < 0) {
+		if (glm::length(glm::dot(direction, updatedDirection)) < 0.0f) {
 			setVelocity(vec3(0.0f));
 		}
 		else {

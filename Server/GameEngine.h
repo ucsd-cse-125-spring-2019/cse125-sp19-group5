@@ -21,6 +21,15 @@ public:
 	void updateGameState(vector<PlayerInputs> & playerInputs);
 	void synchronizeGameState();
 	GameState & getGameState();
+	
+	template<class T>
+	T* addGameObject() {
+		auto id = gameState.getFreeId();
+		auto obj = new T(id);
+		addGameObject(obj);
+		return obj;
+	}
+
 	void addGameObject(Player *player);
 	void addGameObject(Ball *ball);
 	void addGameObject(Wall *wall);

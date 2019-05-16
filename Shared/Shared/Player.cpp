@@ -84,9 +84,13 @@ GameObject * Player::doAction(PlayerCommands action) {
 			// std::cout << "Swing with charge " << actionCharge << std::endl;
 			// assumes direction is unit vector
 			vec3 paddlePosition = getPosition() + getDirection() * vec3(2.05f * this->radius);
-			vec3 paddleVelocity = getDirection() * vec3((float)(actionCharge));
-			int paddleLifespan = 10;
-			return new Paddle(paddlePosition, paddleVelocity, getId(), 1, paddleLifespan);
+			// vec3 paddleVelocity = getDirection() * vec3((float)(actionCharge));
+			vec3 paddleVelocity = vec3(getDirection().x, 0, getDirection().z) * vec3((float)(actionCharge));
+			int paddleLifespan = 100;
+			Paddle * p = new Paddle(paddlePosition, paddleVelocity, getId(), 1, paddleLifespan);
+			/*p->setModel("Models/sphere.obj");
+			p->setMaterial("Materials/brick.json");*/
+			return p;
 			break;
 		}
 		default: {

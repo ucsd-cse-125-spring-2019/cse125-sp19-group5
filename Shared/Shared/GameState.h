@@ -3,6 +3,9 @@
 #include "Ball.h"
 #include "Wall.h"
 
+// Maximum number of players in the game.
+constexpr auto MAX_PLAYERS = 4;
+
 struct GameState : public Serializable {
 	vector<Player *> players;
 	vector<Ball *> balls;
@@ -13,6 +16,16 @@ struct GameState : public Serializable {
 	bool in_progress;
 
 	GameState() : gameObjects(1024, nullptr) { }
+
+	int getFreeId() const {
+		// Offset by MAX_PLAYERS to reserve IDs for players.
+		for (int id = MAX_PLAYERS; id < gameObjects.size(); id++) {
+			if (gameObjects[id] == nullptr) {
+				return id;
+			}
+		}
+		return -1;
+	}
 
 	void serialize(NetBuffer &buffer) const {
 		auto size = 0;

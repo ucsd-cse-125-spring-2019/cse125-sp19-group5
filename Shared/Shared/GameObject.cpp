@@ -18,7 +18,7 @@ GameObject::GameObject(vec3 position, vec3 velocity, int id)
 	this->position = position;
 	this->velocity = velocity;
 	this->id = id;
-	setBoundingShape(NULL);
+	setBoundingShape(nullptr);
 }
   
 BoundingShape * GameObject::getBoundingShape() {
@@ -65,6 +65,10 @@ GAMEOBJECT_TYPES GameObject::getGameObjectType() const {
 	return GAMEOBJECT_TYPES::GAMEOBJECT_TYPE;
 }
 
+void GameObject::setId(int id) {
+	this->id = id;
+}
+
 int GameObject::getId() {
 	return this->id;
 }
@@ -83,7 +87,7 @@ bool GameObject::collidesWith(GameObject * gameObject) {
 
 void GameObject::onCollision(GameObject * gameObject) {
 	// Should only update your own state, gameObject's state will be updated when it calls onCollision
-	std::cout << to_string() << " collided with " << gameObject->to_string() << std::endl;
+	/*std::cout << to_string() << " collided with " << gameObject->to_string() << std::endl;*/
 }
 
 double GameObject::distanceFrom(GameObject * gameObject) {
