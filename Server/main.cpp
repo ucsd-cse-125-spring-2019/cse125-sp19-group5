@@ -63,6 +63,7 @@ int main(int argc, char **argv) {
 
 			//listen for player input at this point
 			c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);
+			cout << "listening to player input" << endl;
 		}
 		else 
 		{
@@ -115,32 +116,6 @@ int main(int argc, char **argv) {
 			matBuffer.write(gameObject->getMaterial());
 			c->send(matBuffer);
 		}
-
-		//the following codeblock does the same thing as the code on line 73
-		int team = gameEngine.getTeam();
-		std::cout << "team: " << team << endl;
-		NetBuffer team_buffer(NetMessage::TEAM);
-		team_buffer.write<int>(team);
-		c->send(team_buffer);
-		//end of the codeblock that does the same thing as the code on line 73
-
-		//the following codeblock has been incorporated into the callback function "handleMenuInput"
-		if (team != -1) {
-			auto player = new Player(origin, origin, origin, c->getId(), 1.0f, team);
-			player->setDirection(vec3(0, 0, -1));
-			player->setScale(vec3(0.2f));
-			gameEngine.addGameObject(player);
-
-		player->setModel("Models/player.obj");
-		player->setDirection(vec3(0, 0, -1));
-		player->setMaterial("Materials/brick.json");
-
-			// Receive player keyboard and mouse(TODO) input
-			c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);
-		}
-		//end of the codeblock that has been incorporated into the callback function "handleMenuInput"
-
-
 
 		// Receive player keyboard and mouse(TODO) input
 		c->onDisconnected([&](Connection *c) {

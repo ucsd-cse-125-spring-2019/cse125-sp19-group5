@@ -66,6 +66,8 @@ int main(int argc, char **argv) {
 		return -1;
 	}
 
+	int selectionComplete = 0;
+
 	ConfigSettings::get().getValue("ScreenWidth", SCREEN_WIDTH);
 	ConfigSettings::get().getValue("ScreenHeight", SCREEN_HEIGHT);
 
@@ -127,6 +129,37 @@ int main(int argc, char **argv) {
 	cout << "creating client" << endl;
 
 	/*
+	 * This is the callback function that is responsible for handling confirmation
+	 * from the server about the menu options selected by a client
+	 */
+	auto handleMenuConfirmed = [&](Connection *server, NetBuffer &serverMenuOptions)
+	{
+		cout << "server sent confirmation" << endl;
+		MenuOptions currentMenuOptions = serverMenuOptions.read<MenuOptions>();
+		
+		// Now we check if the Server has confirmed our selection or if it was 
+		// confirming for another client instead
+		if (game.serverConfirmed(currentMenuOptions))
+		{
+			// The game is ready to start, so clear the Menu prompt from the screen
+			clearMenuPrompt();
+			selectionComplete = 1;
+		}
+		else //The client selection window needs to update
+		{
+			//display these options and allow the client to make a selection
+			MenuOptions clientOptions = menuPrompt(game.getPlayerId(), currentMenuOptions);
+
+			NetBuffer menuInput(NetMessage::MENU_INPUT);
+			menuInput.write<MenuOptions>(clientOptions);
+
+			//send the client's selections to the server for confirmation
+			server->send(menuInput);
+
+		}
+	};
+
+	/*
 	 * This is the callback function that is responsible for displaying all
 	 * the menu options available before the game session has started.
 	 * Currently there is only team selection support
@@ -145,81 +178,61 @@ int main(int argc, char **argv) {
 
 		//send the client's selections to the server for confirmation
 		server->send(menuInput);
-	};
-
-	/*
-	 * This is the callback function that is responsible for handling confirmation
-	 * from the server about the menu options selected by a client
-	 */
-	auto handleMenuConfirmed = [&](Connection *server, NetBuffer &serverMenuOptions)
-	{
-		cout << "server sent confirmation" << endl;
-		MenuOptions currentMenuOptions = serverMenuOptions.read<MenuOptions>();
-		
-		// Now we check if the Server has confirmed our selection or if it was 
-		// confirming for another client instead
-		if (game.serverConfirmed(currentMenuOptions))
-		{
-			// The game is ready to start, so clear the Menu prompt from the screen
-			clearMenuPrompt();
-		}
-		else //The client selection window needs to update
-		{
-			//display these options and allow the client to make a selection
-			MenuOptions clientOptions = menuPrompt(game.getPlayerId(), currentMenuOptions);
-
-			NetBuffer menuInput(NetMessage::MENU_INPUT);
-			menuInput.write<MenuOptions>(clientOptions);
-
-			//send the client's selections to the server for confirmation
-			server->send(menuInput);
-
-		}
+		server->on(NetMessage::MENU_CONFIRM, handleMenuConfirmed);
 	};
 
 	// this handles the broadcast for the general menu option negotiations 
 	// with the server (server will send a MENU_CONFRIM when accepted)
-	Network::on(NetMessage::MENU_INPUT, handleMenuInput);
+	//Network::onConnected([&](Connection *s) {
+	//	
+	//	s->on(NetMessage::MENU_INPUT, handleMenuInput);//callback for the client reply
+	//	/*DEBUG*/
+	//	cout << "send menu options" << endl;
+	//	/*END_DEBUG*/
+
+	//	// Receive player keyboard and mouse(TODO) input
+	//	s->onDisconnected([&](Connection *c) {
+	//		std::cout << "Player has disconnected."
+	//			<< std::endl;
+	//	});
+	//});
 
 	// this is the server confirming a new selection to all connected clients 
 	Network::on(NetMessage::MENU_CONFIRM, handleMenuConfirmed);
 
-	while (1)
-	{
-		Network::poll();
-	}
-
 	// Main loop /* TODO: re-enable */
-	while (1 == 2) {//!glfwWindowShouldClose(window)) {
+	while (1) {//!glfwWindowShouldClose(window)) {
 		auto dt = (float)glfwGetTime() - lastTime;
 		lastTime = (float)glfwGetTime();
 
 		Input::poll();
 		Network::poll();
 
-		if (game.shouldExit) {
-			glfwSetWindowShouldClose(window, true);
-		}
+		if (selectionComplete) {
+			if (game.shouldExit) {
+				glfwSetWindowShouldClose(window, true);
+			}
 
-		if (glfwWindowShouldClose(window)) {
-			break;
-		}
+			if (glfwWindowShouldClose(window)) {
+				break;
+			}
 
-		game.update(dt);
-		game.draw(dt);
+			game.update(dt);
+			game.draw(dt);
 
-		glfwSwapBuffers(window);
+			glfwSwapBuffers(window);
 
-		if (SCREEN_RESHAPED) {
-			game.getCamera()->setAspect(
-				(float)SCREEN_WIDTH / (float)SCREEN_HEIGHT
-			);
-			game.updateScreenDimensions(SCREEN_WIDTH, SCREEN_HEIGHT);
-			SCREEN_RESHAPED = false;
+			if (SCREEN_RESHAPED) {
+				game.getCamera()->setAspect(
+					(float)SCREEN_WIDTH / (float)SCREEN_HEIGHT
+				);
+				game.updateScreenDimensions(SCREEN_WIDTH, SCREEN_HEIGHT);
+				SCREEN_RESHAPED = false;
+			}
 		}
 	}
 
-	//Network::cleanUp();
-	//glfwTerminate();
+	Network::cleanUp();
+	glfwTerminate();
 	return 0;
 }
