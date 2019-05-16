@@ -70,3 +70,12 @@ void TextRenderer::renderText(
 
 	Draw::setupContext();
 }
+
+vec2 TextRenderer::getTextSize(const std::string &text, const std::string &font, float scale) {
+	auto it = fonts.find(font);
+	if (it == fonts.end()) {
+		std::cerr << font << " is not a valid font" << std::endl;
+		return vec2(0.0f);
+	}
+	return (it->second).getSize(text, scale);
+}

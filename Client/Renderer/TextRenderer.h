@@ -40,6 +40,8 @@ public:
 		const vec3 &color,
 		float scale = 1.0f
 	) const;
+
+	vec2 getTextSize(const std::string &text, const std::string &font, float scale = 1.0f);
 };
 
 extern TextRenderer *gTextRenderer;

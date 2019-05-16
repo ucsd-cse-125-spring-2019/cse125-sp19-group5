@@ -104,6 +104,7 @@ Game::Game(): gameObjects(1024, nullptr) {
 	text->setText("Hello, world!");
 	text->setFont("Arial");
 	text->setSize(vec2(1.0f, 0.25f));
+	text->setAlignment(TextAlign::CENTER);
 
 	shadowMap = new ShadowMap();
 	lightShader = new Shader("Shaders/light");

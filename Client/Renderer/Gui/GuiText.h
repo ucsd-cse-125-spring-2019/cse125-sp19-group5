@@ -2,11 +2,20 @@
 
 #include "GuiElement.h"
 
+enum class TextAlign {
+	LEFT,
+	RIGHT,
+	CENTER,
+	TOP,
+	BOTTOM
+};
+
 class GuiText : public GuiElement {
 	private:
 	vec4 color = vec4(1.0f);
 	std::string text;
 	std::string font;
+	TextAlign align;
 	float scale = 1.0f;
 
 	public:
@@ -21,6 +30,9 @@ class GuiText : public GuiElement {
 
 	void setColor(const vec4 &newColor);
 	const vec4 &getColor() const;
+
+	void setAlignment(TextAlign newAlign);
+	TextAlign getAlignment() const;
 
 	void draw(float x, float y, float w, float h) const override;
 };

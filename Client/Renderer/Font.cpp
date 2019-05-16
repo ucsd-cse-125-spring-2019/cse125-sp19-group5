@@ -87,6 +87,19 @@ Font::Font(const std::string &filepath)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+vec2 Font::getSize(const std::string &text, float scale) {
+	auto width = 0;
+	auto height = 0.0f;
+
+	for (auto c : text) {
+		auto &ch = characters[c];
+		width += ch.Advance;
+		height = glm::max(height, ch.Size.y * scale);
+	}
+
+	return vec2((width >> 6) * scale, height);
+}
+
 void Font::renderText(Shader &shader, const std::string &text, GLfloat x, GLfloat y, GLfloat scale, const glm::vec3 &color)
 {
 	const auto screenWidth = Draw::screenWidth;
