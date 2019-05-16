@@ -22,12 +22,12 @@ int main(int argc, char **argv) {
 	vector<PlayerInputs> playerInputs;
 
 	auto ground = gameEngine.addGameObject<Wall>();
-	ground->setBoundingShape(new BoundingBox(vec3(0, 0, 0), vec3(1, 0, 0), 1, 1, 1));
+	ground->setBoundingShape(new BoundingBox(vec3(0, 0, 0), vec3(1, 0, 0), 1, 1, 100));
 	ground->setModel("Models/ground.obj");
 	ground->setMaterial("Materials/grass.json");
 
 	auto ball = gameEngine.addGameObject<Ball>();
-	ball->setBoundingShape(new BoundingSphere(origin, 1));
+	ball->setBoundingShape(new BoundingSphere(origin, 4));
 	ball->setScale(vec3(1.0f/4.0f));
 	ball->setPosition(vec3(0, 4, 0));
 	ball->setVelocity(vec3(0, 0, 0));

@@ -33,6 +33,7 @@ public:
 	vec3 getScale() const;
 
 	virtual GAMEOBJECT_TYPES getGameObjectType() const;
+	void setId(int id);
 	int getId();
 
 	virtual vec3 getMoveDestination(vec3 movement);

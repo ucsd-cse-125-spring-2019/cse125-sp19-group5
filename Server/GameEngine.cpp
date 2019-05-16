@@ -156,7 +156,8 @@ void GameEngine::doPlayerCommands(vector<PlayerInputs> & playerInputs) {
 	for (int i = 0; i < gameState.players.size(); i++) {
 		GameObject * createdGameObject = gameState.players[i]->processCommand(aggregatePlayerCommands[i]);
 		if (createdGameObject) {
-			gameState.gameObjects.push_back(createdGameObject);
+			createdGameObject->setId(gameState.getFreeId());
+			addGenericGameObject(createdGameObject);
 		}
 	}
 }
