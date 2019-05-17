@@ -46,8 +46,12 @@ void Ball::onCollision(Player * player) { }
 
 void Ball::onCollision(Wall * wall) {
 	// TODO: FIX CORNER COLLISIONS, TREAT CORNER AS A SPHERE?
-	// TODO: CORRECT PLANE INTERSECTION TEST
+	// TODO: CORRECT PLANE INTERSECTION TEST INSTEAD OF CLOSEST, I.E. CHECK TWO PLANE COLLISION FOR CORNERS
 	/*std::cout << to_string() + " collided with " << wall->to_string() << std::endl;*/
+
+	if (getVelocity() == vec3(0.0f)) {
+		return;
+	}
 
 	// get planes that ball collides with
 	vector<Plane * > collisionPlanes;
@@ -55,7 +59,6 @@ void Ball::onCollision(Wall * wall) {
 		vec3 planeNormal = glm::normalize(p->getNormal());
 		float angleBetween = glm::angle(glm::normalize(getVelocity()), planeNormal);		
 		if (angleBetween > glm::half_pi<float>() && angleBetween < (3.0f * glm::half_pi<float>())) {
-			std::cout << angleBetween << std::endl;
 			collisionPlanes.push_back(p);
 		}
 	}

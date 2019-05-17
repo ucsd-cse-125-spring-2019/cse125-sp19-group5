@@ -11,7 +11,7 @@ public:
 	Plane * back;
 	Plane * left;
 	Plane * right;
-	BoundingBox(vec3 position, vec3 direction, float length, float width, float height);
+	BoundingBox(vec3 position, vec3 direction, float width, float height, float length);
 	vector<Plane *> & getFacePlanes();
 
 	// collision stuff below

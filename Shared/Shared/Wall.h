@@ -11,7 +11,7 @@ class Wall : public GameObject {
 public:
 	using GameObject::GameObject;
 
-	Wall(vec3 position, vec3 direction, int id, float length, float width, float height);
+	Wall(vec3 position, vec3 direction, int id, float width, float height, float length);
 	GAMEOBJECT_TYPES getGameObjectType() const;
 	void setBoundingShape(BoundingBox * box);
 	vector<Plane *> & getFacePlanes();

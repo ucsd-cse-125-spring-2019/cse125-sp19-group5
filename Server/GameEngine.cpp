@@ -134,7 +134,7 @@ void GameEngine::movePlayers(vector<PlayerInputs> & playerInputs) {
 
 void GameEngine::moveBalls() {
 	for (Ball *ball : gameState.balls) {
-		noCollisionMove(ball, ball->getVelocity());
+		ball->move(ball->getVelocity());
 	}
 }
 
@@ -176,15 +176,6 @@ void GameEngine::doCollisionInteractions() {
 			}
 		}
 	}
-
-	//for (GameObject * gameObject1 : gameState.gameObjects) {
-	//	if (!gameObject1) { continue; }
-	//	for (GameObject * gameObject2 : gameState.gameObjects) {
-	//		if (gameObject2 && gameObject1->collidesWith(gameObject2)) {
-	//			gameObject1->onCollision(gameObject2);
-	//		}
-	//	}
-	//}
 }
 
 void GameEngine::removeDeadObjects() {
@@ -205,6 +196,7 @@ void GameEngine::updateGameObjectsOnServerTick() {
 
 bool GameEngine::noCollisionMove(GameObject * gameObject, vec3 movement) {
 	vec3 destination = gameObject->getMoveDestination(movement);
+	// TODO: fix this method by moving adding a bounding box where the object would move
 
 	//for (GameObject * otherGameObject : gameState.gameObjects) {
 	//	if (gameObject != gameObject) {
