@@ -13,3 +13,15 @@ Wall::Wall(vec3 position, vec3 direction, int id, float length, float width, flo
 GAMEOBJECT_TYPES Wall::getGameObjectType() const {
 	return WALL_TYPE;
 }
+
+void Wall::onCollision(GameObject * gameObject) {
+	gameObject->onCollision(this);
+}
+
+void Wall::onCollision(Ball * ball) { }
+
+void Wall::onCollision(Paddle * paddle) { }
+
+void Wall::onCollision(Player * player) { }
+
+void Wall::onCollision(Wall * wall) { }

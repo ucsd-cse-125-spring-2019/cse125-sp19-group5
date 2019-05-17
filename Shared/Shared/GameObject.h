@@ -6,6 +6,11 @@
 
 using glm::quat;
 
+class Ball;
+class Paddle;
+class Player;
+class Wall;
+
 enum GAMEOBJECT_TYPES {
 	GAMEOBJECT_TYPE,
 	PLAYER_TYPE,
@@ -41,6 +46,10 @@ public:
 
 	bool collidesWith(GameObject * gameObject);
 	virtual void onCollision(GameObject * gameObject);
+	virtual void onCollision(Ball * ball);
+	virtual void onCollision(Paddle * paddle);
+	virtual void onCollision(Player * player);
+	virtual void onCollision(Wall * wall);
 	double distanceFrom(GameObject * gameObject);
 
 	virtual void updateOnServerTick();

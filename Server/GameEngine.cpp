@@ -165,14 +165,26 @@ void GameEngine::doPlayerCommands(vector<PlayerInputs> & playerInputs) {
 }
 
 void GameEngine::doCollisionInteractions() {
-	for (GameObject * gameObject1 : gameState.gameObjects) {
+	for (int i = 0; i < gameState.gameObjects.size(); i++) {
+		GameObject * gameObject1 = gameState.gameObjects[i];
 		if (!gameObject1) { continue; }
-		for (GameObject * gameObject2 : gameState.gameObjects) {
+		for (int j = i; j < gameState.gameObjects.size(); j++) {
+			GameObject * gameObject2 = gameState.gameObjects[j];
 			if (gameObject2 && gameObject1->collidesWith(gameObject2)) {
 				gameObject1->onCollision(gameObject2);
+				gameObject2->onCollision(gameObject1);
 			}
 		}
 	}
+
+	//for (GameObject * gameObject1 : gameState.gameObjects) {
+	//	if (!gameObject1) { continue; }
+	//	for (GameObject * gameObject2 : gameState.gameObjects) {
+	//		if (gameObject2 && gameObject1->collidesWith(gameObject2)) {
+	//			gameObject1->onCollision(gameObject2);
+	//		}
+	//	}
+	//}
 }
 
 void GameEngine::removeDeadObjects() {

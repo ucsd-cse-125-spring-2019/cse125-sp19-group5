@@ -16,10 +16,6 @@ GAMEOBJECT_TYPES Player::getGameObjectType() const {
 	return PLAYER_TYPE;
 }
 
-void Player::onCollision(GameObject * gameObject) {
-	//std::cout << to_string() + " collided with " << gameObject->to_string() << std::endl;
-}
-
 void Player::setDirection(const vec3 &newDirection) {
 	if (glm::length(newDirection) == 0.0f) {
 		return;
@@ -127,3 +123,15 @@ void Player::deserialize(NetBuffer &buffer) {
 	GameObject::deserialize(buffer);
 	direction = buffer.read<vec3>();
 }
+
+void Player::onCollision(GameObject * gameObject) {
+	gameObject->onCollision(this);
+}
+
+void Player::onCollision(Ball * ball) { }
+
+void Player::onCollision(Paddle * paddle) { }
+
+void Player::onCollision(Player * player) { }
+
+void Player::onCollision(Wall * wall) { }

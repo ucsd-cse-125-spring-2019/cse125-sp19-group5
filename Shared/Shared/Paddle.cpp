@@ -17,3 +17,15 @@ bool Paddle::deleteOnServerTick() {
 void Paddle::updateOnServerTick() {
 	--lifespan;
 }
+
+void Paddle::onCollision(GameObject * gameObject) {
+	gameObject->onCollision(this);
+}
+
+void Paddle::onCollision(Ball * ball) { }
+
+void Paddle::onCollision(Paddle * paddle) { }
+
+void Paddle::onCollision(Player * player) { }
+
+void Paddle::onCollision(Wall * wall) { }
