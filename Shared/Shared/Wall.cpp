@@ -14,6 +14,15 @@ GAMEOBJECT_TYPES Wall::getGameObjectType() const {
 	return WALL_TYPE;
 }
 
+void Wall::setBoundingShape(BoundingBox * boundingBox) {
+	this->boundingShape = boundingBox;
+	this->facePlanes = boundingBox->getFacePlanes();
+}
+
+vector<Plane *> & Wall::getFacePlanes() {
+	return this->facePlanes;
+}
+
 void Wall::onCollision(GameObject * gameObject) {
 	gameObject->onCollision(this);
 }

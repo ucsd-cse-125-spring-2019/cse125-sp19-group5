@@ -35,8 +35,8 @@ int main(int argc, char **argv) {
 	ball->setMaterial("Materials/brick.json");
 
 	auto wall1 = gameEngine.addGameObject<Wall>();
-	wall1->setBoundingShape(new BoundingBox(vec3(0, 0, 100), vec3(1, 0, 0), 1, 50, 300));
-	wall1->setScale(vec3(300, 100, 1));
+	wall1->setBoundingShape(new BoundingBox(vec3(0, 0, 100), vec3(1, 0, 0), 100, 200, 20));
+	wall1->setScale(vec3(200, 40, 100));
 	wall1->setPosition(vec3(0, 0, 100));
 	wall1->setModel("Models/unit_cube.obj");
 	wall1->setMaterial("Materials/grass.json");

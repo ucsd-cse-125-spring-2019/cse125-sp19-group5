@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+#include "BoundingBox.h"
 #include "Ball.h"
 #include "Paddle.h"
 #include "Player.h"
@@ -12,6 +13,8 @@ public:
 
 	Wall(vec3 position, vec3 direction, int id, float length, float width, float height);
 	GAMEOBJECT_TYPES getGameObjectType() const;
+	void setBoundingShape(BoundingBox * box);
+	vector<Plane *> & getFacePlanes();
 
 	// collision interactions below
 	void onCollision(GameObject * gameObject);
@@ -25,4 +28,5 @@ private:
 	float length;
 	float width;
 	float height;
+	vector<Plane *> facePlanes;
 };

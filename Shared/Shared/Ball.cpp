@@ -1,7 +1,10 @@
 #include "Ball.h"
 #include "BoundingSphere.h"
 #include <iostream>
+#include <math.h>
 #include <glm/gtx/string_cast.hpp>
+#include <glm/gtx/vector_angle.hpp>
+
 
 Ball::Ball(vec3 position, vec3 velocity, int id, float radius) : GameObject(position, velocity, id) {
 	setBoundingShape(new BoundingSphere(position, radius));
@@ -28,24 +31,13 @@ void Ball::updateOnServerTick() {
 
 void Ball::onCollision(GameObject * gameObject) {
 	gameObject->onCollision(this);
-	/*switch (gameObject->getGameObjectType()) {
-	case PADDLE_TYPE:
-		std::cout << to_string() << " collided with " << gameObject->to_string() << std::endl;
-		std::cout << to_string() << " velocity changing from " << glm::to_string(getVelocity()) << " to " << glm::to_string(gameObject->getVelocity()) << std::endl;
-		setVelocity(gameObject->getVelocity());
-		break;
-	case WALL_TYPE:
-		std::cout << to_string() + " collided with " << gameObject->to_string() << std::endl;
-		vector<vec3> planeNormals;
-		break;
-	}*/
 }
 
 void Ball::onCollision(Ball * ball) { }
 
 void Ball::onCollision(Paddle * paddle) {
-	std::cout << to_string() << " collided with " << paddle->to_string() << std::endl;
-	std::cout << to_string() << " velocity changing from " << glm::to_string(getVelocity()) << " to " << glm::to_string(paddle->getVelocity()) << std::endl;
+	/*std::cout << to_string() << " collided with " << paddle->to_string() << std::endl;
+	std::cout << to_string() << " velocity changing from " << glm::to_string(getVelocity()) << " to " << glm::to_string(paddle->getVelocity()) << std::endl;*/
 	setVelocity(paddle->getVelocity());
 }
 
@@ -53,7 +45,33 @@ void Ball::onCollision(Paddle * paddle) {
 void Ball::onCollision(Player * player) { }
 
 void Ball::onCollision(Wall * wall) {
-	std::cout << to_string() + " collided with " << wall->to_string() << std::endl;
-	vector<vec3> planeNormals;
-	setVelocity(getVelocity() * vec3(-1));
+	// TODO: FIX CORNER COLLISIONS, TREAT CORNER AS A SPHERE?
+	// TODO: CORRECT PLANE INTERSECTION TEST
+	/*std::cout << to_string() + " collided with " << wall->to_string() << std::endl;*/
+
+	// get planes that ball collides with
+	vector<Plane * > collisionPlanes;
+	for (Plane * p : wall->getFacePlanes()) {
+		vec3 planeNormal = glm::normalize(p->getNormal());
+		float angleBetween = glm::angle(glm::normalize(getVelocity()), planeNormal);		
+		if (angleBetween > glm::half_pi<float>() && angleBetween < (3.0f * glm::half_pi<float>())) {
+			std::cout << angleBetween << std::endl;
+			collisionPlanes.push_back(p);
+		}
+	}
+
+	// get closest plane
+	Plane * closestPlane = nullptr;
+	for (Plane * p : collisionPlanes) {
+		if (!closestPlane) {
+			closestPlane = p;
+		}
+		else {
+			if (abs(p->pointDistance(getPosition())) < abs(closestPlane->pointDistance(getPosition()))) {
+				closestPlane = p;
+			}
+		}
+	}
+
+	setVelocity(glm::reflect(getVelocity(), glm::normalize(closestPlane->getNormal())));
 }
