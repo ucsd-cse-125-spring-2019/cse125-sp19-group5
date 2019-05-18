@@ -157,3 +157,5 @@ bool GuiElement::dispatchMouseButton(float x, float y, int button, int action) {
 
 	return false;
 }
+
+void GuiElement::update(float dt) { }

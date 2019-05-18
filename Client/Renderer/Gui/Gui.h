@@ -9,6 +9,7 @@ class GuiElement;
 
 namespace Gui {
 	extern std::vector<GuiElement*> rootElements;
+	extern std::vector<GuiElement*> allElements;
 
 	template<class T>
 	T* create(GuiElement *parent = nullptr) {
@@ -19,6 +20,7 @@ namespace Gui {
 		} else {
 			rootElements.push_back(element);
 		}
+		allElements.push_back(element);
 
 		return element;
 	}
@@ -30,5 +32,6 @@ namespace Gui {
 	void dispatchMousePos(float x, float y);
 	void dispatchKey(const std::string &key);
 	void draw();
+	void update(float dt);
 	void cleanUp();
 }

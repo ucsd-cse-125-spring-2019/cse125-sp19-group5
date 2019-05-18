@@ -3,6 +3,7 @@
 #include <locale>
 
 std::vector<GuiElement*> Gui::rootElements;
+std::vector<GuiElement*> Gui::allElements;
 
 std::string unicodeToUTF8(unsigned int codepoint)
 {
@@ -61,6 +62,10 @@ void Gui::onElementRemoved(GuiElement *element) {
 	if (it != rootElements.end()) {
 		rootElements.erase(it);
 	}
+	it = std::find(allElements.begin(), allElements.end(), element);
+	if (it != allElements.end()) {
+		allElements.erase(it);
+	}
 	delete element;
 }
 
@@ -84,6 +89,12 @@ void Gui::onElementParentSet(GuiElement *element, GuiElement *parent) {
 void Gui::draw() {
 	for (auto it = rootElements.begin(); it != rootElements.end(); it++) {
 		(*it)->drawElement();
+	}
+}
+
+void Gui::update(float dt) {
+	for (auto element : allElements) {
+		element->update(dt);
 	}
 }
 
