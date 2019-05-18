@@ -23,12 +23,6 @@ bool GuiFocusable::isFocused() const {
 	return this == currFocused;
 }
 
-void GuiFocusable::onMouseButton(float x, float y, int button, int action) {
-	if (isMouseHovering) {
-		requestFocus();
-	}
-}
-
 bool GuiFocusable::shouldGiveUpFocus(GuiFocusable *requester) {
 	return true;
 }

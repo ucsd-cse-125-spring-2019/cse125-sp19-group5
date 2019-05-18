@@ -5,7 +5,7 @@
 std::vector<GuiElement*> Gui::rootElements;
 std::vector<GuiElement*> Gui::allElements;
 
-std::string unicodeToUTF8(unsigned int codepoint)
+static std::string unicodeToUTF8(unsigned int codepoint)
 {
     std::string out;
 
@@ -32,29 +32,48 @@ std::string unicodeToUTF8(unsigned int codepoint)
     return out;
 }
 
-void charCallback(GLFWwindow* window, unsigned int code) {
-	auto key = unicodeToUTF8(code);
-	Gui::dispatchKey(key);
+static void charCallback(GLFWwindow* window, unsigned int code) {
+	Gui::dispatchChar(unicodeToUTF8(code));
 }
 
-void cursorPosCallback(GLFWwindow *window, double x, double y) {
+static void cursorPosCallback(GLFWwindow *window, double x, double y) {
 	x /= Draw::screenWidth;
 	y /= Draw::screenHeight;
 	Gui::dispatchMousePos((float)x, 1.0f - (float)y);
 }
 
-void buttonCallback(GLFWwindow *window, int button, int action, int mods) {
-	double x, y;
-	glfwGetCursorPos(window, &x, &y);
-	x /= Draw::screenWidth;
-	y /= Draw::screenHeight;
+static void buttonCallback(int button, int action, int mods) {
+	auto x = Input::getMouseX() / Draw::screenWidth;
+	auto y = Input::getMouseY() / Draw::screenHeight;
 	Gui::dispatchMouseButton((float)x, 1.0f - (float)y, button, action);
+}
+
+static void keyCallback(int key, int scancode, int action, int mods) {
+	// This is a bit messy, but no clear way to get enum
+	// from value for noncontinuous values.
+	switch (static_cast<Gui::Key>(key)) {
+		case Gui::Key::BACKSPACE:
+		case Gui::Key::ESCAPE:
+		case Gui::Key::ENTER:
+		case Gui::Key::TAB:
+		case Gui::Key::LEFT:
+		case Gui::Key::RIGHT:
+		case Gui::Key::UP:
+		case Gui::Key::DOWN:
+		case Gui::Key::DEL:
+		case Gui::Key::END:
+			Gui::dispatchKey(static_cast<Gui::Key>(key), action == GLFW_PRESS);
+			break;
+
+	}
 }
 
 void Gui::setupInputListeners(GLFWwindow *window) {
 	glfwSetCharCallback(window, charCallback);
 	glfwSetCursorPosCallback(window, cursorPosCallback);
-	glfwSetMouseButtonCallback(window, buttonCallback);
+
+	Input::addKeyCallback(keyCallback);
+	Input::addMouseButtonCallback(buttonCallback);
 }
 
 void Gui::onElementRemoved(GuiElement *element) {
@@ -121,9 +140,17 @@ void Gui::dispatchMousePos(float x, float y) {
 	}
 }
 
-void Gui::dispatchKey(const std::string &key) {
+void Gui::dispatchChar(const std::string &c) {
 	for (auto element : rootElements) {
-		if (element->dispatchKey(key)) {
+		if (element->dispatchChar(c)) {
+			return;
+		}
+	}
+}
+
+void Gui::dispatchKey(Gui::Key key, bool pressed) {
+	for (auto element : rootElements) {
+		if (element->dispatchKey(key, pressed)) {
 			return;
 		}
 	}

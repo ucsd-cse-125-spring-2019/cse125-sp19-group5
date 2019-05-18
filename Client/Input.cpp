@@ -3,6 +3,8 @@
 GLFWwindow *curWindow;
 
 bool Input::mouseLock = true;
+std::vector<Input::KeyCallback> Input::keyCallbacks;
+std::vector<Input::MouseButtonCallback> Input::mouseButtonCallbacks;
 
 bool windowInFocus = true;
 
@@ -14,15 +16,21 @@ double mouseDeltaY = 0.0;
 int keys[512] = { 0 };
 int buttons[16] = { 0 };
 
-void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+static void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
 	keys[key] = action;
+	for (auto &callback : Input::keyCallbacks) {
+		callback(key, scancode, action, mods);
+	}
 }
 
-void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods) {
+static void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods) {
 	buttons[button] = action;
+	for (auto &callback : Input::mouseButtonCallbacks) {
+		callback(button, action, mods);
+	}
 }
 
-void windowFocusCallback(GLFWwindow *window, int focused) {
+static void windowFocusCallback(GLFWwindow *window, int focused) {
 	windowInFocus = focused;
 }
 
@@ -70,6 +78,14 @@ void Input::poll() {
 		lastMouseX = mouseX;
 		lastMouseY = mouseY;
 	}
+}
+
+void Input::addKeyCallback(const KeyCallback &callback) {
+	keyCallbacks.push_back(callback);
+}
+
+void Input::addMouseButtonCallback(const MouseButtonCallback &callback) {
+	mouseButtonCallbacks.push_back(callback);
 }
 
 bool Input::isKeyDown(int key) {

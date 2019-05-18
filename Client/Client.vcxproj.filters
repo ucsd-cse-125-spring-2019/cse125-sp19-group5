@@ -257,5 +257,8 @@
     <ClInclude Include="Renderer\Gui\GuiFocusable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Renderer\Gui\GuiKey.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

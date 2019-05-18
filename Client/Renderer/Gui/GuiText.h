@@ -11,7 +11,7 @@ enum class TextAlign {
 };
 
 class GuiText : public GuiElement {
-	private:
+	protected:
 	vec4 color = vec4(1.0f);
 	std::string text;
 	std::string font;

@@ -111,13 +111,25 @@ bool GuiElement::isAbsPosWithin(float posX, float posY) const {
 		&& posY <= (absPos.y + absSize.y);
 }
 
-bool GuiElement::dispatchKey(const std::string &key) {
+bool GuiElement::dispatchChar(const std::string &c) {
 	for (auto child : children) {
-		if (child->dispatchKey(key)) {
+		if (child->dispatchChar(c)) {
 			return true;
 		}
 	}
-	onKeyPressed(key);
+	return onCharPressed(c);
+}
+
+bool GuiElement::dispatchKey(Gui::Key key, bool pressed) {
+	for (auto child : children) {
+		if (child->dispatchKey(key, pressed)) {
+			return true;
+		}
+	}
+
+	if (pressed) {
+		return onKeyPressed(key);
+	}
 	return false;
 }
 
@@ -157,5 +169,3 @@ bool GuiElement::dispatchMouseButton(float x, float y, int button, int action) {
 
 	return false;
 }
-
-void GuiElement::update(float dt) { }

@@ -2,7 +2,7 @@
 
 #include "GuiElement.h"
 
-class GuiFocusable : public GuiElement {
+class GuiFocusable {
 	private:
 	static GuiFocusable *currFocused;
 
@@ -10,7 +10,6 @@ class GuiFocusable : public GuiElement {
 	bool requestFocus();
 	void unfocus();
 	bool isFocused() const;
-	virtual void onMouseButton(float x, float y, int button, int action);
 
 	virtual bool shouldGiveUpFocus(GuiFocusable *requester);
 	virtual void onFocusChanged(bool gained);

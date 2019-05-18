@@ -2,10 +2,13 @@
 
 #include <vector>
 #include <string>
+#include "GuiKey.h"
+#include "../Input.h"
 #include <GLFW/glfw3.h>
 
 class GuiElement;
 #include "GuiElement.h"
+
 
 namespace Gui {
 	extern std::vector<GuiElement*> rootElements;
@@ -30,7 +33,8 @@ namespace Gui {
 	void setupInputListeners(GLFWwindow *window);
 	void dispatchMouseButton(float x, float y, int button, int action);
 	void dispatchMousePos(float x, float y);
-	void dispatchKey(const std::string &key);
+	void dispatchChar(const std::string &c);
+	void dispatchKey(Key key, bool pressed);
 	void draw();
 	void update(float dt);
 	void cleanUp();

@@ -3,17 +3,13 @@
 #include "GuiText.h"
 #include <functional>
 
-class GuiButton : public GuiText {
+class GuiButton : public GuiText, public GuiBgColorable {
 	private:
 	std::vector<std::function<void()>> callbacks;
-	vec4 bgColor = vec4(1.0f);
 	vec4 hoverColor = vec4(1.0f, 1.0f, 1.0f, 0.1f);
 	vec4 clickColor = vec4(0.0f, 0.0f, 0.0f, 0.1f);
 
 	public:
-	void setBgColor(const vec4 &newBgColor);
-	const vec4 &getBgColor() const;
-
 	void setHoverColor(const vec4 &newHoverColor);
 	const vec4 &getHoverColor() const;
 

@@ -12,7 +12,7 @@
 #include "Renderer/Material.h"
 #include "Renderer/Gui/Gui.h"
 #include "Renderer/Gui/GuiRect.h"
-#include "Renderer/Gui/GuiButton.h"
+#include "Renderer/Gui/GuiTextbox.h"
 
 void Game::onGameObjectCreated(Connection *c, NetBuffer &buffer) {
 	auto gameObjectType = buffer.read<GAMEOBJECT_TYPES>();
@@ -98,16 +98,11 @@ Game::Game(): gameObjects(1024, nullptr) {
 	rect->setPosition(vec2(0.0f, 0.0f));
 	rect->setSize(vec2(0.5f, 0.5f));
 
-	auto text = Gui::create<GuiButton>(rect);
+	auto text = Gui::create<GuiTextbox>(rect);
 	text->setBgColor(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	text->setPosition(vec2(0.0f, 0.0f));
-	text->setText("Hello, world!");
 	text->setFont("Arial");
 	text->setSize(vec2(1.0f, 0.25f));
-	text->setAlignment(TextAlign::CENTER);
-	text->addCallback([]() {
-		std::cout << "HEH" << std::endl;
-	});
 
 	shadowMap = new ShadowMap();
 	lightShader = new Shader("Shaders/light");
