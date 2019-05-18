@@ -33,13 +33,14 @@ static MenuOptions menuPrompt(int playerId, MenuOptions currentMenuOptions) {
 		cout << "-------------------------- " << endl;
 		cout << "Type '1', '2', '3', or '4' to make a selection: ";
 		cin >> selection;
-		cout << selection << endl;
-	}
-	switch (selection) {
-	case 1: currentMenuOptions.team_A_1 = playerId; break;
-	case 2: currentMenuOptions.team_B_1 = playerId; break;
-	case 3: currentMenuOptions.team_A_2 = playerId; break;
-	case 4: currentMenuOptions.team_B_2 = playerId; break;
+		cout << endl;
+
+		switch (selection) {
+		case 1: currentMenuOptions.team_A_1 = playerId; break;
+		case 2: currentMenuOptions.team_B_1 = playerId; break;
+		case 3: currentMenuOptions.team_A_2 = playerId; break;
+		case 4: currentMenuOptions.team_B_2 = playerId; break;
+		}
 	}
 	return currentMenuOptions;
 }
@@ -129,6 +130,26 @@ int main(int argc, char **argv) {
 	cout << "creating client" << endl;
 
 	/*
+	 * This is the callback function that is responsible for displaying all
+	 * the menu options available before the game session has started.
+	 * Currently there is only team selection support
+	 */
+	auto handleMenuInput = [&](Connection *server, NetBuffer &incomingMessage)
+	{
+		cout << "New Input Message...." << endl;
+		//read in the current menu options from the server
+		MenuOptions currentMenuOptions = incomingMessage.read<MenuOptions>();
+
+		//else display these options and allow the client to make a selection
+		game.setClientMenuOptions(menuPrompt(game.getPlayerId(), currentMenuOptions));
+		NetBuffer menuInput(NetMessage::MENU_INPUT);
+		menuInput.write<MenuOptions>(game.getClientMenuOptions());
+
+		//send the client's selections to the server for confirmation
+		server->send(menuInput);
+	};
+
+	/*
 	 * This is the callback function that is responsible for handling confirmation
 	 * from the server about the menu options selected by a client
 	 */
@@ -136,49 +157,35 @@ int main(int argc, char **argv) {
 	{
 		cout << "server sent confirmation" << endl;
 		MenuOptions currentMenuOptions = serverMenuOptions.read<MenuOptions>();
-		
+
+
+		game.setCurrentMenuOptions(currentMenuOptions);
+
 		// Now we check if the Server has confirmed our selection or if it was 
 		// confirming for another client instead
-		if (game.serverConfirmed(currentMenuOptions))
-		{
-			// The game is ready to start, so clear the Menu prompt from the screen
-			clearMenuPrompt();
-			selectionComplete = 1;
+		if (!selectionComplete) {
+			cout << "selectionComplete: " << selectionComplete << endl;
+			if (game.serverConfirmed(currentMenuOptions))
+			{
+				// The game is ready to start, so clear the Menu prompt from the screen
+				clearMenuPrompt();
+				selectionComplete = 1;
+			}
+			else //The client selection window needs to update to reflect other player's selection
+			{
+				//display these options and allow the client to make a selection
+				MenuOptions selectedOptions = menuPrompt(game.getPlayerId(), currentMenuOptions);
+
+				////save these options
+				game.setClientMenuOptions(selectedOptions);
+
+				NetBuffer menuInput(NetMessage::MENU_INPUT);
+				menuInput.write<MenuOptions>(game.getClientMenuOptions());
+				//clearMenuPrompt();
+				//send the client's selections to the server for confirmation
+				server->send(menuInput);
+			}
 		}
-		else //The client selection window needs to update
-		{
-			//display these options and allow the client to make a selection
-			MenuOptions clientOptions = menuPrompt(game.getPlayerId(), currentMenuOptions);
-
-			NetBuffer menuInput(NetMessage::MENU_INPUT);
-			menuInput.write<MenuOptions>(clientOptions);
-
-			//send the client's selections to the server for confirmation
-			server->send(menuInput);
-
-		}
-	};
-
-	/*
-	 * This is the callback function that is responsible for displaying all
-	 * the menu options available before the game session has started.
-	 * Currently there is only team selection support
-	 */
-	auto handleMenuInput = [&](Connection *server, NetBuffer &incomingMessage)
-	{
-		cout << "DEBUG" << endl;
-		//read in the current menu options from the server
-		MenuOptions currentMenuOptions = incomingMessage.read<MenuOptions>();
-
-		//display these options and allow the client to make a selection
-		MenuOptions clientOptions = menuPrompt(game.getPlayerId(), currentMenuOptions);
-
-		NetBuffer menuInput(NetMessage::MENU_INPUT);
-		menuInput.write<MenuOptions>(clientOptions);
-
-		//send the client's selections to the server for confirmation
-		server->send(menuInput);
-		server->on(NetMessage::MENU_CONFIRM, handleMenuConfirmed);
 	};
 
 	// this handles the broadcast for the general menu option negotiations 
@@ -199,12 +206,13 @@ int main(int argc, char **argv) {
 
 	// this is the server confirming a new selection to all connected clients 
 	Network::on(NetMessage::MENU_OPTIONS, handleMenuInput);
+	Network::on(NetMessage::MENU_CONFIRM, handleMenuConfirmed);
 
 	while (1) {
 		Network::poll();
 	}
 	// Main loop /* TODO: re-enable */
-	while (1==2) {//!glfwWindowShouldClose(window)) {
+	while (1 == 2) {//!glfwWindowShouldClose(window)) {
 		auto dt = (float)glfwGetTime() - lastTime;
 		lastTime = (float)glfwGetTime();
 

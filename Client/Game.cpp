@@ -332,5 +332,24 @@ bool Game::serverConfirmed(MenuOptions serverMenuOptions)
  * This Function is a getter for the clientMenuOptions
  */
 MenuOptions Game::getCurrentMenuOptions() {
+	return this->currentMenuOptions;
+}
+
+/*
+ * This Function is a getter for the clientMenuOptions
+ */
+MenuOptions Game::getClientMenuOptions() {
 	return this->clientMenuOptions;
 }
+
+/*
+ * This function is a setter for the clientMenuOptions
+ */
+void Game::setCurrentMenuOptions(MenuOptions newMenuOptions) {
+	this->currentMenuOptions = newMenuOptions;
+}
+
+void Game::setClientMenuOptions(MenuOptions newMenuOptions) {
+	this->clientMenuOptions = newMenuOptions;
+}
+

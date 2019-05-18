@@ -45,6 +45,7 @@ class Game {
 	int team;
 
 	MenuOptions clientMenuOptions;
+	MenuOptions currentMenuOptions;
 
 	GameState gameState;
 	Player *playerObj = nullptr;
@@ -74,5 +75,9 @@ public:
 	int getPlayerId();//
 	bool serverConfirmed(MenuOptions serverMenuOptions);//setter for the clientMenuOptions
 	MenuOptions getCurrentMenuOptions();//getter for the clientMenuOptions
+	MenuOptions getClientMenuOptions();
+	void setCurrentMenuOptions(MenuOptions newMenuOptions);//setter for the clientMenuOptions
+	void setClientMenuOptions(MenuOptions newMenuOptions);//setter for the clientMenuOptions
+
 };
 
