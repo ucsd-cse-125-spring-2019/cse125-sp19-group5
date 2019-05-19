@@ -49,6 +49,19 @@ static void buttonCallback(int button, int action, int mods) {
 }
 
 static void keyCallback(int key, int scancode, int action, int mods) {
+	Gui::KeyState state;
+	switch (action) {
+		case GLFW_PRESS:
+			state = Gui::KeyState::PRESSED;
+			break;
+		case GLFW_REPEAT:
+			state = Gui::KeyState::HELD;
+			break;
+		default:
+			state = Gui::KeyState::RELEASED;
+			break;
+	}
+
 	// This is a bit messy, but no clear way to get enum
 	// from value for noncontinuous values.
 	switch (static_cast<Gui::Key>(key)) {
@@ -62,7 +75,7 @@ static void keyCallback(int key, int scancode, int action, int mods) {
 		case Gui::Key::DOWN:
 		case Gui::Key::DEL:
 		case Gui::Key::END:
-			Gui::dispatchKey(static_cast<Gui::Key>(key), action == GLFW_PRESS);
+			Gui::dispatchKey(static_cast<Gui::Key>(key), state);
 			break;
 
 	}
@@ -148,9 +161,9 @@ void Gui::dispatchChar(const std::string &c) {
 	}
 }
 
-void Gui::dispatchKey(Gui::Key key, bool pressed) {
+void Gui::dispatchKey(Gui::Key key, Gui::KeyState state) {
 	for (auto element : rootElements) {
-		if (element->dispatchKey(key, pressed)) {
+		if (element->dispatchKey(key, state)) {
 			return;
 		}
 	}

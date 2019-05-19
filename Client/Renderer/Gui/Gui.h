@@ -34,7 +34,7 @@ namespace Gui {
 	void dispatchMouseButton(float x, float y, int button, int action);
 	void dispatchMousePos(float x, float y);
 	void dispatchChar(const std::string &c);
-	void dispatchKey(Key key, bool pressed);
+	void dispatchKey(Key key, KeyState state);
 	void draw();
 	void update(float dt);
 	void cleanUp();

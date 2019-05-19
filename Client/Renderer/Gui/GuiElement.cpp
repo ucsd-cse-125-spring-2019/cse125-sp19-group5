@@ -120,14 +120,14 @@ bool GuiElement::dispatchChar(const std::string &c) {
 	return onCharPressed(c);
 }
 
-bool GuiElement::dispatchKey(Gui::Key key, bool pressed) {
+bool GuiElement::dispatchKey(Gui::Key key, Gui::KeyState state) {
 	for (auto child : children) {
-		if (child->dispatchKey(key, pressed)) {
+		if (child->dispatchKey(key, state)) {
 			return true;
 		}
 	}
 
-	if (pressed) {
+	if (state == Gui::KeyState::PRESSED) {
 		return onKeyPressed(key);
 	}
 	return false;

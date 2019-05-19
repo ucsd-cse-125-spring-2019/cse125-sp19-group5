@@ -21,10 +21,10 @@ class GuiElement {
 	public:
 	using Children = std::vector<GuiElement*>;
 
-	bool dispatchMouseButton(float x, float y, int button, int action);
-	bool dispatchMousePos(float x, float y);
-	bool dispatchKey(Gui::Key key, bool pressed);
-	bool dispatchChar(const std::string &c);
+	virtual bool dispatchMouseButton(float x, float y, int button, int action);
+	virtual bool dispatchMousePos(float x, float y);
+	virtual bool dispatchKey(Gui::Key key, Gui::KeyState state);
+	virtual bool dispatchChar(const std::string &c);
 
 	void addChild(GuiElement *newChild);
 	void removeChild(GuiElement *child);

@@ -15,4 +15,10 @@ namespace Gui {
 		DEL = 261,
 		END = 269,
 	};
+
+	enum class KeyState {
+		PRESSED,
+		HELD,
+		RELEASED,
+	};
 }
