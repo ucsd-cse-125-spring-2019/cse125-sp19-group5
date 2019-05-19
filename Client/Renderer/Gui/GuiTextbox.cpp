@@ -1,9 +1,11 @@
 #include "GuiTextbox.h"
 #include "../Draw.h"
+#include <GLFW/glfw3.h>
 #include "../TextRenderer.h"
 
 constexpr auto CURSOR_BORDER = 2.0f; // pixels
 constexpr auto CURSOR_WIDTH = 1.0f; // pixels
+constexpr auto CURSOR_BLINK_TIME = 0.5f; // seconds
 
 bool GuiTextbox::onCharPressed(const std::string &c) {
 	if (!isFocused()) { return false; }
@@ -22,6 +24,7 @@ void GuiTextbox::backspace() {
 }
 
 void GuiTextbox::onTextChanged() {
+	resetBlink();
 }
 
 void GuiTextbox::draw(float x, float y, float w, float h) const {
@@ -58,6 +61,7 @@ void GuiTextbox::setCursorIndex(int i) {
 	}
 	cursorIndex = i;
 	updateCursorPos();
+	resetBlink();
 }
 
 void GuiTextbox::updateCursorPos() {
@@ -137,7 +141,7 @@ bool GuiTextbox::dispatchKey(Gui::Key key, Gui::KeyState state) {
 }
 
 void GuiTextbox::drawCursor(float x, float y, float w, float h) const {
-	if (!isFocused()) { return; }
+	if (!isFocused() || !cursorVisible) { return; }
 
 	auto border = CURSOR_BORDER / Draw::screenHeight;
 	auto width = CURSOR_WIDTH / Draw::screenWidth;
@@ -161,4 +165,18 @@ void GuiTextbox::setText(const std::string &newText) {
 	setCursorIndex();
 	updateCursorPos();
 	onTextChanged();
+}
+
+void GuiTextbox::update(float dt) {
+	auto curTime = static_cast<float>(glfwGetTime());
+	if (nextBlink < curTime) {
+		nextBlink = curTime + CURSOR_BLINK_TIME;
+		cursorVisible = !cursorVisible;
+	}
+}
+
+void GuiTextbox::resetBlink() {
+	auto curTime = static_cast<float>(glfwGetTime());
+	nextBlink = curTime + CURSOR_BLINK_TIME;
+	cursorVisible = true;
 }

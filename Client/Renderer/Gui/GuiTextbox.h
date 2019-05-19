@@ -14,12 +14,13 @@ class GuiTextbox : public GuiText, public GuiFocusable, public GuiBgColorable {
 	vec4 cursorColor = vec4(1.0f);
 	int cursorIndex = 0;
 	float cursorX = 0.0f;
+	float nextBlink = 0.0f;
+	float cursorVisible = false;
 
 	void backspace();
 	int getDrawStartIndex();
 
 	public:
-
 	bool dispatchKey(Gui::Key key, Gui::KeyState state) override;
 	bool onCharPressed(const std::string &c) override;
 	void draw(float x, float y, float w, float h) const override;
@@ -35,4 +36,8 @@ class GuiTextbox : public GuiText, public GuiFocusable, public GuiBgColorable {
 
 	void addEnterCallback(const EnterCallback &callback);
 	virtual void onEnter(std::string text);
+
+	void update(float dt) override;
+
+	void resetBlink();
 };
