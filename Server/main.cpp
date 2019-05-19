@@ -22,7 +22,8 @@ int main(int argc, char **argv) {
 	vector<PlayerInputs> playerInputs;
 
 	auto ground = gameEngine.addGameObject<Wall>();
-	ground->setBoundingShape(new BoundingBox(vec3(0, 0, 0), vec3(1, 0, 0), 1, 1, 100));
+	ground->setBoundingShape(new BoundingBox(vec3(0, -1, 0), vec3(1, 0, 0), 1, 1, 100));
+	ground->setPosition(vec3(0, -1, 0));
 	ground->setModel("Models/ground.obj");
 	ground->setMaterial("Materials/grass.json");
 

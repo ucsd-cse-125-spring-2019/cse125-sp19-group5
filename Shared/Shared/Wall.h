@@ -14,7 +14,7 @@ public:
 	Wall(vec3 position, vec3 direction, int id, float width, float height, float length);
 	GAMEOBJECT_TYPES getGameObjectType() const;
 	void setBoundingShape(BoundingBox * box);
-	vector<Plane *> & getFacePlanes();
+	BoundingBox * getBoundingBox();
 
 	// collision interactions below
 	void onCollision(GameObject * gameObject);
@@ -28,5 +28,5 @@ private:
 	float length;
 	float width;
 	float height;
-	vector<Plane *> facePlanes;
+	BoundingBox * boundingBox = nullptr;
 };
