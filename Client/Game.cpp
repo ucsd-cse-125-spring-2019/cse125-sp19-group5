@@ -94,15 +94,27 @@ Game::Game(): gameObjects(1024, nullptr) {
 	Input::setMouseVisible(true);
 
 	auto rect = Gui::create<GuiRect>();
-	rect->setColor(vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	rect->setColor(vec4(0.2f, 0.2f, 0.2f, 1.0f));
 	rect->setPosition(vec2(0.0f, 0.0f));
-	rect->setSize(vec2(0.5f, 0.5f));
+	rect->setSize(vec2(1.0f, 1.0f));
+
+	auto instructions = Gui::create<GuiText>(rect);
+	instructions->setPosition(vec2(0.0f, 0.7f));
+	instructions->setAlignment(TextAlign::CENTER);
+	instructions->setSize(vec2(1.0f, 0.1f));
+	instructions->setText("Connect to:");
+	instructions->setFont("Arial");
 
 	auto text = Gui::create<GuiTextbox>(rect);
 	text->setBgColor(vec4(0.0f, 0.0f, 0.0f, 1.0f));
-	text->setPosition(vec2(0.0f, 0.0f));
+	text->setPosition(vec2(0.2f, 0.3f));
 	text->setFont("Arial");
-	text->setSize(vec2(1.0f, 0.25f));
+	text->setSize(vec2(0.6f, 0.25f));
+	text->addEnterCallback([text](const std::string &textStr) {
+		if (textStr.empty()) { return; }
+		std::cout << textStr << std::endl;
+		text->setText("");
+	});
 
 	shadowMap = new ShadowMap();
 	lightShader = new Shader("Shaders/light");

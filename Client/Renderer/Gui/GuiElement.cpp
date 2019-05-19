@@ -139,11 +139,13 @@ bool GuiElement::dispatchMousePos(float x, float y) {
 		if (mouseInside && !isMouseHovering) {
 			isMouseHovering = true;
 			onMouseEntered(x, y);
+			return true;
 		} else if (!mouseInside && isMouseHovering) {
 			isMouseHovering = false;
 			onMouseLeft(x, y);
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	for (auto child : children) {
@@ -156,15 +158,15 @@ bool GuiElement::dispatchMousePos(float x, float y) {
 }
 
 bool GuiElement::dispatchMouseButton(float x, float y, int button, int action) {
-	if (isMouseHovering) {
-		onMouseButton(x, y, button, action);
-		return true;
-	}
-
 	for (auto child : children) {
 		if (child->dispatchMouseButton(x, y, button, action)) {
 			return true;
 		}
+	}
+
+	if (isMouseHovering) {
+		onMouseButton(x, y, button, action);
+		return true;
 	}
 
 	return false;

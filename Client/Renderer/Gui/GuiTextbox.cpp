@@ -28,6 +28,11 @@ void GuiTextbox::draw(float x, float y, float w, float h) const {
 	Draw::setColor(bgColor);
 	Draw::rect(x, y, w, h);
 
+	if (isMouseHovering) {
+		Draw::setColor(vec4(1.0f, 1.0f, 1.0f, 0.05f));
+		Draw::rect(x, y, w, h);
+	}
+
 	gTextRenderer->renderText(
 		drawText,
 		font,
@@ -42,6 +47,8 @@ void GuiTextbox::draw(float x, float y, float w, float h) const {
 void GuiTextbox::onMouseButton(float x, float y, int button, int action) {
 	if (isMouseHovering) {
 		requestFocus();
+	} else {
+		unfocus();
 	}
 }
 
@@ -74,7 +81,7 @@ void GuiTextbox::updateCursorPos() {
 		auto width = widthPixels / Draw::screenWidth;
 		if (curX < spaceLeft) {
 			drawStart++;
-		} else if (curX <= spaceRight) {
+		} else if (curX + width <= spaceRight) {
 			drawEnd++;
 		}
 		curX += width;
@@ -115,7 +122,15 @@ bool GuiTextbox::dispatchKey(Gui::Key key, Gui::KeyState state) {
 			break;
 		// Move to end when pressing end key.
 		case Gui::Key::END:
-			setCursorIndex();
+			if (state == Gui::KeyState::PRESSED) {
+				setCursorIndex();
+			}
+			break;
+		// Call onEnter when enter is pressed.
+		case Gui::Key::ENTER:
+			if (state == Gui::KeyState::PRESSED) {
+				onEnter(text);
+			}
 			break;
 	}
 	return true;
@@ -129,4 +144,21 @@ void GuiTextbox::drawCursor(float x, float y, float w, float h) const {
 
 	Draw::setColor(cursorColor);
 	Draw::rect(x + cursorX, y + border, width, h - (2.0f * border));
+}
+
+void GuiTextbox::addEnterCallback(const EnterCallback &callback) {
+	enterCallbacks.push_back(callback);
+}
+
+void GuiTextbox::onEnter(std::string text) {
+	for (auto &callback : enterCallbacks) {
+		callback(text);
+	}
+}
+
+void GuiTextbox::setText(const std::string &newText) {
+	text = newText;
+	setCursorIndex();
+	updateCursorPos();
+	onTextChanged();
 }
