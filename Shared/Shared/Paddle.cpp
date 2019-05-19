@@ -1,7 +1,7 @@
 #include "Paddle.h"
 #include "BoundingSphere.h"
 
-Paddle::Paddle (vec3 position, vec3 velocity, int id, float radius, int lifespan) : GameObject(position, velocity, id) {
+Paddle::Paddle (vec3 position, vec3 velocity, int id, float radius, int lifespan) : SphereGameObject(position, velocity, id) {
 	this->lifespan = lifespan;
 	setBoundingShape(new BoundingSphere(position, radius));
 }

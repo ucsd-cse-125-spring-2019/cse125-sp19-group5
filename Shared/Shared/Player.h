@@ -1,15 +1,15 @@
 #pragma once
-#include "GameObject.h"
+#include "SphereGameObject.h"
 #include "CommonStructs.h"
 #include "Ball.h"
 #include "Paddle.h"
 #include "Wall.h"
 
-class Player : public GameObject {
+class Player : public SphereGameObject {
 public:
-	using GameObject::GameObject;
+	using SphereGameObject::SphereGameObject;
   
-  Player(vec3 position, vec3 velocity, vec3 direction, int id, float radius, int team);
+	Player(vec3 position, vec3 velocity, vec3 direction, int id, float radius, int team);
 
 	void setDirection(const vec3 &newDirection);
 	GAMEOBJECT_TYPES getGameObjectType() const;
@@ -29,7 +29,6 @@ public:
 	void onCollision(Wall * wall);
 private:
 	vec3 direction;
-	float radius;
 	int actionCharge;
 	int team;
 	PlayerCommands currentAction;

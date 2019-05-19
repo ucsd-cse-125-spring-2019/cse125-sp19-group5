@@ -1,14 +1,9 @@
 #include "Ball.h"
-#include "BoundingSphere.h"
 #include <iostream>
 #include <math.h>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/vector_angle.hpp>
 
-
-Ball::Ball(vec3 position, vec3 velocity, int id, float radius) : GameObject(position, velocity, id) {
-	setBoundingShape(new BoundingSphere(position, radius));
-}
 
 GAMEOBJECT_TYPES Ball::getGameObjectType() const {
 	return BALL_TYPE;

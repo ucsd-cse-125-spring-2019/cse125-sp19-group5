@@ -119,6 +119,7 @@
     <ClInclude Include="Shared\BoundingBox.h" />
     <ClInclude Include="Shared\BoundingShape.h" />
     <ClInclude Include="Shared\BoundingSphere.h" />
+    <ClInclude Include="Shared\BoxGameObject.h" />
     <ClInclude Include="Shared\CollisionDetection.h" />
     <ClInclude Include="Shared\Common.h" />
     <ClInclude Include="Shared\CommonStructs.h" />
@@ -132,6 +133,7 @@
     <ClInclude Include="Shared\Networking\Network.h" />
     <ClInclude Include="Shared\Networking\Serializable.h" />
     <ClInclude Include="Shared\Player.h" />
+    <ClInclude Include="Shared\SphereGameObject.h" />
     <ClInclude Include="Shared\Util\json11.hpp" />
     <ClInclude Include="Shared\Wall.h" />
   </ItemGroup>
@@ -140,6 +142,7 @@
     <ClCompile Include="Shared\BoundingBox.cpp" />
     <ClCompile Include="Shared\BoundingShape.cpp" />
     <ClCompile Include="Shared\BoundingSphere.cpp" />
+    <ClCompile Include="Shared\BoxGameObject.cpp" />
     <ClCompile Include="Shared\CollisionDetection.cpp" />
     <ClCompile Include="Shared\ConfigSettings.cpp" />
     <ClCompile Include="Shared\GameObject.cpp" />
@@ -147,6 +150,7 @@
     <ClCompile Include="Shared\Networking\Connection.cpp" />
     <ClCompile Include="Shared\Networking\Network.cpp" />
     <ClCompile Include="Shared\Player.cpp" />
+    <ClCompile Include="Shared\SphereGameObject.cpp" />
     <ClCompile Include="Shared\Util\json11.cpp" />
     <ClCompile Include="Shared\Wall.cpp" />
   </ItemGroup>

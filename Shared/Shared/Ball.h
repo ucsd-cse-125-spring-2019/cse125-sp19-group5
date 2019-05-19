@@ -1,14 +1,12 @@
 #pragma once
-#include "GameObject.h"
+#include "SphereGameObject.h"
 #include "Paddle.h"
 #include "Player.h"
 #include "Wall.h"
 
-class Ball : public GameObject {
+class Ball : public SphereGameObject {
 public:
-	using GameObject::GameObject;
-
-	Ball(vec3 position, vec3 velocity, int id, float radius);
+	using SphereGameObject::SphereGameObject;
 	GAMEOBJECT_TYPES getGameObjectType() const;
 	void updateOnServerTick();
 

@@ -15,10 +15,6 @@ BoundingBox::BoundingBox(vec3 position, vec3 direction, float width, float heigh
 	}
 	vec3 centerPoint = position + (heightDir * (height / 2));
 
-	std::cout << "widthDir: " << glm::to_string(widthDir) << std::endl;
-	std::cout << "lengthDir: " << glm::to_string(lengthDir) << std::endl;
-	std::cout << "heightDir: " << glm::to_string(heightDir) << std::endl;
-
 	// bottom face
 	this->bottom = new Plane(
 		position,

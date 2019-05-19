@@ -1,5 +1,5 @@
 #pragma once
-#include "GameObject.h"
+#include "BoxGameObject.h"
 #include "BoundingBox.h"
 #include "Ball.h"
 #include "Paddle.h"
@@ -7,14 +7,10 @@
 
 struct Plane;
 
-class Wall : public GameObject {
+class Wall : public BoxGameObject {
 public:
-	using GameObject::GameObject;
-
-	Wall(vec3 position, vec3 direction, int id, float width, float height, float length);
+	using BoxGameObject::BoxGameObject;
 	GAMEOBJECT_TYPES getGameObjectType() const;
-	void setBoundingShape(BoundingBox * box);
-	BoundingBox * getBoundingBox();
 
 	// collision interactions below
 	void onCollision(GameObject * gameObject);
@@ -22,11 +18,4 @@ public:
 	void onCollision(Paddle * paddle);
 	void onCollision(Player * player);
 	void onCollision(Wall * wall);
-
-private:
-	vec3 direction;
-	float length;
-	float width;
-	float height;
-	BoundingBox * boundingBox = nullptr;
 };
