@@ -5,6 +5,7 @@
 #include <Shared/Player.h>
 #include <Shared/Ball.h>
 #include <Shared/Wall.h>
+#include <Shared/Goal.h>
 #include <Shared/GameState.h>
 #include <Shared/Networking/Connection.h>
 
@@ -33,6 +34,7 @@ public:
 	void addGameObject(Player *player);
 	void addGameObject(Ball *ball);
 	void addGameObject(Wall *wall);
+	void addGameObject(Goal * goal);
 	void removeGameObjectById(int id);
 
 	vec3 movementInputToVector(int movementInput);
@@ -41,6 +43,7 @@ public:
 	void doPlayerCommands(vector<PlayerInputs> & playerInputs);
 
 	void doCollisionInteractions();
+	void updateScore();
 	void removeDeadObjects();
 	void updateGameObjectsOnServerTick();
 	bool noCollisionMove(GameObject * gameObject, vec3 movement);

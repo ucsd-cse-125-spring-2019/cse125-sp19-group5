@@ -1,11 +1,9 @@
 #pragma once
 #include "BoxGameObject.h"
-#include "BoundingBox.h"
 #include "Ball.h"
 #include "Paddle.h"
 #include "Player.h"
 
-struct Plane;
 
 class Wall : public BoxGameObject {
 public:

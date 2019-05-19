@@ -18,6 +18,7 @@
     <ClCompile Include="Shared\CollisionDetection.cpp" />
     <ClCompile Include="Shared\BoxGameObject.cpp" />
     <ClCompile Include="Shared\SphereGameObject.cpp" />
+    <ClCompile Include="Shared\Goal.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shared\Ball.h" />
@@ -43,6 +44,7 @@
     <ClInclude Include="Shared\CollisionDetection.h" />
     <ClInclude Include="Shared\BoxGameObject.h" />
     <ClInclude Include="Shared\SphereGameObject.h" />
+    <ClInclude Include="Shared\Goal.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Util">

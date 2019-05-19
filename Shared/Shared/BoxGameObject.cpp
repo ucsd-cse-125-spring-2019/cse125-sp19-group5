@@ -9,7 +9,6 @@ BoxGameObject::BoxGameObject(vec3 position, vec3 direction, int id, float width,
 	setBoundingShape(new BoundingBox(position, direction, width, length, height));
 }
 
-
 void BoxGameObject::setBoundingShape(BoundingBox * boundingBox) {
 	this->boundingShape = boundingBox;
 	this->boundingBox = boundingBox;

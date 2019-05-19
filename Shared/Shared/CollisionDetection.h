@@ -10,6 +10,7 @@ public:
 	static bool sphereInsidePlane(BoundingSphere * sphere, Plane * p);
 	static bool sphereInsideBox(BoundingSphere * sphere, BoundingBox * box);
 	static bool sphereIntersectsPlanePoint(BoundingSphere * sphere, Plane * p, vec3 * point, float * radius);
+	static vector<Plane *> getIntersectingPlanes(BoundingSphere * sphere, BoundingBox * box);
 	static bool sphereIntersectsBox(BoundingSphere * sphere, BoundingBox * box);
 	static bool collisionCheck(BoundingBox * box, BoundingSphere * sphere);
 	static bool collisionCheck(BoundingSphere * sphere, BoundingBox * box);

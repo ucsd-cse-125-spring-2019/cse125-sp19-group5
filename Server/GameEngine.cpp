@@ -18,6 +18,7 @@ void GameEngine::removeGameObjectById(int id) {
 		safeRemoveFromVec(gameState.players, gameObject);
 		safeRemoveFromVec(gameState.walls, gameObject);
 		safeRemoveFromVec(gameState.balls, gameObject);
+		safeRemoveFromVec(gameState.goals, gameObject);
 		delete gameObject;
 
 		NetBuffer buffer(NetMessage::GAME_OBJ_DELETE);
@@ -37,13 +38,13 @@ void GameEngine::onPlayerDisconnected(Connection *c) {
 }
 
 void GameEngine::updateGameState(vector<PlayerInputs> & playerInputs) {
-	
 	movePlayers(playerInputs);
 	doPlayerCommands(playerInputs);
 
 	moveBalls();
 
 	doCollisionInteractions();
+	updateScore();
 	updateGameObjectsOnServerTick();
 	removeDeadObjects();
 
@@ -80,6 +81,11 @@ void GameEngine::addGameObject(Ball *ball) {
 void GameEngine::addGameObject(Wall *wall) {
 	addGenericGameObject(wall);
 	gameState.walls.push_back(wall);
+}
+
+void GameEngine::addGameObject(Goal *goal) {
+	addGenericGameObject(goal);
+	gameState.goals.push_back(goal);
 }
 
 vec3 GameEngine::movementInputToVector(int movementInput) {
@@ -168,7 +174,7 @@ void GameEngine::doCollisionInteractions() {
 	for (int i = 0; i < gameState.gameObjects.size(); i++) {
 		GameObject * gameObject1 = gameState.gameObjects[i];
 		if (!gameObject1) { continue; }
-		for (int j = i; j < gameState.gameObjects.size(); j++) {
+		for (int j = i + 1; j < gameState.gameObjects.size(); j++) {
 			GameObject * gameObject2 = gameState.gameObjects[j];
 			if (gameObject2 && gameObject1->collidesWith(gameObject2)) {
 				gameObject1->onCollision(gameObject2);
@@ -176,6 +182,23 @@ void GameEngine::doCollisionInteractions() {
 			}
 		}
 	}
+}
+
+void GameEngine::updateScore() {
+	int team1Score = 0;
+	int team2Score = 0;
+	for (Goal * goal : gameState.goals) {
+		if (goal->getTeam() == 0) {
+			team1Score += goal->getGoalsScored();
+		}
+		else {
+			team2Score += goal->getGoalsScored();
+		}
+	}
+
+	std::get<0>(gameState.score) = team1Score;
+	std::get<1>(gameState.score) = team2Score;
+	std::cout << team1Score << " " << team2Score << std::endl;
 }
 
 void GameEngine::removeDeadObjects() {

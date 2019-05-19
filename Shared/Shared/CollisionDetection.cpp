@@ -28,6 +28,8 @@ bool CollisionDetection::sphereInsideBox(BoundingSphere * sphere, BoundingBox * 
 	if (!sphereInsidePlane(sphere, box->bottom)) { return false; }
 	if (!sphereInsidePlane(sphere, box->left)) { return false; }
 	if (!sphereInsidePlane(sphere, box->right)) { return false; }
+
+	return true;
 }
 
 bool CollisionDetection::sphereIntersectsPlanePoint(BoundingSphere * sphere, Plane * p, vec3 * point, float * radius) {
@@ -38,7 +40,9 @@ bool CollisionDetection::sphereIntersectsPlanePoint(BoundingSphere * sphere, Pla
 	return fabs(d) <= sphere->getRadius();
 }
 
-bool CollisionDetection::sphereIntersectsBox(BoundingSphere * sphere, BoundingBox * box) {
+vector<Plane *> CollisionDetection::getIntersectingPlanes(BoundingSphere * sphere, BoundingBox * box) {
+	vector<Plane *> intersectingPlanes;
+
 	vec3 point;
 	float radius;
 
@@ -47,7 +51,7 @@ bool CollisionDetection::sphereIntersectsBox(BoundingSphere * sphere, BoundingBo
 			box->right->pointDistance(point) <= radius &&
 			box->front->pointDistance(point) <= radius &&
 			box->back->pointDistance(point) <= radius) {
-			return true;
+			intersectingPlanes.push_back(box->top);
 		}
 	}
 
@@ -56,7 +60,7 @@ bool CollisionDetection::sphereIntersectsBox(BoundingSphere * sphere, BoundingBo
 			box->right->pointDistance(point) <= radius &&
 			box->front->pointDistance(point) <= radius &&
 			box->back->pointDistance(point) <= radius) {
-			return true;
+			intersectingPlanes.push_back(box->bottom);
 		}
 	}
 
@@ -65,7 +69,7 @@ bool CollisionDetection::sphereIntersectsBox(BoundingSphere * sphere, BoundingBo
 			box->bottom->pointDistance(point) <= radius &&
 			box->front->pointDistance(point) <= radius &&
 			box->back->pointDistance(point) <= radius) {
-			return true;
+			intersectingPlanes.push_back(box->left);
 		}
 	}
 
@@ -74,7 +78,7 @@ bool CollisionDetection::sphereIntersectsBox(BoundingSphere * sphere, BoundingBo
 			box->bottom->pointDistance(point) <= radius &&
 			box->front->pointDistance(point) <= radius &&
 			box->back->pointDistance(point) <= radius) {
-			return true;
+			intersectingPlanes.push_back(box->right);
 		}
 	}
 
@@ -83,7 +87,7 @@ bool CollisionDetection::sphereIntersectsBox(BoundingSphere * sphere, BoundingBo
 			box->bottom->pointDistance(point) <= radius &&
 			box->left->pointDistance(point) <= radius &&
 			box->right->pointDistance(point) <= radius) {
-			return true;
+			intersectingPlanes.push_back(box->front);
 		}
 	}
 
@@ -92,11 +96,15 @@ bool CollisionDetection::sphereIntersectsBox(BoundingSphere * sphere, BoundingBo
 			box->bottom->pointDistance(point) <= radius &&
 			box->left->pointDistance(point) <= radius &&
 			box->right->pointDistance(point) <= radius) {
-			return true;
+			intersectingPlanes.push_back(box->back);
 		}
 	}
 
-	return false;
+	return intersectingPlanes;
+}
+
+bool CollisionDetection::sphereIntersectsBox(BoundingSphere * sphere, BoundingBox * box) {
+	return getIntersectingPlanes(sphere, box).size() > 0;
 }
 
 bool CollisionDetection::collisionCheck(BoundingBox * box, BoundingSphere * sphere) {

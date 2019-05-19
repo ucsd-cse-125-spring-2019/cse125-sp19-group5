@@ -86,16 +86,27 @@ bool GameObject::collidesWith(GameObject * gameObject) {
 }
 
 void GameObject::onCollision(GameObject * gameObject) {
-	std::cout << "not implemented" << std::endl;
+	// std::cout << "not implemented" << std::endl;
 }
 
-void GameObject::onCollision(Ball * ball) { std::cout << "not implemented" << std::endl; }
+void GameObject::onCollision(Ball * ball) { 
+	// std::cout << "not implemented" << std::endl; 
+}
 
-void GameObject::onCollision(Paddle * paddle) { std::cout << "not implemented" << std::endl; }
+void GameObject::onCollision(Goal * goal) {
+}
 
-void GameObject::onCollision(Player * player) { std::cout << "not implemented" << std::endl; }
+void GameObject::onCollision(Paddle * paddle) { 
+	// std::cout << "not implemented" << std::endl; 
+}
 
-void GameObject::onCollision(Wall * wall) { std::cout << "not implemented" << std::endl; }
+void GameObject::onCollision(Player * player) {
+	// std::cout << "not implemented" << std::endl;
+}
+
+void GameObject::onCollision(Wall * wall) { 
+	// std::cout << "not implemented" << std::endl; 
+}
 
 double GameObject::distanceFrom(GameObject * gameObject) {
 	return glm::distance(position, gameObject->getPosition());

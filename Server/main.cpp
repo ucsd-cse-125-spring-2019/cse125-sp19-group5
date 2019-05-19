@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
 	ball->setModel("Models/sphere.obj");
 	ball->setMaterial("Materials/brick.json");
 
-	auto wall1 = gameEngine.addGameObject<Wall>();
+	/*auto wall1 = gameEngine.addGameObject<Wall>();
 	wall1->setBoundingShape(new BoundingBox(vec3(0, 0, 100), vec3(1, 0, 0), 200, 20, 10));
 	wall1->setScale(vec3(200, 40, 10));
 	wall1->setPosition(vec3(0, 0, 100));
@@ -47,7 +47,23 @@ int main(int argc, char **argv) {
 	wall2->setScale(vec3(200, 40, 10));
 	wall2->setPosition(vec3(0, 0, -100));
 	wall2->setModel("Models/unit_cube.obj");
-	wall2->setMaterial("Materials/grass.json");
+	wall2->setMaterial("Materials/grass.json");*/
+
+	auto goal1 = gameEngine.addGameObject<Goal>();
+	goal1->setBoundingShape(new BoundingBox(vec3(0, 0, 100), vec3(1, 0, 0), 200, 20, 10));
+	goal1->setScale(vec3(200, 40, 10));
+	goal1->setPosition(vec3(0, 0, 100));
+	goal1->setTeam(0);
+	goal1->setModel("Models/unit_cube.obj");
+	goal1->setMaterial("Materials/brick.json");
+
+	auto goal2 = gameEngine.addGameObject<Goal>();
+	goal2->setBoundingShape(new BoundingBox(vec3(0, 0, -100), vec3(1, 0, 0), 200, 20, 10));
+	goal2->setScale(vec3(200, 40, 10));
+	goal2->setPosition(vec3(0, 0, -100));
+	goal2->setTeam(1);
+	goal2->setModel("Models/unit_cube.obj");
+	goal2->setMaterial("Materials/brick.json");
 
 	auto wall3 = gameEngine.addGameObject<Wall>();
 	wall3->setBoundingShape(new BoundingBox(vec3(100, 0, 0), vec3(0, 0, 1), 200, 20, 10));
@@ -62,6 +78,13 @@ int main(int argc, char **argv) {
 	wall4->setPosition(vec3(-100, 0, 0));
 	wall4->setModel("Models/unit_cube.obj");
 	wall4->setMaterial("Materials/grass.json");
+	
+	/*auto wall5 = gameEngine.addGameObject<Wall>();
+	wall5->setBoundingShape(new BoundingBox(vec3(-20, 0, 10), vec3(1, 0, 1), 50, 20, 5));
+	wall5->setScale(vec3(50, 40, 5));
+	wall5->setPosition(vec3(-20, 0, 10));
+	wall5->setModel("Models/unit_cube.obj");
+	wall5->setMaterial("Materials/grass.json");*/
 
 
 
