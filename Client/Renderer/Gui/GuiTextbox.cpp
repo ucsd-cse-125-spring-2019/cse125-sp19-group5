@@ -74,14 +74,13 @@ void GuiTextbox::updateCursorPos() {
 		auto width = widthPixels / Draw::screenWidth;
 		if (curX < spaceLeft) {
 			drawStart++;
-		}
-		if (curX <= spaceRight) {
+		} else if (curX <= spaceRight) {
 			drawEnd++;
 		}
 		curX += width;
 	}
 
-	drawText = text.substr(drawStart, drawEnd + 2);
+	drawText = text.substr(drawStart, drawEnd);
 	cursorX = clampedCursorX;
 }
 
@@ -90,12 +89,35 @@ int GuiTextbox::getDrawStartIndex() {
 }
 
 bool GuiTextbox::dispatchKey(Gui::Key key, Gui::KeyState state) {
+	// Only capture key inputs when focused.
 	if (!isFocused()) { return GuiText::dispatchKey(key, state);  }
 
-	if (key == Gui::Key::BACKSPACE && state != Gui::KeyState::RELEASED) {
-		backspace();
+	// Ignore key released.
+	if (state == Gui::KeyState::RELEASED) {
+		return true;
 	}
 
+	switch (key) {
+		// Delete current character when pressing backspace.
+		case Gui::Key::BACKSPACE:
+			backspace();
+			break;
+		// Move cursor with left, right arrows.
+		case Gui::Key::LEFT:
+			if (cursorIndex > 0) {
+				setCursorIndex(cursorIndex - 1);
+			}
+			break;
+		case Gui::Key::RIGHT:
+			if (cursorIndex < text.size()) {
+				setCursorIndex(cursorIndex + 1);
+			}
+			break;
+		// Move to end when pressing end key.
+		case Gui::Key::END:
+			setCursorIndex();
+			break;
+	}
 	return true;
 }
 

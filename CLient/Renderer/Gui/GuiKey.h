@@ -9,7 +9,7 @@ namespace Gui {
 		ENTER = 257,
 		TAB = 258,
 		LEFT = 263,
-		RIGHT = 252,
+		RIGHT = 262,
 		UP = 265,
 		DOWN = 264,
 		DEL = 261,
