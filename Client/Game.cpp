@@ -247,10 +247,6 @@ void Game::drawScene(Shader &shader, DrawPass pass) const {
 }
 
 void Game::drawUI() const {
-	Draw::rect(-1.0f, -1.0f, 0.5f, 0.5f, shadowMap->getTexture(0));
-	Draw::rect(-0.5f, -1.0f, 0.5f, 0.5f, shadowMap->getTexture(1));
-	Draw::rect(-0.0f, -1.0f, 0.5f, 0.5f, shadowMap->getTexture(2));
-
 	textShader->use();
 	textRenderer->renderText();
 }

@@ -152,9 +152,6 @@ void ShadowMap::setupLightTransform(int i, const DirectionalLight &light) {
 	}
 
 	auto proj = glm::ortho(mins.x, maxs.x, mins.y, maxs.y, mins.z - 20.f, maxs.z + 20.0f);
-	if (i == 0) {
-		std::cout << mins.x << " " << maxs.x << " " << mins.y << " " << maxs.y << " " << mins.z << " " << maxs.z << std::endl;
-	}
 	toLightSpace[i] = proj * view;
 }
 

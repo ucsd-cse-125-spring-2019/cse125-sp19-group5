@@ -34,7 +34,7 @@ class ShadowMap {
 	public:
 	static float cascadeZCutoffs[SHADOW_NUM_CASCADES + 1];
 
-	ShadowMap(Camera *camera, int width = 4096, int height = 4096);
+	ShadowMap(Camera *camera, int width = 1024, int height = 1024);
 
 	// Does some OpenGL setup before rendering the scene for the shadow pass.
 	void prePass(int i);
