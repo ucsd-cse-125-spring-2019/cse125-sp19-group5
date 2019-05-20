@@ -22,6 +22,11 @@ void Ball::updateOnServerTick() {
 			setVelocity(updatedVelocity);
 		}
 	}
+	this->goalScored = false;
+}
+
+bool Ball::getGoalScored() {
+	return this->goalScored;
 }
 
 
@@ -32,8 +37,11 @@ void Ball::onCollision(GameObject * gameObject) {
 void Ball::onCollision(Ball * ball) { }
 
 void Ball::onCollision(Goal * goal) {
+	std::cout << to_string() << std::endl;
+	std::cout << glm::to_string(getVelocity()) << std::endl;
 	setPosition(vec3(0, 4, 0));
 	setVelocity(vec3(0));
+	this->goalScored = true;
 }
 
 void Ball::onCollision(Paddle * paddle) {

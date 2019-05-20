@@ -21,11 +21,11 @@ int main(int argc, char **argv) {
 
 	vector<PlayerInputs> playerInputs;
 
-	auto ground = gameEngine.addGameObject<Wall>();
-	ground->setBoundingShape(new BoundingBox(vec3(0, -1, 0), vec3(1, 0, 0), 1, 1, 100));
-	ground->setPosition(vec3(0, -1, 0));
-	ground->setModel("Models/ground.obj");
-	ground->setMaterial("Materials/grass.json");
+	//auto ground = gameEngine.addGameObject<Wall>();
+	//ground->setBoundingShape(new BoundingBox(vec3(0, -1, 0), vec3(1, 0, 0), 1, 1, 100));
+	//ground->setPosition(vec3(0, -1, 0));
+	//ground->setModel("Models/ground.obj");
+	//ground->setMaterial("Materials/grass.json");
 
 	auto ball = gameEngine.addGameObject<Ball>();
 	ball->setBoundingShape(new BoundingSphere(origin, 4));
@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
 	ball->setModel("Models/sphere.obj");
 	ball->setMaterial("Materials/brick.json");
 
-	/*auto wall1 = gameEngine.addGameObject<Wall>();
+	auto wall1 = gameEngine.addGameObject<Wall>();
 	wall1->setBoundingShape(new BoundingBox(vec3(0, 0, 100), vec3(1, 0, 0), 200, 20, 10));
 	wall1->setScale(vec3(200, 40, 10));
 	wall1->setPosition(vec3(0, 0, 100));
@@ -47,9 +47,9 @@ int main(int argc, char **argv) {
 	wall2->setScale(vec3(200, 40, 10));
 	wall2->setPosition(vec3(0, 0, -100));
 	wall2->setModel("Models/unit_cube.obj");
-	wall2->setMaterial("Materials/grass.json");*/
+	wall2->setMaterial("Materials/grass.json");
 
-	auto goal1 = gameEngine.addGameObject<Goal>();
+	/*auto goal1 = gameEngine.addGameObject<Goal>();
 	goal1->setBoundingShape(new BoundingBox(vec3(0, 0, 100), vec3(1, 0, 0), 200, 20, 10));
 	goal1->setScale(vec3(200, 40, 10));
 	goal1->setPosition(vec3(0, 0, 100));
@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
 	goal2->setPosition(vec3(0, 0, -100));
 	goal2->setTeam(1);
 	goal2->setModel("Models/unit_cube.obj");
-	goal2->setMaterial("Materials/brick.json");
+	goal2->setMaterial("Materials/brick.json");*/
 
 	auto wall3 = gameEngine.addGameObject<Wall>();
 	wall3->setBoundingShape(new BoundingBox(vec3(100, 0, 0), vec3(0, 0, 1), 200, 20, 10));

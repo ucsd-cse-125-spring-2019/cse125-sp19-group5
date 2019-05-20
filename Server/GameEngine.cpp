@@ -43,7 +43,7 @@ void GameEngine::updateGameState(vector<PlayerInputs> & playerInputs) {
 
 	moveBalls();
 
-	doCollisionInteractions();
+	// doCollisionInteractions();
 	updateScore();
 	updateGameObjectsOnServerTick();
 	removeDeadObjects();
@@ -139,9 +139,45 @@ void GameEngine::movePlayers(vector<PlayerInputs> & playerInputs) {
 }
 
 void GameEngine::moveBalls() {
-	for (Ball *ball : gameState.balls) {
-		ball->move(ball->getVelocity());
+	vector<float> ballUnitMoves;
+
+	for (Ball * ball : gameState.balls) {
+		if (ball) {
+			ballUnitMoves.push_back(glm::length(ball->getVelocity()));
+		}
+		else {
+			ballUnitMoves.push_back(0.0f);
+		}
 	}
+	
+	do {
+		// move all balls the length of their diameter then check collisions
+		for (int i = 0; i < gameState.balls.size(); i++) {
+			Ball * ball = gameState.balls[i];
+			if (ball && ballUnitMoves[i] > 0.0f) {
+				if (!ball->getGoalScored()) {
+					float ballDiameter = ball->getBoundingSphere()->getRadius() * 2.0f;
+					if (ballUnitMoves[i] > ballDiameter) {
+						ball->move(glm::normalize(ball->getVelocity()) * ballDiameter);
+						ballUnitMoves[i] -= ballDiameter;
+					}
+					else {
+						ball->move(glm::normalize(ball->getVelocity()) * ballUnitMoves[i]);
+						ballUnitMoves[i] = 0.0f;
+					}
+				}
+				else {
+					ballUnitMoves[i] = 0.0f;
+				}
+			}
+			else {
+				continue;
+			}
+		}
+
+		doCollisionInteractions();
+
+	} while (*std::max_element(ballUnitMoves.begin(), ballUnitMoves.end()) > 0.0f);
 }
 
 void GameEngine::doPlayerCommands(vector<PlayerInputs> & playerInputs) {
@@ -196,9 +232,12 @@ void GameEngine::updateScore() {
 		}
 	}
 
+	if (std::get<0>(gameState.score) != team1Score || std::get<1>(gameState.score) != team2Score) {
+		std::cout << team1Score << " " << team2Score << std::endl;
+	}
+
 	std::get<0>(gameState.score) = team1Score;
 	std::get<1>(gameState.score) = team2Score;
-	std::cout << team1Score << " " << team2Score << std::endl;
 }
 
 void GameEngine::removeDeadObjects() {
