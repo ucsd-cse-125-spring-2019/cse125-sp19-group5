@@ -10,9 +10,7 @@
 #include "Renderer/Draw.h"
 #include <Shared/CommonStructs.h>
 #include "Renderer/Material.h"
-#include "Renderer/Gui/Gui.h"
-#include "Renderer/Gui/GuiRect.h"
-#include "Renderer/Gui/GuiTextbox.h"
+#include "Game/Gui/GuiConnectMenu.h"
 
 void Game::onGameObjectCreated(Connection *c, NetBuffer &buffer) {
 	auto gameObjectType = buffer.read<GAMEOBJECT_TYPES>();
@@ -93,29 +91,9 @@ Game::Game(): gameObjects(1024, nullptr) {
 	Input::mouseLock = false;
 	Input::setMouseVisible(true);
 
-	auto rect = Gui::create<GuiRect>();
-	rect->setColor(vec4(0.2f, 0.2f, 0.2f, 1.0f));
-	rect->setPosition(vec2(0.0f, 0.0f));
-	rect->setSize(vec2(1.0f, 1.0f));
-
-	auto instructions = Gui::create<GuiText>(rect);
-	instructions->setPosition(vec2(0.0f, 0.7f));
-	instructions->setAlignment(TextAlign::CENTER);
-	instructions->setSize(vec2(1.0f, 0.1f));
-	instructions->setText("Connect to:");
-	instructions->setFont("Arial");
-
-	auto text = Gui::create<GuiTextbox>(rect);
-	text->setBgColor(vec4(0.0f, 0.0f, 0.0f, 1.0f));
-	text->setPosition(vec2(0.2f, 0.3f));
-	text->setFont("Arial");
-	text->setSize(vec2(0.6f, 0.25f));
-	text->addEnterCallback([text](const std::string &textStr) {
-		if (textStr.empty()) { return; }
-		std::cout << textStr << std::endl;
-		text->setText("");
-	});
-
+	// TODO (bhang): Integrate this with connecting.
+	// Gui::create<GuiConnectMenu>();
+	
 	shadowMap = new ShadowMap();
 	lightShader = new Shader("Shaders/light");
 	camera = new Camera(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f), 70, 1.0f);

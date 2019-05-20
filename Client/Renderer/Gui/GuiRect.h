@@ -9,6 +9,6 @@ class GuiRect : public GuiElement {
 	void setColor(const vec4 &newColor);
 	const vec4 &getColor() const;
 
-	private:
+	protected:
 	vec4 color = vec4(1.0f);
 };

@@ -37,6 +37,12 @@
     <Filter Include="Source Files\Sound">
       <UniqueIdentifier>{f8b22b17-6e82-4b26-91ff-2607f444dcfb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Game\Gui">
+      <UniqueIdentifier>{9c52df74-41ee-416e-96c5-7c977cf13d31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Gui">
+      <UniqueIdentifier>{7a60f599-0a66-4f9c-9302-45bcc1e6a500}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -145,6 +151,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Renderer\Gui\GuiFocusable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Gui\GuiConnectMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\Gui\GuiImage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -258,6 +270,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Renderer\Gui\GuiKey.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Gui\GuiConnectMenu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Gui\GuiImage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
