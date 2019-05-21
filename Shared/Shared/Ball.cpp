@@ -36,12 +36,7 @@ void Ball::onCollision(GameObject * gameObject) {
 }
 
 void Ball::onCollision(Ball * ball) { 
-	if (collidesWith(ball)) {
-		// TODO: consider which side ball is coming from -- velocity of ball when repositioning
-		vec3 midPoint = (getPosition() + ball->getPosition()) / 2.0f;
-		setPosition(midPoint + (glm::normalize(midPoint - getPosition()) * (getBoundingSphere()->getRadius() * 1.01f)));
-		ball->setPosition(midPoint + (glm::normalize(midPoint - ball->getPosition()) * (ball->getBoundingSphere()->getRadius() * 1.01f)));
-	
+	if (collidesWith(ball)) {	
 		vec3 newVelocity = getVelocity();
 		newVelocity += glm::proj(ball->getVelocity(), ball->getPosition() - getPosition());
 		newVelocity -= glm::proj(getVelocity(), getPosition() - ball->getPosition());
@@ -52,12 +47,16 @@ void Ball::onCollision(Ball * ball) {
 
 		setVelocity(newVelocity);
 		ball->setVelocity(ballNewVelocity);
+
+		float intersectDist = getBoundingSphere()->getRadius() + ball->getBoundingSphere()->getRadius() - distanceFrom(ball);
+		while (collidesWith(ball)) {
+			move(glm::normalize(newVelocity) * (intersectDist / 2.0f));
+			ball->move(glm::normalize(ballNewVelocity) * (intersectDist / 2.0f));
+		}
 	}	
 }
 
 void Ball::onCollision(Goal * goal) {
-	std::cout << to_string() << std::endl;
-	std::cout << glm::to_string(getVelocity()) << std::endl;
 	setPosition(vec3(0, 4, 0));
 	setVelocity(vec3(0));
 	this->goalScored = true;

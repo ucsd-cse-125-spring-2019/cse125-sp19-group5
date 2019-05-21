@@ -138,48 +138,56 @@ void GameEngine::movePlayers(vector<PlayerInputs> & playerInputs) {
 	}
 }
 
+void GameEngine::incrementalMoveBall(Ball * ball, float dist) {
+	float diameter = ball->getBoundingSphere()->getRadius() * 2.0f;
+
+	while (dist > 0.0f && !ball->getGoalScored()) {
+		if (dist > diameter) {
+			ball->move(glm::normalize(ball->getVelocity()) * diameter);
+			dist -= diameter;
+		}
+		else {
+			ball->move(glm::normalize(ball->getVelocity()) * dist);
+			dist = 0.0f;
+		}
+
+		// check to see if ball collides with goal or wall
+		for (Goal * goal : gameState.goals) {
+			if (ball->collidesWith(goal)) {
+				ball->onCollision(goal);
+				goal->onCollision(ball);
+			}
+		}
+
+		for (Wall * wall : gameState.walls) {
+			if (ball->collidesWith(wall)) {
+				ball->onCollision(wall);
+				wall->onCollision(ball);
+			}
+		}
+	}
+}
+
 void GameEngine::moveBalls() {
 	// TODO: manage ballUnitMoves in ball object so balls can take each other's velocity
 	// TODO: account for balls with 0 velocity
-	vector<float> ballUnitMoves;
+	// TODO: move balls in increments based on their velocity
+	int moves_per_tick = 5;
 
-	for (Ball * ball : gameState.balls) {
+	doCollisionInteractions();
+
+	// move all balls their incremental move while checking for wall collisions
+	for (int i = 0; i < gameState.balls.size(); i++) {
+		Ball * ball = gameState.balls[i];
 		if (ball) {
-			ballUnitMoves.push_back(glm::length(ball->getVelocity()));
-		}
-		else {
-			ballUnitMoves.push_back(0.0f);
-		}
-	}
-	
-	do {
-		// move all balls the length of their diameter then check collisions
-		for (int i = 0; i < gameState.balls.size(); i++) {
-			Ball * ball = gameState.balls[i];
-			if (ball && ballUnitMoves[i] > 0.0f) {
-				if (!ball->getGoalScored()) {
-					float ballDiameter = ball->getBoundingSphere()->getRadius() * 2.0f;
-					if (ballUnitMoves[i] > ballDiameter) {
-						ball->move(glm::normalize(ball->getVelocity()) * ballDiameter);
-						ballUnitMoves[i] -= ballDiameter;
-					}
-					else {
-						ball->move(glm::normalize(ball->getVelocity()) * ballUnitMoves[i]);
-						ballUnitMoves[i] = 0.0f;
-					}
-				}
-				else {
-					ballUnitMoves[i] = 0.0f;
-				}
-			}
-			else {
-				continue;
+			for (int j = 0; j < moves_per_tick; j++) {
+				float moveDist = glm::length(ball->getVelocity()) / moves_per_tick;
+				incrementalMoveBall(ball, moveDist);
 			}
 		}
-
+		// check for other collisions at end
 		doCollisionInteractions();
-
-	} while (*std::max_element(ballUnitMoves.begin(), ballUnitMoves.end()) > 0.0f);
+	}
 }
 
 void GameEngine::doPlayerCommands(vector<PlayerInputs> & playerInputs) {

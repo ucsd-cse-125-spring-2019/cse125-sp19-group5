@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
 	ball2->setPosition(vec3(-5, 4, 0));
 	ball2->setVelocity(vec3(0, 0, 0));
 	ball2->setModel("Models/sphere.obj");
-	ball2->setMaterial("Materials/brick.json");
+	ball2->setMaterial("Materials/grass.json");
 
 	/*auto wall1 = gameEngine.addGameObject<Wall>();
 	wall1->setBoundingShape(new BoundingBox(vec3(0, 0, 100), vec3(1, 0, 0), 200, 20, 10));

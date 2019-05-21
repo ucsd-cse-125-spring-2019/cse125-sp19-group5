@@ -39,7 +39,10 @@ public:
 
 	vec3 movementInputToVector(int movementInput);
 	void movePlayers(vector<PlayerInputs> & playerInputs);
+
+	void incrementalMoveBall(Ball * ball, float dist);
 	void moveBalls();
+
 	void doPlayerCommands(vector<PlayerInputs> & playerInputs);
 
 	void doCollisionInteractions();
