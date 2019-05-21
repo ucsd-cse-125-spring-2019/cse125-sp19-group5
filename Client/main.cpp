@@ -5,7 +5,9 @@
 #include "Networking/Client.h"
 #include "Game.h"
 #include "Renderer/Camera.h"
+#include "Renderer/Gui/Gui.h"
 #include "Input.h"
+#include "Renderer/Draw.h"
 
 using std::string;
 using std::cout;
@@ -58,6 +60,7 @@ static void onResize(GLFWwindow *window, int width, int height) {
 	SCREEN_HEIGHT = height;
 	SCREEN_RESHAPED = true;
 
+	Draw::updateScreenDimensions(width, height);
 	glViewport(0, 0, width, height);
 }
 
@@ -87,6 +90,11 @@ int main(int argc, char **argv) {
 		std::cerr << "Failed to create window!" << std::endl;
 		return -1;
 	}
+
+	Draw::updateScreenDimensions(
+		(float)SCREEN_WIDTH,
+		(float)SCREEN_HEIGHT
+	);
 
 	glfwMakeContextCurrent(window);
 
@@ -120,6 +128,8 @@ int main(int argc, char **argv) {
 
 	Input::init(window);
 	Network::init("127.0.0.1", 1234);
+
+	Gui::setupInputListeners(window);
 
 	Game game;
 	game.getCamera()->setAspect((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT);
@@ -228,8 +238,9 @@ int main(int argc, char **argv) {
 				break;
 			}
 
-			game.update(dt);
-			game.draw(dt);
+		game.update(dt);
+		game.draw(dt);
+		Gui::update(dt);
 
 			glfwSwapBuffers(window);
 

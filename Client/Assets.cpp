@@ -2,6 +2,7 @@
 
 unordered_map<string, Texture2d*> Assets::textures;
 unordered_map<string, ModelData*> Assets::models;
+unordered_map<string, Shader*> Assets::shaders;
 
 ModelData *Assets::getModelData(const string &path) {
 	if (models.find(path) == models.end()) {
@@ -15,6 +16,13 @@ Texture2d *Assets::getTexture2d(const string &path) {
 		textures[path] = new Texture2d(path);
 	}
 	return textures[path];
+}
+
+Shader *Assets::getShader(const string &path) {
+	if (shaders.find(path) == shaders.end()) {
+		shaders[path] = new Shader(path);
+	}
+	return shaders[path];
 }
 
 void Assets::cleanUp() {
