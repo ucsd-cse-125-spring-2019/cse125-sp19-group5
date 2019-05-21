@@ -77,10 +77,6 @@ void Game::onGameObjectMaterialSet(Connection *c, NetBuffer &buffer) {
 	}
 }
 
-<<<<<<< HEAD
-
-Game::Game() : gameObjects(1024, nullptr) {
-=======
 int Game::getScreenWidth() const {
 	return screenWidth;
 }
@@ -90,7 +86,6 @@ int Game::getScreenHeight() const {
 }
 
 Game::Game(): gameObjects(1024, nullptr) {
->>>>>>> master
 	Draw::init();
 
 	Input::mouseLock = false;
