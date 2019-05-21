@@ -86,8 +86,14 @@ int main(int argc, char **argv) {
 	Network::init("127.0.0.1", 1234);
 
 	Game game;
+
+
 	game.getCamera()->setAspect((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT);
 	game.updateScreenDimensions(SCREEN_WIDTH, SCREEN_HEIGHT);
+    GLenum err;
+    while ((err = glGetError()) != GL_NO_ERROR) {
+        std::cerr << "OpenGL error: " << err << endl;
+    }
 
 	auto lastTime = (float)glfwGetTime();
 

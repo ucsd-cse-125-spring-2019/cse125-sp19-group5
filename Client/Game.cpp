@@ -10,6 +10,11 @@
 #include "Renderer/Draw.h"
 #include <Shared/CommonStructs.h>
 #include "Renderer/Material.h"
+#include "Renderer/ParticleSystem.h"
+#include "Assets.h"
+
+ParticleSystem *ps;
+Shader *psShader;
 
 void Game::onGameObjectCreated(Connection *c, NetBuffer &buffer) {
 	auto gameObjectType = buffer.read<GAMEOBJECT_TYPES>();
@@ -78,6 +83,9 @@ void Game::onGameObjectMaterialSet(Connection *c, NetBuffer &buffer) {
 
 Game::Game(): gameObjects(1024, nullptr) {
 	Draw::init();
+
+	ps = new ParticleSystem();
+	psShader = new Shader("Shaders/particle");
 
 	shadowMap = new ShadowMap();
 	lightShader = new Shader("Shaders/light");
@@ -150,6 +158,7 @@ Game::~Game() {
 	delete soundtrack;
 	delete spatialTest1;
 	delete spatialTest2;
+	delete ps;
 
 	for (auto gameObject : gameObjects) {
 		if (gameObject) {
@@ -239,6 +248,8 @@ void Game::update(float dt) {
 		auto offset = camera->getForward() * -10.0f + vec3(0, 2, 0);
 		camera->setPosition(playerObj->getPosition() + offset);
 	}
+
+	ps->update(dt);
 }
 
 void Game::drawScene(Shader &shader, DrawPass pass) const {
@@ -272,6 +283,7 @@ void Game::draw(float dt) const {
 
 	sun->bind(*lightShader);
 	drawScene(*lightShader, DrawPass::LIGHTING);
+	ps->draw(*psShader, camera);
 	skybox->draw();
 
 	glDisable(GL_DEPTH_TEST);
