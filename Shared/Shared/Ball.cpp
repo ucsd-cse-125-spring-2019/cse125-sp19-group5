@@ -85,8 +85,10 @@ void Ball::onCollision(Wall * wall) {
 		}
 	}
 
-
+	// move sphere so it no longer intersects with plane
 	if (closestPlane) {
+		float planeDistance = abs(closestPlane->pointDistance(getPosition()) - (1.01f * getBoundingSphere()->getRadius()));
+		move(glm::normalize(closestPlane->getNormal()) * planeDistance);
 		setVelocity(glm::reflect(getVelocity(), glm::normalize(closestPlane->getNormal())));
 	}
 }
