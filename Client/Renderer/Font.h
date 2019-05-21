@@ -20,8 +20,10 @@ public:
 	Font(const std::string &filepath);
 	~Font();
 
-	void renderText(Shader &shader, const int screenWidth, const int screenHeight, const std::string &text, GLfloat x, GLfloat y, GLfloat scale, const glm::vec3 &color);
+	void renderText(Shader &shader, const std::string &text, GLfloat x, GLfloat y, GLfloat scale, const glm::vec3 &color);
 
+	// Returns the size of a given string rendered in this font, in pixels.
+	vec2 getSize(const std::string &text, float scale);
 private:
 	std::unordered_map<GLchar, Character> characters;
 	GLuint VAO;
