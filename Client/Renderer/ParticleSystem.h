@@ -41,6 +41,7 @@ private:
 	vector<Particle *> particles;
 	float creationTimer;          // Used to calculate how many to spawn
 
+	GLuint VAO;
 	GLuint particleVertexBuffer;
 	GLuint particlePositionBuffer;
 	GLuint particleColorBuffer;

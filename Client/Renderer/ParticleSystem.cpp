@@ -22,7 +22,8 @@ ParticleSystem::ParticleSystem(const unsigned int maxParticles, const float part
 	, particleRadius(1.0f)
 	, collElasticity(0.6f)
 	, collFriction(0.2f)
-	, particleColor(vector<vec4>{ vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(1.0f) }) {
+	, particleColor(vector<vec4>{ vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(1.0f) })
+	, VAO(0) {
 
 	for (unsigned int i = 0; i < maxParticles; i++)
 	{
@@ -35,9 +36,16 @@ ParticleSystem::ParticleSystem(const unsigned int maxParticles, const float part
 
 ParticleSystem::~ParticleSystem() {
 	for (Particle *p : particles) delete p;
+
+	if (VAO) {
+		glDeleteVertexArrays(1, &VAO);
+	}
 }
 
 void ParticleSystem::setupBuffers() {
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+
 	particleVertexBufferData = {
 		-0.5f, -0.5f, 0.0f,
 		0.5f, -0.5f, 0.0f,
@@ -57,7 +65,32 @@ void ParticleSystem::setupBuffers() {
 	glBindBuffer(GL_ARRAY_BUFFER, particleColorBuffer);
 	glBufferData(GL_ARRAY_BUFFER, maxParticles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
 
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, particleVertexBuffer);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, particlePositionBuffer);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+	glEnableVertexAttribArray(2);
+	glBindBuffer(GL_ARRAY_BUFFER, particleColorBuffer);
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_TRUE, 0, (void*)0);
+
+	// These functions are specific to glDrawArrays*Instanced*.
+	// The first parameter is the attribute buffer we're talking about.
+	// The second parameter is the "rate at which generic vertex attributes advance when rendering multiple instances"
+	glVertexAttribDivisor(0, 0); // particles vertices : always reuse the same 4 vertices -> 0
+	glVertexAttribDivisor(1, 1); // positions : one per quad (its center) -> 1
+	glVertexAttribDivisor(2, 1); // color : one per quad -> 1
+
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
+
 }
 
 void ParticleSystem::update(float dt) {
@@ -189,37 +222,9 @@ void ParticleSystem::draw(Shader &shader, const Camera *camera) {
 	shader.setUniform("modelViewProjMtx", mvpMtx);
 
 	// Set up state
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, particleVertexBuffer);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, particlePositionBuffer);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-	glEnableVertexAttribArray(2);
-	glBindBuffer(GL_ARRAY_BUFFER, particleColorBuffer);
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_TRUE, 0, (void*)0);
-
-	// These functions are specific to glDrawArrays*Instanced*.
-	// The first parameter is the attribute buffer we're talking about.
-	// The second parameter is the "rate at which generic vertex attributes advance when rendering multiple instances"
-	glVertexAttribDivisor(0, 0); // particles vertices : always reuse the same 4 vertices -> 0
-	glVertexAttribDivisor(1, 1); // positions : one per quad (its center) -> 1
-	glVertexAttribDivisor(2, 1); // color : one per quad -> 1
-
-	// Draw the particules !
-	// This draws many times a small triangle_strip (which looks like a quad).
-	// This is equivalent to :
-	// for(i in ParticlesCount) : glDrawArrays(GL_TRIANGLE_STRIP, 0, 4),
-	// but faster.
+	glBindVertexArray(VAO);
 	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, numParticles);
-
-	// Clean up state
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(2);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 
 	glUseProgram(0);
 }
