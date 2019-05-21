@@ -30,10 +30,18 @@ int main(int argc, char **argv) {
 	auto ball = gameEngine.addGameObject<Ball>();
 	ball->setBoundingShape(new BoundingSphere(origin, 4));
 	ball->setScale(vec3(1.0f/4.0f));
-	ball->setPosition(vec3(0, 4, 0));
+	ball->setPosition(vec3(5, 4, 0));
 	ball->setVelocity(vec3(0, 0, 0));
 	ball->setModel("Models/sphere.obj");
 	ball->setMaterial("Materials/brick.json");
+
+	auto ball2 = gameEngine.addGameObject<Ball>();
+	ball2->setBoundingShape(new BoundingSphere(origin, 4));
+	ball2->setScale(vec3(1.0f / 4.0f));
+	ball2->setPosition(vec3(-5, 4, 0));
+	ball2->setVelocity(vec3(0, 0, 0));
+	ball2->setModel("Models/sphere.obj");
+	ball2->setMaterial("Materials/brick.json");
 
 	/*auto wall1 = gameEngine.addGameObject<Wall>();
 	wall1->setBoundingShape(new BoundingBox(vec3(0, 0, 100), vec3(1, 0, 0), 200, 20, 10));

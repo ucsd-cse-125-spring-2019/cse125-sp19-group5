@@ -4,6 +4,7 @@
 #include <math.h>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/vector_angle.hpp>
+#include <glm/gtx/projection.hpp>
 
 
 GAMEOBJECT_TYPES Ball::getGameObjectType() const {
@@ -34,7 +35,25 @@ void Ball::onCollision(GameObject * gameObject) {
 	gameObject->onCollision(this);
 }
 
-void Ball::onCollision(Ball * ball) { }
+void Ball::onCollision(Ball * ball) { 
+	if (collidesWith(ball)) {
+		// TODO: consider which side ball is coming from -- velocity of ball when repositioning
+		vec3 midPoint = (getPosition() + ball->getPosition()) / 2.0f;
+		setPosition(midPoint + (glm::normalize(midPoint - getPosition()) * (getBoundingSphere()->getRadius() * 1.01f)));
+		ball->setPosition(midPoint + (glm::normalize(midPoint - ball->getPosition()) * (ball->getBoundingSphere()->getRadius() * 1.01f)));
+	
+		vec3 newVelocity = getVelocity();
+		newVelocity += glm::proj(ball->getVelocity(), ball->getPosition() - getPosition());
+		newVelocity -= glm::proj(getVelocity(), getPosition() - ball->getPosition());
+
+		vec3 ballNewVelocity = ball->getVelocity();
+		ballNewVelocity += glm::proj(getVelocity(), ball->getPosition() - getPosition());
+		ballNewVelocity -= glm::proj(ball->getVelocity(), getPosition() - ball->getPosition());
+
+		setVelocity(newVelocity);
+		ball->setVelocity(ballNewVelocity);
+	}	
+}
 
 void Ball::onCollision(Goal * goal) {
 	std::cout << to_string() << std::endl;

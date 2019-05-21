@@ -139,6 +139,8 @@ void GameEngine::movePlayers(vector<PlayerInputs> & playerInputs) {
 }
 
 void GameEngine::moveBalls() {
+	// TODO: manage ballUnitMoves in ball object so balls can take each other's velocity
+	// TODO: account for balls with 0 velocity
 	vector<float> ballUnitMoves;
 
 	for (Ball * ball : gameState.balls) {
