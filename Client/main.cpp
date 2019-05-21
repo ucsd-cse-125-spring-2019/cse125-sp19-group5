@@ -22,6 +22,14 @@ auto SCREEN_RESHAPED = false;
 /*
  * This is a function stub
  */
+static void updateMenuPrompt(int playerId, MenuOptions currentMenuOptions)
+{
+	cout << "UPDATED MENU PROMPT APPEARED" << endl;
+}
+
+/*
+ * This is a function stub
+ */
 static MenuOptions menuPrompt(int playerId, MenuOptions currentMenuOptions) {
 	int selection = 0;
 	while (0 >= selection || selection >= 5)
@@ -70,7 +78,7 @@ int main(int argc, char **argv) {
 		return -1;
 	}
 
-	int selectionComplete = 0;
+	bool selectionComplete = false;
 
 	ConfigSettings::get().getValue("ScreenWidth", SCREEN_WIDTH);
 	ConfigSettings::get().getValue("ScreenHeight", SCREEN_HEIGHT);
@@ -144,18 +152,21 @@ int main(int argc, char **argv) {
 	 * the menu options available before the game session has started.
 	 * Currently there is only team selection support
 	 */
-	auto handleMenuInput = [&](Connection *server, NetBuffer &incomingMessage)
+	auto handleMenuOptions = [&](Connection *server, NetBuffer &incomingMessage)
 	{
-		cout << "New Input Message...." << endl;
-		//read in the current menu options from the server
+		//read in the current menu options from the server 
 		MenuOptions currentMenuOptions = incomingMessage.read<MenuOptions>();
 
-		//else display these options and allow the client to make a selection
-		game.setClientMenuOptions(menuPrompt(game.getPlayerId(), currentMenuOptions));
+		//update the client to match the server
+		game.setCurrentMenuOptions(currentMenuOptions);
+
+		//display these options and allow the client to make a selection
+		MenuOptions clientMenuOptions = menuPrompt(game.getPlayerId(), currentMenuOptions);
+
+		game.setClientMenuOptions(clientMenuOptions);
+		//send the client's selections to the server for confirmation
 		NetBuffer menuInput(NetMessage::MENU_INPUT);
 		menuInput.write<MenuOptions>(game.getClientMenuOptions());
-
-		//send the client's selections to the server for confirmation
 		server->send(menuInput);
 	};
 
@@ -163,13 +174,43 @@ int main(int argc, char **argv) {
 	 * This is the callback function that is responsible for handling confirmation
 	 * from the server about the menu options selected by a client
 	 */
-	auto handleMenuConfirmed = [&](Connection *server, NetBuffer &serverMenuOptions)
+	auto handleMenuConfirmed = [&](Connection *server, NetBuffer &serverMessage)
 	{
 		cout << "server sent confirmation" << endl;
-		MenuOptions currentMenuOptions = serverMenuOptions.read<MenuOptions>();
+		int confirmedID = serverMessage.read<int>();
+		MenuOptions currentMenuOptions = serverMessage.read<MenuOptions>();
 
-
+		//update the client to match the server
 		game.setCurrentMenuOptions(currentMenuOptions);
+
+		if (confirmedID == game.getPlayerId())
+		{
+			//This client was confirmed
+			clearMenuPrompt();
+			
+			//Start the game
+			selectionComplete = true;
+		}
+		else //Some other client was confirmed
+		{
+			if (!selectionComplete) //this client has not yet been confirmed
+			{
+
+				//display new options and allow the client to make a selection
+				//MenuOptions selectedOptions = 
+				updateMenuPrompt(game.getPlayerId(), currentMenuOptions);
+
+				//save these options
+				//game.setClientMenuOptions(selectedOptions);
+
+				//send the client's selections to the server for confirmation
+				//NetBuffer menuInput(NetMessage::MENU_INPUT);
+				//menuInput.write<MenuOptions>(game.getClientMenuOptions());
+
+				//server->send(menuInput);
+			}
+		}
+
 
 		// Now we check if the Server has confirmed our selection or if it was 
 		// confirming for another client instead
@@ -179,43 +220,18 @@ int main(int argc, char **argv) {
 			{
 				// The game is ready to start, so clear the Menu prompt from the screen
 				clearMenuPrompt();
+
+				//and start the game loop
 				selectionComplete = 1;
 			}
 			else //The client selection window needs to update to reflect other player's selection
 			{
-				//display these options and allow the client to make a selection
-				MenuOptions selectedOptions = menuPrompt(game.getPlayerId(), currentMenuOptions);
-
-				////save these options
-				game.setClientMenuOptions(selectedOptions);
-
-				NetBuffer menuInput(NetMessage::MENU_INPUT);
-				menuInput.write<MenuOptions>(game.getClientMenuOptions());
-				//clearMenuPrompt();
-				//send the client's selections to the server for confirmation
-				server->send(menuInput);
 			}
 		}
 	};
 
-	// this handles the broadcast for the general menu option negotiations 
-	// with the server (server will send a MENU_CONFRIM when accepted)
-	//Network::onConnected([&]() {
-	//	
-	//	Network::on(NetMessage::MENU_INPUT, handleMenuInput);//callback for the client reply
-	//	/*debug*/
-	//	cout << "send menu options" << endl;
-	//	/*end_debug*/
-
-	//	// receive player keyboard and mouse(todo) input
-	//	Network::onDisconnected([&]() {
-	//		std::cout << "player has disconnected."
-	//			<< std::endl;
-	//	});
-	//});
-
 	// this is the server confirming a new selection to all connected clients 
-	Network::on(NetMessage::MENU_OPTIONS, handleMenuInput);
+	Network::on(NetMessage::MENU_OPTIONS, handleMenuOptions);
 	Network::on(NetMessage::MENU_CONFIRM, handleMenuConfirmed);
 
 	while (1) {

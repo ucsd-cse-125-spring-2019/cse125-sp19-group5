@@ -56,6 +56,8 @@ int main(int argc, char **argv) {
 		{
 			//the update was accepted, broadcast the confirmation to all clients
 			NetBuffer teamUpdate(NetMessage::MENU_CONFIRM);
+			/*sending the client id and the menu options*/
+			teamUpdate.write<int>(c->getId());
 			teamUpdate.write<MenuOptions>(gameEngine.getTeams());
 			Network::broadcast(teamUpdate);
 
@@ -98,9 +100,7 @@ int main(int argc, char **argv) {
 		menu_options.write<MenuOptions>(gameEngine.getTeams());
 		c->send(menu_options);
 		c->on(NetMessage::MENU_INPUT, handleMenuInput);//callback for the client reply
-		/*DEBUG*/
 		cout << "send menu options" << endl;
-		/*END_DEBUG*/
 
 		for (auto gameObject : gameEngine.getGameObjects()) {
 			if (!gameObject) { continue; }
