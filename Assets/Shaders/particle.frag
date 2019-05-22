@@ -1,7 +1,6 @@
 #version 330 core
 
-in vec3 fragPosition;
-in vec4 color;
+in vec4 vertexColor;
 
 uniform bool RenderingPlane;
 uniform vec3 AmbientColor;
@@ -12,5 +11,5 @@ void main() {
     // if (RenderingPlane)
     //     gl_FragColor = vec4(AmbientColor, 1.0f);
     // else
-    fragColor = color;
+    fragColor = vertexColor;
 }

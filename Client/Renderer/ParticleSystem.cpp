@@ -13,16 +13,16 @@ ParticleSystem::ParticleSystem(const unsigned int maxParticles, const float part
 	, initialPos(position)
 	, initialPosVariance(vec3(1.0f))
 	, initialVel(vec3(0.0f, 0.0f, 0.0f))
-	, initialVelVariance(vec3(2.0f))
+	, initialVelVariance(vec3(5.0f))
 	, initialLife(5.0f)
 	, initialLifeVariance(2.0f)
 	, gravity(0.0f)
 	, airDensity(0.2f)
 	, dragCoeff(2.0f)
-	, particleRadius(1.0f)
+	, particleRadius(0.2f)
 	, collElasticity(0.6f)
 	, collFriction(0.2f)
-	, particleColor(vector<vec4>{ vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(1.0f) })
+	, particleColor(vector<vec4>{ vec4(1.0f), vec4(0.0f) })
 	, VAO(0) {
 
 	for (unsigned int i = 0; i < maxParticles; i++)
@@ -214,9 +214,19 @@ void ParticleSystem::draw(Shader &shader, const Camera *camera) {
 	// Set GL matrix state to identity (world)
 	glm::mat4x4 modelMtx = glm::mat4(1.0f);
 
+	auto &view = camera->getViewMatrix();
+	auto right = vec3(view[0][0], view[1][0], view[2][0]);
+	auto up = vec3(view[0][1], view[1][1], view[2][1]);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+
 	// Set up shader
 	shader.use();
 	shader.setUniform("modelMtx", modelMtx);
+	shader.setUniform("camUp", up);
+	shader.setUniform("camRight", right);
 
 	glm::mat4x4 mvpMtx = camera->getMatrix() * modelMtx;
 	shader.setUniform("modelViewProjMtx", mvpMtx);
