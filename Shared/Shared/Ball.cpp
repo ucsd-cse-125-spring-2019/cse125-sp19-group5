@@ -62,12 +62,12 @@ void Ball::onCollision(Ball * ball) {
 		setVelocity(newVelocity);
 		ball->setVelocity(ballNewVelocity);
 
-		/*std::cout << glm::length(newVelocity) << " " << glm::length(ballNewVelocity) << std::endl;*/
-
 		float intersectDist = getBoundingSphere()->getRadius() + ball->getBoundingSphere()->getRadius() - distanceFrom(ball);
 		while (collidesWith(ball)) {
 			move(glm::normalize(newVelocity));
 			ball->move(glm::normalize(ballNewVelocity));
+
+			std::cout << to_string() << " " << ball->to_string() << std::endl;
 		}
 	}	
 }
@@ -81,7 +81,10 @@ void Ball::onCollision(Goal * goal) {
 void Ball::onCollision(Paddle * paddle) {
 	/*std::cout << to_string() << " collided with " << paddle->to_string() << std::endl;
 	std::cout << to_string() << " velocity changing from " << glm::to_string(getVelocity()) << " to " << glm::to_string(paddle->getVelocity()) << std::endl;*/
-	setVelocity(paddle->getVelocity());
+	if (paddle->getObjectsHit().find(this) == paddle->getObjectsHit().end()) {
+		setVelocity(paddle->getVelocity());
+		paddle->getObjectsHit().insert(this);
+	}
 }
 
 

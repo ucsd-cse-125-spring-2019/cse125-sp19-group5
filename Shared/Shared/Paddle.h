@@ -1,4 +1,5 @@
 #pragma once
+#include <set>
 #include "SphereGameObject.h"
 #include "Ball.h"
 #include "Player.h"
@@ -12,6 +13,7 @@ public:
 	GAMEOBJECT_TYPES getGameObjectType() const;
 	bool deleteOnServerTick();
 	void updateOnServerTick();
+	std::set<GameObject *> & getObjectsHit();
 
 	// collision interactions below
 	void onCollision(GameObject * gameObject);
@@ -22,4 +24,5 @@ public:
 
 private:
 	int lifespan;
+	std::set<GameObject *> objectsHit;
 };

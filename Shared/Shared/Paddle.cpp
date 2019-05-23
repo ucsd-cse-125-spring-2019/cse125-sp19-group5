@@ -18,6 +18,10 @@ void Paddle::updateOnServerTick() {
 	--lifespan;
 }
 
+std::set<GameObject *> & Paddle::getObjectsHit() {
+	return this->objectsHit;
+}
+
 void Paddle::onCollision(GameObject * gameObject) {
 	gameObject->onCollision(this);
 }
