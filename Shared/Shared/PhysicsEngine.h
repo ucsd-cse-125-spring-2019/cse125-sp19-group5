@@ -5,16 +5,17 @@
 class PhysicsEngine
 {
 public:
-	static vec3 acceleratePlayer(vec3 accelDir, vec3 prevVelocity, float accelerate, float maxVelocity);
-	static vec3 movePlayerOnGround(vec3 accelDir, vec3 prevVelocity	);
-	static vec3 movePlayerInAir(vec3 accelDir, vec3 prevVelocity);
+	static vec3 acceleratePlayer(vec3 accelDir, vec3 prevVelocity, float accelerate, float maxVelocity, float moveSpeed);
+	static vec3 movePlayerOnGround(vec3 accelDir, vec3 prevVelocity, float moveSpeed);
+	static vec3 movePlayerInAir(vec3 accelDir, vec3 prevVelocity, float moveSpeed);
 	static vec3 jumpPlayer(vec3 prevVelocity);
-	static vec3 applyGravity(vec3 velocity);
+	static vec3 applyGravity(vec3 prevVelocity, float gravity);
 	static vec3 applyFriction(vec3 prevVelocity, float friction);
 
 	static float getDeltaTime()					{ return PhysicsEngine::deltaTime; }
 	static float getFloorY()					{ return PhysicsEngine::floorY; }
 	static float getGravity()					{ return PhysicsEngine::gravity; }
+	static float getPlayerDefaultMoveSpeed()	{ return PhysicsEngine::playerDefaultMoveSpeed; }
 	static float getPlayerAccelerationGround()	{ return PhysicsEngine::playerAccelerationGround; }
 	static float getPlayerMaxVelocityGround()	{ return PhysicsEngine::playerMaxVelocityGround; }
 	static float getPlayerAccelerationAir()		{ return PhysicsEngine::playerAccelerationAir; }
@@ -38,6 +39,7 @@ private:
 	static float deltaTime; // ms
 	static float floorY;
 	static float gravity;
+	static float playerDefaultMoveSpeed;
 	static float playerAccelerationGround;
 	static float playerMaxVelocityGround;
 	static float playerAccelerationAir;

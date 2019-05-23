@@ -32,8 +32,9 @@ private:
 	int team;
 	PlayerCommands currentAction;
 	vector<Wall *> walls;
-	bool isGrounded = false;
 
+	float moveSpeed = PhysicsEngine::getPlayerDefaultMoveSpeed();
+	bool isGrounded = false;
 	bool isJumpKeyDown = false; // For bhop
 	bool isJumpKey = false;
 	bool isJumpKeyUp = false;

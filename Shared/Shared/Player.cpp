@@ -1,7 +1,6 @@
 #include "Player.h"
 #include "BoundingSphere.h"
 #include <iostream>
-#include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/euler_angles.hpp>
 
 Player::Player(vec3 position, vec3 velocity, vec3 direction, int id, float radius, int team) : GameObject(position, velocity, id) {
@@ -98,24 +97,29 @@ vec3 Player::getMoveDestination(vec3 movement) {
 	}
 	vec3 newVelocity = getVelocity();
 	if (isGrounded) {
-		newVelocity.y = PhysicsEngine::applyGravity(vec3(0.0f)).y; // Reset gravity
+		newVelocity.y = PhysicsEngine::applyGravity(vec3(0.0f), PhysicsEngine::getGravity()).y; // Reset gravity
+		//cout << "Reset gravity, Velocity: " << glm::to_string(getVelocity()) << endl;
 		if (wishJump) {
-			newVelocity = PhysicsEngine::movePlayerOnGround(accelDir, newVelocity);
+			newVelocity = PhysicsEngine::movePlayerOnGround(accelDir, newVelocity, moveSpeed);
 			newVelocity = PhysicsEngine::jumpPlayer(newVelocity);
+			//cout << "Jump, Velocity: " << glm::to_string(getVelocity()) << endl;
 			isGrounded = false;
+			wishJump = false;
 		}
 		else {
 			newVelocity = PhysicsEngine::applyFriction(newVelocity, PhysicsEngine::getPlayerMoveFriction());
-			newVelocity = PhysicsEngine::movePlayerOnGround(accelDir, newVelocity);
+			newVelocity = PhysicsEngine::movePlayerOnGround(accelDir, newVelocity, moveSpeed);
+			//cout << "Move, Velocity: " << glm::to_string(getVelocity()) << endl;
 		}
 	}
 	else {
-		newVelocity = PhysicsEngine::movePlayerInAir(accelDir, newVelocity);
-		newVelocity = PhysicsEngine::applyGravity(newVelocity);
+		newVelocity = PhysicsEngine::movePlayerInAir(accelDir, newVelocity, moveSpeed);
+		newVelocity = PhysicsEngine::applyGravity(newVelocity, PhysicsEngine::getGravity());
 	}
 	setVelocity(newVelocity);
 
-	cout << glm::to_string(getPosition()) << endl;
+	// cout << "Position: " << glm::to_string(getPosition()) << endl;
+	// cout << "Velocity: " << glm::to_string(getVelocity()) << endl;
 
 	// Prevent the player from ever falling through the floor
 	vec3 newPos = getPosition() + newVelocity * PhysicsEngine::getDeltaTime();
