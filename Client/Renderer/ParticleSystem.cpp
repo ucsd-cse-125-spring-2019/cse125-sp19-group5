@@ -1,5 +1,7 @@
 #include "ParticleSystem.h"
 #include <glm/gtx/string_cast.hpp>
+#include "../Assets.h"
+#include <algorithm>
 
 ParticleSystem::ParticleSystem()
 	: ParticleSystem(1000, 1.0f, vec3(0.0f), -2.0f) {
@@ -19,11 +21,12 @@ ParticleSystem::ParticleSystem(const unsigned int maxParticles, const float part
 	, gravity(0.0f)
 	, airDensity(0.2f)
 	, dragCoeff(2.0f)
-	, particleRadius(0.2f)
+	, particleRadius(0.8f)
 	, collElasticity(0.6f)
 	, collFriction(0.2f)
 	, particleColor(vector<vec4>{ vec4(1.0f), vec4(0.0f) })
-	, VAO(0) {
+	, VAO(0)
+	, texture(Assets::getTexture2d("Textures/white.png")) {
 
 	for (unsigned int i = 0; i < maxParticles; i++)
 	{
@@ -93,7 +96,7 @@ void ParticleSystem::setupBuffers() {
 
 }
 
-void ParticleSystem::update(float dt) {
+void ParticleSystem::update(float dt, const Camera *camera) {
 	creationTimer += dt;
 	if (creationTimer > 1.0f)
 	{
@@ -179,16 +182,22 @@ void ParticleSystem::update(float dt) {
 	}
 
 	// Integrate
+	const auto camPos = camera->getPosition();
 	for (unsigned int i = 0; i < numParticles; i++)
 	{
 		Particle *p = particles[i];
 		p->color = getColorFromLifespan(p->lifespan, p->maxLifespan);
 		p->update(dt, floorY, collElasticity, collFriction);
+		p->camDist = glm::length(p->position - camPos);
 	}
 
 	// Populate buffer data
 	std::vector<glm::vec4> particlePositionBufferData; // w contains size
 	std::vector<glm::vec4> particleColorBufferData; // w contains alpha
+
+	std::sort(particles.begin(), particles.end(), [](Particle *a, Particle *b) {
+		return a->camDist > b->camDist;
+	});
 
 	for (unsigned int i = 0; i < numParticles; i++)
 	{
@@ -211,6 +220,8 @@ void ParticleSystem::update(float dt) {
 }
 
 void ParticleSystem::draw(Shader &shader, const Camera *camera) {
+	glEnable(GL_BLEND);  
+
 	// Set GL matrix state to identity (world)
 	glm::mat4x4 modelMtx = glm::mat4(1.0f);
 
@@ -218,15 +229,17 @@ void ParticleSystem::draw(Shader &shader, const Camera *camera) {
 	auto right = vec3(view[0][0], view[1][0], view[2][0]);
 	auto up = vec3(view[0][1], view[1][1], view[2][1]);
 
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-
 	// Set up shader
 	shader.use();
 	shader.setUniform("modelMtx", modelMtx);
 	shader.setUniform("camUp", up);
 	shader.setUniform("camRight", right);
+
+	// Set up particle texture.
+	if (texture) {
+		texture->bind(0);
+	}
+	shader.setUniform("texSampler", 0);
 
 	glm::mat4x4 mvpMtx = camera->getMatrix() * modelMtx;
 	shader.setUniform("modelViewProjMtx", mvpMtx);

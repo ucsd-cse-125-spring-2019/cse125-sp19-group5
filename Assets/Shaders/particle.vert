@@ -4,6 +4,7 @@ layout(location=0) in vec3 Vertex;
 layout(location=1) in vec4 PosSize;
 layout(location=2) in vec4 Color;
 
+out vec2 texCoords;
 out vec4 vertexColor;
 
 uniform vec3 camUp;
@@ -21,4 +22,5 @@ void main() {
     );
 
     vertexColor = Color;
+    texCoords = Vertex.xy + vec2(0.5);
 }

@@ -85,6 +85,7 @@ Game::Game(): gameObjects(1024, nullptr) {
 	Draw::init();
 
 	ps = new ParticleSystem();
+	ps->texture = Assets::getTexture2d("Textures/star.png");
 	psShader = new Shader("Shaders/particle");
 
 	shadowMap = new ShadowMap();
@@ -249,7 +250,7 @@ void Game::update(float dt) {
 		camera->setPosition(playerObj->getPosition() + offset);
 	}
 
-	ps->update(dt);
+	ps->update(dt, camera);
 }
 
 void Game::drawScene(Shader &shader, DrawPass pass) const {
@@ -283,8 +284,8 @@ void Game::draw(float dt) const {
 
 	sun->bind(*lightShader);
 	drawScene(*lightShader, DrawPass::LIGHTING);
-	ps->draw(*psShader, camera);
 	skybox->draw();
+	ps->draw(*psShader, camera);
 
 	glDisable(GL_DEPTH_TEST);
 	Draw::setupContext();
