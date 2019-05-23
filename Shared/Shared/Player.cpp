@@ -33,12 +33,6 @@ vec3 Player::getDirection() {
 }
 
 vec3 Player::getMoveDestination(vec3 movement) {
-	//return GameObject::getMoveDestination(movement);
-	
-	if (movement.x == 0.0f && movement.z == 0.0f) {
-		return position;
-	}
-
 	vec3 direction = glm::normalize(vec3(getDirection().x, 0, getDirection().z));
 	vec3 directionalizedMovement = vec3(0, 0, 0);
 	vec3 up = vec3(0, 1, 0);
@@ -56,12 +50,21 @@ vec3 Player::getMoveDestination(vec3 movement) {
 		directionalizedMovement = directionalizedMovement - glm::cross(up, direction);
 	}
 
-	if (glm::length(directionalizedMovement) == 0) {
-		return position;
-	}
+	vec3 prevVelocity = getVelocity();
+	vec3 accelDir;
+	if (glm::length(directionalizedMovement) == 0)
+		accelDir = vec3(0.0f);
+	else
+		accelDir = glm::normalize(directionalizedMovement);
+	vec3 newVelocity;
+	if (isGrounded)
+		newVelocity = PhysicsEngine::movePlayerOnGround(accelDir, prevVelocity);
+	else
+		newVelocity = PhysicsEngine::movePlayerInAir(accelDir, prevVelocity);
+	setVelocity(newVelocity);
 
-	return getPosition() + glm::normalize(directionalizedMovement); // * player->getSpeed();
-	// TODO: implement bhopping
+	// TODO jumping/applying gravity
+	return getPosition() + newVelocity * PhysicsEngine::getDeltaTime();
 }
 
 GameObject * Player::doAction(PlayerCommands action) {

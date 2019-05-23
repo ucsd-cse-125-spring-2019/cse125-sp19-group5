@@ -16,6 +16,7 @@
     <ClCompile Include="Shared\BoundingSphere.cpp" />
     <ClCompile Include="Shared\BoundingBox.cpp" />
     <ClCompile Include="Shared\CollisionDetection.cpp" />
+    <ClCompile Include="Shared\PhysicsEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shared\Ball.h" />
@@ -39,6 +40,7 @@
     <ClInclude Include="Shared\BoundingSphere.h" />
     <ClInclude Include="Shared\BoundingBox.h" />
     <ClInclude Include="Shared\CollisionDetection.h" />
+    <ClInclude Include="Shared\PhysicsEngine.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Util">

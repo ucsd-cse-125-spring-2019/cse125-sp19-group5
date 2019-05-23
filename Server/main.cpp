@@ -3,6 +3,7 @@
 #include <boost/asio.hpp>
 #include <Shared/Common.h>
 #include <Shared/GameMessage.hpp>
+#include <Shared/PhysicsEngine.h>
 #include <Shared/BoundingSphere.h>
 #include <Shared/BoundingBox.h>
 #include <chrono>
@@ -104,7 +105,10 @@ int main(int argc, char **argv) {
 	});
 
 	//This is the total amount of time allowed for the server to update the game state
-	auto maxAllowabeServerTime = std::chrono::milliseconds(1000 / TICKS_PER_SECOND + 10);
+	auto maxAllowableServerTime = std::chrono::milliseconds(1000 / TICKS_PER_SECOND + 10);
+
+	// Time step used for physics
+	PhysicsEngine::setDeltaTime(maxAllowableServerTime.count());
 
 	while (true) 
 	{
@@ -116,10 +120,8 @@ int main(int argc, char **argv) {
 		auto networkPollDuration = std::chrono::duration_cast<std::chrono::milliseconds>(pollDone - startTime);
 
 		//updating the game state with each client message
-		//vector<PlayerInputs> playerInputs;
-			/*TODO: use the player input (Oliver)*/
-			gameEngine.updateGameState(playerInputs);
-			playerInputs.clear();
+		gameEngine.updateGameState(playerInputs);
+		playerInputs.clear();
 
 		//timekeeping stuff to check the duration so far
 		auto updateDone = std::chrono::high_resolution_clock::now();
@@ -127,10 +129,10 @@ int main(int argc, char **argv) {
 		auto totalDuration = std::chrono::duration_cast<std::chrono::milliseconds>(updateDone - startTime);
 
 		//check if the server is running on schedule
-		if (updateDuration <= maxAllowabeServerTime) 
+		if (updateDuration <= maxAllowableServerTime) 
 		{
 			//wait for the update time to broadcast the game state update
-			std::this_thread::sleep_for(maxAllowabeServerTime - totalDuration);
+			std::this_thread::sleep_for(maxAllowableServerTime - totalDuration);
 		}
 		else 
 		{

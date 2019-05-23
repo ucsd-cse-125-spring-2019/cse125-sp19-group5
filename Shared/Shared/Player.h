@@ -1,14 +1,16 @@
 #pragma once
+
 #include "GameObject.h"
 #include "Wall.h"
 #include "CommonStructs.h"
 #include "Paddle.h"
+#include "PhysicsEngine.h"
 
 class Player : public GameObject {
 public:
 	using GameObject::GameObject;
   
-  Player(vec3 position, vec3 velocity, vec3 direction, int id, float radius, int team);
+	Player(vec3 position, vec3 velocity, vec3 direction, int id, float radius, int team);
 
 	void setDirection(const vec3 &newDirection);
 	GAMEOBJECT_TYPES getGameObjectType() const;
@@ -17,6 +19,9 @@ public:
 	vec3 getDirection();
 	GameObject * doAction(PlayerCommands action);
 	GameObject * processCommand(int inputs);
+
+	bool getIsGrounded() const { return isGrounded; }
+	void setIsGrounded(const bool grounded) { isGrounded = grounded; }
 
 	void serialize(NetBuffer &buffer) const override;
 	void deserialize(NetBuffer &buffer) override;
@@ -27,4 +32,5 @@ private:
 	int team;
 	PlayerCommands currentAction;
 	vector<Wall *> walls;
+	bool isGrounded = true;
 };
