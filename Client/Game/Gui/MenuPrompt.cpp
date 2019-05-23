@@ -5,7 +5,7 @@ MenuPrompt::MenuPrompt()
 	connected = false;
 }
 
-bool MenuPrompt::ipPrompt() {
+void MenuPrompt::ipPrompt() {
 	/*
 	 * The following code draws the "Connect to: " screen
 	 */
@@ -33,7 +33,7 @@ bool MenuPrompt::ipPrompt() {
 	ipInput->setPosition(vec2(0.2f, 0.3f));
 	ipInput->setFont("Arial");
 	ipInput->setSize(vec2(0.6f, 0.25f));
-	ipInput->addEnterCallback(&MenuPrompt::onIpEntered);
+	ipInput->addEnterCallback(onEnter);
 	/*
 	 * At this point, the "Connect to: " screen has been drawn
 	 */
@@ -61,7 +61,7 @@ void MenuPrompt::settingsPrompt() {
 	label->setFont("Arial");
 
 	//callback - when the user hits the enter key
-	auto onEnter = boost::bind(&MenuPrompt::handleMenuOptions, this, _1);
+	auto onEnter = std::bind(&MenuPrompt::handleMenuOptions, this, std::placeholders::_1);
 
 	//the input textbox where the user will type in the IP
 	auto ipInput = Gui::create<GuiTextbox>(this);
@@ -81,4 +81,8 @@ void MenuPrompt::onIpEntered(const std::string &text) {
 
 bool MenuPrompt::getConnected() {
 	return connected;
+}
+
+void MenuPrompt::handleMenuOptions(const std::string &text) {
+
 }

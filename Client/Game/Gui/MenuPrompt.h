@@ -16,13 +16,13 @@ class MenuPrompt: public GuiRect {
 		void onIpEntered(const std::string &text);
 		void onPortEntered(const std::string &text);
 
-		void handleMenuOptions();
+		void handleMenuOptions(const std::string &text);
 		void handleMenuConfirmed();
 
 	public:
 		MenuPrompt();
 		~MenuPrompt();
 		bool getConnected();
-		bool ipPrompt();
+		void ipPrompt();
 		void settingsPrompt();
 };
