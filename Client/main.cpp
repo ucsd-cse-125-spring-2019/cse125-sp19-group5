@@ -8,6 +8,7 @@
 #include "Renderer/Gui/Gui.h"
 #include "Input.h"
 #include "Renderer/Draw.h"
+#include "Game/Gui/MenuPrompt.h"
 
 using std::string;
 using std::cout;
@@ -142,6 +143,11 @@ int main(int argc, char **argv) {
 
 	Input::init(window);
 	Gui::setupInputListeners(window);
+	MenuPrompt menuPrompt;
+	while (!menuPrompt.getConnected()) {
+		menuPrompt.ipPrompt();
+	}
+	menuPrompt.settingsPrompt();
 
 	Game game;
 	game.getCamera()->setAspect((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT);

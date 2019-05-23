@@ -10,19 +10,19 @@
 
 class MenuPrompt: public GuiRect {
 	private:
-		int playerId
-
+		bool connected;
+		int playerId;
 
 		void onIpEntered(const std::string &text);
 		void onPortEntered(const std::string &text);
 
 		void handleMenuOptions();
 		void handleMenuConfirmed();
-		
-		bool ipPrompt();
-		void settingPrompt();
 
 	public:
 		MenuPrompt();
 		~MenuPrompt();
+		bool getConnected();
+		bool ipPrompt();
+		void settingsPrompt();
 };
