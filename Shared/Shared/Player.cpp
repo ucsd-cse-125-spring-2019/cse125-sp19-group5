@@ -98,18 +98,15 @@ vec3 Player::getMoveDestination(vec3 movement) {
 	vec3 newVelocity = getVelocity();
 	if (isGrounded) {
 		newVelocity.y = PhysicsEngine::applyGravity(vec3(0.0f), PhysicsEngine::getGravity()).y; // Reset gravity
-		//cout << "Reset gravity, Velocity: " << glm::to_string(getVelocity()) << endl;
 		if (wishJump) {
 			newVelocity = PhysicsEngine::movePlayerOnGround(accelDir, newVelocity, moveSpeed);
 			newVelocity = PhysicsEngine::jumpPlayer(newVelocity);
-			//cout << "Jump, Velocity: " << glm::to_string(getVelocity()) << endl;
 			isGrounded = false;
 			wishJump = false;
 		}
 		else {
 			newVelocity = PhysicsEngine::applyFriction(newVelocity, PhysicsEngine::getPlayerMoveFriction());
 			newVelocity = PhysicsEngine::movePlayerOnGround(accelDir, newVelocity, moveSpeed);
-			//cout << "Move, Velocity: " << glm::to_string(getVelocity()) << endl;
 		}
 	}
 	else {
@@ -117,9 +114,6 @@ vec3 Player::getMoveDestination(vec3 movement) {
 		newVelocity = PhysicsEngine::applyGravity(newVelocity, PhysicsEngine::getGravity());
 	}
 	setVelocity(newVelocity);
-
-	// cout << "Position: " << glm::to_string(getPosition()) << endl;
-	// cout << "Velocity: " << glm::to_string(getVelocity()) << endl;
 
 	// Prevent the player from ever falling through the floor
 	vec3 newPos = getPosition() + newVelocity * PhysicsEngine::getDeltaTime();

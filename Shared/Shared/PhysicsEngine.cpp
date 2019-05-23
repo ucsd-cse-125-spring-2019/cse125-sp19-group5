@@ -4,13 +4,13 @@
 float PhysicsEngine::deltaTime = 1.0f / 60.0f;
 float PhysicsEngine::floorY = 0.0f;
 float PhysicsEngine::gravity = 0.0005f;
-float PhysicsEngine::playerDefaultMoveSpeed = 0.1;
+float PhysicsEngine::playerDefaultMoveSpeed = 0.08;
 float PhysicsEngine::playerAccelerationGround = 0.02f;
 float PhysicsEngine::playerMaxVelocityGround = 0.06f;
-float PhysicsEngine::playerAccelerationAir = 0.0001f;
-float PhysicsEngine::playerMaxVelocityAir = 0.0005f;
+float PhysicsEngine::playerAccelerationAir = 0.005f;
+float PhysicsEngine::playerMaxVelocityAir = 0.02f;
 float PhysicsEngine::playerMoveFriction = 0.8f;
-float PhysicsEngine::playerJumpSpeed = 0.08f;
+float PhysicsEngine::playerJumpSpeed = 0.09f;
 bool PhysicsEngine::autoBhopEnabled = true;
 
 /* accelDir: The normalized direction the player wants to accelerate in,
