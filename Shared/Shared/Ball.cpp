@@ -14,9 +14,10 @@ GAMEOBJECT_TYPES Ball::getGameObjectType() const {
 void Ball::updateOnServerTick() {
 	if (glm::length(getVelocity()) > 0) { 
 		vec3 direction = glm::normalize(getVelocity());
-		vec3 updatedVelocity = getVelocity() - (direction * 0.1f);
+		// vec3 updatedVelocity = getVelocity() - (direction * 0.1f);
+		vec3 updatedVelocity = getVelocity() * 0.99f;
 		vec3 updatedDirection = glm::normalize(updatedVelocity);
-		if (glm::length(glm::dot(direction, updatedDirection)) < 0.0f) {
+		if (glm::dot(direction, updatedDirection) < 0.0f) {
 			setVelocity(vec3(0.0f));
 		}
 		else {
@@ -24,6 +25,15 @@ void Ball::updateOnServerTick() {
 		}
 	}
 	this->goalScored = false;
+
+	for (auto it = currentBallCollisions.begin(); it != currentBallCollisions.end(); ) {
+		if (!collidesWith(*it)) {
+			it = currentBallCollisions.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
 }
 
 bool Ball::getGoalScored() {
@@ -36,40 +46,43 @@ void Ball::onCollision(GameObject * gameObject) {
 }
 
 void Ball::onCollision(Ball * ball) { 
-	if (collidesWith(ball)) {
-		// currentCollisions.insert(ball);
-		if (glm::length(getPosition() - ball->getPosition()) == 0.0f) {
-			move(vec3((rand() % 100) / 100.0f, 0, (rand() % 100) / 100.0f));
-			std::cout << to_string() << std::endl;
+	if (currentBallCollisions.find(ball) == currentBallCollisions.end()) {
+		currentBallCollisions.insert(ball);
+		ball->currentBallCollisions.insert(this);
+
+		if (collidesWith(ball)) {
+			// currentCollisions.insert(ball);
+			if (glm::length(getPosition() - ball->getPosition()) == 0.0f) {
+				move(vec3((rand() % 100) / 100.0f, 0, (rand() % 100) / 100.0f));
+				std::cout << to_string() << std::endl;
+			}
+
+			if ((glm::length(getVelocity()) == 0.0f) && (glm::length(ball->getVelocity()) == 0.0f)) {
+				return;
+			}
+
+			vec3 newVelocity = getVelocity();
+			newVelocity += glm::proj(ball->getVelocity(), ball->getPosition() - getPosition());
+			newVelocity -= glm::proj(getVelocity(), getPosition() - ball->getPosition());
+
+			vec3 ballNewVelocity = ball->getVelocity();
+			ballNewVelocity += glm::proj(getVelocity(), ball->getPosition() - getPosition());
+			ballNewVelocity -= glm::proj(ball->getVelocity(), getPosition() - ball->getPosition());
+
+			float velLength = glm::length(newVelocity) + glm::length(ballNewVelocity);
+			newVelocity = glm::normalize(newVelocity) * (velLength / 2.0f);
+			ballNewVelocity = glm::normalize(ballNewVelocity) * (velLength / 2.0f);
+
+			setVelocity(newVelocity);
+			ball->setVelocity(ballNewVelocity);
+
+			/*float intersectDist = getBoundingSphere()->getRadius() + ball->getBoundingSphere()->getRadius() - distanceFrom(ball);
+			while (collidesWith(ball)) {
+				move(glm::normalize(newVelocity));
+				ball->move(glm::normalize(ballNewVelocity));
+			}*/
 		}
-
-		if ((glm::length(getVelocity()) == 0.0f) && (glm::length(ball->getVelocity()) == 0.0f)) {
-			return;
-		}
-
-		vec3 newVelocity = getVelocity();
-		newVelocity += glm::proj(ball->getVelocity(), ball->getPosition() - getPosition());
-		newVelocity -= glm::proj(getVelocity(), getPosition() - ball->getPosition());
-
-		vec3 ballNewVelocity = ball->getVelocity();
-		ballNewVelocity += glm::proj(getVelocity(), ball->getPosition() - getPosition());
-		ballNewVelocity -= glm::proj(ball->getVelocity(), getPosition() - ball->getPosition());
-
-		float velLength = glm::length(newVelocity) + glm::length(ballNewVelocity);
-		newVelocity = glm::normalize(newVelocity) * (velLength / 2.0f);
-		ballNewVelocity = glm::normalize(ballNewVelocity) * (velLength / 2.0f);
-
-		setVelocity(newVelocity);
-		ball->setVelocity(ballNewVelocity);
-
-		float intersectDist = getBoundingSphere()->getRadius() + ball->getBoundingSphere()->getRadius() - distanceFrom(ball);
-		while (collidesWith(ball)) {
-			move(glm::normalize(newVelocity));
-			ball->move(glm::normalize(ballNewVelocity));
-
-			std::cout << to_string() << " " << ball->to_string() << std::endl;
-		}
-	}	
+	}
 }
 
 void Ball::onCollision(Goal * goal) {
@@ -84,6 +97,7 @@ void Ball::onCollision(Paddle * paddle) {
 	if (paddle->getObjectsHit().find(this) == paddle->getObjectsHit().end()) {
 		setVelocity(paddle->getVelocity());
 		paddle->getObjectsHit().insert(this);
+		currentBallCollisions.clear();
 	}
 }
 

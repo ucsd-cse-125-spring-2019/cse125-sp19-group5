@@ -1,4 +1,5 @@
 #pragma once
+#include <set>
 #include "SphereGameObject.h"
 #include "Goal.h"
 #include "Paddle.h"
@@ -22,4 +23,5 @@ public:
 
 private:
 	bool goalScored = false;
+	std::set<Ball *> currentBallCollisions;
 };
