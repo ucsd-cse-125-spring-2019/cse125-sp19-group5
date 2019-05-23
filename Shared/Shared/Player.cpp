@@ -1,11 +1,15 @@
 #include "Player.h"
+#include "BoundingSphere.h"
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/euler_angles.hpp>
 
-Player::Player(vec3 position, vec3 velocity, vec3 direction, int id, int radius) : GameObject(position, velocity, id, radius) {
+Player::Player(vec3 position, vec3 velocity, vec3 direction, int id, float radius, int team) : GameObject(position, velocity, id) {
 	this->direction = direction;
+	this->radius = radius;
 	this->actionCharge = 0;
+	this->team = team;
+	setBoundingShape(new BoundingSphere(position, radius));
 }
 
 GAMEOBJECT_TYPES Player::getGameObjectType() const {
@@ -65,10 +69,14 @@ GameObject * Player::doAction(PlayerCommands action) {
 		case SWING: {
 			// std::cout << "Swing with charge " << actionCharge << std::endl;
 			// assumes direction is unit vector
-			vec3 paddlePosition = getPosition() + getDirection()*vec3(2.0f * radius);
-			vec3 paddleVelocity = getDirection() * vec3((float)(actionCharge));
-			int paddleLifespan = 10;
-			return new Paddle(paddlePosition, paddleVelocity, getId(), 1, paddleLifespan);
+			vec3 paddlePosition = getPosition() + getDirection() * vec3(2.05f * this->radius);
+			// vec3 paddleVelocity = getDirection() * vec3((float)(actionCharge));
+			vec3 paddleVelocity = vec3(getDirection().x, 0, getDirection().z) * vec3((float)(actionCharge));
+			int paddleLifespan = 100;
+			Paddle * p = new Paddle(paddlePosition, paddleVelocity, getId(), 1, paddleLifespan);
+			/*p->setModel("Models/sphere.obj");
+			p->setMaterial("Materials/brick.json");*/
+			return p;
 			break;
 		}
 		default: {

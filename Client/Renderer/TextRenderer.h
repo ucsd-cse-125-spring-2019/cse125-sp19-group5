@@ -15,29 +15,33 @@ struct Text {
 	GLfloat scale;
 	vec3 color;
 
-	void renderText(Shader &shader, int screenWidth, int screenHeight) {
-		font.renderText(shader, screenWidth, screenHeight, text, widthPercent * screenWidth, heightPercent * screenHeight, scale, color);
+	void renderText(Shader &shader) {
+		font.renderText(shader, text, widthPercent, heightPercent, scale, color);
 	};
 };
 
 class TextRenderer
 {
 private:
-	int screenWidth = 800;
-	int screenHeight = 600;
-	Shader &shader;
 	std::unordered_map<std::string, Font> fonts;
 	std::vector<Text> texts;
 
 public:
-	const std::string DEFAULT_FONT_NAME = "Arial";
-	const std::string DEFAULT_FONT_FILEPATH = "Fonts/Arial.ttf";
+	static const std::string DEFAULT_FONT_NAME;
+	static const std::string DEFAULT_FONT_FILEPATH;
 
-	TextRenderer(Shader &shader);
-	~TextRenderer();
-
-	void updateScreenDimensions(int width, int height);
 	bool loadFont(const std::string &name, const std::string &filepath);
 	Text* addText(const std::string &fontname, const std::string text, const GLfloat widthPercent, const GLfloat heightPercent, const GLfloat scale, const glm::vec3 color);
 	void renderText();
+	void renderText(
+		const std::string &text,
+		const std::string &font,
+		float x, float y,
+		const vec3 &color,
+		float scale = 1.0f
+	) const;
+
+	vec2 getTextSize(const std::string &text, const std::string &font, float scale = 1.0f);
 };
+
+extern TextRenderer *gTextRenderer;

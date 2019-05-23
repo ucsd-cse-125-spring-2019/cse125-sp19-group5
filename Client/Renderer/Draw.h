@@ -12,6 +12,7 @@ namespace Draw {
 	extern Shader *texturedQuadShader;
 	extern Texture2d *whiteTexture;
 	extern vec4 color;
+	extern float screenWidth, screenHeight;
 		
 	void init();
 	void cleanUp();
@@ -20,4 +21,5 @@ namespace Draw {
 	void rect(float x, float y, float w, float h, Texture &texture);
 	void rect(float x, float y, float w, float h);
 	void setupContext();
+	void updateScreenDimensions(float newScrWidth, float newScrHeight);
 }

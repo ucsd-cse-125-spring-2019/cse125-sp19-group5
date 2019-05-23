@@ -46,6 +46,7 @@ void GameEngine::updateGameState(vector<PlayerInputs> & playerInputs) {
 	doCollisionInteractions();
 	updateGameObjectsOnServerTick();
 	removeDeadObjects();
+
 	// send getNetworkGameState() to client
 }
 
@@ -155,7 +156,8 @@ void GameEngine::doPlayerCommands(vector<PlayerInputs> & playerInputs) {
 	for (int i = 0; i < gameState.players.size(); i++) {
 		GameObject * createdGameObject = gameState.players[i]->processCommand(aggregatePlayerCommands[i]);
 		if (createdGameObject) {
-			gameState.gameObjects.push_back(createdGameObject);
+			createdGameObject->setId(gameState.getFreeId());
+			addGenericGameObject(createdGameObject);
 		}
 	}
 }
@@ -174,7 +176,7 @@ void GameEngine::doCollisionInteractions() {
 void GameEngine::removeDeadObjects() {
 	for (GameObject * gameObject : gameState.gameObjects) {
 		if (gameObject && gameObject->deleteOnServerTick()) {
-			delete gameObject;
+			removeGameObjectById(gameObject->getId());
 		}
 	}
 }
@@ -190,14 +192,14 @@ void GameEngine::updateGameObjectsOnServerTick() {
 bool GameEngine::noCollisionMove(GameObject * gameObject, vec3 movement) {
 	vec3 destination = gameObject->getMoveDestination(movement);
 
-	for (GameObject * otherGameObject : gameState.gameObjects) {
-		if (gameObject != gameObject) {
-			float distance = glm::distance(destination, otherGameObject->getPosition());
-			if (distance < (gameObject->getRadius() + otherGameObject->getRadius())) {
-				return false;
-			}
-		}
-	}
+	//for (GameObject * otherGameObject : gameState.gameObjects) {
+	//	if (gameObject != gameObject) {
+	//		float distance = glm::distance(destination, otherGameObject->getPosition());
+	//		if (distance < (gameObject->getRadius() + otherGameObject->getRadius())) {
+	//			return false;
+	//		}
+	//	}
+	//}
 	gameObject->setPosition(destination);
 
 	return true;

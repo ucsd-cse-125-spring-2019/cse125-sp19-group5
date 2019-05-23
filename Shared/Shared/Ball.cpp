@@ -1,8 +1,10 @@
 #include "Ball.h"
+#include "BoundingSphere.h"
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
 
-Ball::Ball(vec3 position, vec3 velocity, int id, int radius) : GameObject(position, velocity, id, radius) {
+Ball::Ball(vec3 position, vec3 velocity, int id, float radius) : GameObject(position, velocity, id) {
+	setBoundingShape(new BoundingSphere(position, radius));
 }
 
 GAMEOBJECT_TYPES Ball::getGameObjectType() const {
@@ -24,7 +26,7 @@ void Ball::updateOnServerTick() {
 		vec3 direction = glm::normalize(getVelocity());
 		vec3 updatedVelocity = getVelocity() - (direction * 0.1f);
 		vec3 updatedDirection = glm::normalize(updatedVelocity);
-		if (glm::length(glm::dot(direction, updatedDirection)) < 0) {
+		if (glm::length(glm::dot(direction, updatedDirection)) < 0.0f) {
 			setVelocity(vec3(0.0f));
 		}
 		else {

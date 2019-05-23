@@ -19,7 +19,7 @@ SoundEngine::~SoundEngine() {
 
 bool SoundEngine::isInitialized() {
 	if (!didInitialize)
-		std::cout << ERRKLANG_ERROR_MSG << std::endl;
+		// std::cout << ERRKLANG_ERROR_MSG << std::endl;
 
 	return didInitialize;
 }

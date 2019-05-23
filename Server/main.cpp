@@ -3,6 +3,8 @@
 #include <boost/asio.hpp>
 #include <Shared/Common.h>
 #include <Shared/GameMessage.hpp>
+#include <Shared/BoundingSphere.h>
+#include <Shared/BoundingBox.h>
 #include <chrono>
 #include "GameEngine.h"
 #include "Networking/Server.h"
@@ -19,10 +21,19 @@ int main(int argc, char **argv) {
 
 	vector<PlayerInputs> playerInputs;
 
-	auto ground = new Wall(origin, origin, 100, 1);
-	gameEngine.addGameObject(ground);
+	auto ground = gameEngine.addGameObject<Wall>();
+	ground->setBoundingShape(new BoundingBox(vec3(0, 0, 0), vec3(1, 0, 0), 1, 1, 100));
 	ground->setModel("Models/ground.obj");
 	ground->setMaterial("Materials/grass.json");
+
+	auto ball = gameEngine.addGameObject<Ball>();
+	ball->setBoundingShape(new BoundingSphere(origin, 4));
+	ball->setScale(vec3(1.0f/4.0f));
+	ball->setPosition(vec3(0, 4, 0));
+	ball->setVelocity(vec3(0, 0, 0));
+	ball->setModel("Models/sphere.obj");
+	ball->setMaterial("Materials/brick.json");
+
 
 	// Handle player keyboard/mouse inputs
 	auto handlePlayerInput = [&playerInputs](Connection *c, NetBuffer &buffer) {
@@ -74,12 +85,14 @@ int main(int argc, char **argv) {
 			c->send(matBuffer);
 		}
 
-		auto player = new Player(origin, origin, c->getId(), 1.0f);
+		auto player = new Player(origin, origin, origin, c->getId(), 1.0f, 0);
 		gameEngine.addGameObject(player);
 
-		player->setModel("Models/player.obj");
+		player->setModel("Models/BearTiltAnimation.fbx");
 		player->setDirection(vec3(0, 0, -1));
 		player->setMaterial("Materials/brick.json");
+		player->setScale(vec3(0.2f));
+		player->setAnimation(0);
 
 		// Receive player keyboard and mouse(TODO) input
 		c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);
@@ -130,11 +143,21 @@ int main(int argc, char **argv) {
 
 
 
+	/*
 	// testing code
-	/*std::cout << "Hello world!" << std::endl;
+	std::cout << "Hello world!" << std::endl;
 	GameEngine gameEngine;
-	gameEngine.addGameObject(new Player(vec3(-2, 0, 0), vec3(1, 0, 0), vec3(1, 0, 0), 0, 1));
+	gameEngine.addGameObject(new Player(vec3(-2, 0, 0), vec3(1, 0, 0), vec3(1, 0, 0), 0, 1, 0));
 	gameEngine.addGameObject(new Ball(vec3(5, 0, 0), vec3(-1, 0, 0), 0, 1));
+
+	//gameEngine.addGameObject(new Wall(
+	//	vec3(0, 0, 0), // position
+	//	vec3(1, 0, 0), // velocity/direction
+	//	0, // id
+	//	2, // length
+	//	2, // width
+	//	1 // height
+	//));
 
 	vector<PlayerInputs> playerInputs;
 	PlayerInputs pi;
@@ -157,7 +180,8 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	system("pause");*/
+	system("pause");
 
 	return 0;
+	*/
 }
