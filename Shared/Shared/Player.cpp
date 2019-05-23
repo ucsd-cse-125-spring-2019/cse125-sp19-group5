@@ -68,7 +68,7 @@ GameObject * Player::doAction(PlayerCommands action) {
 			// vec3 paddleVelocity = getDirection() * vec3((float)(actionCharge));
 			vec3 paddleVelocity = vec3(getDirection().x, 0, getDirection().z) * vec3((float)(actionCharge));
 			int paddleLifespan = 10;
-			Paddle * p = new Paddle(paddlePosition, paddleVelocity, -1, 1, paddleLifespan);
+			Paddle * p = new Paddle(paddlePosition, paddleVelocity, -1, 5, paddleLifespan);
 			return p;
 			break;
 		}

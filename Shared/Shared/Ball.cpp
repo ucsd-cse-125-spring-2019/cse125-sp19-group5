@@ -37,8 +37,10 @@ void Ball::onCollision(GameObject * gameObject) {
 
 void Ball::onCollision(Ball * ball) { 
 	if (collidesWith(ball)) {
+		// currentCollisions.insert(ball);
 		if (glm::length(getPosition() - ball->getPosition()) == 0.0f) {
-			setPosition(getPosition() + vec3((rand() % 100) / 100.0f, 0, (rand() % 100) / 100.0f));
+			move(vec3((rand() % 100) / 100.0f, 0, (rand() % 100) / 100.0f));
+			std::cout << to_string() << std::endl;
 		}
 
 		if ((glm::length(getVelocity()) == 0.0f) && (glm::length(ball->getVelocity()) == 0.0f)) {
@@ -53,21 +55,25 @@ void Ball::onCollision(Ball * ball) {
 		ballNewVelocity += glm::proj(getVelocity(), ball->getPosition() - getPosition());
 		ballNewVelocity -= glm::proj(ball->getVelocity(), getPosition() - ball->getPosition());
 
+		float velLength = glm::length(newVelocity) + glm::length(ballNewVelocity);
+		newVelocity = glm::normalize(newVelocity) * (velLength / 2.0f);
+		ballNewVelocity = glm::normalize(ballNewVelocity) * (velLength / 2.0f);
+
 		setVelocity(newVelocity);
 		ball->setVelocity(ballNewVelocity);
 
-		std::cout << glm::length(newVelocity) << " " << glm::length(ballNewVelocity) << std::endl;
+		/*std::cout << glm::length(newVelocity) << " " << glm::length(ballNewVelocity) << std::endl;*/
 
 		float intersectDist = getBoundingSphere()->getRadius() + ball->getBoundingSphere()->getRadius() - distanceFrom(ball);
 		while (collidesWith(ball)) {
-			move(glm::normalize(newVelocity) * (intersectDist / 2.0f));
-			ball->move(glm::normalize(ballNewVelocity) * (intersectDist / 2.0f));
+			move(glm::normalize(newVelocity));
+			ball->move(glm::normalize(ballNewVelocity));
 		}
 	}	
 }
 
 void Ball::onCollision(Goal * goal) {
-	setPosition(vec3(0, 4, 0));
+	setPosition(vec3(0, 3, 0));
 	setVelocity(vec3(0));
 	this->goalScored = true;
 }

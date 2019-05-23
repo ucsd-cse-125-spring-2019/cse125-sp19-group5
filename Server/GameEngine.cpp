@@ -172,7 +172,7 @@ void GameEngine::moveBalls() {
 	// TODO: manage ballUnitMoves in ball object so balls can take each other's velocity
 	// TODO: account for balls with 0 velocity
 	// TODO: move balls in increments based on their velocity
-	int moves_per_tick = 5;
+	int moves_per_tick = 1;
 
 	doCollisionInteractions();
 
