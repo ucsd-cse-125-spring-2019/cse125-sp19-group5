@@ -93,6 +93,9 @@ void GameObject::onCollision(Ball * ball) {
 	// std::cout << "not implemented" << std::endl; 
 }
 
+void GameObject::onCollision(Bullet * bullet) {
+}
+
 void GameObject::onCollision(Goal * goal) {
 }
 
@@ -156,6 +159,9 @@ string GameObject::to_string() {
 		break;
 	case BALL_TYPE:
 		type = "ball";
+		break;
+	case BULLET_TYPE:
+		type = "bullet";
 		break;
 	case WALL_TYPE:
 		type = "wall";

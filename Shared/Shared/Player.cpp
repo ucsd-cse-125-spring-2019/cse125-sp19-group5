@@ -87,16 +87,30 @@ GameObject * Player::doAction(PlayerCommands action) {
 				useCooldown(SWING);
 				vec3 paddlePosition = getPosition() + getDirection() * vec3(2.05f * getBoundingSphere()->getRadius());
 				// vec3 paddleVelocity = getDirection() * vec3((float)(actionCharge));
-				vec3 paddleVelocity = vec3(getDirection().x, 0, getDirection().z) * vec3((float)(actionCharge));
+				vec3 paddleVelocity = glm::normalize(vec3(getDirection().x, 0, getDirection().z)) * vec3((float)(actionCharge));
 				int paddleLifespan = 10;
 				Paddle * p = new Paddle(paddlePosition, paddleVelocity, -1, 5, paddleLifespan);
+				/*p->setModel("Models/unit_sphere.obj");
+				p->setMaterial("Materials/brick.json");*/
+				p->setScale(vec3(5));
 				return p;
 			}
 			return nullptr;
 			break;
 		}
 		case SHOOT: {
+			if (std::get<0>(getCooldown(SHOOT)) == 0) {
+				useCooldown(SHOOT);
+				vec3 bulletStart = vec3(getPosition().x, 2.5, getPosition().z);
+				// vec3 paddleVelocity = getDirection() * vec3((float)(actionCharge));
+				vec3 bulletVelocity = glm::normalize(vec3(getDirection().x, 0, getDirection().z)) * 20.0f;
+				Bullet * b = new Bullet(bulletStart, bulletVelocity, 1.0f);
+				/*b->setModel("Models/unit_sphere.obj");
+				b->setMaterial("Materials/brick.json");*/
+				return b;
+			}
 			return nullptr;
+			break;
 		}
 		default: {
 			return nullptr;

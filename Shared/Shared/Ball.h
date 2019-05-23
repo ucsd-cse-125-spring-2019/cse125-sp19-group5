@@ -1,6 +1,7 @@
 #pragma once
 #include <set>
 #include "SphereGameObject.h"
+#include "Bullet.h"
 #include "Goal.h"
 #include "Paddle.h"
 #include "Player.h"
@@ -16,6 +17,7 @@ public:
 	// collision interactions below
 	void onCollision(GameObject * gameObject);
 	void onCollision(Ball * ball);
+	void onCollision(Bullet * bullet);
 	void onCollision(Goal * goal);
 	void onCollision(Paddle * paddle);
 	void onCollision(Player * player);

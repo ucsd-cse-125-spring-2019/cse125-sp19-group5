@@ -14,7 +14,7 @@ GAMEOBJECT_TYPES Ball::getGameObjectType() const {
 void Ball::updateOnServerTick() {
 	if (glm::length(getVelocity()) > 0) { 
 		vec3 direction = glm::normalize(getVelocity());
-		vec3 updatedVelocity = getVelocity() - (direction * 0.1f);
+		vec3 updatedVelocity = getVelocity() - (direction * 0.01f);
 		// vec3 updatedVelocity = getVelocity() * 0.99f;
 		vec3 updatedDirection = glm::normalize(updatedVelocity);
 		if (glm::dot(direction, updatedDirection) < 0.0f) {
@@ -83,6 +83,11 @@ void Ball::onCollision(Ball * ball) {
 			}*/
 		}
 	}
+}
+
+void Ball::onCollision(Bullet * bullet) {
+	std::cout << bullet->to_string() << std::endl;
+	setVelocity(getVelocity() + bullet->getVelocity());
 }
 
 void Ball::onCollision(Goal * goal) {

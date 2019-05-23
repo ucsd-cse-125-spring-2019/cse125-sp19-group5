@@ -120,6 +120,7 @@
     <ClInclude Include="Shared\BoundingShape.h" />
     <ClInclude Include="Shared\BoundingSphere.h" />
     <ClInclude Include="Shared\BoxGameObject.h" />
+    <ClInclude Include="Shared\Bullet.h" />
     <ClInclude Include="Shared\CollisionDetection.h" />
     <ClInclude Include="Shared\Common.h" />
     <ClInclude Include="Shared\CommonStructs.h" />
@@ -144,6 +145,7 @@
     <ClCompile Include="Shared\BoundingShape.cpp" />
     <ClCompile Include="Shared\BoundingSphere.cpp" />
     <ClCompile Include="Shared\BoxGameObject.cpp" />
+    <ClCompile Include="Shared\Bullet.cpp" />
     <ClCompile Include="Shared\CollisionDetection.cpp" />
     <ClCompile Include="Shared\ConfigSettings.cpp" />
     <ClCompile Include="Shared\GameObject.cpp" />

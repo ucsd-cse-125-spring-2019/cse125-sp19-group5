@@ -60,6 +60,7 @@ GameState & GameEngine::getGameState() {
 }
 
 void GameEngine::addGenericGameObject(GameObject *obj) {
+	std::cout << obj->to_string() << std::endl;
 	gameState.gameObjects[obj->getId()] = obj;
 
 	NetBuffer buffer(NetMessage::GAME_OBJ_CREATE);
@@ -209,8 +210,8 @@ void GameEngine::doPlayerCommands(vector<PlayerInputs> & playerInputs) {
 		GameObject * createdGameObject = gameState.players[i]->processCommand(aggregatePlayerCommands[i]);
 		if (createdGameObject) {
 			createdGameObject->setId(gameState.getFreeId());
-			createdGameObject->setModel("Models/sphere.obj");
-			createdGameObject->setMaterial("Materials/brick.json");
+			//createdGameObject->setModel("Models/sphere.obj");
+			//createdGameObject->setMaterial("Materials/brick.json");
 			addGenericGameObject(createdGameObject);
 		}
 	}

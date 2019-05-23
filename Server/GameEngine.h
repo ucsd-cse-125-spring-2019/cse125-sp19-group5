@@ -4,6 +4,7 @@
 #include <Shared/GameObject.h>
 #include <Shared/Player.h>
 #include <Shared/Ball.h>
+#include <Shared/Bullet.h>
 #include <Shared/Wall.h>
 #include <Shared/Goal.h>
 #include <Shared/GameState.h>
@@ -11,7 +12,7 @@
 
 #define NUM_PLAYERS 1
 #define MOVEMENT_MASK 0b11111
-#define COMMAND_MASK 0b1100000
+#define COMMAND_MASK 0b11100000
 
 class GameEngine {
 public:

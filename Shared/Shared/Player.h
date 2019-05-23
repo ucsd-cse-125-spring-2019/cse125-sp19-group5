@@ -3,6 +3,7 @@
 #include "SphereGameObject.h"
 #include "CommonStructs.h"
 #include "Ball.h"
+#include "Bullet.h"
 #include "Paddle.h"
 #include "Wall.h"
 
