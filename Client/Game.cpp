@@ -88,9 +88,6 @@ int Game::getScreenHeight() const {
 Game::Game(): gameObjects(1024, nullptr) {
 	Draw::init();
 
-	Input::mouseLock = false;
-	Input::setMouseVisible(true);
-
 	// TODO (bhang): Integrate this with connecting.
 	// Gui::create<GuiConnectMenu>();
 	
@@ -98,9 +95,11 @@ Game::Game(): gameObjects(1024, nullptr) {
 	lightShader = new Shader("Shaders/light");
 	camera = new Camera(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f), 70, 1.0f);
 	sun = new DirectionalLight(0);
-	sun->setDirection(vec3(0.009395, -0.200647, -0.713446));
+	sun->setDirection(vec3(0.009395, -0.500647, -0.713446));
 	sun->setAmbient(vec3(0.04f, 0.05f, 0.13f));
 	sun->setColor(vec3(0.8f, 0.7f, 0.55f));
+
+	shadowMap = new ShadowMap(camera);
 
 	skybox = new Skybox("Textures/Skybox/cloudtop", *camera);
 
@@ -114,12 +113,12 @@ Game::Game(): gameObjects(1024, nullptr) {
 
 	soundEngine = new SoundEngine();
 	soundEngine->setMasterVolume(1.0f);
-	soundtrack = soundEngine->loadFlatSound("Sounds/minecraft_wet_hands.wav", 0.5f);
+	soundtrack = soundEngine->loadFlatSound("Sounds/minecraft_wet_hands.wav", 0.1f);
 	soundtrack->play(true);
 	spatialTest1 = soundEngine->loadSpatialSound("Sounds/minecraft_sheep.ogg", 1.0f);
-	spatialTest1->play(true);
+	spatialTest1->play(false);
 	spatialTest2 = soundEngine->loadSpatialSound("Sounds/minecraft_chicken_ambient.ogg", 1.0f);
-	spatialTest2->play(true);
+	spatialTest2->play(false);
 
 	// Handle game object creation and deletion.
 	Network::on(
@@ -271,10 +270,12 @@ void Game::drawUI() const {
 
 void Game::draw(float dt) const {
 	// Shadow mapping render pass
-	shadowMap->prePass();
-	shadowMap->setupLight(shadowMap->getShader(), *sun);
-	drawScene(shadowMap->getShader(), DrawPass::SHADOW);
-	shadowMap->postPass();
+	shadowMap->setupLight(*sun);
+	for (int i = 0; i < SHADOW_NUM_CASCADES; i++) {
+		shadowMap->prePass(i);
+		drawScene(shadowMap->getShader(), DrawPass::SHADOW);
+		shadowMap->postPass(i);
+	}
 
 	// Normal 3D render pass
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -282,9 +283,9 @@ void Game::draw(float dt) const {
 	lightShader->use();
 	lightShader->setUniform("eyePos", camera->getPosition());
 	lightShader->setUniform("directionalLightNum", 1);
-
-	shadowMap->setupLight(*lightShader, *sun);
+	shadowMap->bindLightTransforms(*lightShader);
 	shadowMap->bindTexture(*lightShader);
+	shadowMap->bindZCutoffs(*lightShader);
 
 	sun->bind(*lightShader);
 	drawScene(*lightShader, DrawPass::LIGHTING);

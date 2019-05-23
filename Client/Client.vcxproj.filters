@@ -132,6 +132,9 @@
     <ClCompile Include="GameObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Renderer\ParticleSystem.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="Renderer\Gui\GuiElement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -248,6 +251,12 @@
     <ClInclude Include="Renderer\DrawPass.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Renderer\ParticleSystem.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Particle.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClCompile>
     <ClInclude Include="Renderer\Gui\GuiElement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
