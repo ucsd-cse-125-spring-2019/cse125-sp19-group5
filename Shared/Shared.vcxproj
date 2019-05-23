@@ -134,6 +134,7 @@
     <ClInclude Include="Shared\Networking\NetMessage.h" />
     <ClInclude Include="Shared\Networking\Network.h" />
     <ClInclude Include="Shared\Networking\Serializable.h" />
+    <ClInclude Include="Shared\PhysicsEngine.h" />
     <ClInclude Include="Shared\Player.h" />
     <ClInclude Include="Shared\SphereGameObject.h" />
     <ClInclude Include="Shared\Util\json11.hpp" />
@@ -153,6 +154,7 @@
     <ClCompile Include="Shared\Paddle.cpp" />
     <ClCompile Include="Shared\Networking\Connection.cpp" />
     <ClCompile Include="Shared\Networking\Network.cpp" />
+    <ClCompile Include="Shared\PhysicsEngine.cpp" />
     <ClCompile Include="Shared\Player.cpp" />
     <ClCompile Include="Shared\SphereGameObject.cpp" />
     <ClCompile Include="Shared\Util\json11.cpp" />

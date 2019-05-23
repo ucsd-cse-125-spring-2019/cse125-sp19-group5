@@ -6,6 +6,7 @@
 #include "Bullet.h"
 #include "Paddle.h"
 #include "Wall.h"
+#include "PhysicsEngine.h"
 
 class Player : public SphereGameObject {
 public:
@@ -25,6 +26,9 @@ public:
 	GameObject * doAction(PlayerCommands action);
 	GameObject * processCommand(int inputs);
 
+	bool getIsGrounded() const { return isGrounded; }
+	void setIsGrounded(const bool grounded) { isGrounded = grounded; }
+
 	void serialize(NetBuffer &buffer) const override;
 	void deserialize(NetBuffer &buffer) override;
 
@@ -43,4 +47,9 @@ private:
 
 	// get<0> = current cooldown, get<1> = total cooldown
 	std::map<PlayerCommands, tuple<int, int>> cooldowns;
+	float moveSpeed = PhysicsEngine::getPlayerDefaultMoveSpeed();
+	bool isGrounded = false;
+	bool isJumpKeyDown = false; // For bhop
+	bool isJumpKey = false;
+	bool isJumpKeyUp = false;
 };

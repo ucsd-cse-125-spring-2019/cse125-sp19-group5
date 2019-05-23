@@ -1,4 +1,5 @@
 #include "ParticleSystem.h"
+#include <glm/gtx/string_cast.hpp>
 
 ParticleSystem::ParticleSystem()
 	: ParticleSystem(1000, 1.0f, vec3(0.0f), -2.0f) {

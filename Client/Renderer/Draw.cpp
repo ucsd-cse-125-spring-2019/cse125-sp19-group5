@@ -1,8 +1,21 @@
 #include "Draw.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+float Draw::screenWidth = 0.0f;
+float Draw::screenHeight = 0.0f;
 
 GLuint Draw::quadVAO = 0;
 GLuint Draw::quadVBO = 0;
-mat4 Draw::projection = mat4(1.0f);
+
+// (x, y, z) -> (2x - 1, 2y - 1, z)
+mat4 Draw::projection = mat4(
+	 2.0,  0.0, 0.0, 0.0,
+	 0.0,  2.0, 0.0, 0.0,
+	 0.0,  0.0, 1.0, 0.0,
+	-1.0, -1.0, 0.0, 1.0
+);
+
 vec4 Draw::color = vec4(1.0f);
 Shader *Draw::texturedQuadShader = nullptr;
 Texture2d *Draw::whiteTexture = nullptr;
@@ -20,8 +33,6 @@ void Draw::init() {
 	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	projection = mat4(1.0f);
 
 	texturedQuadShader->use();
 	texturedQuadShader->setUniform("projection", projection);
@@ -74,4 +85,9 @@ void Draw::rect(float x, float y, float w, float h) {
 
 void Draw::setupContext() {
 	texturedQuadShader->use();
+}
+
+void Draw::updateScreenDimensions(float newScrWidth, float newScrHeight) {
+	screenWidth = newScrWidth;
+	screenHeight = newScrHeight;
 }

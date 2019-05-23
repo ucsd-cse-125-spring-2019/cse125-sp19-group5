@@ -64,6 +64,9 @@ public:
 	void onGameObjectAnimSet(Connection *c, NetBuffer &buffer);
 	void onGameObjectMaterialSet(Connection *c, NetBuffer &buffer);
 
+	int getScreenWidth() const;
+	int getScreenHeight() const;
+
 	void updateScreenDimensions(int width, int height);
 	Camera *getCamera() const;
 };
