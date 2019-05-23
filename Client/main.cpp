@@ -27,10 +27,16 @@ static void updateMenuPrompt(int playerId, MenuOptions currentMenuOptions)
 	cout << "UPDATED MENU PROMPT APPEARED" << endl;
 }
 
+
+static MenuOptions menuPrompt(int playerId, MenuOptions currentMenuOptions) 
+{
+
+}
+
 /*
  * This is a function stub
  */
-static MenuOptions menuPrompt(int playerId, MenuOptions currentMenuOptions) {
+static MenuOptions menuPrompt_old(int playerId, MenuOptions currentMenuOptions) {
 	int selection = 0;
 	while (0 >= selection || selection >= 5)
 	{
@@ -135,8 +141,6 @@ int main(int argc, char **argv) {
 	glfwSetWindowPos(window, middleX, middleY);
 
 	Input::init(window);
-	Network::init("127.0.0.1", 1234);
-
 	Gui::setupInputListeners(window);
 
 	Game game;

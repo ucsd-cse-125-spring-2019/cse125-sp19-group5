@@ -159,6 +159,9 @@
     <ClCompile Include="Renderer\Gui\GuiImage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Gui\MenuPrompt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -276,6 +279,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Renderer\Gui\GuiImage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Gui\MenuPrompt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

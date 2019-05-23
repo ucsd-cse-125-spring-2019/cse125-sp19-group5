@@ -126,6 +126,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Game\Gui\GuiConnectMenu.cpp" />
+    <ClCompile Include="Game\Gui\MenuPrompt.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Networking\Client.cpp" />
@@ -166,6 +167,7 @@
     <ClInclude Include="ClientGameObject.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Game\Gui\GuiConnectMenu.h" />
+    <ClInclude Include="Game\Gui\MenuPrompt.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Networking\Client.h" />
     <ClInclude Include="Renderer\Camera.h" />
