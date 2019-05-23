@@ -9,7 +9,8 @@ enum PlayerCommands {
 	RIGHT = 1 << 3,
 	JUMP = 1 << 4,
 	WALL = 1 << 5,
-	SWING = 1 << 6
+	SWING = 1 << 6,
+	SHOOT = 1 << 7
 };
 
 struct PlayerInputs {
