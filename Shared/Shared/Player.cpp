@@ -101,9 +101,9 @@ GameObject * Player::doAction(PlayerCommands action) {
 		case SHOOT: {
 			if (std::get<0>(getCooldown(SHOOT)) == 0) {
 				useCooldown(SHOOT);
-				vec3 bulletStart = vec3(getPosition().x, 2.5, getPosition().z);
+				vec3 bulletStart = vec3(getPosition().x, 5, getPosition().z);
 				// vec3 paddleVelocity = getDirection() * vec3((float)(actionCharge));
-				vec3 bulletVelocity = glm::normalize(vec3(getDirection().x, 0, getDirection().z)) * 20.0f;
+				vec3 bulletVelocity = glm::normalize(vec3(getDirection().x, 0, getDirection().z)) * 5.0f;
 				Bullet * b = new Bullet(bulletStart, bulletVelocity, 1.0f);
 				/*b->setModel("Models/unit_sphere.obj");
 				b->setMaterial("Materials/brick.json");*/

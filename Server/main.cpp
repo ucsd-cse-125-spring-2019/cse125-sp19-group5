@@ -163,7 +163,7 @@ int main(int argc, char **argv) {
 
 		auto player = new Player(vec3(0, 2, 0), origin, origin, c->getId(), 2, 0);
 		player->setCooldown(SWING, std::make_tuple(0, 60));
-		player->setCooldown(SHOOT, std::make_tuple(0, 20));
+		player->setCooldown(SHOOT, std::make_tuple(0, 60));
 		gameEngine.addGameObject(player);
 
 		player->setModel("Models/player.obj");
