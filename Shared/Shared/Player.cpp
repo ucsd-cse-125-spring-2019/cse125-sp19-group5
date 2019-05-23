@@ -50,21 +50,81 @@ vec3 Player::getMoveDestination(vec3 movement) {
 		directionalizedMovement = directionalizedMovement - glm::cross(up, direction);
 	}
 
-	vec3 prevVelocity = getVelocity();
+	// For checking frame-perfect bhop
+	if (!isJumpKeyDown && !isJumpKey && !isJumpKeyUp && movement.y > 0) {
+		isJumpKeyDown = true;
+		isJumpKey = false;
+		isJumpKeyUp = false;
+	}
+	else if (isJumpKeyDown && movement.y > 0) {
+		isJumpKeyDown = false;
+		isJumpKey = true;
+		isJumpKeyUp = false;
+	}
+	else if ((isJumpKeyDown || isJumpKey) && movement.y <= 0) {
+		isJumpKeyDown = false;
+		isJumpKey = false;
+		isJumpKeyUp = true;
+	}
+	else if (isJumpKey && movement.y > 0) {
+		isJumpKeyDown = false;
+		isJumpKey = true;
+		isJumpKeyUp = false;
+	}
+	else {
+		isJumpKeyDown = false;
+		isJumpKey = false;
+		isJumpKeyUp = false;
+	}
+
+	bool wishJump = false;
+	if (PhysicsEngine::getAutoBhopEnabled()) {
+		wishJump = movement.y > 0;
+	}
+	else {
+		if (isJumpKeyDown && !wishJump)
+			wishJump = true;
+		if (isJumpKeyUp)
+			wishJump = false;
+	}
+
+	// Calculate player velocity
 	vec3 accelDir;
-	if (glm::length(directionalizedMovement) == 0)
+	if (glm::length(directionalizedMovement) == 0) { // Avoid returning NaN
 		accelDir = vec3(0.0f);
-	else
+	}
+	else {
 		accelDir = glm::normalize(directionalizedMovement);
-	vec3 newVelocity;
-	if (isGrounded)
-		newVelocity = PhysicsEngine::movePlayerOnGround(accelDir, prevVelocity);
-	else
-		newVelocity = PhysicsEngine::movePlayerInAir(accelDir, prevVelocity);
+	}
+	vec3 newVelocity = getVelocity();
+	if (isGrounded) {
+		newVelocity.y = PhysicsEngine::applyGravity(vec3(0.0f)).y; // Reset gravity
+		if (wishJump) {
+			newVelocity = PhysicsEngine::movePlayerOnGround(accelDir, newVelocity);
+			newVelocity = PhysicsEngine::jumpPlayer(newVelocity);
+			isGrounded = false;
+		}
+		else {
+			newVelocity = PhysicsEngine::applyFriction(newVelocity, PhysicsEngine::getPlayerMoveFriction());
+			newVelocity = PhysicsEngine::movePlayerOnGround(accelDir, newVelocity);
+		}
+	}
+	else {
+		newVelocity = PhysicsEngine::movePlayerInAir(accelDir, newVelocity);
+		newVelocity = PhysicsEngine::applyGravity(newVelocity);
+	}
 	setVelocity(newVelocity);
 
-	// TODO jumping/applying gravity
-	return getPosition() + newVelocity * PhysicsEngine::getDeltaTime();
+	cout << glm::to_string(getPosition()) << endl;
+
+	// Prevent the player from ever falling through the floor
+	vec3 newPos = getPosition() + newVelocity * PhysicsEngine::getDeltaTime();
+	if (newPos.y < PhysicsEngine::getFloorY()) {
+		newPos.y = PhysicsEngine::getFloorY();
+		isGrounded = true;
+	}
+
+	return newPos;
 }
 
 GameObject * Player::doAction(PlayerCommands action) {
