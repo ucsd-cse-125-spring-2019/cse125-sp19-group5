@@ -101,6 +101,9 @@ vec3 GameEngine::movementInputToVector(int movementInput) {
 	if (movementInput & RIGHT) {
 		movement = movement + vec3(1, 0, 0);
 	}
+	if (movementInput & JUMP) {
+		movement = movement + vec3(0, 1, 0);
+	}
 
 	if (glm::length(movement) == 0.0f) {
 		return vec3(0.0f);

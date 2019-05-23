@@ -215,6 +215,9 @@ void Game::updateInputs() {
 		//direction += camera->getRight();
 		keyInputs += RIGHT;
 	}
+	if (Input::isKeyDown(GLFW_KEY_SPACE)) {
+		keyInputs += JUMP;
+	}
 	if (Input::isKeyDown(GLFW_KEY_E)) {
 		keyInputs += SWING;
 	}
