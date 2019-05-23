@@ -11,20 +11,20 @@ ParticleSystem::ParticleSystem(const unsigned int maxParticles, const float part
 	: maxParticles(maxParticles)
 	, particleMass(particleMass)
 	, floorY(floorY)
-	, creationSpeed(100)
+	, creationSpeed(50)
 	, initialPos(position)
 	, initialPosVariance(vec3(1.0f))
 	, initialVel(vec3(0.0f, 0.0f, 0.0f))
 	, initialVelVariance(vec3(5.0f))
-	, initialLife(5.0f)
-	, initialLifeVariance(2.0f)
+	, initialLife(1.0f)
+	, initialLifeVariance(0.8f)
 	, gravity(0.0f)
 	, airDensity(0.2f)
 	, dragCoeff(2.0f)
 	, particleRadius(0.8f)
 	, collElasticity(0.6f)
 	, collFriction(0.2f)
-	, particleColor(vector<vec4>{ vec4(1.0f), vec4(0.0f) })
+	, particleColor(vector<vec4>{ vec4(1.0f), vec4(1.0f, 1.0f, 1.0f, 0.0f) })
 	, VAO(0)
 	, texture(Assets::getTexture2d("Textures/white.png")) {
 
@@ -152,7 +152,6 @@ void ParticleSystem::update(float dt, const Camera *camera) {
 
 		if (currP->lifespan <= 0)
 		{
-			// Decrement pointer
 			numParticles--;
 			if (numParticles <= 0) break;
 
@@ -162,6 +161,9 @@ void ParticleSystem::update(float dt, const Camera *camera) {
 			currP->velocity = newP->velocity;
 			currP->force = newP->force;
 			currP->lifespan = newP->lifespan;
+			currP->camDist = newP->camDist;
+
+			newP->camDist = -1.0f;
 		}
 	}
 
@@ -188,12 +190,17 @@ void ParticleSystem::update(float dt, const Camera *camera) {
 		Particle *p = particles[i];
 		p->color = getColorFromLifespan(p->lifespan, p->maxLifespan);
 		p->update(dt, floorY, collElasticity, collFriction);
-		p->camDist = glm::length(p->position - camPos);
+
+		if (p->lifespan > 0) {
+			p->camDist = glm::length(p->position - camPos);
+		} else {
+			p->camDist = -1.0f;
+		}
 	}
 
 	// Populate buffer data
-	std::vector<glm::vec4> particlePositionBufferData; // w contains size
-	std::vector<glm::vec4> particleColorBufferData; // w contains alpha
+	std::vector<glm::vec4> particlePositionBufferData(numParticles); // w contains size
+	std::vector<glm::vec4> particleColorBufferData(numParticles); // w contains alpha
 
 	std::sort(particles.begin(), particles.end(), [](Particle *a, Particle *b) {
 		return a->camDist > b->camDist;
@@ -203,8 +210,8 @@ void ParticleSystem::update(float dt, const Camera *camera) {
 	{
 		Particle *p = particles[i];
 		glm::vec3 pos = p->position;
-		particlePositionBufferData.push_back(glm::vec4(pos.x, pos.y, pos.z, particleRadius));
-		particleColorBufferData.push_back(p->color);
+		particlePositionBufferData[i] = glm::vec4(pos.x, pos.y, pos.z, particleRadius);
+		particleColorBufferData[i] = p->color;
 	}
 
 	// Bind VBOs
