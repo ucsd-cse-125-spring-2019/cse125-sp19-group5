@@ -91,9 +91,11 @@ Game::Game(): gameObjects(1024, nullptr) {
 	// TODO (bhang): Integrate this with connecting.
 	// Gui::create<GuiConnectMenu>();
 	
-	shadowMap = new ShadowMap();
+	Input::setMouseVisible(false);
+
 	lightShader = new Shader("Shaders/light");
 	camera = new Camera(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f), 70, 1.0f);
+	shadowMap = new ShadowMap(camera);
 	sun = new DirectionalLight(0);
 	sun->setDirection(vec3(0.009395, -0.500647, -0.713446));
 	sun->setAmbient(vec3(0.04f, 0.05f, 0.13f));

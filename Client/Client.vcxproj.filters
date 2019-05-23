@@ -256,7 +256,7 @@
     </ClInclude>
     <ClInclude Include="Renderer\Particle.h">
       <Filter>Header Files\Renderer</Filter>
-    </ClCompile>
+    </ClInclude>
     <ClInclude Include="Renderer\Gui\GuiElement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
