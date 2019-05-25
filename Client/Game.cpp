@@ -12,9 +12,7 @@
 #include "Renderer/Material.h"
 #include "Renderer/ParticleSystem.h"
 #include "Assets.h"
-
-ParticleSystem *ps;
-Shader *psShader;
+#include "Game/ParticleEmitters.h"
 
 void Game::onGameObjectCreated(Connection *c, NetBuffer &buffer) {
 	auto gameObjectType = buffer.read<GAMEOBJECT_TYPES>();
@@ -84,10 +82,6 @@ void Game::onGameObjectMaterialSet(Connection *c, NetBuffer &buffer) {
 Game::Game(): gameObjects(1024, nullptr) {
 	Draw::init();
 
-	ps = new ParticleSystem();
-	ps->texture = Assets::getTexture2d("Textures/gary.png");
-	psShader = new Shader("Shaders/particle");
-
 	shadowMap = new ShadowMap();
 	lightShader = new Shader("Shaders/light");
 	textShader = new Shader("Shaders/text");
@@ -147,6 +141,9 @@ Game::Game(): gameObjects(1024, nullptr) {
 	Network::on(NetMessage::GAME_STATE_UPDATE, [&](Connection *c, NetBuffer &buffer) {
 		gameState.deserialize(buffer);
 	});
+
+	Network::on(NetMessage::PARTICLES, ParticleEmitters::onUpdate);
+	Network::on(NetMessage::PARTICLES_DELETE, ParticleEmitters::onDelete);
 }
 
 Game::~Game() {
@@ -159,7 +156,6 @@ Game::~Game() {
 	delete soundtrack;
 	delete spatialTest1;
 	delete spatialTest2;
-	delete ps;
 
 	for (auto gameObject : gameObjects) {
 		if (gameObject) {
@@ -168,6 +164,7 @@ Game::~Game() {
 	}
 
 	Draw::cleanUp();
+	ParticleEmitters::cleanUp();
 }
 
 Camera *Game::getCamera() const {
@@ -250,7 +247,7 @@ void Game::update(float dt) {
 		camera->setPosition(playerObj->getPosition() + offset);
 	}
 
-	ps->update(dt, camera);
+	ParticleEmitters::update(dt, camera);
 }
 
 void Game::drawScene(Shader &shader, DrawPass pass) const {
@@ -285,7 +282,7 @@ void Game::draw(float dt) const {
 	sun->bind(*lightShader);
 	drawScene(*lightShader, DrawPass::LIGHTING);
 	skybox->draw();
-	ps->draw(*psShader, camera);
+	ParticleEmitters::draw(camera);
 
 	glDisable(GL_DEPTH_TEST);
 	Draw::setupContext();

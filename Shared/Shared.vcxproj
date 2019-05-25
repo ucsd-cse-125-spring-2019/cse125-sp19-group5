@@ -124,6 +124,7 @@
     <ClInclude Include="Shared\CommonStructs.h" />
     <ClInclude Include="Shared\GameObject.h" />
     <ClInclude Include="Shared\GameState.h" />
+    <ClInclude Include="Shared\Game\ParticleEmitter.h" />
     <ClInclude Include="Shared\Paddle.h" />
     <ClInclude Include="Shared\GameMessage.hpp" />
     <ClInclude Include="Shared\Networking\Connection.h" />
@@ -143,6 +144,7 @@
     <ClCompile Include="Shared\CollisionDetection.cpp" />
     <ClCompile Include="Shared\ConfigSettings.cpp" />
     <ClCompile Include="Shared\GameObject.cpp" />
+    <ClCompile Include="Shared\Game\ParticleEmitter.cpp" />
     <ClCompile Include="Shared\Paddle.cpp" />
     <ClCompile Include="Shared\Networking\Connection.cpp" />
     <ClCompile Include="Shared\Networking\Network.cpp" />
@@ -151,6 +153,7 @@
     <ClCompile Include="Shared\Wall.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="cpp.hint" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -8,6 +8,7 @@
 #include <chrono>
 #include "GameEngine.h"
 #include "Networking/Server.h"
+#include <Shared/Game/ParticleEmitter.h>
 
 constexpr auto TICKS_PER_SECOND = 60; // How many updates per second.
 
@@ -93,6 +94,10 @@ int main(int argc, char **argv) {
 		player->setMaterial("Materials/brick.json");
 		player->setScale(vec3(0.2f));
 		player->setAnimation(1);
+
+		auto ps = new ParticleEmitter();
+		ps->setTexture("Textures/gary.png");
+		ps->setLifeTime(10);
 
 		// Receive player keyboard and mouse(TODO) input
 		c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);
