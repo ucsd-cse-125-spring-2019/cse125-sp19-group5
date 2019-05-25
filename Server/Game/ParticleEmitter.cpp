@@ -11,7 +11,7 @@ static inline float curTime() {
 }
 
 ParticleEmitter::ParticleEmitter()
-	: updateNextTick(false)
+	: updateNextTick(true)
 	, dieTime(-1.0f)
 	, _CreationSpeed(50)
 	, _InitialPosVariance(vec3(1.0f))

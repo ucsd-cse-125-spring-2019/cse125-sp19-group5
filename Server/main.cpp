@@ -96,8 +96,10 @@ int main(int argc, char **argv) {
 		player->setAnimation(1);
 
 		auto ps = new ParticleEmitter();
+		ps->setGravity(-15.0f);
+		ps->setCreationSpeed(500);
+		ps->setInitialVel(vec3(0, 10, 0));
 		ps->setTexture("Textures/gary.png");
-		ps->setLifeTime(10);
 
 		// Receive player keyboard and mouse(TODO) input
 		c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);
