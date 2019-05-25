@@ -3,6 +3,14 @@
 #include "../Assets.h"
 #include <algorithm>
 
+
+vector<GLfloat> ParticleSystem::particleVertexBufferData = {
+	-0.5f, -0.5f, 0.0f,
+	0.5f, -0.5f, 0.0f,
+	-0.5f, 0.5f, 0.0f,
+	0.5f, 0.5f, 0.0f,
+};
+
 ParticleSystem::ParticleSystem()
 	: ParticleSystem(1000, 1.0f, vec3(0.0f), -2.0f) {
 }
@@ -32,6 +40,9 @@ ParticleSystem::ParticleSystem(const unsigned int maxParticles, const float part
 	{
 		Particle* p = new Particle(particleMass, position);
 		particles.push_back(p);
+
+		particlePositionBufferData.push_back(vec4());
+		particleColorBufferData.push_back(vec4());
 	}
 
 	setupBuffers();
@@ -43,18 +54,20 @@ ParticleSystem::~ParticleSystem() {
 	if (VAO) {
 		glDeleteVertexArrays(1, &VAO);
 	}
+	if (particleVertexBuffer) {
+		glDeleteBuffers(1, &particleVertexBuffer);
+	}
+	if (particlePositionBuffer) {
+		glDeleteBuffers(1, &particlePositionBuffer);
+	}
+	if (particleColorBuffer) {
+		glDeleteBuffers(1, &particleColorBuffer);
+	}
 }
 
 void ParticleSystem::setupBuffers() {
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
-
-	particleVertexBufferData = {
-		-0.5f, -0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f,
-		-0.5f, 0.5f, 0.0f,
-		0.5f, 0.5f, 0.0f,
-	};
 
 	glGenBuffers(1, &particleVertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, particleVertexBuffer);
@@ -100,15 +113,6 @@ void ParticleSystem::update(float dt, const Camera *camera) {
 	creationTimer += dt;
 	if (creationTimer > 1.0f)
 	{
-		cout << "Current particle count: " << numParticles << endl;
-		for (unsigned int i = 0; i < numParticles && i < 1; i++)
-		{
-			cout << i << ": " << particles[i]->lifespan << " s" << endl;
-			cout << glm::to_string(particles[i]->position) << endl;
-			cout << glm::to_string(particles[i]->velocity) << endl;
-			cout << glm::to_string(particles[i]->color) << endl;
-		}
-
 		creationTimer -= 1.0f;
 		for (unsigned int i = 0; i < creationSpeed; i++)
 		{
@@ -198,10 +202,6 @@ void ParticleSystem::update(float dt, const Camera *camera) {
 		}
 	}
 
-	// Populate buffer data
-	std::vector<glm::vec4> particlePositionBufferData(numParticles); // w contains size
-	std::vector<glm::vec4> particleColorBufferData(numParticles); // w contains alpha
-
 	std::sort(particles.begin(), particles.end(), [](Particle *a, Particle *b) {
 		return a->camDist > b->camDist;
 	});
@@ -217,11 +217,11 @@ void ParticleSystem::update(float dt, const Camera *camera) {
 	// Bind VBOs
 	glBindBuffer(GL_ARRAY_BUFFER, particlePositionBuffer);
 	glBufferData(GL_ARRAY_BUFFER, maxParticles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, particlePositionBufferData.size() * sizeof(glm::vec4), particlePositionBufferData.data());
+	glBufferSubData(GL_ARRAY_BUFFER, 0, numParticles * sizeof(glm::vec4), particlePositionBufferData.data());
 
 	glBindBuffer(GL_ARRAY_BUFFER, particleColorBuffer);
 	glBufferData(GL_ARRAY_BUFFER, maxParticles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, particleColorBufferData.size() * sizeof(glm::vec4), particleColorBufferData.data());
+	glBufferSubData(GL_ARRAY_BUFFER, 0, numParticles * sizeof(glm::vec4), particleColorBufferData.data());
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }

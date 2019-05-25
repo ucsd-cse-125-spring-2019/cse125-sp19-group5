@@ -22,5 +22,5 @@ void main() {
     );
 
     vertexColor = Color;
-    texCoords = Vertex.xy + vec2(0.5);
+    texCoords = vec2(Vertex.x, 1.0 - Vertex.y) + vec2(0.5);
 }

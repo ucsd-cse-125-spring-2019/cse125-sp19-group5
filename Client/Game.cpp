@@ -85,7 +85,7 @@ Game::Game(): gameObjects(1024, nullptr) {
 	Draw::init();
 
 	ps = new ParticleSystem();
-	ps->texture = Assets::getTexture2d("Textures/star.png");
+	ps->texture = Assets::getTexture2d("Textures/gary.png");
 	psShader = new Shader("Shaders/particle");
 
 	shadowMap = new ShadowMap();

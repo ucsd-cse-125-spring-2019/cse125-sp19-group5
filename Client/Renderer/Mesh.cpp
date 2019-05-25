@@ -113,7 +113,7 @@ void Mesh::buildBoneTransformations(float time, aiNode *node, const mat4 &parent
 		transformation = toGlm(node->mTransformation);
 	}
 
-	const auto boneIds = data->getBoneIds();
+	const auto &boneIds = data->getBoneIds();
 	auto boneIdIt = boneIds.find(nodeName);
 	transformation = parentTransform * transformation;
 
