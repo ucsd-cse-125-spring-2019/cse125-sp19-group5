@@ -1,7 +1,9 @@
+#include "CollisionDetection.h"
 #include "Player.h"
 #include "BoundingSphere.h"
 #include <iostream>
 #include <glm/gtx/euler_angles.hpp>
+#include <algorithm>
 
 Player::Player(vec3 position, vec3 velocity, vec3 direction, int id, float radius, int team) : SphereGameObject(position, velocity, id) {
 	this->direction = direction;
@@ -28,6 +30,19 @@ void Player::updateOnServerTick() {
 			std::get<0>(cd.second) -= 1;
 		}
 	}
+
+	if (numLandings == 0) {
+		maxBoxHeight = 0.0f;
+		isGrounded = false;
+	}
+
+	if (!isGrounded && numLandings > 0) {
+		setPosition(vec3(getPosition().x, maxBoxHeight, getPosition().z));
+		isGrounded = true;
+		maxBoxHeight = 0.0f;
+	}
+
+	numLandings = 0;
 }
 
 vec3 Player::getDirection() {
@@ -119,11 +134,12 @@ vec3 Player::getMoveDestination(vec3 movement) {
 	setVelocity(newVelocity);
 
 	// Prevent the player from ever falling through the floor
+	// ATTEMPT TO MOVE GROUND CHECK TO WALL COLLISIONS - KEENAN
 	vec3 newPos = getPosition() + newVelocity * PhysicsEngine::getDeltaTime();
-	if (newPos.y < PhysicsEngine::getFloorY()) {
+	/*if (newPos.y < PhysicsEngine::getFloorY()) {
 		newPos.y = PhysicsEngine::getFloorY();
 		isGrounded = true;
-	}
+	}*/
 
 	return newPos;
 }
@@ -234,4 +250,12 @@ void Player::onCollision(Paddle * paddle) { }
 
 void Player::onCollision(Player * player) { }
 
-void Player::onCollision(Wall * wall) { }
+void Player::onCollision(Wall * wall) { 
+	for (Plane * p : CollisionDetection::getIntersectingPlanes(getBoundingSphere(), wall->getBoundingBox())) {
+		if (p == wall->getBoundingBox()->top) {
+			this->numLandings += 1;
+			this->maxBoxHeight = std::max(maxBoxHeight, 
+				wall->getPosition().y + wall->getBoundingBox()->height + getBoundingSphere()->getRadius());
+		}
+	}
+}
