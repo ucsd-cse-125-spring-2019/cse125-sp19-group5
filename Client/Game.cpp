@@ -13,6 +13,7 @@
 #include "Renderer/ParticleSystem.h"
 #include "Assets.h"
 #include "Game/ParticleEmitters.h"
+#include "Game/Gui/GuiConnectMenu.h"
 
 void Game::onGameObjectCreated(Connection *c, NetBuffer &buffer) {
 	auto gameObjectType = buffer.read<GAMEOBJECT_TYPES>();
@@ -79,26 +80,41 @@ void Game::onGameObjectMaterialSet(Connection *c, NetBuffer &buffer) {
 	}
 }
 
+int Game::getScreenWidth() const {
+	return screenWidth;
+}
+
+int Game::getScreenHeight() const {
+	return screenHeight;
+}
+
 Game::Game(): gameObjects(1024, nullptr) {
 	Draw::init();
 
-	shadowMap = new ShadowMap();
+	// TODO (bhang): Integrate this with connecting.
+	// Gui::create<GuiConnectMenu>();
+	
+	Input::setMouseVisible(false);
+
 	lightShader = new Shader("Shaders/light");
-	textShader = new Shader("Shaders/text");
 	camera = new Camera(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f), 70, 1.0f);
+	shadowMap = new ShadowMap(camera);
 	sun = new DirectionalLight(0);
-	sun->setDirection(vec3(0.009395, -0.200647, -0.713446));
+	sun->setDirection(vec3(0.009395, -0.500647, -0.713446));
 	sun->setAmbient(vec3(0.04f, 0.05f, 0.13f));
 	sun->setColor(vec3(0.8f, 0.7f, 0.55f));
 
-	skybox = new Skybox("Textures/Skybox/cloudtop", *camera);
+	shadowMap = new ShadowMap(camera);
 
-	Input::setMouseVisible(false);
+	skybox = new Skybox("Textures/Skybox/cloudtop", *camera);
 
 	ConfigSettings::get().getValue("MouseSensitivity", mouseSensitivity);
 
-	textRenderer = new TextRenderer(*textShader);
-	fpsText = textRenderer->addText(textRenderer->DEFAULT_FONT_NAME, "fps", 0.02f, 0.02f, 0.4f, glm::vec3(1.0f, 1.0f, 0.0f));
+	gTextRenderer->loadFont(
+		TextRenderer::DEFAULT_FONT_NAME,
+		TextRenderer::DEFAULT_FONT_FILEPATH
+	);
+	fpsText = gTextRenderer->addText(TextRenderer::DEFAULT_FONT_NAME, "fps", 0.02f, 0.02f, 0.4f, glm::vec3(1.0f, 1.0f, 0.0f));
 
 	soundEngine = new SoundEngine();
 	soundEngine->setMasterVolume(1.0f);
@@ -163,6 +179,7 @@ Game::~Game() {
 		}
 	}
 
+	Gui::cleanUp();
 	Draw::cleanUp();
 	ParticleEmitters::cleanUp();
 }
@@ -174,7 +191,6 @@ Camera *Game::getCamera() const {
 void Game::updateScreenDimensions(int width, int height) {
 	screenWidth = width;
 	screenHeight = height;
-	textRenderer->updateScreenDimensions(width, height);
 }
 
 void Game::updateInputs() {
@@ -205,6 +221,9 @@ void Game::updateInputs() {
 	if (Input::isKeyDown(GLFW_KEY_D)) {
 		//direction += camera->getRight();
 		keyInputs += RIGHT;
+	}
+	if (Input::isKeyDown(GLFW_KEY_SPACE)) {
+		keyInputs += JUMP;
 	}
 	if (Input::isKeyDown(GLFW_KEY_E)) {
 		keyInputs += SWING;
@@ -258,16 +277,19 @@ void Game::drawScene(Shader &shader, DrawPass pass) const {
 }
 
 void Game::drawUI() const {
-	textShader->use();
-	textRenderer->renderText();
+	Gui::draw();
+
+	gTextRenderer->renderText();
 }
 
 void Game::draw(float dt) const {
 	// Shadow mapping render pass
-	shadowMap->prePass();
-	shadowMap->setupLight(shadowMap->getShader(), *sun);
-	drawScene(shadowMap->getShader(), DrawPass::SHADOW);
-	shadowMap->postPass();
+	shadowMap->setupLight(*sun);
+	for (int i = 0; i < SHADOW_NUM_CASCADES; i++) {
+		shadowMap->prePass(i);
+		drawScene(shadowMap->getShader(), DrawPass::SHADOW);
+		shadowMap->postPass(i);
+	}
 
 	// Normal 3D render pass
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -275,9 +297,9 @@ void Game::draw(float dt) const {
 	lightShader->use();
 	lightShader->setUniform("eyePos", camera->getPosition());
 	lightShader->setUniform("directionalLightNum", 1);
-
-	shadowMap->setupLight(*lightShader, *sun);
+	shadowMap->bindLightTransforms(*lightShader);
 	shadowMap->bindTexture(*lightShader);
+	shadowMap->bindZCutoffs(*lightShader);
 
 	sun->bind(*lightShader);
 	drawScene(*lightShader, DrawPass::LIGHTING);

@@ -3,6 +3,8 @@
 // Lighting
 const int LIGHTS_MAX = 10;
 
+const int SHADOW_NUM_CASCADES = 4;
+
 const float gamma = 2.2;
 const vec3 gammaCorr = vec3(1.0 / gamma);
 
@@ -32,14 +34,17 @@ struct Material {
 uniform Material material;
 uniform DirectionalLight directionalLight[LIGHTS_MAX];
 uniform PointLight pointLight[LIGHTS_MAX];
-uniform sampler2D shadowMap;
+uniform sampler2D shadowMap[SHADOW_NUM_CASCADES];
 uniform int pointLightNum;
 uniform int directionalLightNum;
+uniform float cascadeZCutoffs[SHADOW_NUM_CASCADES];
 
 uniform vec3 eyePos;
+uniform mat4 viewMat;
 
+in float clipSpaceZ;
 in mat3 tbn;
-in vec4 lightSpacePos;
+in vec4 lightSpacePos[SHADOW_NUM_CASCADES];
 in vec3 fragPos;
 in vec3 fragNormal;
 in vec2 fragTexCoords;
@@ -92,11 +97,15 @@ vec3 getDirectionalLightIntensity(
 
 const float SHADOW_BIAS = 0.0002f;
 
-float getShadowIntensity(vec4 lightSpacePos) {
-	vec3 pos = lightSpacePos.xyz / lightSpacePos.w;
+float getShadowIntensity(int cascade, vec4 lightSpacePos) {
+	vec3 pos = lightSpacePos.xyz;
 	pos = pos * 0.5 + 0.5;
 
-	vec2 moments = texture(shadowMap, pos.xy).rg;
+	if (pos.z < 0.0 || pos.z > 1.0) {
+		return 1.0;
+	}
+
+	vec2 moments = texture(shadowMap[cascade], pos.xy).rg;
 
 	if (pos.z <= moments.x) {
 		return 1.0f;
@@ -114,7 +123,15 @@ void main() {
 	vec3 normal = normalize(fragNormal);
 	vec3 eyeDir = normalize(eyePos - fragPos);
 	vec3 finalColor = vec3(0.0f);
-	float intensity = getShadowIntensity(lightSpacePos);
+	float intensity = 1.0;
+	int cascade;	
+	float zPos = gl_FragCoord.z / gl_FragCoord.w;
+	for (cascade = 0; cascade < SHADOW_NUM_CASCADES; cascade++) {
+		if (zPos < cascadeZCutoffs[cascade]) {
+			intensity = getShadowIntensity(cascade, lightSpacePos[cascade]);
+			break;
+		}
+	}
 
 	float shininess = material.shininess;
 	vec3 diffuse = texture2D(material.diffuseTex, fragTexCoords).rgb;

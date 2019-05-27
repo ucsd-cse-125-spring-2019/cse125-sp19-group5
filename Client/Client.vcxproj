@@ -127,6 +127,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Game\ParticleEmitter.cpp" />
     <ClCompile Include="Game\ParticleEmitters.cpp" />
+    <ClCompile Include="Game\Gui\GuiConnectMenu.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Networking\Client.cpp" />
@@ -134,6 +135,14 @@
     <ClCompile Include="Renderer\DirectionalLight.cpp" />
     <ClCompile Include="Renderer\Draw.cpp" />
     <ClCompile Include="Renderer\Font.cpp" />
+    <ClCompile Include="Renderer\Gui\Gui.cpp" />
+    <ClCompile Include="Renderer\Gui\GuiButton.cpp" />
+    <ClCompile Include="Renderer\Gui\GuiElement.cpp" />
+    <ClCompile Include="Renderer\Gui\GuiFocusable.cpp" />
+    <ClCompile Include="Renderer\Gui\GuiImage.cpp" />
+    <ClCompile Include="Renderer\Gui\GuiRect.cpp" />
+    <ClCompile Include="Renderer\Gui\GuiText.cpp" />
+    <ClCompile Include="Renderer\Gui\GuiTextbox.cpp" />
     <ClCompile Include="Renderer\Light.cpp" />
     <ClCompile Include="Renderer\Material.cpp" />
     <ClCompile Include="Renderer\Mesh.cpp" />
@@ -160,6 +169,7 @@
     <ClInclude Include="ClientGameObject.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Game\ParticleEmitters.h" />
+    <ClInclude Include="Game\Gui\GuiConnectMenu.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Networking\Client.h" />
     <ClInclude Include="Renderer\Camera.h" />
@@ -167,6 +177,15 @@
     <ClInclude Include="Renderer\Draw.h" />
     <ClInclude Include="Renderer\DrawPass.h" />
     <ClInclude Include="Renderer\Font.h" />
+    <ClInclude Include="Renderer\Gui\Gui.h" />
+    <ClInclude Include="Renderer\Gui\GuiButton.h" />
+    <ClInclude Include="Renderer\Gui\GuiElement.h" />
+    <ClInclude Include="Renderer\Gui\GuiFocusable.h" />
+    <ClInclude Include="Renderer\Gui\GuiImage.h" />
+    <ClInclude Include="Renderer\Gui\GuiKey.h" />
+    <ClInclude Include="Renderer\Gui\GuiRect.h" />
+    <ClInclude Include="Renderer\Gui\GuiText.h" />
+    <ClInclude Include="Renderer\Gui\GuiTextbox.h" />
     <ClInclude Include="Renderer\Light.h" />
     <ClInclude Include="Renderer\Material.h" />
     <ClInclude Include="Renderer\Mesh.h" />

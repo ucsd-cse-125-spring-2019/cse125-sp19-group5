@@ -3,6 +3,7 @@
 // Commonly used imports and using statements.
 
 #include <glm/glm.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include <vector>
 #include <tuple>
 #include <string>

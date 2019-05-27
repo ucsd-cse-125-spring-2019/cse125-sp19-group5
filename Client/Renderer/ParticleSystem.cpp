@@ -3,7 +3,6 @@
 #include "../Assets.h"
 #include <algorithm>
 
-
 vector<GLfloat> ParticleSystem::particleVertexBufferData = {
 	-0.5f, -0.5f, 0.0f,
 	0.5f, -0.5f, 0.0f,
