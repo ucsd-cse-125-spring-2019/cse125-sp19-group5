@@ -23,26 +23,26 @@ int main(int argc, char **argv) {
 	vector<PlayerInputs> playerInputs;
 
 	auto ground = gameEngine.addGameObject<Wall>();
-	ground->setBoundingShape(new BoundingBox(vec3(0, -3, 0), vec3(1, 0, 0), 100, 3, 100));
-	ground->setScale(vec3(100, 3, 100));
+	ground->setBoundingShape(new BoundingBox(vec3(0, -3, 0), vec3(1, 0, 0), 250, 3, 250));
+	ground->setScale(vec3(250, 3, 250));
 	ground->setPosition(vec3(0, -3, 0));
 	ground->setModel("Models/unit_cube.obj");
 	ground->setMaterial("Materials/grass.json");
 
-	auto jumpableBox = gameEngine.addGameObject<Wall>();
+	/*auto jumpableBox = gameEngine.addGameObject<Wall>();
 	jumpableBox->setBoundingShape(new BoundingBox(vec3(0, 0, 30), vec3(1, 0, 0), 30, 2, 30));
 	jumpableBox->setPosition(vec3(0, 0, 30));
 	jumpableBox->setScale(vec3(30, 2, 30));
 	jumpableBox->setModel("Models/unit_cube.obj");
-	jumpableBox->setMaterial("Materials/brick.json");
+	jumpableBox->setMaterial("Materials/brick.json");*/
 
-	//auto ball = gameEngine.addGameObject<Ball>();
-	//ball->setBoundingShape(new BoundingSphere(origin, 3));
-	//ball->setScale(vec3(3));
-	//ball->setPosition(vec3(5, 3, 10));
-	//ball->setVelocity(vec3(0, 0, 0));
-	//ball->setModel("Models/unit_sphere.obj");
-	//ball->setMaterial("Materials/brick.json");
+	auto ball = gameEngine.addGameObject<Ball>();
+	ball->setBoundingShape(new BoundingSphere(origin, 3));
+	ball->setScale(vec3(3));
+	ball->setPosition(vec3(5, 3, 10));
+	ball->setVelocity(vec3(0, 0, 0));
+	ball->setModel("Models/unit_sphere.obj");
+	ball->setMaterial("Materials/brick.json");
 
 	//auto ball2 = gameEngine.addGameObject<Ball>();
 	//ball2->setBoundingShape(new BoundingSphere(origin, 3));
@@ -63,19 +63,19 @@ int main(int argc, char **argv) {
 		b->setMaterial("Materials/brick.json");
 	}*/
 
-	/*auto wall1 = gameEngine.addGameObject<Wall>();
-	wall1->setBoundingShape(new BoundingBox(vec3(0, 0, 100), vec3(1, 0, 0), 400, 20, 10));
-	wall1->setScale(vec3(200, 40, 10));
+	auto wall1 = gameEngine.addGameObject<Wall>();
+	wall1->setBoundingShape(new BoundingBox(vec3(0, 0, 100), vec3(1, 0, 0), 400, 100, 10));
+	wall1->setScale(vec3(200, 100, 10));
 	wall1->setPosition(vec3(0, 0, 100));
 	wall1->setModel("Models/unit_cube.obj");
 	wall1->setMaterial("Materials/grass.json");
 
 	auto wall2 = gameEngine.addGameObject<Wall>();
-	wall2->setBoundingShape(new BoundingBox(vec3(0, 0, -100), vec3(1, 0, 0), 400, 20, 10));
-	wall2->setScale(vec3(200, 40, 10));
+	wall2->setBoundingShape(new BoundingBox(vec3(0, 0, -100), vec3(1, 0, 0), 400, 100, 10));
+	wall2->setScale(vec3(200, 100, 10));
 	wall2->setPosition(vec3(0, 0, -100));
 	wall2->setModel("Models/unit_cube.obj");
-	wall2->setMaterial("Materials/grass.json");*/
+	wall2->setMaterial("Materials/grass.json");
 
 	//auto goal1 = gameEngine.addGameObject<Goal>();
 	//goal1->setBoundingShape(new BoundingBox(vec3(0, 0, 100), vec3(1, 0, 0), 200, 20, 10));
@@ -93,19 +93,19 @@ int main(int argc, char **argv) {
 	//goal2->setModel("Models/unit_cube.obj");
 	//goal2->setMaterial("Materials/brick.json");
 
-	/*auto wall3 = gameEngine.addGameObject<Wall>();
-	wall3->setBoundingShape(new BoundingBox(vec3(100, 0, 0), vec3(0, 0, 1), 400, 20, 10));
-	wall3->setScale(vec3(10, 40, 200));
+	auto wall3 = gameEngine.addGameObject<Wall>();
+	wall3->setBoundingShape(new BoundingBox(vec3(100, 0, 0), vec3(0, 0, 1), 400, 100, 10));
+	wall3->setScale(vec3(10, 100, 200));
 	wall3->setPosition(vec3(100, 0, 0));
 	wall3->setModel("Models/unit_cube.obj");
 	wall3->setMaterial("Materials/grass.json");
 
 	auto wall4 = gameEngine.addGameObject<Wall>();
-	wall4->setBoundingShape(new BoundingBox(vec3(-100, 0, 0), vec3(0, 0, 1), 400, 20, 10));
-	wall4->setScale(vec3(10, 40, 200));
+	wall4->setBoundingShape(new BoundingBox(vec3(-100, 0, 0), vec3(0, 0, 1), 400, 100, 10));
+	wall4->setScale(vec3(10, 100, 200));
 	wall4->setPosition(vec3(-100, 0, 0));
 	wall4->setModel("Models/unit_cube.obj");
-	wall4->setMaterial("Materials/grass.json");*/
+	wall4->setMaterial("Materials/grass.json");
 	
 	/*auto wall5 = gameEngine.addGameObject<Wall>();
 	wall5->setBoundingShape(new BoundingBox(vec3(-20, 0, 10), vec3(1, 0, 1), 50, 20, 5));

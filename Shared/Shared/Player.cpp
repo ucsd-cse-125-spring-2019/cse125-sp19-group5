@@ -163,8 +163,8 @@ GameObject * Player::doAction(PlayerCommands action) {
 			if (std::get<0>(getCooldown(SWING)) == 0) {
 				useCooldown(SWING);
 				vec3 paddlePosition = getPosition() + getDirection() * vec3(2.05f * getBoundingSphere()->getRadius());
-				// vec3 paddleVelocity = getDirection() * vec3((float)(actionCharge));
-				vec3 paddleVelocity = glm::normalize(vec3(getDirection().x, 0, getDirection().z)) * vec3((float)(actionCharge));
+				vec3 paddleVelocity = glm::normalize(getDirection()) * vec3((float)(actionCharge));
+				// vec3 paddleVelocity = glm::normalize(vec3(getDirection().x, 0, getDirection().z)) * vec3((float)(actionCharge));
 				int paddleLifespan = 10;
 				Paddle * p = new Paddle(paddlePosition, paddleVelocity, -1, 5, paddleLifespan);
 				/*p->setModel("Models/unit_sphere.obj");

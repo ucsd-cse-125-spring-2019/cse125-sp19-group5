@@ -34,6 +34,8 @@ void Ball::updateOnServerTick() {
 			++it;
 		}
 	}
+
+	setVelocity(PhysicsEngine::applyGravity(getVelocity(), PhysicsEngine::getGravity()));
 }
 
 bool Ball::getGoalScored() {
