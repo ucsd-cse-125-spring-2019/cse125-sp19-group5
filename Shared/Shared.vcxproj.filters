@@ -16,6 +16,9 @@
     <ClCompile Include="Shared\BoundingSphere.cpp" />
     <ClCompile Include="Shared\BoundingBox.cpp" />
     <ClCompile Include="Shared\CollisionDetection.cpp" />
+    <ClCompile Include="Shared\Game\ParticleEmitter.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
     <ClCompile Include="Shared\PhysicsEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -40,14 +43,21 @@
     <ClInclude Include="Shared\BoundingSphere.h" />
     <ClInclude Include="Shared\BoundingBox.h" />
     <ClInclude Include="Shared\CollisionDetection.h" />
+    <ClInclude Include="Shared\Game\ParticleEmitter.h">
+      <Filter>Game</Filter>
+    </ClInclude>
     <ClInclude Include="Shared\PhysicsEngine.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Util">
       <UniqueIdentifier>{629d504a-4410-414a-a5c0-4c8b4998cdf4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{cc2e990a-a5bc-44f8-9d4e-ce3c9981670e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

@@ -10,6 +10,9 @@
 #include "Renderer/Draw.h"
 #include <Shared/CommonStructs.h>
 #include "Renderer/Material.h"
+#include "Renderer/ParticleSystem.h"
+#include "Assets.h"
+#include "Game/ParticleEmitters.h"
 #include "Game/Gui/GuiConnectMenu.h"
 
 void Game::onGameObjectCreated(Connection *c, NetBuffer &buffer) {
@@ -154,6 +157,9 @@ Game::Game(): gameObjects(1024, nullptr) {
 	Network::on(NetMessage::GAME_STATE_UPDATE, [&](Connection *c, NetBuffer &buffer) {
 		gameState.deserialize(buffer);
 	});
+
+	Network::on(NetMessage::PARTICLES, ParticleEmitters::onUpdate);
+	Network::on(NetMessage::PARTICLES_DELETE, ParticleEmitters::onDelete);
 }
 
 Game::~Game() {
@@ -175,6 +181,7 @@ Game::~Game() {
 
 	Gui::cleanUp();
 	Draw::cleanUp();
+	ParticleEmitters::cleanUp();
 }
 
 Camera *Game::getCamera() const {
@@ -258,6 +265,8 @@ void Game::update(float dt) {
 		auto offset = camera->getForward() * -10.0f + vec3(0, 2, 0);
 		camera->setPosition(playerObj->getPosition() + offset);
 	}
+
+	ParticleEmitters::update(dt, camera);
 }
 
 void Game::drawScene(Shader &shader, DrawPass pass) const {
@@ -295,6 +304,7 @@ void Game::draw(float dt) const {
 	sun->bind(*lightShader);
 	drawScene(*lightShader, DrawPass::LIGHTING);
 	skybox->draw();
+	ParticleEmitters::draw(camera);
 
 	glDisable(GL_DEPTH_TEST);
 	Draw::setupContext();

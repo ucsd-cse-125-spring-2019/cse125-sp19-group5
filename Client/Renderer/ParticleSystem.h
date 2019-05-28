@@ -4,6 +4,7 @@
 #include "Particle.h"
 #include "Shader.h"	
 #include "Camera.h"
+#include "Texture2d.h"
 
 class ParticleSystem {
 public:
@@ -11,7 +12,7 @@ public:
 	ParticleSystem(const unsigned int maxParticles, const float particleMass, const vec3 position, const float floorY);
 	~ParticleSystem();
 
-	void update(float dt);
+	void update(float dt, const Camera *camera);
 	void draw(Shader &shader, const Camera *camera);
 
 	unsigned int creationSpeed;   // Particles per second
@@ -28,6 +29,7 @@ public:
 	float collElasticity;         // For ground plane collision
 	float collFriction;           // For ground plane collision
 	vector<vec4> particleColor;   // Color of each particle during its lifetime
+	Texture2d *texture;           // Texture for each particle
 
 private:
 	void setupBuffers();
@@ -41,8 +43,11 @@ private:
 	vector<Particle *> particles;
 	float creationTimer;          // Used to calculate how many to spawn
 
-	GLuint particleVertexBuffer;
-	GLuint particlePositionBuffer;
-	GLuint particleColorBuffer;
-	vector<GLfloat> particleVertexBufferData;
+	GLuint VAO = 0;
+	GLuint particleVertexBuffer = 0;
+	GLuint particlePositionBuffer = 0;
+	GLuint particleColorBuffer = 0;
+	static vector<GLfloat> particleVertexBufferData;
+	vector<vec4> particlePositionBufferData;
+	vector<vec4> particleColorBufferData;
 };

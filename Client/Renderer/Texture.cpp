@@ -14,7 +14,7 @@ void Texture::loadTextureImage(
 	auto pixels = SOIL_load_image(
 		path.c_str(),
 		&width, &height, &channels,
-		SOIL_LOAD_RGB
+		SOIL_LOAD_RGBA
 	);
 	if (!pixels) {
 		std::cerr << "Texture::loadTextureImage(" << path << ") failed!"
