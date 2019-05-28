@@ -30,9 +30,9 @@ int main(int argc, char **argv) {
 	ground->setMaterial("Materials/grass.json");
 
 	auto jumpableBox = gameEngine.addGameObject<Wall>();
-	jumpableBox->setBoundingShape(new BoundingBox(vec3(0, 0, 30), vec3(1, 0, 0), 30, 2, 30));
+	jumpableBox->setBoundingShape(new BoundingBox(vec3(0, 0, 30), vec3(1, 0, 0), 30, 10, 30));
 	jumpableBox->setPosition(vec3(0, 0, 30));
-	jumpableBox->setScale(vec3(30, 2, 30));
+	jumpableBox->setScale(vec3(30, 10, 30));
 	jumpableBox->setModel("Models/unit_cube.obj");
 	jumpableBox->setMaterial("Materials/brick.json");
 

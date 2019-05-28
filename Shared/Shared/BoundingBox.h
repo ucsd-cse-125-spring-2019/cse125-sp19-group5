@@ -59,6 +59,6 @@ struct Plane {
 	}
 
 	float pointDistance(vec3 point) {
-		return (a*point.x + b * point.y + c * point.z + d) / (glm::sqrt(a*a + b * b + c * c));
+		return (a * point.x + b * point.y + c * point.z + d) / (glm::sqrt(a * a + b * b + c * c));
 	}
 };

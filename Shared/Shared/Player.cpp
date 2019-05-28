@@ -3,6 +3,7 @@
 #include "BoundingSphere.h"
 #include <iostream>
 #include <glm/gtx/euler_angles.hpp>
+#include <glm/gtx/vector_angle.hpp>
 #include <algorithm>
 
 Player::Player(vec3 position, vec3 velocity, vec3 direction, int id, float radius, int team) : SphereGameObject(position, velocity, id) {
@@ -251,11 +252,44 @@ void Player::onCollision(Paddle * paddle) { }
 void Player::onCollision(Player * player) { }
 
 void Player::onCollision(Wall * wall) { 
+	if (CollisionDetection::getIntersectingPlanes(getBoundingSphere(), wall->getBoundingBox()).size() > 1) {
+		std::cout << CollisionDetection::getIntersectingPlanes(getBoundingSphere(), wall->getBoundingBox()).size();
+		for (Plane * p : CollisionDetection::getIntersectingPlanes(getBoundingSphere(), wall->getBoundingBox())) {
+			if (p == wall->getBoundingBox()->top) {
+				std::cout << " top ";
+			}
+			if (p == wall->getBoundingBox()->bottom) {
+				std::cout << " bottom ";
+			}
+			if (p == wall->getBoundingBox()->front) {
+				std::cout << " front ";
+			}
+			if (p == wall->getBoundingBox()->back) {
+				std::cout << " back ";
+			}
+			if (p == wall->getBoundingBox()->left) {
+				std::cout << " left ";
+			}
+			if (p == wall->getBoundingBox()->right) {
+				std::cout << " right ";
+			}
+		}
+		std::cout << endl;
+	}
+	
 	for (Plane * p : CollisionDetection::getIntersectingPlanes(getBoundingSphere(), wall->getBoundingBox())) {
 		if (p == wall->getBoundingBox()->top) {
 			this->numLandings += 1;
-			this->maxBoxHeight = std::max(maxBoxHeight, 
+			this->maxBoxHeight = std::max(maxBoxHeight,
 				wall->getPosition().y + wall->getBoundingBox()->height + getBoundingSphere()->getRadius());
+		}
+		else {
+			vec3 planeNormal = glm::normalize(p->getNormal());
+			float angleBetween = glm::angle(glm::normalize(getVelocity()), planeNormal);
+			if (angleBetween > glm::half_pi<float>() && angleBetween < (3.0f * glm::half_pi<float>())) {
+				float planeDistance = abs(p->pointDistance(getPosition()) - (getBoundingSphere()->getRadius()));
+				setPosition(getPosition() + glm::normalize(p->getNormal()) * planeDistance);
+			}
 		}
 	}
 }

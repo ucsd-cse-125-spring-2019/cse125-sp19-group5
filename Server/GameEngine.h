@@ -50,7 +50,7 @@ public:
 	void updateScore();
 	void removeDeadObjects();
 	void updateGameObjectsOnServerTick();
-	bool noCollisionMove(GameObject * gameObject, vec3 movement);
+	bool noCollisionMove(Player * player, vec3 movement);
 
 	const vector<GameObject*> &getGameObjects() const;
 
