@@ -272,12 +272,8 @@ void GameEngine::updateGameObjectsOnServerTick() {
 }
 
 bool GameEngine::noCollisionMove(Player * player, vec3 movement) {
-	vec3 currPosition = player->getPosition();
+	/*vec3 currPosition = player->getPosition();
 	player->move(movement);
-
-	//if (glm::length(player->getVelocity()) != 0.0f) {
-	//	std::cout << glm::to_string(player->getVelocity()) << std::endl;
-	//}	
 
 	for (Player * p : gameState.players) {
 		if (player->collidesWith(p)) {
@@ -293,32 +289,41 @@ bool GameEngine::noCollisionMove(Player * player, vec3 movement) {
 		}
 	}
 
-	/*for (Wall * w : gameState.walls) {
-		if (player->collidesWith(w)) {
-			vector<Plane *> intersectingPlanes = CollisionDetection::getIntersectingPlanes(player->getBoundingSphere(), w->getBoundingBox());
-			if (std::find(intersectingPlanes.begin(), intersectingPlanes.end(), w->getBoundingBox()->top) == intersectingPlanes.end()) {
+	return true;*/
+
+	vec3 currPosition = player->getPosition();
+	float diameter = player->getBoundingSphere()->getRadius() * 2;
+	vec3 move = player->getMoveDestination(movement) - player->getPosition();
+	float dist = glm::length(move);
+
+	while (dist > 0.0f) {
+		if (dist > diameter) {
+			player->setPosition(player->getPosition() + glm::normalize(move) * diameter);
+			currPosition = player->getPosition();
+			dist -= diameter;
+		}
+		else {
+			player->setPosition(player->getPosition() + glm::normalize(move) * dist);
+			currPosition = player->getPosition();
+			dist = 0.0f;
+		}
+
+		for (Player * p : gameState.players) {
+			if (player->collidesWith(p)) {
 				player->setPosition(currPosition);
 				return false;
 			}
 		}
-	}*/
+
+		for (Ball * b : gameState.balls) {
+			if (player->collidesWith(b)) {
+				player->setPosition(currPosition);
+				return false;
+			}
+		}
+	}
 
 	return true;
-
-	//vec3 destination = gameObject->getMoveDestination(movement);
-	//// TODO: fix this method by moving adding a bounding box where the object would move
-
-	////for (GameObject * otherGameObject : gameState.gameObjects) {
-	////	if (gameObject != gameObject) {
-	////		float distance = glm::distance(destination, otherGameObject->getPosition());
-	////		if (distance < (gameObject->getRadius() + otherGameObject->getRadius())) {
-	////			return false;
-	////		}
-	////	}
-	////}
-	//gameObject->setPosition(destination);
-
-	//return true;
 }
 
 const std::vector<GameObject*> &GameEngine::getGameObjects() const {

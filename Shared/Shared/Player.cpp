@@ -251,32 +251,7 @@ void Player::onCollision(Paddle * paddle) { }
 
 void Player::onCollision(Player * player) { }
 
-void Player::onCollision(Wall * wall) { 
-	if (CollisionDetection::getIntersectingPlanes(getBoundingSphere(), wall->getBoundingBox()).size() > 1) {
-		std::cout << CollisionDetection::getIntersectingPlanes(getBoundingSphere(), wall->getBoundingBox()).size();
-		for (Plane * p : CollisionDetection::getIntersectingPlanes(getBoundingSphere(), wall->getBoundingBox())) {
-			if (p == wall->getBoundingBox()->top) {
-				std::cout << " top ";
-			}
-			if (p == wall->getBoundingBox()->bottom) {
-				std::cout << " bottom ";
-			}
-			if (p == wall->getBoundingBox()->front) {
-				std::cout << " front ";
-			}
-			if (p == wall->getBoundingBox()->back) {
-				std::cout << " back ";
-			}
-			if (p == wall->getBoundingBox()->left) {
-				std::cout << " left ";
-			}
-			if (p == wall->getBoundingBox()->right) {
-				std::cout << " right ";
-			}
-		}
-		std::cout << endl;
-	}
-	
+void Player::onCollision(Wall * wall) { 	
 	for (Plane * p : CollisionDetection::getIntersectingPlanes(getBoundingSphere(), wall->getBoundingBox())) {
 		if (p == wall->getBoundingBox()->top) {
 			this->numLandings += 1;
