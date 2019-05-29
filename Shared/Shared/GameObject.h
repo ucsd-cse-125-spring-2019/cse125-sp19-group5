@@ -63,6 +63,8 @@ public:
 	void setOrientation(const quat &newOrientation);
 	const quat &getOrientation() const;
 
+	virtual void onCreated();
+
 protected:
 	quat orientation = quat();
 	vec3 position;

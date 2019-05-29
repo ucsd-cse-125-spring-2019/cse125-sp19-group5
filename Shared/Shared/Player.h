@@ -17,8 +17,8 @@ public:
 	void onCollision(GameObject * gameObject);
 	vec3 getMoveDestination(vec3 movement);
 	vec3 getDirection();
-	GameObject * doAction(PlayerCommands action);
-	GameObject * processCommand(int inputs);
+	void doAction(PlayerCommands action);
+	void processCommand(int inputs);
 
 	bool getIsGrounded() const { return isGrounded; }
 	void setIsGrounded(const bool grounded) { isGrounded = grounded; }

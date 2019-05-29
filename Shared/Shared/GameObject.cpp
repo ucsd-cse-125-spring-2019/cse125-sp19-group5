@@ -152,3 +152,5 @@ string GameObject::to_string() {
 
 	return type + "_" + std::to_string(getId()) + glm::to_string(getPosition()).substr(4);
 }
+
+void GameObject::onCreated() { }
