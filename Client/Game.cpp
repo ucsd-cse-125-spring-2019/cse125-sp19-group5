@@ -88,7 +88,7 @@ int Game::getScreenHeight() const {
 	return screenHeight;
 }
 
-Game::Game(): gameObjects(1024, nullptr) {
+Game::Game() : gameObjects({ nullptr }) {
 	Draw::init();
 
 	// TODO (bhang): Integrate this with connecting.

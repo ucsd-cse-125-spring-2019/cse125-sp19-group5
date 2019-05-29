@@ -52,7 +52,7 @@ public:
 	void updateGameObjectsOnServerTick();
 	bool noCollisionMove(GameObject * gameObject, vec3 movement);
 
-	const vector<GameObject*> &getGameObjects() const;
+	const std::array<GameObject*, MAX_GAME_OBJS> &getGameObjects() const;
 
 private:
 	GameState gameState;

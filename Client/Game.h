@@ -12,6 +12,7 @@
 #include "ClientGameObject.h"
 #include <Shared/GameState.h>
 #include "Networking/Client.h"
+#include <array>
 
 class Game {
 	private:
@@ -34,7 +35,7 @@ class Game {
 	float ballX = 0.0f;
 	float mouseSensitivity = 1.0f;
 
-	std::vector<ClientGameObject*> gameObjects;
+	std::array<ClientGameObject*, MAX_GAME_OBJS> gameObjects;
 
 	SoundEngine *soundEngine = nullptr;
 	Sound *soundtrack = nullptr;

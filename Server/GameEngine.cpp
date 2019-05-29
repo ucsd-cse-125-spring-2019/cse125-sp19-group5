@@ -290,6 +290,6 @@ bool GameEngine::noCollisionMove(GameObject * gameObject, vec3 movement) {
 	return true;
 }
 
-const std::vector<GameObject*> &GameEngine::getGameObjects() const {
+const std::array<GameObject*, MAX_GAME_OBJS> &GameEngine::getGameObjects() const {
 	return gameState.gameObjects;
 }
