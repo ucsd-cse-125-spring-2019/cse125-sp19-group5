@@ -92,8 +92,6 @@ int main(int argc, char **argv) {
 	glfwSetWindowPos(window, middleX, middleY);
 
 	Input::init(window);
-	Network::init("127.0.0.1", 1234);
-
 	Gui::setupInputListeners(window);
 
 	Game game;
@@ -112,7 +110,10 @@ int main(int argc, char **argv) {
 		lastTime = (float)glfwGetTime();
 
 		Input::poll();
-		Network::poll();
+
+		if (Network::connection) {
+			Network::poll();
+		}
 
 		if (game.shouldExit) {
 			glfwSetWindowShouldClose(window, true);

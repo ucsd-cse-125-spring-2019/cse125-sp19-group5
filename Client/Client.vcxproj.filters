@@ -43,6 +43,12 @@
     <Filter Include="Source Files\Game\Gui">
       <UniqueIdentifier>{7a60f599-0a66-4f9c-9302-45bcc1e6a500}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Renderer\Gui">
+      <UniqueIdentifier>{5926e265-5b55-45cd-afc3-cc67d71d6398}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Renderer\Gui">
+      <UniqueIdentifier>{beb91ce9-df60-4a10-ac5e-1bdf1f862a72}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -141,32 +147,32 @@
     <ClCompile Include="Game\ParticleEmitters.cpp">
       <Filter>Source Files\Game</Filter>
     </ClCompile>
-    <ClCompile Include="Renderer\Gui\GuiElement.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Renderer\Gui\GuiRect.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Game\Gui\GuiConnectMenu.cpp">
+      <Filter>Source Files\Game\Gui</Filter>
     </ClCompile>
     <ClCompile Include="Renderer\Gui\Gui.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Renderer\Gui\GuiText.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Renderer\Gui</Filter>
     </ClCompile>
     <ClCompile Include="Renderer\Gui\GuiButton.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Renderer\Gui</Filter>
     </ClCompile>
-    <ClCompile Include="Renderer\Gui\GuiTextbox.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Renderer\Gui\GuiElement.cpp">
+      <Filter>Source Files\Renderer\Gui</Filter>
     </ClCompile>
     <ClCompile Include="Renderer\Gui\GuiFocusable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\Gui\GuiConnectMenu.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Renderer\Gui</Filter>
     </ClCompile>
     <ClCompile Include="Renderer\Gui\GuiImage.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Renderer\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\Gui\GuiRect.cpp">
+      <Filter>Source Files\Renderer\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\Gui\GuiText.cpp">
+      <Filter>Source Files\Renderer\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\Gui\GuiTextbox.cpp">
+      <Filter>Source Files\Renderer\Gui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -272,35 +278,35 @@
     <ClInclude Include="Renderer\Particle.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Renderer\Gui\GuiElement.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Renderer\Gui\GuiRect.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Game\Gui\GuiConnectMenu.h">
+      <Filter>Header Files\Game\Gui</Filter>
     </ClInclude>
     <ClInclude Include="Renderer\Gui\Gui.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Renderer\Gui\GuiText.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Renderer\Gui</Filter>
     </ClInclude>
     <ClInclude Include="Renderer\Gui\GuiButton.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Renderer\Gui</Filter>
     </ClInclude>
-    <ClInclude Include="Renderer\Gui\GuiTextbox.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Renderer\Gui\GuiElement.h">
+      <Filter>Header Files\Renderer\Gui</Filter>
     </ClInclude>
     <ClInclude Include="Renderer\Gui\GuiFocusable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Renderer\Gui\GuiKey.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\Gui\GuiConnectMenu.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Renderer\Gui</Filter>
     </ClInclude>
     <ClInclude Include="Renderer\Gui\GuiImage.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Renderer\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Gui\GuiKey.h">
+      <Filter>Header Files\Renderer\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Gui\GuiRect.h">
+      <Filter>Header Files\Renderer\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Gui\GuiText.h">
+      <Filter>Header Files\Renderer\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Gui\GuiTextbox.h">
+      <Filter>Header Files\Renderer\Gui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

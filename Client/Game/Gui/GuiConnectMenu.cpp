@@ -1,11 +1,23 @@
 #include "GuiConnectMenu.h"
-
-using namespace std::placeholders;
+#include "../Networking/Client.h"
+#include <Shared/ConfigSettings.h>
 
 GuiConnectMenu::GuiConnectMenu() {
+	using std::placeholders::_1;
+
 	setColor(vec4(0.2f, 0.2f, 0.2f, 1.0f));
 	setPosition(vec2(0.0f, 0.0f));
 	setSize(vec2(1.0f, 1.0f));
+
+	Input::setMouseVisible(true);
+
+	message = Gui::create<GuiText>(this);
+	message->setPosition(vec2(0.0f, 0.8f));
+	message->setColor(vec4(1.0f, 0.1f, 0.1, 1.0f));
+	message->setText("");
+	message->setSize(vec2(1.0f, 0.1f));
+	message->setFont("Arial");
+	message->setAlignment(TextAlign::CENTER);
 
 	label = Gui::create<GuiText>(this);
 	label->setPosition(vec2(0.0f, 0.7f));
@@ -25,5 +37,11 @@ GuiConnectMenu::GuiConnectMenu() {
 }
 
 void GuiConnectMenu::onIpEntered(const std::string &text) {
-	std::cout << text << std::endl;
+	auto port = 1234;
+	ConfigSettings::get().getValue("Port", port);
+	if (Network::init(text, port)) {
+		remove();
+	} else {
+		message->setText("Failed to connect!");
+	}
 }
