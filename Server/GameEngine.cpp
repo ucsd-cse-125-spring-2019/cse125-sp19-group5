@@ -2,6 +2,7 @@
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
 #include "Networking/Server.h"
+#include <Shared/Game/ParticleEmitter.h>
 
 template<class T, class V>
 void inline safeRemoveFromVec(std::vector<T> &v, V &val) {
@@ -47,6 +48,8 @@ void GameEngine::updateGameState(vector<PlayerInputs> & playerInputs) {
 	updateScore();
 	updateGameObjectsOnServerTick();
 	removeDeadObjects();
+
+	ParticleEmitter::updateAll();
 
 	// send getNetworkGameState() to client
 }

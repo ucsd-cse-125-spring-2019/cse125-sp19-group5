@@ -10,6 +10,7 @@ struct Particle {
 	float lifespan;
 	float maxLifespan;
 	vec4 color;
+	float camDist;
 
 	Particle(float mass, vec3 position)
 		: mass(mass)
@@ -18,7 +19,8 @@ struct Particle {
 		, force(vec3(1.0f))
 		, lifespan(1.0f)
 		, maxLifespan(1.0f)
-		, color(vec4(1.0f)) {}
+		, color(vec4(1.0f))
+		, camDist(-1.0f) {}
 
 	void applyForce(const vec3 &newForce) { force += newForce; }
 	void resetForce() { force = vec3(0.0f); }

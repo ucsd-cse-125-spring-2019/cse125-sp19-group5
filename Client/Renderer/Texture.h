@@ -12,8 +12,8 @@ class Texture {
 	void loadTextureImage(
 		GLenum target,
 		const std::string &path,
-		GLenum format = GL_RGB,
-		GLenum intformat = GL_RGB,
+		GLenum format = GL_RGBA,
+		GLenum intformat = GL_RGBA,
 		GLenum type = GL_UNSIGNED_BYTE
 	);
 
