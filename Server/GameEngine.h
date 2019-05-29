@@ -12,7 +12,6 @@
 
 #define NUM_PLAYERS 1
 #define MOVEMENT_MASK 0b11111
-#define COMMAND_MASK 0b11100000
 
 class GameEngine {
 public:
@@ -36,6 +35,7 @@ public:
 	void addGameObject(Ball *ball);
 	void addGameObject(Wall *wall);
 	void addGameObject(Goal * goal);
+	void addGameObject(GameObject *obj);
 	void removeGameObjectById(int id);
 
 	vec3 movementInputToVector(int movementInput);
@@ -58,3 +58,5 @@ private:
 	GameState gameState;
 	void addGenericGameObject(GameObject *player);
 };
+
+extern GameEngine *gGameEngine;

@@ -179,7 +179,7 @@ vec3 Player::getMoveDestination(vec3 movement) {
 	return newPos;
 }
 
-tuple<int, int> & Player::getCooldown(PlayerCommands command) {
+tuple<int, int> &Player::getCooldown(PlayerCommands command) {
 	return this->cooldowns[command];
 }
 
@@ -192,78 +192,16 @@ void Player::useCooldown(PlayerCommands command) {
 	setCooldown(command, usedAbility);
 }
 
-GameObject * Player::doAction(PlayerCommands action) {
-	switch (action) {
-		case SWING: {
-			if (std::get<0>(getCooldown(SWING)) == 0) {
-				useCooldown(SWING);
-				vec3 paddlePosition = getPosition() + getDirection() * vec3(2.05f * getBoundingSphere()->getRadius());
-				vec3 paddleVelocity = glm::normalize(getDirection()) * vec3((float)(actionCharge));
-				// vec3 paddleVelocity = glm::normalize(vec3(getDirection().x, 0, getDirection().z)) * vec3((float)(actionCharge));
-				int paddleLifespan = 10;
-				Paddle * p = new Paddle(paddlePosition, paddleVelocity, -1, 5, paddleLifespan);
-				/*p->setModel("Models/unit_sphere.obj");
-				p->setMaterial("Materials/brick.json");*/
-				p->setScale(vec3(5));
-				return p;
-			}
-			return nullptr;
-			break;
-		}
-		case SHOOT: {
-			if (std::get<0>(getCooldown(SHOOT)) == 0) {
-				useCooldown(SHOOT);
-				vec3 bulletStart = vec3(getPosition().x, 5, getPosition().z);
-				// vec3 paddleVelocity = getDirection() * vec3((float)(actionCharge));
-				vec3 bulletVelocity = glm::normalize(vec3(getDirection().x, 0, getDirection().z)) * 5.0f;
-				Bullet * b = new Bullet(bulletStart, bulletVelocity, 1.0f);
-				/*b->setModel("Models/unit_sphere.obj");
-				b->setMaterial("Materials/brick.json");*/
-				return b;
-			}
-			return nullptr;
-			break;
-		}
-		default: {
-			return nullptr;
-		}
-	}
+#ifdef _CLIENT
+GameObject *Player::doAction(PlayerCommands action) {
+	return nullptr;
 }
 
-/*
-	Takes the byte of player inputs for this player
-	Handles only the non-movement commands (charging)
-	
-	Only one command can charge at one time.
-	Once a command has started charging, another cannot start until the action/command has been done.
-*/
-GameObject * Player::processCommand(int inputs)
-{
-	vector<PlayerCommands> chargeCommands = { SWING, WALL, SHOOT };
-	GameObject * retval = nullptr;
-
-	//TODO for command in chargable commands
-	//TODO return GameObject (Ball, Wall) based on input to be rendered by the GameEngine
-	// For now, only swing:
-	for (auto command : chargeCommands) {
-		if (command & inputs) {
-			if (!actionCharge) {
-				currentAction = command;
-				actionCharge = 1;
-			}
-			else if (command == currentAction) {
-				actionCharge++;
-			}
-		}
-		else {
-			if (actionCharge && command == currentAction) {
-				retval = doAction(command);
-				actionCharge = 0;
-			}
-		}
-	}
-	return retval;
+GameObject *Player::processCommand(int inputs) {
+	return nullptr;
+>>>>>>> Move player actions to server
 }
+#endif
 
 void Player::serialize(NetBuffer &buffer) const {
 	GameObject::serialize(buffer);

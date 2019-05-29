@@ -27,8 +27,9 @@ public:
 	tuple<int, int> & getCooldown(PlayerCommands command);
 	void setCooldown(PlayerCommands command, tuple<int, int> cd);
 	void useCooldown(PlayerCommands command);
-	GameObject * doAction(PlayerCommands action);
-	GameObject * processCommand(int inputs);
+
+	void doAction(PlayerCommands action);
+	void processCommand(int inputs);
 
 	bool getIsGrounded() const { return isGrounded; }
 	void setIsGrounded(const bool grounded) { isGrounded = grounded; }
