@@ -1,18 +1,19 @@
 #pragma once
-#include "GameObject.h"
+#include "BoxGameObject.h"
+#include "Ball.h"
+#include "Paddle.h"
+#include "Player.h"
 
-struct Plane;
 
-class Wall : public GameObject {
+class Wall : public BoxGameObject {
 public:
-	using GameObject::GameObject;
-
-	Wall(vec3 position, vec3 direction, int id, float length, float width, float height);
+	using BoxGameObject::BoxGameObject;
 	GAMEOBJECT_TYPES getGameObjectType() const;
 
-private:
-	vec3 direction;
-	float length;
-	float width;
-	float height;
+	// collision interactions below
+	void onCollision(GameObject * gameObject);
+	void onCollision(Ball * ball);
+	void onCollision(Paddle * paddle);
+	void onCollision(Player * player);
+	void onCollision(Wall * wall);
 };

@@ -16,6 +16,10 @@
     <ClCompile Include="Shared\BoundingSphere.cpp" />
     <ClCompile Include="Shared\BoundingBox.cpp" />
     <ClCompile Include="Shared\CollisionDetection.cpp" />
+    <ClCompile Include="Shared\BoxGameObject.cpp" />
+    <ClCompile Include="Shared\SphereGameObject.cpp" />
+    <ClCompile Include="Shared\Goal.cpp" />
+    <ClCompile Include="Shared\Bullet.cpp" />
     <ClCompile Include="Shared\Game\ParticleEmitter.cpp">
       <Filter>Game</Filter>
     </ClCompile>
@@ -43,6 +47,10 @@
     <ClInclude Include="Shared\BoundingSphere.h" />
     <ClInclude Include="Shared\BoundingBox.h" />
     <ClInclude Include="Shared\CollisionDetection.h" />
+    <ClInclude Include="Shared\BoxGameObject.h" />
+    <ClInclude Include="Shared\SphereGameObject.h" />
+    <ClInclude Include="Shared\Goal.h" />
+    <ClInclude Include="Shared\Bullet.h" />
     <ClInclude Include="Shared\Game\ParticleEmitter.h">
       <Filter>Game</Filter>
     </ClInclude>

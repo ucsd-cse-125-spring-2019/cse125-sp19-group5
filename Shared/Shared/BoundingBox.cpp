@@ -1,14 +1,15 @@
 #include "BoundingBox.h"
 #include "CollisionDetection.h"
+#include <glm/gtx/string_cast.hpp>
 
-BoundingBox::BoundingBox(vec3 position, vec3 direction, float length, float width, float height) : BoundingShape(position) {
+BoundingBox::BoundingBox(vec3 position, vec3 direction, float width, float height, float length) : BoundingShape(position) {
 	this->length = length;
 	this->width = width;
 	this->height = height;
 
 	vec3 widthDir = glm::normalize(direction);
 	vec3 lengthDir = glm::normalize(glm::cross(widthDir, vec3(0, 1, 0)));
-	vec3 heightDir = glm::normalize(glm::cross(widthDir, vec3(0, 0, 1)));
+	vec3 heightDir = glm::normalize(glm::cross(widthDir, lengthDir));
 	if (heightDir.y < 0) {
 		heightDir.y = -1 * heightDir.y;
 	}
@@ -74,6 +75,17 @@ BoundingBox::BoundingBox(vec3 position, vec3 direction, float length, float widt
 	if (right->pointDistance(centerPoint) > 0) {
 		right->invertNormal();
 	}
+
+	this->facePlanes.push_back(bottom);
+	this->facePlanes.push_back(top);
+	this->facePlanes.push_back(front);
+	this->facePlanes.push_back(back);
+	this->facePlanes.push_back(left);
+	this->facePlanes.push_back(right);
+}
+
+vector<Plane *> & BoundingBox::getFacePlanes() {
+	return this->facePlanes;
 }
 
 bool BoundingBox::collideVisit(BoundingShape * boundingShape) {

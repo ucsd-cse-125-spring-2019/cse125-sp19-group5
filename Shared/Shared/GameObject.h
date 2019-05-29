@@ -6,12 +6,21 @@
 
 using glm::quat;
 
+class Ball;
+class Bullet;
+class Goal;
+class Paddle;
+class Player;
+class Wall;
+
 enum GAMEOBJECT_TYPES {
 	GAMEOBJECT_TYPE,
 	PLAYER_TYPE,
 	BALL_TYPE,
+	BULLET_TYPE,
 	WALL_TYPE,
 	PADDLE_TYPE,
+	GOAL_TYPE
 };
 
 class GameObject : public Serializable {
@@ -41,6 +50,12 @@ public:
 
 	bool collidesWith(GameObject * gameObject);
 	virtual void onCollision(GameObject * gameObject);
+	virtual void onCollision(Ball * ball);
+	virtual void onCollision(Bullet * bullet);
+	virtual void onCollision(Goal * goal);
+	virtual void onCollision(Paddle * paddle);
+	virtual void onCollision(Player * player);
+	virtual void onCollision(Wall * wall);
 	double distanceFrom(GameObject * gameObject);
 
 	virtual void updateOnServerTick();

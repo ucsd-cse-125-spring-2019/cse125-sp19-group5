@@ -3,9 +3,8 @@
 #include <iostream>
 #include <glm/gtx/euler_angles.hpp>
 
-Player::Player(vec3 position, vec3 velocity, vec3 direction, int id, float radius, int team) : GameObject(position, velocity, id) {
+Player::Player(vec3 position, vec3 velocity, vec3 direction, int id, float radius, int team) : SphereGameObject(position, velocity, id) {
 	this->direction = direction;
-	this->radius = radius;
 	this->actionCharge = 0;
 	this->team = team;
 	setBoundingShape(new BoundingSphere(position, radius));
@@ -13,10 +12,6 @@ Player::Player(vec3 position, vec3 velocity, vec3 direction, int id, float radiu
 
 GAMEOBJECT_TYPES Player::getGameObjectType() const {
 	return PLAYER_TYPE;
-}
-
-void Player::onCollision(GameObject * gameObject) {
-	//std::cout << to_string() + " collided with " << gameObject->to_string() << std::endl;
 }
 
 void Player::setDirection(const vec3 &newDirection) {
@@ -27,8 +22,16 @@ void Player::setDirection(const vec3 &newDirection) {
 	setOrientation(glm::quatLookAt(direction, vec3(0, 1, 0)));
 }
 
+void Player::updateOnServerTick() {
+	for (auto & cd : this->cooldowns) {
+		if (std::get<0>(cd.second) > 0) {
+			std::get<0>(cd.second) -= 1;
+		}
+	}
+}
+
 vec3 Player::getDirection() {
-	return this->direction;
+	return glm::normalize(this->direction);
 }
 
 vec3 Player::getMoveDestination(vec3 movement) {
@@ -125,23 +128,53 @@ vec3 Player::getMoveDestination(vec3 movement) {
 	return newPos;
 }
 
+tuple<int, int> & Player::getCooldown(PlayerCommands command) {
+	return this->cooldowns[command];
+}
+
+void Player::setCooldown(PlayerCommands command, tuple<int, int> cd) {
+	this->cooldowns[command] = cd;
+}
+
+void Player::useCooldown(PlayerCommands command) {
+	tuple<int, int> usedAbility = std::make_tuple(std::get<1>(cooldowns[command]), std::get<1>(cooldowns[command]));
+	setCooldown(command, usedAbility);
+}
+
 GameObject * Player::doAction(PlayerCommands action) {
 	switch (action) {
 		case SWING: {
-			// std::cout << "Swing with charge " << actionCharge << std::endl;
-			// assumes direction is unit vector
-			vec3 paddlePosition = getPosition() + getDirection() * vec3(2.05f * this->radius);
-			// vec3 paddleVelocity = getDirection() * vec3((float)(actionCharge));
-			vec3 paddleVelocity = vec3(getDirection().x, 0, getDirection().z) * vec3((float)(actionCharge));
-			int paddleLifespan = 100;
-			Paddle * p = new Paddle(paddlePosition, paddleVelocity, getId(), 1, paddleLifespan);
-			/*p->setModel("Models/sphere.obj");
-			p->setMaterial("Materials/brick.json");*/
-			return p;
+			if (std::get<0>(getCooldown(SWING)) == 0) {
+				useCooldown(SWING);
+				vec3 paddlePosition = getPosition() + getDirection() * vec3(2.05f * getBoundingSphere()->getRadius());
+				// vec3 paddleVelocity = getDirection() * vec3((float)(actionCharge));
+				vec3 paddleVelocity = glm::normalize(vec3(getDirection().x, 0, getDirection().z)) * vec3((float)(actionCharge));
+				int paddleLifespan = 10;
+				Paddle * p = new Paddle(paddlePosition, paddleVelocity, -1, 5, paddleLifespan);
+				/*p->setModel("Models/unit_sphere.obj");
+				p->setMaterial("Materials/brick.json");*/
+				p->setScale(vec3(5));
+				return p;
+			}
+			return nullptr;
+			break;
+		}
+		case SHOOT: {
+			if (std::get<0>(getCooldown(SHOOT)) == 0) {
+				useCooldown(SHOOT);
+				vec3 bulletStart = vec3(getPosition().x, 5, getPosition().z);
+				// vec3 paddleVelocity = getDirection() * vec3((float)(actionCharge));
+				vec3 bulletVelocity = glm::normalize(vec3(getDirection().x, 0, getDirection().z)) * 5.0f;
+				Bullet * b = new Bullet(bulletStart, bulletVelocity, 1.0f);
+				/*b->setModel("Models/unit_sphere.obj");
+				b->setMaterial("Materials/brick.json");*/
+				return b;
+			}
+			return nullptr;
 			break;
 		}
 		default: {
-			return NULL;
+			return nullptr;
 		}
 	}
 }
@@ -155,8 +188,8 @@ GameObject * Player::doAction(PlayerCommands action) {
 */
 GameObject * Player::processCommand(int inputs)
 {
-	vector<PlayerCommands> chargeCommands = { SWING, WALL };
-	GameObject * retval = NULL;
+	vector<PlayerCommands> chargeCommands = { SWING, WALL, SHOOT };
+	GameObject * retval = nullptr;
 
 	//TODO for command in chargable commands
 	//TODO return GameObject (Ball, Wall) based on input to be rendered by the GameEngine
@@ -190,3 +223,15 @@ void Player::deserialize(NetBuffer &buffer) {
 	GameObject::deserialize(buffer);
 	direction = buffer.read<vec3>();
 }
+
+void Player::onCollision(GameObject * gameObject) {
+	gameObject->onCollision(this);
+}
+
+void Player::onCollision(Ball * ball) { }
+
+void Player::onCollision(Paddle * paddle) { }
+
+void Player::onCollision(Player * player) { }
+
+void Player::onCollision(Wall * wall) { }

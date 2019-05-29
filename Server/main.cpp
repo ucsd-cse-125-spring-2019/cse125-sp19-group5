@@ -23,18 +23,94 @@ int main(int argc, char **argv) {
 
 	vector<PlayerInputs> playerInputs;
 
-	auto ground = gameEngine.addGameObject<Wall>();
-	ground->setBoundingShape(new BoundingBox(vec3(0, 0, 0), vec3(1, 0, 0), 1, 1, 100));
-	ground->setModel("Models/ground.obj");
-	ground->setMaterial("Materials/grass.json");
 
-	auto ball = gameEngine.addGameObject<Ball>();
-	ball->setBoundingShape(new BoundingSphere(origin, 4));
-	ball->setScale(vec3(1.0f/4.0f));
-	ball->setPosition(vec3(0, 4, 0));
-	ball->setVelocity(vec3(0, 0, 0));
-	ball->setModel("Models/sphere.obj");
-	ball->setMaterial("Materials/brick.json");
+	//auto ground = gameEngine.addGameObject<Wall>();
+	//ground->setBoundingShape(new BoundingBox(vec3(0, -1, 0), vec3(1, 0, 0), 1, 1, 100));
+	//ground->setPosition(vec3(0, -1, 0));
+	//ground->setModel("Models/ground.obj");
+	//ground->setMaterial("Materials/grass.json");
+
+	//auto ball = gameEngine.addGameObject<Ball>();
+	//ball->setBoundingShape(new BoundingSphere(origin, 3));
+	//ball->setScale(vec3(3));
+	//ball->setPosition(vec3(5, 3, 10));
+	//ball->setVelocity(vec3(0, 0, 0));
+	//ball->setModel("Models/unit_sphere.obj");
+	//ball->setMaterial("Materials/brick.json");
+
+	//auto ball2 = gameEngine.addGameObject<Ball>();
+	//ball2->setBoundingShape(new BoundingSphere(origin, 3));
+	//ball2->setScale(vec3(3));
+	//ball2->setPosition(vec3(-5, 3, 10));
+	//ball2->setVelocity(vec3(0, 0, 0));
+	//ball2->setModel("Models/unit_sphere.obj");
+	//ball2->setMaterial("Materials/grass.json");
+
+	for (int i = 0; i < 15; i++) {
+		float radius = 5;
+		auto b = gameEngine.addGameObject<Ball>();
+		b->setBoundingShape(new BoundingSphere(origin, radius));
+		b->setScale(vec3(radius));
+		b->setPosition(vec3(-90 + (i * radius * 2.5), radius, 0));
+		b->setVelocity(vec3(0, 0, 0));
+		b->setModel("Models/unit_sphere.obj");
+		b->setMaterial("Materials/brick.json");
+	}
+
+	auto wall1 = gameEngine.addGameObject<Wall>();
+	wall1->setBoundingShape(new BoundingBox(vec3(0, 0, 100), vec3(1, 0, 0), 400, 20, 10));
+	wall1->setScale(vec3(200, 40, 10));
+	wall1->setPosition(vec3(0, 0, 100));
+	wall1->setModel("Models/unit_cube.obj");
+	wall1->setMaterial("Materials/grass.json");
+
+	auto wall2 = gameEngine.addGameObject<Wall>();
+	wall2->setBoundingShape(new BoundingBox(vec3(0, 0, -100), vec3(1, 0, 0), 400, 20, 10));
+	wall2->setScale(vec3(200, 40, 10));
+	wall2->setPosition(vec3(0, 0, -100));
+	wall2->setModel("Models/unit_cube.obj");
+	wall2->setMaterial("Materials/grass.json");
+
+	//auto goal1 = gameEngine.addGameObject<Goal>();
+	//goal1->setBoundingShape(new BoundingBox(vec3(0, 0, 100), vec3(1, 0, 0), 200, 20, 10));
+	//goal1->setScale(vec3(200, 40, 10));
+	//goal1->setPosition(vec3(0, 0, 100));
+	//goal1->setTeam(0);
+	//goal1->setModel("Models/unit_cube.obj");
+	//goal1->setMaterial("Materials/brick.json");
+
+	//auto goal2 = gameEngine.addGameObject<Goal>();
+	//goal2->setBoundingShape(new BoundingBox(vec3(0, 0, -100), vec3(1, 0, 0), 200, 20, 10));
+	//goal2->setScale(vec3(200, 40, 10));
+	//goal2->setPosition(vec3(0, 0, -100));
+	//goal2->setTeam(1);
+	//goal2->setModel("Models/unit_cube.obj");
+	//goal2->setMaterial("Materials/brick.json");
+
+	auto wall3 = gameEngine.addGameObject<Wall>();
+	wall3->setBoundingShape(new BoundingBox(vec3(100, 0, 0), vec3(0, 0, 1), 400, 20, 10));
+	wall3->setScale(vec3(10, 40, 200));
+	wall3->setPosition(vec3(100, 0, 0));
+	wall3->setModel("Models/unit_cube.obj");
+	wall3->setMaterial("Materials/grass.json");
+
+	auto wall4 = gameEngine.addGameObject<Wall>();
+	wall4->setBoundingShape(new BoundingBox(vec3(-100, 0, 0), vec3(0, 0, 1), 400, 20, 10));
+	wall4->setScale(vec3(10, 40, 200));
+	wall4->setPosition(vec3(-100, 0, 0));
+	wall4->setModel("Models/unit_cube.obj");
+	wall4->setMaterial("Materials/grass.json");
+	
+	/*auto wall5 = gameEngine.addGameObject<Wall>();
+	wall5->setBoundingShape(new BoundingBox(vec3(-20, 0, 10), vec3(1, 0, 1), 50, 20, 5));
+	wall5->setScale(vec3(50, 40, 5));
+	wall5->setPosition(vec3(-20, 0, 10));
+	wall5->setModel("models/unit_cube.obj");
+	wall5->setMaterial("materials/grass.json");
+
+	auto quat4 = quat(vec3(0, glm::radians(-45.0f), 0));
+	wall5->setOrientation(quat4);*/
+
 
 
 	// Handle player keyboard/mouse inputs
@@ -87,7 +163,9 @@ int main(int argc, char **argv) {
 			c->send(matBuffer);
 		}
 
-		auto player = new Player(origin, origin, origin, c->getId(), 1.0f, 0);
+		auto player = new Player(vec3(0, 2, 0), origin, origin, c->getId(), 2, 0);
+		player->setCooldown(SWING, std::make_tuple(0, 60));
+		player->setCooldown(SHOOT, std::make_tuple(0, 60));
 		gameEngine.addGameObject(player);
 
 		player->setModel("Models/beararm.fbx");
@@ -149,48 +227,4 @@ int main(int argc, char **argv) {
 	
 		gameEngine.synchronizeGameState();
 	}
-
-
-
-	/*
-	// testing code
-	std::cout << "Hello world!" << std::endl;
-	GameEngine gameEngine;
-	gameEngine.addGameObject(new Player(vec3(-2, 0, 0), vec3(1, 0, 0), vec3(1, 0, 0), 0, 1, 0));
-	gameEngine.addGameObject(new Ball(vec3(5, 0, 0), vec3(-1, 0, 0), 0, 1));
-
-	//gameEngine.addGameObject(new Wall(
-	//	vec3(0, 0, 0), // position
-	//	vec3(1, 0, 0), // velocity/direction
-	//	0, // id
-	//	2, // length
-	//	2, // width
-	//	1 // height
-	//));
-
-	vector<PlayerInputs> playerInputs;
-	PlayerInputs pi;
-	pi.id = 0;
-	pi.inputs = SWING + RIGHT + LEFT;
-	playerInputs.push_back(pi);
-
-	vector<PlayerInputs> noInputs;
-	pi.id = 0;
-	pi.inputs = 0;
-	noInputs.push_back(pi);
-
-	for (int i = 0; i < 15; i++) {
-		if (i < 3) {
-			gameEngine.updateGameState(playerInputs);
-		}
-		else {
-			gameEngine.updateGameState(noInputs);
-
-		}
-	}
-
-	system("pause");
-
-	return 0;
-	*/
 }

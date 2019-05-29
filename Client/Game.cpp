@@ -228,6 +228,9 @@ void Game::updateInputs() {
 	if (Input::isKeyDown(GLFW_KEY_E)) {
 		keyInputs += SWING;
 	}
+	if (Input::isKeyDown(GLFW_KEY_Q)) {
+		keyInputs += SHOOT;
+	}
 
 	if (Input::isKeyDown(GLFW_KEY_ESCAPE)) {
 		shouldExit = true;

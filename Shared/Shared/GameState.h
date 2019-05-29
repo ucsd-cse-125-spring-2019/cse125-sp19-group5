@@ -9,6 +9,7 @@ constexpr auto MAX_PLAYERS = 4;
 struct GameState : public Serializable {
 	vector<Player *> players;
 	vector<Ball *> balls;
+	vector<Goal *> goals;
 	vector<Wall *> walls;
 	vector<GameObject *> gameObjects;
 	long timeLeft;

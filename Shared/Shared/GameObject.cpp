@@ -86,8 +86,29 @@ bool GameObject::collidesWith(GameObject * gameObject) {
 }
 
 void GameObject::onCollision(GameObject * gameObject) {
-	// Should only update your own state, gameObject's state will be updated when it calls onCollision
-	/*std::cout << to_string() << " collided with " << gameObject->to_string() << std::endl;*/
+	// std::cout << "not implemented" << std::endl;
+}
+
+void GameObject::onCollision(Ball * ball) { 
+	// std::cout << "not implemented" << std::endl; 
+}
+
+void GameObject::onCollision(Bullet * bullet) {
+}
+
+void GameObject::onCollision(Goal * goal) {
+}
+
+void GameObject::onCollision(Paddle * paddle) { 
+	// std::cout << "not implemented" << std::endl; 
+}
+
+void GameObject::onCollision(Player * player) {
+	// std::cout << "not implemented" << std::endl;
+}
+
+void GameObject::onCollision(Wall * wall) { 
+	// std::cout << "not implemented" << std::endl; 
 }
 
 double GameObject::distanceFrom(GameObject * gameObject) {
@@ -138,6 +159,9 @@ string GameObject::to_string() {
 		break;
 	case BALL_TYPE:
 		type = "ball";
+		break;
+	case BULLET_TYPE:
+		type = "bullet";
 		break;
 	case WALL_TYPE:
 		type = "wall";

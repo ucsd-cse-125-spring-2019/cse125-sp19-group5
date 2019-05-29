@@ -19,6 +19,7 @@ void GameEngine::removeGameObjectById(int id) {
 		safeRemoveFromVec(gameState.players, gameObject);
 		safeRemoveFromVec(gameState.walls, gameObject);
 		safeRemoveFromVec(gameState.balls, gameObject);
+		safeRemoveFromVec(gameState.goals, gameObject);
 		delete gameObject;
 
 		NetBuffer buffer(NetMessage::GAME_OBJ_DELETE);
@@ -38,13 +39,13 @@ void GameEngine::onPlayerDisconnected(Connection *c) {
 }
 
 void GameEngine::updateGameState(vector<PlayerInputs> & playerInputs) {
-	
 	movePlayers(playerInputs);
 	doPlayerCommands(playerInputs);
 
 	moveBalls();
 
-	doCollisionInteractions();
+	// doCollisionInteractions();
+	updateScore();
 	updateGameObjectsOnServerTick();
 	removeDeadObjects();
 
@@ -62,6 +63,7 @@ GameState & GameEngine::getGameState() {
 }
 
 void GameEngine::addGenericGameObject(GameObject *obj) {
+	std::cout << obj->to_string() << std::endl;
 	gameState.gameObjects[obj->getId()] = obj;
 
 	NetBuffer buffer(NetMessage::GAME_OBJ_CREATE);
@@ -83,6 +85,11 @@ void GameEngine::addGameObject(Ball *ball) {
 void GameEngine::addGameObject(Wall *wall) {
 	addGenericGameObject(wall);
 	gameState.walls.push_back(wall);
+}
+
+void GameEngine::addGameObject(Goal *goal) {
+	addGenericGameObject(goal);
+	gameState.goals.push_back(goal);
 }
 
 vec3 GameEngine::movementInputToVector(int movementInput) {
@@ -138,9 +145,55 @@ void GameEngine::movePlayers(vector<PlayerInputs> & playerInputs) {
 	}
 }
 
+void GameEngine::incrementalMoveBall(Ball * ball, float dist) {
+	float diameter = ball->getBoundingSphere()->getRadius() * 2.0f;
+
+	while (dist > 0.0f && !ball->getGoalScored()) {
+		if (dist > diameter) {
+			ball->move(glm::normalize(ball->getVelocity()) * diameter);
+			dist -= diameter;
+		}
+		else {
+			ball->move(glm::normalize(ball->getVelocity()) * dist);
+			dist = 0.0f;
+		}
+
+		// check to see if ball collides with goal or wall
+		for (Goal * goal : gameState.goals) {
+			if (ball->collidesWith(goal)) {
+				ball->onCollision(goal);
+				goal->onCollision(ball);
+			}
+		}
+
+		for (Wall * wall : gameState.walls) {
+			if (ball->collidesWith(wall)) {
+				ball->onCollision(wall);
+				wall->onCollision(ball);
+			}
+		}
+	}
+}
+
 void GameEngine::moveBalls() {
-	for (Ball *ball : gameState.balls) {
-		noCollisionMove(ball, ball->getVelocity());
+	// TODO: manage ballUnitMoves in ball object so balls can take each other's velocity
+	// TODO: account for balls with 0 velocity
+	// TODO: move balls in increments based on their velocity
+	int moves_per_tick = 1;
+
+	doCollisionInteractions();
+
+	// move all balls their incremental move while checking for wall collisions
+	for (int i = 0; i < gameState.balls.size(); i++) {
+		Ball * ball = gameState.balls[i];
+		if (ball) {
+			for (int j = 0; j < moves_per_tick; j++) {
+				float moveDist = glm::length(ball->getVelocity()) / moves_per_tick;
+				incrementalMoveBall(ball, moveDist);
+			}
+		}
+		// check for other collisions at end
+		doCollisionInteractions();
 	}
 }
 
@@ -164,19 +217,44 @@ void GameEngine::doPlayerCommands(vector<PlayerInputs> & playerInputs) {
 		if (createdGameObject) {
 			createdGameObject->setId(gameState.getFreeId());
 			addGenericGameObject(createdGameObject);
+			createdGameObject->setModel("Models/unit_sphere.obj");
+			createdGameObject->setMaterial("Materials/brick.json");
 		}
 	}
 }
 
 void GameEngine::doCollisionInteractions() {
-	for (GameObject * gameObject1 : gameState.gameObjects) {
+	for (int i = 0; i < gameState.gameObjects.size(); i++) {
+		GameObject * gameObject1 = gameState.gameObjects[i];
 		if (!gameObject1) { continue; }
-		for (GameObject * gameObject2 : gameState.gameObjects) {
+		for (int j = i + 1; j < gameState.gameObjects.size(); j++) {
+			GameObject * gameObject2 = gameState.gameObjects[j];
 			if (gameObject2 && gameObject1->collidesWith(gameObject2)) {
 				gameObject1->onCollision(gameObject2);
+				gameObject2->onCollision(gameObject1);
 			}
 		}
 	}
+}
+
+void GameEngine::updateScore() {
+	int team1Score = 0;
+	int team2Score = 0;
+	for (Goal * goal : gameState.goals) {
+		if (goal->getTeam() == 0) {
+			team1Score += goal->getGoalsScored();
+		}
+		else {
+			team2Score += goal->getGoalsScored();
+		}
+	}
+
+	if (std::get<0>(gameState.score) != team1Score || std::get<1>(gameState.score) != team2Score) {
+		std::cout << team1Score << " " << team2Score << std::endl;
+	}
+
+	std::get<0>(gameState.score) = team1Score;
+	std::get<1>(gameState.score) = team2Score;
 }
 
 void GameEngine::removeDeadObjects() {
@@ -197,6 +275,7 @@ void GameEngine::updateGameObjectsOnServerTick() {
 
 bool GameEngine::noCollisionMove(GameObject * gameObject, vec3 movement) {
 	vec3 destination = gameObject->getMoveDestination(movement);
+	// TODO: fix this method by moving adding a bounding box where the object would move
 
 	//for (GameObject * otherGameObject : gameState.gameObjects) {
 	//	if (gameObject != gameObject) {
