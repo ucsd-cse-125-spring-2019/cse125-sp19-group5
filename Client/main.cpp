@@ -26,7 +26,10 @@ static void onResize(GLFWwindow *window, int width, int height) {
 	SCREEN_HEIGHT = height;
 	SCREEN_RESHAPED = true;
 
-	Draw::updateScreenDimensions(width, height);
+	Draw::updateScreenDimensions(
+		static_cast<float>(width),
+		static_cast<float>(height)
+	);
 	glViewport(0, 0, width, height);
 }
 

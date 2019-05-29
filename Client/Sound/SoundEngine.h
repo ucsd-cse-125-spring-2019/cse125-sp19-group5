@@ -22,3 +22,4 @@ private:
 	bool didInitialize = false;
 };
 
+extern SoundEngine *gSound;

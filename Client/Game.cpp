@@ -80,6 +80,20 @@ void Game::onGameObjectMaterialSet(Connection *c, NetBuffer &buffer) {
 	}
 }
 
+void Game::onPlaySound(Connection *c, NetBuffer &buffer) {
+	auto id = buffer.read<int>();
+	auto sound = buffer.read<string>();
+	auto volume = buffer.read<float>();
+	auto loop = buffer.read<bool>();
+	auto gameObject = gameObjects[id];
+	if (!gameObject) { return; }
+	if (volume > 0.0f) {
+		gameObject->playSound(sound, volume, loop);
+	} else {
+		gameObject->stopSound(sound);
+	}
+}
+
 int Game::getScreenWidth() const {
 	return screenWidth;
 }
@@ -116,14 +130,9 @@ Game::Game(): gameObjects(1024, nullptr) {
 	);
 	fpsText = gTextRenderer->addText(TextRenderer::DEFAULT_FONT_NAME, "fps", 0.02f, 0.02f, 0.4f, glm::vec3(1.0f, 1.0f, 0.0f));
 
-	soundEngine = new SoundEngine();
-	soundEngine->setMasterVolume(1.0f);
-	soundtrack = soundEngine->loadFlatSound("Sounds/minecraft_wet_hands.wav", 0.1f);
+	gSound->setMasterVolume(1.0f);
+	soundtrack = gSound->loadFlatSound("Sounds/minecraft_wet_hands.wav", 0.1f);
 	soundtrack->play(true);
-	spatialTest1 = soundEngine->loadSpatialSound("Sounds/minecraft_sheep.ogg", 1.0f);
-	spatialTest1->play(false);
-	spatialTest2 = soundEngine->loadSpatialSound("Sounds/minecraft_chicken_ambient.ogg", 1.0f);
-	spatialTest2->play(false);
 
 	// Handle game object creation and deletion.
 	Network::on(
@@ -160,6 +169,10 @@ Game::Game(): gameObjects(1024, nullptr) {
 
 	Network::on(NetMessage::PARTICLES, ParticleEmitters::onUpdate);
 	Network::on(NetMessage::PARTICLES_DELETE, ParticleEmitters::onDelete);
+	Network::on(
+		NetMessage::SOUND,
+		boost::bind(&Game::onPlaySound, this, _1, _2)
+	);
 }
 
 Game::~Game() {
@@ -170,8 +183,6 @@ Game::~Game() {
 	delete sun;
 	delete shadowMap;
 	delete soundtrack;
-	delete spatialTest1;
-	delete spatialTest2;
 
 	for (auto gameObject : gameObjects) {
 		if (gameObject) {
@@ -182,6 +193,8 @@ Game::~Game() {
 	Gui::cleanUp();
 	Draw::cleanUp();
 	ParticleEmitters::cleanUp();
+
+	delete gSound;
 }
 
 Camera *Game::getCamera() const {
@@ -241,9 +254,7 @@ void Game::updateInputs() {
 }
 
 void Game::update(float dt) {
-	spatialTest1->setPosition(camera->getPosition() + vec3(10.0f, 0.0f, 0.0f));
-	spatialTest2->setPosition(camera->getPosition() + vec3(10.0f, 0.0f, 0.0f));
-	soundEngine->update(camera->getPosition(), vec3(0.0f, 0.0f, 0.0f), camera->getForward());
+	gSound->update(camera->getPosition(), vec3(0.0f, 0.0f, 0.0f), camera->getForward());
 
 	fpsTextTimer += dt;
 	int fps = (int) (1.0f / dt);
@@ -258,7 +269,7 @@ void Game::update(float dt) {
 	const auto curTime = (float)glfwGetTime();
 	for (auto gameObject : gameObjects) {
 		if (!gameObject) { continue; }
-		gameObject->updateAnimation(curTime);
+		gameObject->update(curTime);
 	}
 
 	if (playerObj) {

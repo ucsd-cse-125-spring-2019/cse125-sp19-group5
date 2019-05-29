@@ -13,4 +13,5 @@ enum NetMessage {
 	GAME_OBJ_MAT,
 	PARTICLES,
 	PARTICLES_DELETE,
+	SOUND,
 };

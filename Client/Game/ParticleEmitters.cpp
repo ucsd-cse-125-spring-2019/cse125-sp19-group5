@@ -40,14 +40,14 @@ void ParticleEmitters::onDelete(Connection *c, NetBuffer &buffer) {
 }
 
 void ParticleEmitters::update(float dt, const Camera *camera) {
-	for (auto system : systems) {
+	for (auto &system : systems) {
 		system.second->update(dt, camera);
 	}
 }
 
 void ParticleEmitters::draw(const Camera *camera) {
 	static auto psShader = new Shader("Shaders/particle");
-	for (auto system : systems) {
+	for (auto &system : systems) {
 		system.second->draw(*psShader, camera);
 	}
 }

@@ -32,15 +32,15 @@ void Sound::setVolume(float volume) {
 	sound->setVolume(volume);
 }
 
-void Sound::setPosition(vec3 pos) {
+void Sound::setPosition(const vec3 &pos) {
 	if (!sound || !isSpatial) { return; }
-	irrklang::vec3df soundPos = irrklang::vec3df(pos.x, pos.y, pos.z);
+	irrklang::vec3df soundPos(pos.x, pos.y, pos.z);
 	sound->setPosition(soundPos);
 }
 
-void Sound::setVelocity(vec3 vel) {
+void Sound::setVelocity(const vec3 &vel) {
 	if (!sound || !isSpatial) { return; }
-	irrklang::vec3df soundVel = irrklang::vec3df(vel.x, vel.y, vel.z);
+	irrklang::vec3df soundVel(vel.x, vel.y, vel.z);
 	sound->setVelocity(soundVel);
 }
 
@@ -52,4 +52,9 @@ void Sound::setMinDist(float dist) {
 void Sound::setMaxDist(float dist) {
 	if (!sound || !isSpatial) { return; }
 	sound->setMaxDistance(dist);
+}
+
+void Sound::stop() {
+	if (!sound) { return; }
+	sound->stop();
 }
