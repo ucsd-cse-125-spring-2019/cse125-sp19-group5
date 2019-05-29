@@ -12,10 +12,11 @@ public:
 	void play(const bool isLooping);
 	void pause();
 	void setVolume(float volume);
-	void setPosition(vec3 pos);
-	void setVelocity(vec3 vel);
+	void setPosition(const vec3 &pos);
+	void setVelocity(const vec3 &vel);
 	void setMinDist(float dist);
 	void setMaxDist(float dist);
+	void stop();
 
 private:
 	std::string filepath;

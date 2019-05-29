@@ -4,6 +4,7 @@ const std::string ERRKLANG_ERROR_MSG = "Error: irrKlang audio failed to initiali
 
 SoundEngine::SoundEngine() {
 	engine = irrklang::createIrrKlangDevice();
+	engine->setDefault3DSoundMinDistance(3.0f);
 	if (!engine) {
 		std::cout << ERRKLANG_ERROR_MSG << std::endl;
 		didInitialize = false;
@@ -18,9 +19,6 @@ SoundEngine::~SoundEngine() {
 }
 
 bool SoundEngine::isInitialized() {
-	if (!didInitialize)
-		// std::cout << ERRKLANG_ERROR_MSG << std::endl;
-
 	return didInitialize;
 }
 
@@ -57,3 +55,5 @@ void SoundEngine::update(vec3 pos, vec3 vel, vec3 lookDir) {
 	engine->setListenerPosition(position, lookAt, velocity);
 	engine->update();
 }
+
+SoundEngine *gSound = new SoundEngine();

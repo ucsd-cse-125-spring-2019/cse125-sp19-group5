@@ -78,6 +78,9 @@ public:
 	void setOrientation(const quat &newOrientation);
 	const quat &getOrientation() const;
 
+	void playSound(const string &sound, float volume = 1.0f, bool loop = false);
+	void stopSound(const string &sound);
+
 protected:
 	quat orientation = quat();
 	vec3 position;

@@ -112,7 +112,6 @@ int main(int argc, char **argv) {
 	wall5->setOrientation(quat4);*/
 
 
-
 	// Handle player keyboard/mouse inputs
 	auto handlePlayerInput = [&playerInputs](Connection *c, NetBuffer &buffer) {
 		PlayerInputs input;
@@ -179,6 +178,8 @@ int main(int argc, char **argv) {
 		ps->setCreationSpeed(500);
 		ps->setInitialVel(vec3(0, 10, 0));
 		ps->setTexture("Textures/gary.png");
+
+		ball->playSound("Sounds/minecraft_chicken_ambient.ogg", 1.0f, true);
 
 		// Receive player keyboard and mouse(TODO) input
 		c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);
