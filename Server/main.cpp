@@ -179,8 +179,6 @@ int main(int argc, char **argv) {
 		ps->setInitialVel(vec3(0, 10, 0));
 		ps->setTexture("Textures/gary.png");
 
-		ball->playSound("Sounds/minecraft_chicken_ambient.ogg", 1.0f, true);
-
 		// Receive player keyboard and mouse(TODO) input
 		c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);
 		c->onDisconnected([&](Connection *c) {
