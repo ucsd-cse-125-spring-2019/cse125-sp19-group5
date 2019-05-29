@@ -110,7 +110,7 @@ void Ball::onCollision(Paddle * paddle) {
 
 
 void Ball::onCollision(Player * player) { 
-	setVelocity(vec3(0.0f));
+	setVelocity(getVelocity() * 0.9f);
 }
 
 void Ball::onCollision(Wall * wall) {

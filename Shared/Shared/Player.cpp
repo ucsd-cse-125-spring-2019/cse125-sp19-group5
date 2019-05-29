@@ -3,6 +3,8 @@
 #include "BoundingSphere.h"
 #include <iostream>
 #include <glm/gtx/euler_angles.hpp>
+#include <glm/gtx/vector_angle.hpp>
+#include <glm/gtx/projection.hpp>
 #include <algorithm>
 
 Player::Player(vec3 position, vec3 velocity, vec3 direction, int id, float radius, int team) : SphereGameObject(position, velocity, id) {
@@ -244,18 +246,33 @@ void Player::onCollision(GameObject * gameObject) {
 	gameObject->onCollision(this);
 }
 
-void Player::onCollision(Ball * ball) { }
+void Player::onCollision(Ball * ball) { 
+	float horizDist = sqrt(pow(getBoundingSphere()->getRadius() + ball->getBoundingSphere()->getRadius(), 2) - pow(getPosition().y - ball->getPosition().y, 2));
+	vec3 moveDirection = glm::normalize(getPosition() - ball->getPosition());
+	moveDirection.y = 0;
+	vec3 startPosition = vec3(ball->getPosition().x, getPosition().y, ball->getPosition().z);
+	setPosition(startPosition + moveDirection * horizDist);
+}
 
 void Player::onCollision(Paddle * paddle) { }
 
 void Player::onCollision(Player * player) { }
 
-void Player::onCollision(Wall * wall) { 
+void Player::onCollision(Wall * wall) { 	
 	for (Plane * p : CollisionDetection::getIntersectingPlanes(getBoundingSphere(), wall->getBoundingBox())) {
 		if (p == wall->getBoundingBox()->top) {
 			this->numLandings += 1;
-			this->maxBoxHeight = std::max(maxBoxHeight, 
+			this->maxBoxHeight = std::max(maxBoxHeight,
 				wall->getPosition().y + wall->getBoundingBox()->height + getBoundingSphere()->getRadius());
+		}
+		else {
+			vec3 planeNormal = glm::normalize(p->getNormal());
+			float angleBetween = glm::angle(glm::normalize(getVelocity()), planeNormal);
+			if (angleBetween > glm::half_pi<float>() && angleBetween < (3.0f * glm::half_pi<float>())) {
+				float planeDistance = abs(p->pointDistance(getPosition()) - (getBoundingSphere()->getRadius()));
+				setPosition(getPosition() + planeNormal * planeDistance);
+				setVelocity(getVelocity() - glm::proj(getVelocity(), planeNormal));
+			}
 		}
 	}
 }
