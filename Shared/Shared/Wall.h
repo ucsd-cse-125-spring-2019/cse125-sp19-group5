@@ -16,4 +16,11 @@ public:
 	void onCollision(Paddle * paddle);
 	void onCollision(Player * player);
 	void onCollision(Wall * wall);
+	void onCreated() override;
+
+private:
+	vec3 direction;
+	float length;
+	float width;
+	float height;
 };

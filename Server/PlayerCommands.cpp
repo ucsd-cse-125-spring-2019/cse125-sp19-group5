@@ -13,12 +13,15 @@ void Player::doAction(PlayerCommands action) {
 
 			auto p = gGameEngine->addGameObject<Paddle>();
 			p->setPosition(paddlePosition);
-			p->setVelocity(paddleVelocity);
+			p->setVelocity(paddleVelocity * 0.2f);
 			p->setLifespan(paddleLifespan);
 
 			break;
 		}
 		case WALL: {
+			auto wall = gGameEngine->addGameObject<Wall>();
+			wall->setPosition(getPosition() + getDirection()*2.0f);
+			
 			break;
 		}
 	}
