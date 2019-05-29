@@ -13,3 +13,9 @@ Wall::Wall(vec3 position, vec3 direction, int id, float length, float width, flo
 GAMEOBJECT_TYPES Wall::getGameObjectType() const {
 	return WALL_TYPE;
 }
+
+void Wall::onCreated() {
+	setBoundingShape(new BoundingBox(position, direction, 1.0f, 2.0f, 2.0f));
+	setModel("Models/wall.obj");
+	setMaterial("Materials/brick.json");
+}
