@@ -125,6 +125,7 @@
     <ClCompile Include="ClientGameObject.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Game\Gui\GuiHUD.cpp" />
     <ClCompile Include="Game\ParticleEmitter.cpp" />
     <ClCompile Include="Game\ParticleEmitters.cpp" />
     <ClCompile Include="Game\Gui\GuiConnectMenu.cpp" />
@@ -168,6 +169,7 @@
     <ClInclude Include="Assets.h" />
     <ClInclude Include="ClientGameObject.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Game\Gui\GuiHUD.h" />
     <ClInclude Include="Game\ParticleEmitters.h" />
     <ClInclude Include="Game\Gui\GuiConnectMenu.h" />
     <ClInclude Include="Input.h" />

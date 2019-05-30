@@ -31,7 +31,7 @@ void GameEngine::removeGameObjectById(int id) {
 void GameEngine::init() {
 	gameState.in_progress = false;
 	gameState.score = std::make_tuple(1, 2);
-	gameState.timeLeft = 30;
+	gameState.timeLeft = 1000 * 60 * 5; // 5 minutes in ms
 }
 
 void GameEngine::onPlayerDisconnected(Connection *c) {
@@ -39,6 +39,8 @@ void GameEngine::onPlayerDisconnected(Connection *c) {
 }
 
 void GameEngine::updateGameState(vector<PlayerInputs> & playerInputs) {
+	gameState.timeLeft -= PhysicsEngine::getDeltaTime();
+
 	movePlayers(playerInputs);
 	doPlayerCommands(playerInputs);
 
