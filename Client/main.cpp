@@ -143,15 +143,14 @@ int main(int argc, char **argv) {
 	glfwSetWindowPos(window, middleX, middleY);
 
 	Input::init(window);
-	Gui::setupInputListeners(window);
-	MenuPrompt menuPrompt;
-	while (!menuPrompt.getConnected()) {
+	//Gui::setupInputListeners(window);
+	//MenuPrompt menuPrompt;
+	/*while (!menuPrompt.getConnected()) {
 		menuPrompt.ipPrompt();
 	}
-	menuPrompt.settingsPrompt();
+	menuPrompt.settingsPrompt();*/
 
 	Game game;
-
 
 	game.getCamera()->setAspect((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT);
 	game.updateScreenDimensions(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -167,6 +166,9 @@ int main(int argc, char **argv) {
 	 */
 	auto handleMenuOptions = [&](Connection *server, NetBuffer &incomingMessage)
 	{
+		MenuPrompt *menuPrompt = Gui::create<MenuPrompt>();
+
+		menuPrompt->setGame(&game);
 		//read in the current menu options from the server 
 		MenuOptions currentMenuOptions = incomingMessage.read<MenuOptions>();
 
@@ -244,7 +246,7 @@ int main(int argc, char **argv) {
 	};
 
 	// this is the server confirming a new selection to all connected clients 
-	Network::on(NetMessage::MENU_OPTIONS, handleMenuOptions);
+	Network::on(NetMessage::MENU_OPTIONS,handleMenuOptions);
 	Network::on(NetMessage::MENU_CONFIRM, handleMenuConfirmed);
 
 	while (1) {
