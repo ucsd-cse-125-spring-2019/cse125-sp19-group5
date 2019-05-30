@@ -2,6 +2,7 @@
 
 #include "../Common.h"
 #include "../Networking/Serializable.h"
+#include "../GameObject.h"
 
 // Defines a member variable with a setter that synchronizes the state on client.
 #define PARTICLE_PARAM(type, var) \
@@ -18,6 +19,7 @@ class ParticleEmitter : public Serializable {
 	size_t id;            // A unique number used to identify this emitter.
 	static size_t nextId; // Unique number for the next emitter.
 	float dieTime;        // When the emitter should be auto-deleted. -1 = never
+	GameObject *parent;   // Object that this emitter should follow.
 
 	public:
 	PARTICLE_PARAM(unsigned int, CreationSpeed);
@@ -35,6 +37,7 @@ class ParticleEmitter : public Serializable {
 	PARTICLE_PARAM(float, CollFriction);
 	PARTICLE_PARAM(vector<vec4>, ParticleColor);
 	PARTICLE_PARAM(string, Texture);
+	PARTICLE_PARAM(int, ParentId);
 
 	ParticleEmitter();
 
@@ -42,10 +45,16 @@ class ParticleEmitter : public Serializable {
 	void deserialize(NetBuffer &buffer) override;
 
 	// Sends state to client so it can be synchronized.
-	void update() const;  
+	void update();  
 
 	// Sets how long this emitter stays active for.
 	void setLifeTime(float seconds); 
+
+	// Sets the game object that this emitter should be attached to.
+	void setParent(GameObject *newParent);
+
+	// Returns the object this emitter is attached to.
+	GameObject *getParent() const;
 
 	~ParticleEmitter();
 

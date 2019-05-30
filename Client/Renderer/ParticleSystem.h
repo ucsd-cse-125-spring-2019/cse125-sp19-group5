@@ -30,6 +30,7 @@ public:
 	float collFriction;           // For ground plane collision
 	vector<vec4> particleColor;   // Color of each particle during its lifetime
 	Texture2d *texture;           // Texture for each particle
+	int parentId;                 // ID of object to follow
 
 private:
 	void setupBuffers();
