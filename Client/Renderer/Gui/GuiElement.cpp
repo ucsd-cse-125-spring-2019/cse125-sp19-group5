@@ -75,6 +75,11 @@ void GuiElement::remove() {
 	if (parent) {
 		parent->removeChild(this);
 	}
+	for (auto child : children) {
+		child->parent = nullptr;
+		child->remove();
+	}
+	children.clear();
 	Gui::onElementRemoved(this);
 }
 

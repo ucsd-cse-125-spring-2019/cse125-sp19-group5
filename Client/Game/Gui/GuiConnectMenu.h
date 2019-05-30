@@ -10,6 +10,7 @@
 class GuiConnectMenu : public GuiRect {
 	private:
 	GuiText *label;
+	GuiText *message;
 	GuiTextbox *ipInput;
 
 	void onIpEntered(const std::string &text);

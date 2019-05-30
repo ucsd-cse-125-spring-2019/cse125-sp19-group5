@@ -256,7 +256,10 @@ int main(int argc, char **argv) {
 		lastTime = (float)glfwGetTime();
 
 		Input::poll();
-		Network::poll();
+
+		if (Network::connection) {
+			Network::poll();
+		}
 
 		if (selectionComplete) {
 			if (game.shouldExit) {

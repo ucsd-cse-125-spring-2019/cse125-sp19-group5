@@ -91,10 +91,7 @@ int Game::getScreenHeight() const {
 Game::Game(): gameObjects(1024, nullptr) {
 	Draw::init();
 
-	// TODO (bhang): Integrate this with connecting.
-	// Gui::create<GuiConnectMenu>();
-	
-	Input::setMouseVisible(false);
+	Gui::create<GuiConnectMenu>();
 
 	lightShader = new Shader("Shaders/light");
 	camera = new Camera(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f), 70, 1.0f);
@@ -152,6 +149,7 @@ Game::Game(): gameObjects(1024, nullptr) {
 	Network::on(NetMessage::CONNECTION_ID, [this](Connection *c, NetBuffer &buffer) {
 		playerId = buffer.read<int>();
 		cout << "I am Player " << playerId << "." << endl;
+		Input::setMouseVisible(false);
 	});
 
 	Network::on(
