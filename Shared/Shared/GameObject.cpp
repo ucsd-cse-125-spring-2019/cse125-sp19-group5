@@ -33,14 +33,18 @@ void GameObject::setBoundingShape(BoundingShape * boundingShape) {
 }
 
 vec3 GameObject::setPosition(vec3 pos) {
-	vec3 oldPosition = this->position;
+	this->prevPosition = this->position;
 	this->position = pos;
 	this->boundingShape->setPosition(pos);
-	return oldPosition;
+	return prevPosition;
 }
 
 vec3 GameObject::getPosition() {
 	return this->position;
+}
+
+vec3 GameObject::getPrevPosition() {
+	return this->prevPosition;
 }
 
 vec3 GameObject::setVelocity(vec3 velocity) {

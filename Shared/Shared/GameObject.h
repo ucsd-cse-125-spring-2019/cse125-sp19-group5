@@ -32,8 +32,9 @@ public:
 	BoundingShape * getBoundingShape();
 	void setBoundingShape(BoundingShape * boundingShape);
 
-	vec3 setPosition(vec3 position);
+	virtual vec3 setPosition(vec3 position);
 	vec3 getPosition();
+	vec3 getPrevPosition();
 
 	vec3 setVelocity(vec3 velocity);
 	vec3 getVelocity();
@@ -81,6 +82,7 @@ public:
 protected:
 	quat orientation = quat();
 	vec3 position;
+	vec3 prevPosition;
 	vec3 velocity;
 	vec3 scale = vec3(1.0f);
 	std::string model;

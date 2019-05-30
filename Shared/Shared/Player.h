@@ -55,4 +55,6 @@ private:
 	bool isJumpKeyUp = false;
 	float maxBoxHeight = 0.0f;
 	int numLandings = 0;
+	vec3 ballVelocityComponent = vec3(0);
+	vec3 prevPosition;
 };

@@ -39,13 +39,13 @@ void GameEngine::onPlayerDisconnected(Connection *c) {
 }
 
 void GameEngine::updateGameState(vector<PlayerInputs> & playerInputs) {
-	for (Player * p : gameState.players) {
-		if (p) {
-			if (glm::length(p->getVelocity()) != 0) {
-				std::cout << glm::to_string(p->getVelocity()) << std::endl;
-			}
-		}
-	}
+	//for (Player * p : gameState.players) {
+	//	if (p) {
+	//		if (glm::length(p->getVelocity()) != 0) {
+	//			std::cout << glm::to_string(p->getVelocity()) << std::endl;
+	//		}
+	//	}
+	//}
 
 	movePlayers(playerInputs);
 	doPlayerCommands(playerInputs);
