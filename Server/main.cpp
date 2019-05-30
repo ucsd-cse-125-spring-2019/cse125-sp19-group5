@@ -3,11 +3,13 @@
 #include <boost/asio.hpp>
 #include <Shared/Common.h>
 #include <Shared/GameMessage.hpp>
+#include <Shared/PhysicsEngine.h>
 #include <Shared/BoundingSphere.h>
 #include <Shared/BoundingBox.h>
 #include <chrono>
 #include "GameEngine.h"
 #include "Networking/Server.h"
+#include <Shared/Game/ParticleEmitter.h>
 
 constexpr auto TICKS_PER_SECOND = 60; // How many updates per second.
 
@@ -16,7 +18,7 @@ int main(int argc, char **argv) {
 	//TODO: config file for the port number to be specified in
 	Network::init(1234);
 
-	GameEngine gameEngine;
+	GameEngine &gameEngine = *gGameEngine;
 	gameEngine.init();
 
 	auto origin = vec3(0.0f);
@@ -131,11 +133,17 @@ int main(int argc, char **argv) {
 		auto player = new Player(origin, origin, origin, c->getId(), 1.0f, 0);
 		gameEngine.addGameObject(player);
 
-		player->setModel("Models/BearTiltAnimation.fbx");
+		player->setModel("Models/beararm.fbx");
 		player->setDirection(vec3(0, 0, -1));
 		player->setMaterial("Materials/brick.json");
 		player->setScale(vec3(0.2f));
-		player->setAnimation(0);
+		player->setAnimation(1);
+
+		auto ps = new ParticleEmitter();
+		ps->setGravity(-15.0f);
+		ps->setCreationSpeed(500);
+		ps->setInitialVel(vec3(0, 10, 0));
+		ps->setTexture("Textures/gary.png");
 
 		// Receive player keyboard and mouse(TODO) input
 		c->onDisconnected([&](Connection *c) {
@@ -146,7 +154,10 @@ int main(int argc, char **argv) {
 	});
 
 	//This is the total amount of time allowed for the server to update the game state
-	auto maxAllowabeServerTime = std::chrono::milliseconds(1000 / TICKS_PER_SECOND + 10);
+	auto maxAllowableServerTime = std::chrono::milliseconds(1000 / TICKS_PER_SECOND + 10);
+
+	// Time step used for physics
+	PhysicsEngine::setDeltaTime(maxAllowableServerTime.count());
 
 	//now the game loop begins
 	while (true)
@@ -159,8 +170,6 @@ int main(int argc, char **argv) {
 		auto networkPollDuration = std::chrono::duration_cast<std::chrono::milliseconds>(pollDone - startTime);
 
 		//updating the game state with each client message
-		//vector<PlayerInputs> playerInputs;
-			/*TODO: use the player input (Oliver)*/
 		gameEngine.updateGameState(playerInputs);
 		playerInputs.clear();
 
@@ -170,10 +179,10 @@ int main(int argc, char **argv) {
 		auto totalDuration = std::chrono::duration_cast<std::chrono::milliseconds>(updateDone - startTime);
 
 		//check if the server is running on schedule
-		if (updateDuration <= maxAllowabeServerTime)
+		if (updateDuration <= maxAllowableServerTime) 
 		{
 			//wait for the update time to broadcast the game state update
-			std::this_thread::sleep_for(maxAllowabeServerTime - totalDuration);
+			std::this_thread::sleep_for(maxAllowableServerTime - totalDuration);
 		}
 		else
 		{

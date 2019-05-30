@@ -33,7 +33,7 @@ class Camera {
 		const vec3 &position, const vec3 &angles,
 		GLfloat fov,
 		GLfloat aspect,
-		GLfloat zNear = 0.001f, GLfloat zFar = 1000.0f
+		GLfloat zNear = 0.001f, GLfloat zFar = 100.0f
 	);
 
 	void setPosition(const vec3 &newPos);
@@ -46,6 +46,10 @@ class Camera {
 	const vec3 &getForward() const;
 	const vec3 &getRight() const;
 	const vec3 &getAngles() const;
+	float getAspect() const;
+	float getFov() const;
+	float getZNear() const;
+	float getZFar() const;
 
 	mat4 getMatrix() const;
 	const mat4 &getViewMatrix() const;

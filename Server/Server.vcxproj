@@ -117,8 +117,10 @@
   <ItemGroup>
     <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Game\ParticleEmitter.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Networking\Server.cpp" />
+    <ClCompile Include="PlayerCommands.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine.h" />

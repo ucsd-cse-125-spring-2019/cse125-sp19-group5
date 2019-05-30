@@ -116,6 +116,7 @@ int main(int argc, char **argv) {
 	// Initialize GLEW
 	glewExperimental = true;
 	auto glewInitRes = glewInit();
+	glGetError();
 	if (glewInitRes != GLEW_OK) {
 		std::cerr << "Failed to initialize GLEW" << std::endl
 			<< glewGetErrorString(glewInitRes) << std::endl;
@@ -150,6 +151,8 @@ int main(int argc, char **argv) {
 	menuPrompt.settingsPrompt();
 
 	Game game;
+
+
 	game.getCamera()->setAspect((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT);
 	game.updateScreenDimensions(SCREEN_WIDTH, SCREEN_HEIGHT);
 

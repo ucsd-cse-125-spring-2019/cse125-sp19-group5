@@ -85,6 +85,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)include;%(AdditionalIncludeDirectories);../Shared;;$(ProjectDir)include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CLIENT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>irrKlang.lib;irrKlang.exp;soil2.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -112,6 +113,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)include;%(AdditionalIncludeDirectories);../Shared;$(ProjectDir)Renderer/SOIL2;$(ProjectDir)include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CLIENT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -125,6 +127,8 @@
     <ClCompile Include="ClientGameObject.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Game\ParticleEmitter.cpp" />
+    <ClCompile Include="Game\ParticleEmitters.cpp" />
     <ClCompile Include="Game\Gui\GuiConnectMenu.cpp" />
     <ClCompile Include="Game\Gui\MenuPrompt.cpp" />
     <ClCompile Include="Input.cpp" />
@@ -148,6 +152,7 @@
     <ClCompile Include="Renderer\MeshData.cpp" />
     <ClCompile Include="Renderer\Model.cpp" />
     <ClCompile Include="Renderer\ModelData.cpp" />
+    <ClCompile Include="Renderer\ParticleSystem.cpp" />
     <ClCompile Include="Renderer\PointLight.cpp" />
     <ClCompile Include="Renderer\Shader.cpp" />
     <ClCompile Include="Renderer\ShadowMap.cpp" />
@@ -166,6 +171,7 @@
     <ClInclude Include="Assets.h" />
     <ClInclude Include="ClientGameObject.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Game\ParticleEmitters.h" />
     <ClInclude Include="Game\Gui\GuiConnectMenu.h" />
     <ClInclude Include="Game\Gui\MenuPrompt.h" />
     <ClInclude Include="Input.h" />
@@ -190,6 +196,8 @@
     <ClInclude Include="Renderer\MeshData.h" />
     <ClInclude Include="Renderer\Model.h" />
     <ClInclude Include="Renderer\ModelData.h" />
+    <ClInclude Include="Renderer\Particle.h" />
+    <ClInclude Include="Renderer\ParticleSystem.h" />
     <ClInclude Include="Renderer\PointLight.h" />
     <ClInclude Include="Renderer\Shader.h" />
     <ClInclude Include="Renderer\ShadowMap.h" />

@@ -22,6 +22,7 @@ void ClientGameObject::draw(
 		auto modelInvT = glm::transpose(glm::inverse(mat3(modelTransform)));
 
 		shader.setUniform("model", modelTransform);
+		shader.setUniform("viewMat", camera->getViewMatrix());
 		shader.setUniform("modelInvT", modelInvT);
 		shader.setUniform("mvp", camera->getMatrix() * modelTransform);
 

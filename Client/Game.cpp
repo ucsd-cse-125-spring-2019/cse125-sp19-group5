@@ -10,6 +10,9 @@
 #include "Renderer/Draw.h"
 #include <Shared/CommonStructs.h>
 #include "Renderer/Material.h"
+#include "Renderer/ParticleSystem.h"
+#include "Assets.h"
+#include "Game/ParticleEmitters.h"
 #include "Game/Gui/GuiConnectMenu.h"
 
 void Game::onGameObjectCreated(Connection *c, NetBuffer &buffer) {
@@ -88,19 +91,20 @@ int Game::getScreenHeight() const {
 Game::Game(): gameObjects(1024, nullptr) {
 	Draw::init();
 
-	Input::mouseLock = false;
-	Input::setMouseVisible(true);
-
 	// TODO (bhang): Integrate this with connecting.
 	// Gui::create<GuiConnectMenu>();
 	
-	shadowMap = new ShadowMap();
+	Input::setMouseVisible(false);
+
 	lightShader = new Shader("Shaders/light");
 	camera = new Camera(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f), 70, 1.0f);
+	shadowMap = new ShadowMap(camera);
 	sun = new DirectionalLight(0);
-	sun->setDirection(vec3(0.009395, -0.200647, -0.713446));
+	sun->setDirection(vec3(0.009395, -0.500647, -0.713446));
 	sun->setAmbient(vec3(0.04f, 0.05f, 0.13f));
 	sun->setColor(vec3(0.8f, 0.7f, 0.55f));
+
+	shadowMap = new ShadowMap(camera);
 
 	skybox = new Skybox("Textures/Skybox/cloudtop", *camera);
 
@@ -114,12 +118,12 @@ Game::Game(): gameObjects(1024, nullptr) {
 
 	soundEngine = new SoundEngine();
 	soundEngine->setMasterVolume(1.0f);
-	soundtrack = soundEngine->loadFlatSound("Sounds/minecraft_wet_hands.wav", 0.5f);
+	soundtrack = soundEngine->loadFlatSound("Sounds/minecraft_wet_hands.wav", 0.1f);
 	soundtrack->play(true);
 	spatialTest1 = soundEngine->loadSpatialSound("Sounds/minecraft_sheep.ogg", 1.0f);
-	spatialTest1->play(true);
+	spatialTest1->play(false);
 	spatialTest2 = soundEngine->loadSpatialSound("Sounds/minecraft_chicken_ambient.ogg", 1.0f);
-	spatialTest2->play(true);
+	spatialTest2->play(false);
 
 	// Handle game object creation and deletion.
 	Network::on(
@@ -159,6 +163,9 @@ Game::Game(): gameObjects(1024, nullptr) {
 	Network::on(NetMessage::GAME_STATE_UPDATE, [&](Connection *c, NetBuffer &buffer) {
 		gameState.deserialize(buffer);
 	});
+
+	Network::on(NetMessage::PARTICLES, ParticleEmitters::onUpdate);
+	Network::on(NetMessage::PARTICLES_DELETE, ParticleEmitters::onDelete);
 }
 
 Game::~Game() {
@@ -180,6 +187,7 @@ Game::~Game() {
 
 	Gui::cleanUp();
 	Draw::cleanUp();
+	ParticleEmitters::cleanUp();
 }
 
 Camera *Game::getCamera() const {
@@ -220,10 +228,15 @@ void Game::updateInputs() {
 		//direction += camera->getRight();
 		keyInputs += RIGHT;
 	}
+	if (Input::isKeyDown(GLFW_KEY_SPACE)) {
+		keyInputs += JUMP;
+	}
 	if (Input::isKeyDown(GLFW_KEY_E)) {
 		keyInputs += SWING;
 	}
-
+	if (Input::isKeyDown(GLFW_KEY_F)) {
+		keyInputs += WALL;
+	}
 	if (Input::isKeyDown(GLFW_KEY_ESCAPE)) {
 		shouldExit = true;
 	}
@@ -260,6 +273,8 @@ void Game::update(float dt) {
 		auto offset = camera->getForward() * -10.0f + vec3(0, 2, 0);
 		camera->setPosition(playerObj->getPosition() + offset);
 	}
+
+	ParticleEmitters::update(dt, camera);
 }
 
 void Game::drawScene(Shader &shader, DrawPass pass) const {
@@ -277,10 +292,12 @@ void Game::drawUI() const {
 
 void Game::draw(float dt) const {
 	// Shadow mapping render pass
-	shadowMap->prePass();
-	shadowMap->setupLight(shadowMap->getShader(), *sun);
-	drawScene(shadowMap->getShader(), DrawPass::SHADOW);
-	shadowMap->postPass();
+	shadowMap->setupLight(*sun);
+	for (int i = 0; i < SHADOW_NUM_CASCADES; i++) {
+		shadowMap->prePass(i);
+		drawScene(shadowMap->getShader(), DrawPass::SHADOW);
+		shadowMap->postPass(i);
+	}
 
 	// Normal 3D render pass
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -288,13 +305,14 @@ void Game::draw(float dt) const {
 	lightShader->use();
 	lightShader->setUniform("eyePos", camera->getPosition());
 	lightShader->setUniform("directionalLightNum", 1);
-
-	shadowMap->setupLight(*lightShader, *sun);
+	shadowMap->bindLightTransforms(*lightShader);
 	shadowMap->bindTexture(*lightShader);
+	shadowMap->bindZCutoffs(*lightShader);
 
 	sun->bind(*lightShader);
 	drawScene(*lightShader, DrawPass::LIGHTING);
 	skybox->draw();
+	ParticleEmitters::draw(camera);
 
 	glDisable(GL_DEPTH_TEST);
 	Draw::setupContext();

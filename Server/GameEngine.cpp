@@ -2,6 +2,7 @@
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
 #include "Networking/Server.h"
+#include <Shared/Game/ParticleEmitter.h>
 
 template<class T, class V>
 void inline safeRemoveFromVec(std::vector<T> &v, V &val) {
@@ -157,6 +158,8 @@ void GameEngine::updateGameState(vector<PlayerInputs> & playerInputs) {
 	updateGameObjectsOnServerTick();
 	removeDeadObjects();
 
+	ParticleEmitter::updateAll();
+
 	// send getNetworkGameState() to client
 }
 
@@ -175,6 +178,8 @@ void GameEngine::addGenericGameObject(GameObject *obj) {
 	buffer.write<GAMEOBJECT_TYPES>(obj->getGameObjectType());
 	obj->serialize(buffer);
 	Network::broadcast(buffer);
+
+	obj->onCreated();
 }
 
 void GameEngine::addGameObject(Player *player) {
@@ -190,6 +195,10 @@ void GameEngine::addGameObject(Ball *ball) {
 void GameEngine::addGameObject(Wall *wall) {
 	addGenericGameObject(wall);
 	gameState.walls.push_back(wall);
+}
+
+void GameEngine::addGameObject(GameObject *obj) {
+	addGenericGameObject(obj);
 }
 
 vec3 GameEngine::movementInputToVector(int movementInput) {
@@ -210,6 +219,9 @@ vec3 GameEngine::movementInputToVector(int movementInput) {
 	}
 	if (movementInput & RIGHT) {
 		movement = movement + vec3(1, 0, 0);
+	}
+	if (movementInput & JUMP) {
+		movement = movement + vec3(0, 1, 0);
 	}
 
 	if (glm::length(movement) == 0.0f) {
@@ -258,17 +270,10 @@ void GameEngine::doPlayerCommands(vector<PlayerInputs> & playerInputs) {
 	for (PlayerInputs playerInput : playerInputs) {
 		aggregatePlayerCommands[playerInput.id] = aggregatePlayerCommands[playerInput.id] | playerInput.inputs;
 	}
-	for (int i = 0; i < gameState.players.size(); i++) {
-		aggregatePlayerCommands[i] = aggregatePlayerCommands[i] & COMMAND_MASK;
-	}
 
 	// Process player commands
 	for (int i = 0; i < gameState.players.size(); i++) {
-		GameObject * createdGameObject = gameState.players[i]->processCommand(aggregatePlayerCommands[i]);
-		if (createdGameObject) {
-			createdGameObject->setId(gameState.getFreeId());
-			addGenericGameObject(createdGameObject);
-		}
+		gameState.players[i]->processCommand(aggregatePlayerCommands[i]);
 	}
 }
 
@@ -330,4 +335,4 @@ const std::vector<GameObject*> &GameEngine::getGameObjects() const {
 	return gameState.gameObjects;
 }
 
-
+GameEngine *gGameEngine = new GameEngine();

@@ -10,6 +10,8 @@ public:
 	Wall(vec3 position, vec3 direction, int id, float length, float width, float height);
 	GAMEOBJECT_TYPES getGameObjectType() const;
 
+	void onCreated() override;
+
 private:
 	vec3 direction;
 	float length;

@@ -10,6 +10,11 @@ public:
 	bool deleteOnServerTick();
 	void updateOnServerTick();
 
+	void setLifespan(int newLifespan);
+	int getLifespan() const;
+
+	void onCreated() override;
+
 private:
 	int lifespan;
 };

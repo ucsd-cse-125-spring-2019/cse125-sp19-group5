@@ -1,5 +1,7 @@
 #version 330 core
 
+const int SHADOW_NUM_CASCADES = 4;
+
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 normal;
 layout (location = 2) in vec2 texCoords;
@@ -9,16 +11,17 @@ layout (location = 5) in vec3 tangent;
 layout (location = 6) in vec3 bitangent;
 
 out mat3 tbn;
-out vec4 lightSpacePos;
+out vec4 lightSpacePos[SHADOW_NUM_CASCADES];
 out vec3 fragPos;
 out vec3 fragNormal;
 out vec2 fragTexCoords;
+out float clipSpaceZ;
 
 uniform bool animated;
 uniform mat3 modelInvT;
 uniform mat4 model;
 uniform mat4 mvp;
-uniform mat4 toLightSpace;
+uniform mat4 toLightSpace[SHADOW_NUM_CASCADES];
 
 const int MAX_BONES = 128;
 uniform mat4 boneTransforms[MAX_BONES];
@@ -37,7 +40,12 @@ void main() {
 		finalNorm = boneTransformInvT * normal;
 	}
 	fragPos = vec3(model * finalPos);
-	lightSpacePos = toLightSpace * vec4(fragPos, 1.0f);
+
+	vec4 fragPos4 = model * finalPos;
+	for (int cascade = 0; cascade < SHADOW_NUM_CASCADES; cascade++) {
+		lightSpacePos[cascade] = toLightSpace[cascade] * fragPos4;
+	}
+
 	fragNormal = modelInvT * finalNorm;
 	fragTexCoords = texCoords;
 	gl_Position = mvp * finalPos;
@@ -46,4 +54,5 @@ void main() {
 	vec3 b = normalize(vec3(model * vec4(bitangent, 0.0)));
 	vec3 n = normalize(vec3(model * vec4(finalNorm, 0.0)));
 	tbn = mat3(t, b, n);
+
 }
