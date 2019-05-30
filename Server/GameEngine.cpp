@@ -39,6 +39,14 @@ void GameEngine::onPlayerDisconnected(Connection *c) {
 }
 
 void GameEngine::updateGameState(vector<PlayerInputs> & playerInputs) {
+	for (Player * p : gameState.players) {
+		if (p) {
+			if (glm::length(p->getVelocity()) != 0) {
+				std::cout << glm::to_string(p->getVelocity()) << std::endl;
+			}
+		}
+	}
+
 	movePlayers(playerInputs);
 	doPlayerCommands(playerInputs);
 
@@ -290,6 +298,13 @@ bool GameEngine::noCollisionMove(Player * player, vec3 movement) {
 			if (player->collidesWith(p)) {
 				player->setPosition(currPosition);
 				return false;
+			}
+		}
+
+		for (Wall * wall : gameState.walls) {
+			if (player->collidesWith(wall)) {
+				player->onCollision(wall);
+				wall->onCollision(player);
 			}
 		}
 

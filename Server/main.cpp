@@ -29,12 +29,19 @@ int main(int argc, char **argv) {
 	ground->setModel("Models/unit_cube.obj");
 	ground->setMaterial("Materials/grass.json");
 
-	auto jumpableBox = gameEngine.addGameObject<Wall>();
+	/*auto jumpableBox = gameEngine.addGameObject<Wall>();
 	jumpableBox->setBoundingShape(new BoundingBox(vec3(0, 0, 30), vec3(1, 0, 0), 30, 8, 30));
 	jumpableBox->setPosition(vec3(0, 0, 30));
 	jumpableBox->setScale(vec3(30, 8, 30));
 	jumpableBox->setModel("Models/unit_cube.obj");
 	jumpableBox->setMaterial("Materials/brick.json");
+
+	auto jumpableBox2 = gameEngine.addGameObject<Wall>();
+	jumpableBox2->setBoundingShape(new BoundingBox(vec3(0, 0, 60), vec3(1, 0, 0), 30, 16, 30));
+	jumpableBox2->setPosition(vec3(0, 0, 60));
+	jumpableBox2->setScale(vec3(30, 16, 30));
+	jumpableBox2->setModel("Models/unit_cube.obj");
+	jumpableBox2->setMaterial("Materials/brick.json");*/
 
 	auto ball = gameEngine.addGameObject<Ball>();
 	ball->setBoundingShape(new BoundingSphere(origin, 3));

@@ -88,7 +88,7 @@ void Ball::onCollision(Ball * ball) {
 }
 
 void Ball::onCollision(Bullet * bullet) {
-	std::cout << bullet->to_string() << std::endl;
+	// std::cout << bullet->to_string() << std::endl;
 	setVelocity(getVelocity() + bullet->getVelocity() * 0.01f);
 }
 
@@ -110,7 +110,7 @@ void Ball::onCollision(Paddle * paddle) {
 
 
 void Ball::onCollision(Player * player) { 
-	setVelocity(getVelocity() * 0.9f);
+	// setVelocity(getVelocity() * 0.9f);
 }
 
 void Ball::onCollision(Wall * wall) {

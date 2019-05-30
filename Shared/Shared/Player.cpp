@@ -111,6 +111,7 @@ vec3 Player::getMoveDestination(vec3 movement) {
 	vec3 accelDir;
 	if (glm::length(directionalizedMovement) == 0) { // Avoid returning NaN
 		accelDir = vec3(0.0f);
+		setDirection(getDirection() + getVelocity());
 	}
 	else {
 		accelDir = glm::normalize(directionalizedMovement);
@@ -248,10 +249,14 @@ void Player::onCollision(GameObject * gameObject) {
 
 void Player::onCollision(Ball * ball) { 
 	float horizDist = sqrt(pow(getBoundingSphere()->getRadius() + ball->getBoundingSphere()->getRadius(), 2) - pow(getPosition().y - ball->getPosition().y, 2));
-	vec3 moveDirection = glm::normalize(getPosition() - ball->getPosition());
+	vec3 moveDirection = getPosition() - ball->getPosition();
 	moveDirection.y = 0;
+	moveDirection = glm::normalize(moveDirection);
 	vec3 startPosition = vec3(ball->getPosition().x, getPosition().y, ball->getPosition().z);
-	setPosition(startPosition + moveDirection * horizDist);
+	// setPosition(startPosition + moveDirection * (horizDist * std::max(1.0f, glm::length(ball->getVelocity()) / 2.0f)));
+	// setVelocity(getVelocity() + ball->getVelocity() * 0.5f);
+	setVelocity(getVelocity() + (moveDirection * horizDist * std::max(1.0f, glm::length(ball->getVelocity()) * 0.5f)));
+	std::cout << glm::to_string(getVelocity()) << std::endl;
 }
 
 void Player::onCollision(Paddle * paddle) { }
@@ -269,9 +274,8 @@ void Player::onCollision(Wall * wall) {
 			vec3 planeNormal = glm::normalize(p->getNormal());
 			float angleBetween = glm::angle(glm::normalize(getVelocity()), planeNormal);
 			if (angleBetween > glm::half_pi<float>() && angleBetween < (3.0f * glm::half_pi<float>())) {
-				float planeDistance = abs(p->pointDistance(getPosition()) - (getBoundingSphere()->getRadius()));
+				float planeDistance = abs(p->pointDistance(getPosition()) - (1.01f * getBoundingSphere()->getRadius()));
 				setPosition(getPosition() + planeNormal * planeDistance);
-				setVelocity(getVelocity() - glm::proj(getVelocity(), planeNormal));
 			}
 		}
 	}
