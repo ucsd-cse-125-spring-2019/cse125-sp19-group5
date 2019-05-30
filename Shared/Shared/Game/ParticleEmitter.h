@@ -35,6 +35,7 @@ class ParticleEmitter : public Serializable {
 	PARTICLE_PARAM(float, CollFriction);
 	PARTICLE_PARAM(vector<vec4>, ParticleColor);
 	PARTICLE_PARAM(string, Texture);
+	PARTICLE_PARAM(float, CreationTime);
 
 	ParticleEmitter();
 

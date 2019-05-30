@@ -29,6 +29,7 @@ void ParticleEmitters::onUpdate(Connection *c, NetBuffer &buffer) {
 	system->collFriction = emitter._CollFriction;
 	system->particleColor = emitter._ParticleColor;
 	system->texture = Assets::getTexture2d(emitter._Texture);
+	system->creationTime = emitter._CreationTime;
 }
 
 void ParticleEmitters::onDelete(Connection *c, NetBuffer &buffer) {
