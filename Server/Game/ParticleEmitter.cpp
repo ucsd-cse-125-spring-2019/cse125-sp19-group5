@@ -27,6 +27,7 @@ ParticleEmitter::ParticleEmitter()
 	, _CollFriction(0.2f)
 	, _ParticleColor({ vec4(1.0f), vec4(1.0f, 1.0f, 1.0f, 0.0f) })
 	, _Texture("Textures/white.png")
+	, _CreationTime(1.0f)
 {
 	id = nextId;
 	nextId++;

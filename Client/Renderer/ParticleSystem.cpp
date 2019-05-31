@@ -33,6 +33,7 @@ ParticleSystem::ParticleSystem(const unsigned int maxParticles, const float part
 	, collFriction(0.2f)
 	, particleColor(vector<vec4>{ vec4(1.0f), vec4(1.0f, 1.0f, 1.0f, 0.0f) })
 	, VAO(0)
+	, creationTime(1.0f)
 	, texture(Assets::getTexture2d("Textures/white.png")) {
 
 	for (unsigned int i = 0; i < maxParticles; i++)
@@ -110,9 +111,9 @@ void ParticleSystem::setupBuffers() {
 
 void ParticleSystem::update(float dt, const Camera *camera) {
 	creationTimer += dt;
-	if (creationTimer > 1.0f)
+	if (creationTimer >= creationTime)
 	{
-		creationTimer -= 1.0f;
+		creationTimer = 0.0f;
 		for (unsigned int i = 0; i < creationSpeed; i++)
 		{
 			if (numParticles >= maxParticles) break;
