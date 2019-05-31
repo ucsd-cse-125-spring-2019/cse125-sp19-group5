@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "Ball.h"
 #include "Wall.h"
+#include <array>
 
 // Maximum number of players in the game.
 constexpr auto MAX_PLAYERS = 4;
@@ -11,12 +12,12 @@ struct GameState : public Serializable {
 	vector<Ball *> balls;
 	vector<Goal *> goals;
 	vector<Wall *> walls;
-	vector<GameObject *> gameObjects;
+	std::array<GameObject *, MAX_GAME_OBJS> gameObjects;
 	long timeLeft;
 	tuple<int, int> score;
 	bool in_progress;
 
-	GameState() : gameObjects(1024, nullptr) { }
+	GameState() : gameObjects({ nullptr }) {}
 
 	int getFreeId() const {
 		// Offset by MAX_PLAYERS to reserve IDs for players.

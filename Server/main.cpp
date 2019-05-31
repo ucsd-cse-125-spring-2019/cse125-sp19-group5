@@ -9,6 +9,7 @@
 #include <chrono>
 #include "GameEngine.h"
 #include "Networking/Server.h"
+#include <Shared/Game/ParticleEmitter.h>
 
 constexpr auto TICKS_PER_SECOND = 60; // How many updates per second.
 
@@ -125,7 +126,6 @@ int main(int argc, char **argv) {
 	wall5->setOrientation(quat4);*/
 
 
-
 	// Handle player keyboard/mouse inputs
 	auto handlePlayerInput = [&playerInputs](Connection *c, NetBuffer &buffer) {
 		PlayerInputs input;
@@ -181,14 +181,17 @@ int main(int argc, char **argv) {
 		player->setCooldown(SHOOT, std::make_tuple(0, 60));
 		gameEngine.addGameObject(player);
 
-		player->setModel("Models/unit_sphere.obj");
-		player->setScale(vec3(2));
-
-		/*player->setModel("Models/BearTiltAnimation.fbx");
+		player->setModel("Models/beararm.fbx");
 		player->setDirection(vec3(0, 0, -1));
 		player->setMaterial("Materials/brick.json");
 		player->setScale(vec3(0.2f));
-		player->setAnimation(0);*/
+		player->setAnimation(1);
+
+		auto ps = new ParticleEmitter();
+		ps->setGravity(-15.0f);
+		ps->setCreationSpeed(500);
+		ps->setInitialVel(vec3(0, 10, 0));
+		ps->setTexture("Textures/gary.png");
 
 		// Receive player keyboard and mouse(TODO) input
 		c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);

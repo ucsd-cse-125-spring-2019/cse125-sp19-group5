@@ -26,7 +26,10 @@ static void onResize(GLFWwindow *window, int width, int height) {
 	SCREEN_HEIGHT = height;
 	SCREEN_RESHAPED = true;
 
-	Draw::updateScreenDimensions(width, height);
+	Draw::updateScreenDimensions(
+		static_cast<float>(width),
+		static_cast<float>(height)
+	);
 	glViewport(0, 0, width, height);
 }
 
@@ -65,6 +68,7 @@ int main(int argc, char **argv) {
 	// Initialize GLEW
 	glewExperimental = true;
 	auto glewInitRes = glewInit();
+	glGetError();
 	if (glewInitRes != GLEW_OK) {
 		std::cerr << "Failed to initialize GLEW" << std::endl
 			<< glewGetErrorString(glewInitRes) << std::endl;
@@ -96,6 +100,8 @@ int main(int argc, char **argv) {
 	Gui::setupInputListeners(window);
 
 	Game game;
+
+
 	game.getCamera()->setAspect((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT);
 	game.updateScreenDimensions(SCREEN_WIDTH, SCREEN_HEIGHT);
 

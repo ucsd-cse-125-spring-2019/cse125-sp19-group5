@@ -10,6 +10,8 @@
 #include <iostream>
 #include <exception>
 
+constexpr auto MAX_GAME_OBJS = 256;
+
 using std::cout;
 using std::vector;
 using std::tuple;

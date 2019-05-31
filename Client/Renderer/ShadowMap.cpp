@@ -8,7 +8,7 @@ constexpr auto FRUSTUM_NUM_CORNERS = 8;
 // The i_th and (i+1)_th z-values are used as the zNear and zFar for the i_th
 // light projection where i = 0, 1, ..., SHADOW_NUM_CASCADES.
 float ShadowMap::cascadeZCutoffs[SHADOW_NUM_CASCADES + 1] = {
-	-10.0f, 20.0f, 45.0f, 75.0f, 100.0f
+	0.01f, 50.0f, 100.0f, 250.0f, 500.0f
 };
 
 // Component wise min between 2 vectors u, v into u
@@ -114,7 +114,6 @@ void ShadowMap::prePass(int i) {
 	);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
-#include <glm/gtx/string_cast.hpp>
 
 void ShadowMap::setupLightTransform(int i, const DirectionalLight &light) {
 	auto zNear = cascadeZCutoffs[i], zFar = cascadeZCutoffs[i + 1];
@@ -125,7 +124,10 @@ void ShadowMap::setupLightTransform(int i, const DirectionalLight &light) {
 	auto centerNear = camera->getPosition() + camera->getForward() * zNear;
 	auto centerFar = camera->getPosition() + camera->getForward() * zFar;
 
-	auto up = camera->getUp(), right = camera->getRight();
+	auto &camView = camera->getViewMatrix();
+	auto right = vec3(camView[0][0], camView[1][0], camView[2][0]);
+	auto up = vec3(camView[0][1], camView[1][1], camView[2][1]);
+
 	vec3 vertices[FRUSTUM_NUM_CORNERS] = {
 		centerNear + (up * heightNear * 0.5f) + (right * widthNear * 0.5f),
 		centerNear + (up * heightNear * 0.5f) - (right * widthNear * 0.5f),
@@ -151,7 +153,7 @@ void ShadowMap::setupLightTransform(int i, const DirectionalLight &light) {
 		vecMax(maxs, vertices[j]);
 	}
 
-	auto proj = glm::ortho(mins.x, maxs.x, mins.y, maxs.y, mins.z - 20.f, maxs.z + 20.0f);
+	auto proj = glm::ortho(mins.x, maxs.x, mins.y, maxs.y, mins.z - 20.0f, maxs.z + 20.0f);
 	toLightSpace[i] = proj * view;
 }
 

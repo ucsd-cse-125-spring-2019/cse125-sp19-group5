@@ -37,3 +37,16 @@ void GameObject::setMaterial(const std::string &newMaterial) {
 string GameObject::getMaterial() const {
 	return material;
 }
+
+void GameObject::playSound(const string &sound, float volume, bool loop) {
+	NetBuffer buffer(NetMessage::SOUND);
+	buffer.write(id);
+	buffer.write(sound);
+	buffer.write(volume);
+	buffer.write(loop);
+	Network::broadcast(buffer);
+}
+
+void GameObject::stopSound(const string &sound) {
+	playSound(sound, -1.0f, false);
+}
