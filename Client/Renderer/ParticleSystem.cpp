@@ -35,8 +35,8 @@ ParticleSystem::ParticleSystem(const unsigned int maxParticles, const float part
 	, VAO(0)
 	, texture(Assets::getTexture2d("Textures/white.png"))
 	, parentId(-1)
+  , creationTime(1.0f)
 {
-
 	for (unsigned int i = 0; i < maxParticles; i++)
 	{
 		Particle* p = new Particle(particleMass, position);
@@ -112,9 +112,9 @@ void ParticleSystem::setupBuffers() {
 
 void ParticleSystem::update(float dt, const Camera *camera) {
 	creationTimer += dt;
-	if (creationTimer > 1.0f)
+	if (creationTimer >= creationTime)
 	{
-		creationTimer -= 1.0f;
+		creationTimer = 0.0f;
 		for (unsigned int i = 0; i < creationSpeed; i++)
 		{
 			if (numParticles >= maxParticles) break;

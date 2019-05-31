@@ -29,6 +29,7 @@ ParticleEmitter::ParticleEmitter()
 	, _Texture("Textures/white.png")
 	, _ParentId(-1)
 	, parent(nullptr)
+	, _CreationTime(1.0f)
 {
 	id = nextId;
 	nextId++;

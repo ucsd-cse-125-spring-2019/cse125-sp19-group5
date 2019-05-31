@@ -16,6 +16,7 @@ public:
 	void draw(Shader &shader, const Camera *camera);
 
 	unsigned int creationSpeed;   // Particles per second
+	float creationTime;           // Time between particle creation
 	vec3 initialPos;              // Initial position
 	vec3 initialPosVariance;      // +/- from initial position
 	vec3 initialVel;              // Initial velocity
