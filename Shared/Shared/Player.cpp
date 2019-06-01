@@ -1,7 +1,11 @@
+#include "CollisionDetection.h"
 #include "Player.h"
 #include "BoundingSphere.h"
 #include <iostream>
 #include <glm/gtx/euler_angles.hpp>
+#include <glm/gtx/vector_angle.hpp>
+#include <glm/gtx/projection.hpp>
+#include <algorithm>
 
 Player::Player(vec3 position, vec3 velocity, vec3 direction, int id, float radius, int team) : SphereGameObject(position, velocity, id, radius) {
 	this->direction = direction;
@@ -27,6 +31,19 @@ void Player::updateOnServerTick() {
 			std::get<0>(cd.second) -= 1;
 		}
 	}
+
+	if (numLandings == 0) {
+		maxBoxHeight = 0.0f;
+		isGrounded = false;
+	}
+
+	if (!isGrounded && numLandings > 0) {
+		setPosition(vec3(getPosition().x, maxBoxHeight, getPosition().z));
+		isGrounded = true;
+		maxBoxHeight = 0.0f;
+	}
+
+	numLandings = 0;
 }
 
 vec3 Player::getDirection() {
@@ -91,8 +108,9 @@ vec3 Player::getMoveDestination(vec3 movement) {
 
 	// Calculate player velocity
 	vec3 accelDir;
+	vec3 currVelocity = getVelocity();
 	if (glm::length(directionalizedMovement) == 0) { // Avoid returning NaN
-		accelDir = vec3(0.0f);
+		accelDir = vec3(0);
 	}
 	else {
 		accelDir = glm::normalize(directionalizedMovement);
@@ -117,12 +135,15 @@ vec3 Player::getMoveDestination(vec3 movement) {
 	}
 	setVelocity(newVelocity);
 
+
 	// Prevent the player from ever falling through the floor
-	vec3 newPos = getPosition() + newVelocity * PhysicsEngine::getDeltaTime();
-	if (newPos.y < PhysicsEngine::getFloorY()) {
+	// ATTEMPT TO MOVE GROUND CHECK TO WALL COLLISIONS - KEENAN
+	vec3 newPos = getPosition() + newVelocity * PhysicsEngine::getDeltaTime() + currVelocity + this->ballVelocityComponent;
+	this->ballVelocityComponent = vec3(0);
+	/*if (newPos.y < PhysicsEngine::getFloorY()) {
 		newPos.y = PhysicsEngine::getFloorY();
 		isGrounded = true;
-	}
+	}*/
 
 	return newPos;
 }
@@ -146,8 +167,8 @@ GameObject * Player::doAction(PlayerCommands action) {
 			if (std::get<0>(getCooldown(SWING)) == 0) {
 				useCooldown(SWING);
 				vec3 paddlePosition = getPosition() + getDirection() * vec3(2.05f * getBoundingSphere()->getRadius());
-				// vec3 paddleVelocity = getDirection() * vec3((float)(actionCharge));
-				vec3 paddleVelocity = glm::normalize(vec3(getDirection().x, 0, getDirection().z)) * vec3((float)(actionCharge));
+				vec3 paddleVelocity = glm::normalize(getDirection()) * vec3((float)(actionCharge));
+				// vec3 paddleVelocity = glm::normalize(vec3(getDirection().x, 0, getDirection().z)) * vec3((float)(actionCharge));
 				int paddleLifespan = 10;
 				Paddle * p = new Paddle(paddlePosition, paddleVelocity, -1, 5, paddleLifespan);
 				/*p->setModel("Models/unit_sphere.obj");
@@ -227,10 +248,35 @@ void Player::onCollision(GameObject * gameObject) {
 	gameObject->onCollision(this);
 }
 
-void Player::onCollision(Ball * ball) { }
+void Player::onCollision(Ball * ball) { 
+	float currDist = sqrt(pow(distanceFrom(ball), 2) - pow(getPosition().y - ball->getPosition().y, 2));
+	float targetDist = sqrt(pow(getBoundingSphere()->getRadius() + ball->getBoundingSphere()->getRadius(), 2) - pow(getPosition().y - ball->getPosition().y, 2));
+	vec3 moveDirection = getPosition() - ball->getPosition();
+	moveDirection.y = 0;
+	moveDirection = glm::normalize(moveDirection);
+	this->ballVelocityComponent = moveDirection * (targetDist - currDist) * std::max(1.0f, glm::length(ball->getVelocity()));
+}
 
 void Player::onCollision(Paddle * paddle) { }
 
 void Player::onCollision(Player * player) { }
 
-void Player::onCollision(Wall * wall) { }
+void Player::onCollision(Wall * wall) { 	
+	for (Plane * p : CollisionDetection::getIntersectingPlanes(getBoundingSphere(), wall->getBoundingBox())) {
+		if (p == wall->getBoundingBox()->top) {
+			this->numLandings += 1;
+			this->maxBoxHeight = std::max(maxBoxHeight,
+				wall->getPosition().y + wall->getBoundingBox()->height + getBoundingSphere()->getRadius());
+		}
+		else {
+			vec3 planeNormal = glm::normalize(p->getNormal());
+			float angleBetweenVelocity = glm::angle(glm::normalize(getVelocity()), planeNormal);
+			float angleBetweenPosition = glm::angle(glm::normalize(getPosition() - getPrevPosition()), planeNormal);
+			if ((angleBetweenVelocity > glm::half_pi<float>() && angleBetweenVelocity < (3.0f * glm::half_pi<float>())) ||
+				(angleBetweenPosition > glm::half_pi<float>() && angleBetweenPosition < (3.0f * glm::half_pi<float>()))) {
+				float planeDistance = abs(p->pointDistance(getPosition()) - (1.01f * getBoundingSphere()->getRadius()));
+				setPosition(getPosition() + planeNormal * planeDistance);
+			}
+		}
+	}
+}

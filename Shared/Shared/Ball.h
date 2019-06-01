@@ -26,4 +26,6 @@ public:
 private:
 	bool goalScored = false;
 	std::set<Ball *> currentBallCollisions;
+	int ticksSinceGrounded = 0;
+	bool isGrounded = false;
 };

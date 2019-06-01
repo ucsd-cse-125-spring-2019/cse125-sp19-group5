@@ -47,9 +47,14 @@ private:
 
 	// get<0> = current cooldown, get<1> = total cooldown
 	std::map<PlayerCommands, tuple<int, int>> cooldowns;
+
 	float moveSpeed = PhysicsEngine::getPlayerDefaultMoveSpeed();
 	bool isGrounded = false;
 	bool isJumpKeyDown = false; // For bhop
 	bool isJumpKey = false;
 	bool isJumpKeyUp = false;
+	float maxBoxHeight = 0.0f;
+	int numLandings = 0;
+	vec3 ballVelocityComponent = vec3(0);
+	vec3 prevPosition;
 };

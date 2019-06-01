@@ -11,20 +11,19 @@ public:
 	Plane * back;
 	Plane * left;
 	Plane * right;
+	vec3 direction;
+	float length;
+	float width;
+	float height;
+	vector<Plane *> facePlanes;
+
 	BoundingBox(vec3 position, vec3 direction, float width, float height, float length);
 	vector<Plane *> & getFacePlanes();
 
 	// collision stuff below
 	bool collideVisit(BoundingShape * boundingShape);
 	bool collidesWith(BoundingBox * boundingBox);
-	bool collidesWith(BoundingSphere * boundingSphere);
-
-protected:
-	vec3 direction;
-	float length;
-	float width;
-	float height;
-	vector<Plane *> facePlanes;
+	bool collidesWith(BoundingSphere * boundingSphere);	
 };
 
 struct Plane {
@@ -60,6 +59,6 @@ struct Plane {
 	}
 
 	float pointDistance(vec3 point) {
-		return (a*point.x + b * point.y + c * point.z + d) / (glm::sqrt(a*a + b * b + c * c));
+		return (a * point.x + b * point.y + c * point.z + d) / (glm::sqrt(a * a + b * b + c * c));
 	}
 };
