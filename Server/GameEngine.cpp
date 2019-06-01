@@ -227,6 +227,8 @@ void GameEngine::doPlayerCommands(vector<PlayerInputs> & playerInputs) {
 			addGenericGameObject(createdGameObject);
 			createdGameObject->setModel("Models/unit_sphere.obj");
 			createdGameObject->setMaterial("Materials/brick.json");
+
+			std::cout << createdGameObject->to_string() << std::endl;
 		}
 	}
 }

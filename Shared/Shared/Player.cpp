@@ -7,11 +7,10 @@
 #include <glm/gtx/projection.hpp>
 #include <algorithm>
 
-Player::Player(vec3 position, vec3 velocity, vec3 direction, int id, float radius, int team) : SphereGameObject(position, velocity, id) {
+Player::Player(vec3 position, vec3 velocity, vec3 direction, int id, float radius, int team) : SphereGameObject(position, velocity, id, radius) {
 	this->direction = direction;
 	this->actionCharge = 0;
 	this->team = team;
-	setBoundingShape(new BoundingSphere(position, radius));
 }
 
 GAMEOBJECT_TYPES Player::getGameObjectType() const {
