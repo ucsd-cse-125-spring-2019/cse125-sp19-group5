@@ -1,6 +1,6 @@
 #include "SphereGameObject.h"
 
-SphereGameObject::SphereGameObject(vec3 position, vec3 velocity, int id, float radius) : GameObject(position, vec3(0.0f), id) {
+SphereGameObject::SphereGameObject(vec3 position, vec3 velocity, int id, float radius) : GameObject(position, velocity, id) {
 	setBoundingShape(new BoundingSphere(position, radius));
 }
 

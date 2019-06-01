@@ -1,0 +1,63 @@
+{
+  "walls": [
+    {
+      "name": "bounds1",
+      "position": [ 0, 0, 100 ],
+      "direction": [ 1, 0, 0 ],
+      "dimensions": [ 400, 100, 10 ],
+      "scale": [ 200, 100, 10 ],
+      "model": "Models/unit_cube.obj",
+      "material": "Materials/grass.json",
+      "orientation": null
+    },
+    {
+      "name": "bounds2",
+      "position": [ 0, 0, -100 ],
+      "direction": [ 1, 0, 0 ],
+      "dimensions": [ 400, 100, 10 ],
+      "scale": [ 200, 100, 10 ],
+      "model": "Models/unit_cube.obj",
+      "material": "Materials/grass.json",
+      "orientation": null
+    },
+    {
+      "name": "bounds3",
+      "position": [ 100, 0, 0 ],
+      "direction": [ 0, 0, 1 ],
+      "dimensions": [ 400, 100, 10 ],
+      "scale": [ 10, 100, 200 ],
+      "model": "Models/unit_cube.obj",
+      "material": "Materials/grass.json",
+      "orientation": null
+    },
+    {
+      "name": "bounds4",
+      "position": [ -100, 0, 0 ],
+      "dimensions": [ 400, 100, 10 ],
+      "direction": [ 0, 0, 1 ],
+      "scale": [ 10, 100, 200 ],
+      "model": "Models/unit_cube.obj",
+      "material": "Materials/grass.json",
+      "orientation": null
+    },
+    {
+      "name": "ground",
+      "position": [ 0, -3, 0 ],
+      "direction": [ 1, 0, 0 ],
+      "scale": [ 250, 3, 250 ],
+      "model": "Models/unit_cube.obj",
+      "material": "Materials/grass.json",
+      "orientation": null
+    }
+  ],
+  "balls": [
+    {
+      "position": [ 0, 3, 0 ],
+      "velocity": [ 0, 0, 0 ],
+      "radius": 3,
+      "scale": 3,
+      "model": "Models/unit_sphere.obj",
+      "material": "Materials/brick.json"
+    }
+  ]
+}

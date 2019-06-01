@@ -12,8 +12,5 @@ public:
 
 private:
 	vec3 direction;
-	float length;
-	float width;
-	float height;
 	BoundingBox * boundingBox = nullptr;
 };

@@ -63,7 +63,6 @@ GameState & GameEngine::getGameState() {
 }
 
 void GameEngine::addGenericGameObject(GameObject *obj) {
-	std::cout << obj->to_string() << std::endl;
 	gameState.gameObjects[obj->getId()] = obj;
 
 	NetBuffer buffer(NetMessage::GAME_OBJ_CREATE);
@@ -219,6 +218,8 @@ void GameEngine::doPlayerCommands(vector<PlayerInputs> & playerInputs) {
 			addGenericGameObject(createdGameObject);
 			createdGameObject->setModel("Models/unit_sphere.obj");
 			createdGameObject->setMaterial("Materials/brick.json");
+
+			std::cout << createdGameObject->to_string() << std::endl;
 		}
 	}
 }

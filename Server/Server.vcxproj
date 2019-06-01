@@ -119,10 +119,12 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Game\ParticleEmitter.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MapLoader.cpp" />
     <ClCompile Include="Networking\Server.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine.h" />
+    <ClInclude Include="MapLoader.h" />
     <ClInclude Include="Networking\Server.h" />
   </ItemGroup>
   <ItemGroup>
