@@ -10,6 +10,7 @@
 #include "GameEngine.h"
 #include "Networking/Server.h"
 #include <Shared/Game/ParticleEmitter.h>
+#include "Game/Powerups/SpeedBoost.h"
 
 constexpr auto TICKS_PER_SECOND = 60; // How many updates per second.
 
@@ -172,6 +173,8 @@ int main(int argc, char **argv) {
 		player->setMaterial("Materials/brick.json");
 		player->setScale(vec3(0.2f));
 		player->setAnimation(1);
+
+		player->addPowerup<SpeedBoost>();
 
 		auto ps = new ParticleEmitter();
 		ps->setGravity(-15.0f);

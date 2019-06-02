@@ -22,6 +22,15 @@
     <Filter Include="Source Files\Game">
       <UniqueIdentifier>{3c71e9ad-369d-48b7-b8b4-42a589c41284}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\Powerups">
+      <UniqueIdentifier>{8ca7e6f5-17f8-461b-b236-dc308f2305ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game">
+      <UniqueIdentifier>{4c41f44c-655c-4384-8c38-fb27d6d26f86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game\Powerups">
+      <UniqueIdentifier>{eb5921c4-992f-4487-a3e8-44ad0114e0a9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -39,6 +48,9 @@
     <ClCompile Include="Game\ParticleEmitter.cpp">
       <Filter>Source Files\Game</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Powerups\SpeedBoost.cpp">
+      <Filter>Source Files\Game\Powerups</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -50,6 +62,9 @@
     </ClInclude>
     <ClInclude Include="Networking\Server.h">
       <Filter>Header Files\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Powerups\SpeedBoost.h">
+      <Filter>Header Files\Game\Powerups</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

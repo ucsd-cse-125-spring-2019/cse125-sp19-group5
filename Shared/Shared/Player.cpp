@@ -2,6 +2,7 @@
 #include "BoundingSphere.h"
 #include <iostream>
 #include <glm/gtx/euler_angles.hpp>
+#include <algorithm>
 
 Player::Player(vec3 position, vec3 velocity, vec3 direction, int id, float radius, int team) : SphereGameObject(position, velocity, id) {
 	this->direction = direction;
@@ -22,10 +23,42 @@ void Player::setDirection(const vec3 &newDirection) {
 	setOrientation(glm::quatLookAt(direction, vec3(0, 1, 0)));
 }
 
+void Player::removePowerup(const string &type) {
+	auto it = powerups.find(type);
+	if (it == powerups.end()) { return; }
+
+	it->second->onDeactivate();
+	delete it->second;
+	powerups.erase(it);
+}
+
+bool Player::hasPowerup(const string &type) const {
+	return powerups.find(type) != powerups.end();
+}
+
+void Player::setMoveSpeed(float newMoveSpeed) {
+	moveSpeed = newMoveSpeed;
+}
+
+float Player::getMoveSpeed() const {
+	return moveSpeed;
+}
+
 void Player::updateOnServerTick() {
 	for (auto & cd : this->cooldowns) {
 		if (std::get<0>(cd.second) > 0) {
 			std::get<0>(cd.second) -= 1;
+		}
+	}
+	auto it = powerups.begin();
+	while (it != powerups.end()) {
+		auto powerup = it->second;
+		if (powerup->shouldDeactivate()) {
+			powerup->onDeactivate();
+			delete powerup;
+			it = powerups.erase(it);
+		} else {
+			it++;
 		}
 	}
 }

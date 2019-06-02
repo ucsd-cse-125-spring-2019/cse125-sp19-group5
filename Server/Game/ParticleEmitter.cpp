@@ -1,14 +1,6 @@
 #include <Shared/Game/ParticleEmitter.h>
-#include <chrono>
 #include "../Networking/Server.h"
-
-static inline float curTime() {
-	using namespace std::chrono;
-	constexpr auto seconds = static_cast<float>(milliseconds::period::den);
-
-	auto now = time_point_cast<milliseconds>(high_resolution_clock::now());
-	return now.time_since_epoch().count() / seconds;
-}
+#include <Shared/Util/CurTime.h>
 
 ParticleEmitter::ParticleEmitter()
 	: updateNextTick(true)
