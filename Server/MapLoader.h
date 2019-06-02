@@ -13,6 +13,7 @@ public:
 	vector<T *> loadSphereGameObjects(json11::Json mapJson, string key);
 
 	vec3 toVec3(json11::Json json, string key);
+	tuple<float, float> toTuple(json11::Json json, string key);
 
 private:
 	GameEngine * gameEngine;

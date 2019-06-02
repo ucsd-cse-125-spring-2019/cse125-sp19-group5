@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
 	vector<PlayerInputs> playerInputs;
   
 	MapLoader mapLoader(&gameEngine);
-	mapLoader.loadMap("C:\\Users\\Keenan\\Documents\\School\\2018-2019\\Spring\\CSE 125\\cse125-sp19-group5\\Assets\\Maps\\basic_map.json");
+	mapLoader.loadMap("C:\\Users\\Keenan\\Documents\\School\\2018-2019\\Spring\\CSE 125\\cse125-sp19-group5\\Assets\\Maps\\map_with_goals.json");
 
 	/*auto goal1 = gameEngine.addGameObject<Goal>();
 	goal1->setBoundingShape(new BoundingBox(vec3(0, 0, 100), vec3(1, 0, 0), 200, 20, 10));

@@ -36,9 +36,14 @@ void Ball::updateOnServerTick() {
 	}
 
 	if (!this->isGrounded) {
-		this->ticksSinceGrounded += 1;
 		setVelocity(PhysicsEngine::applyGravity(getVelocity(), PhysicsEngine::getGravity()));
 	}
+
+	if (ticksSinceGrounded > GROUNDED_TICKS_THRESHOLD) {
+		isGrounded = false;
+	}
+
+	this->ticksSinceGrounded += 1;
 }
 
 bool Ball::getGoalScored() {
@@ -90,8 +95,9 @@ void Ball::onCollision(Bullet * bullet) {
 }
 
 void Ball::onCollision(Goal * goal) {
-	setPosition(vec3(0, 3, 0));
+	setPosition(goal->getRandomSpawnPos());
 	setVelocity(vec3(0));
+	this->isGrounded = false;
 	this->goalScored = true;
 }
 
@@ -124,7 +130,7 @@ void Ball::onCollision(Wall * wall) {
 	for (Plane * p : CollisionDetection::getIntersectingPlanes(this->getBoundingSphere(), wall->getBoundingBox())) {
 		if (p == wall->getBoundingBox()->top) {
 			if (!this->isGrounded) {
-				if (this->ticksSinceGrounded < 30) {
+				if (this->ticksSinceGrounded < GROUNDED_TICKS_THRESHOLD) {
 					isGrounded = true;
 					this->velocity.y = 0;
 					vec3 adjustedPos = getPosition();

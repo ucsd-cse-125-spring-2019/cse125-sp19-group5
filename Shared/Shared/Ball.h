@@ -7,6 +7,8 @@
 #include "Player.h"
 #include "Wall.h"
 
+#define GROUNDED_TICKS_THRESHOLD 10
+
 class Ball : public SphereGameObject {
 public:
 	using SphereGameObject::SphereGameObject;
