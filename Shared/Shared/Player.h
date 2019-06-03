@@ -8,6 +8,10 @@
 #include "Wall.h"
 #include "PhysicsEngine.h"
 
+class Powerup;
+#include "Game/Powerup.h"
+#include <unordered_map>
+
 class Player : public SphereGameObject {
 public:
 	using SphereGameObject::SphereGameObject;
@@ -39,12 +43,36 @@ public:
 	void onCollision(Paddle * paddle);
 	void onCollision(Player * player);
 	void onCollision(Wall * wall);
+
+	// Powerups
+	template<class T>
+	void addPowerup() {
+		const string &type = T::TYPE;
+		T *powerup = new T(*this);
+		auto it = powerups.find(type);
+		if (it != powerups.end()) {
+			removePowerup(type);
+		}
+
+		powerups[type] = powerup;
+		powerup->activate();
+		powerup->onActivate();
+	}
+
+	void removePowerup(const string &type);
+
+	bool hasPowerup(const string &type) const;
+
+	void setMoveSpeed(float newMoveSpeed);
+	float getMoveSpeed() const;
+
 private:
 	vec3 direction;
 	int actionCharge;
 	int team;
 	PlayerCommands currentAction;
 	vector<Wall *> walls;
+	std::unordered_map<string, Powerup*> powerups;
 
 	// get<0> = current cooldown, get<1> = total cooldown
 	std::map<PlayerCommands, tuple<int, int>> cooldowns;

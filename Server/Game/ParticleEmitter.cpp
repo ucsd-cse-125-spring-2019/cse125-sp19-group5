@@ -1,14 +1,6 @@
 #include <Shared/Game/ParticleEmitter.h>
-#include <chrono>
 #include "../Networking/Server.h"
-
-static inline float curTime() {
-	using namespace std::chrono;
-	constexpr auto seconds = static_cast<float>(milliseconds::period::den);
-
-	auto now = time_point_cast<milliseconds>(high_resolution_clock::now());
-	return now.time_since_epoch().count() / seconds;
-}
+#include <Shared/Util/CurTime.h>
 
 ParticleEmitter::ParticleEmitter()
 	: updateNextTick(true)
@@ -27,13 +19,16 @@ ParticleEmitter::ParticleEmitter()
 	, _CollFriction(0.2f)
 	, _ParticleColor({ vec4(1.0f), vec4(1.0f, 1.0f, 1.0f, 0.0f) })
 	, _Texture("Textures/white.png")
+	, _ParentId(-1)
+	, parent(nullptr)
+	, _CreationTime(1.0f)
 {
 	id = nextId;
 	nextId++;
 	emitters.push_back(this);
 }
 
-void ParticleEmitter::update() const {
+void ParticleEmitter::update() {
 	if (dieTime > 0 && dieTime <= curTime()) {
 		NetBuffer buffer(NetMessage::PARTICLES_DELETE);
 		buffer.write(id);
@@ -44,6 +39,7 @@ void ParticleEmitter::update() const {
 	}
 	if (updateNextTick) {
 		Network::broadcast(NetMessage::PARTICLES, *this);
+		updateNextTick = false;
 	}
 }
 
@@ -55,6 +51,15 @@ void ParticleEmitter::updateAll() {
 
 void ParticleEmitter::setLifeTime(float seconds) {
 	dieTime = curTime() + seconds;
+}
+
+void ParticleEmitter::setParent(GameObject *newParent) {
+	parent = newParent;
+	setParentId(parent ? parent->getId() : -1);
+}
+
+GameObject *ParticleEmitter::getParent() const {
+	return parent;
 }
 
 ParticleEmitter::~ParticleEmitter() {

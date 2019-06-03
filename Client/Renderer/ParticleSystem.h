@@ -16,6 +16,7 @@ public:
 	void draw(Shader &shader, const Camera *camera);
 
 	unsigned int creationSpeed;   // Particles per second
+	float creationTime;           // Time between particle creation
 	vec3 initialPos;              // Initial position
 	vec3 initialPosVariance;      // +/- from initial position
 	vec3 initialVel;              // Initial velocity
@@ -30,6 +31,7 @@ public:
 	float collFriction;           // For ground plane collision
 	vector<vec4> particleColor;   // Color of each particle during its lifetime
 	Texture2d *texture;           // Texture for each particle
+	int parentId;                 // ID of object to follow
 
 private:
 	void setupBuffers();

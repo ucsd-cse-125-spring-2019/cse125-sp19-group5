@@ -11,6 +11,7 @@
 #include "Networking/Server.h"
 #include <Shared/Game/ParticleEmitter.h>
 #include "MapLoader.h"
+#include "Game/Powerups/SpeedBoost.h"
 
 constexpr auto TICKS_PER_SECOND = 60; // How many updates per second.
 
@@ -25,7 +26,7 @@ int main(int argc, char **argv) {
 	vector<PlayerInputs> playerInputs;
   
 	MapLoader mapLoader(&gameEngine);
-	mapLoader.loadMap("C:\\Users\\Keenan\\Documents\\School\\2018-2019\\Spring\\CSE 125\\cse125-sp19-group5\\Assets\\Maps\\map_with_goals.json");
+	mapLoader.loadMap("Maps/basic_map.json");
 
 	/*auto goal1 = gameEngine.addGameObject<Goal>();
 	goal1->setBoundingShape(new BoundingBox(vec3(0, 0, 100), vec3(1, 0, 0), 200, 20, 10));

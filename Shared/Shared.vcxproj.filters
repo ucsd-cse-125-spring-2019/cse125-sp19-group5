@@ -24,6 +24,9 @@
       <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="Shared\PhysicsEngine.cpp" />
+    <ClCompile Include="Shared\Game\Powerup.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shared\Ball.h" />
@@ -55,6 +58,10 @@
       <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="Shared\PhysicsEngine.h" />
+    <ClInclude Include="Shared\Util\CurTime.h" />
+    <ClInclude Include="Shared\Game\Powerup.h">
+      <Filter>Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Util">

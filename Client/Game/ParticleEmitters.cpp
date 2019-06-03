@@ -2,7 +2,12 @@
 #include "../Assets.h"
 
 unordered_map<size_t, ParticleSystem*> ParticleEmitters::systems;
+GameState *ParticleEmitters::gameState = nullptr;
 static Shader *psShader = nullptr;
+
+void ParticleEmitters::init(GameState *newGameState) {
+	gameState = newGameState;
+}
 
 void ParticleEmitters::onUpdate(Connection *c, NetBuffer &buffer) {
 	const auto id = buffer.read<size_t>();
@@ -29,6 +34,8 @@ void ParticleEmitters::onUpdate(Connection *c, NetBuffer &buffer) {
 	system->collFriction = emitter._CollFriction;
 	system->particleColor = emitter._ParticleColor;
 	system->texture = Assets::getTexture2d(emitter._Texture);
+	system->parentId = emitter._ParentId;
+	system->creationTime = emitter._CreationTime;
 }
 
 void ParticleEmitters::onDelete(Connection *c, NetBuffer &buffer) {
@@ -40,8 +47,14 @@ void ParticleEmitters::onDelete(Connection *c, NetBuffer &buffer) {
 }
 
 void ParticleEmitters::update(float dt, const Camera *camera) {
-	for (auto &system : systems) {
-		system.second->update(dt, camera);
+	for (auto &idAndSystem : systems) {
+		auto system = idAndSystem.second;
+
+		if (gameState && system->parentId >= 0) {
+			auto parent = gameState->gameObjects[system->parentId];
+			system->initialPos = parent->getPosition();
+		}
+		system->update(dt, camera);
 	}
 }
 
