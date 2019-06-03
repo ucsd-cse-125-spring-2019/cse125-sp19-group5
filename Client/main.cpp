@@ -23,20 +23,6 @@ auto SCREEN_RESHAPED = false;
 /*
  * This is a function stub
  */
-static void updateMenuPrompt(int playerId, MenuOptions currentMenuOptions)
-{
-	cout << "UPDATED MENU PROMPT APPEARED" << endl;
-}
-
-
-static MenuOptions menuPrompt(int playerId, MenuOptions currentMenuOptions) 
-{
-
-}
-
-/*
- * This is a function stub
- */
 static MenuOptions menuPrompt_old(int playerId, MenuOptions currentMenuOptions) {
 	int selection = 0;
 	while (0 >= selection || selection >= 5)
@@ -60,13 +46,6 @@ static MenuOptions menuPrompt_old(int playerId, MenuOptions currentMenuOptions) 
 		}
 	}
 	return currentMenuOptions;
-}
-
-/*
- * This is a function stub
- */
-static void clearMenuPrompt() {
-	cout << "clearing the menu prompt!" << endl;
 }
 
 // Update the view port when the window has been resized.
@@ -143,15 +122,15 @@ int main(int argc, char **argv) {
 	glfwSetWindowPos(window, middleX, middleY);
 
 	Input::init(window);
-	Gui::setupInputListeners(window);
-	MenuPrompt menuPrompt;
-	while (!menuPrompt.getConnected()) {
+	//Gui::setupInputListeners(window);
+	//MenuPrompt menuPrompt;
+	/*while (!menuPrompt.getConnected()) {
 		menuPrompt.ipPrompt();
 	}
-	menuPrompt.settingsPrompt();
+	menuPrompt.settingsPrompt();*/
 
 	Game game;
-
+	MenuPrompt *menuPrompt = nullptr;
 
 	game.getCamera()->setAspect((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT);
 	game.updateScreenDimensions(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -173,20 +152,25 @@ int main(int argc, char **argv) {
 		//update the client to match the server
 		game.setCurrentMenuOptions(currentMenuOptions);
 
-		//display these options and allow the client to make a selection
-		MenuOptions clientMenuOptions = menuPrompt(game.getPlayerId(), currentMenuOptions);
+		menuPrompt = Gui::create<MenuPrompt>();
 
-		game.setClientMenuOptions(clientMenuOptions);
+		menuPrompt->setGame(&game);
+
+		//display these options and allow the client to make a selection
+		//MenuOptions clientMenuOptions = menuPrompt(game.getPlayerId(), currentMenuOptions);
+
+		//game.setClientMenuOptions(clientMenuOptions);
 		//send the client's selections to the server for confirmation
-		NetBuffer menuInput(NetMessage::MENU_INPUT);
-		menuInput.write<MenuOptions>(game.getClientMenuOptions());
-		server->send(menuInput);
+		//NetBuffer menuInput(NetMessage::MENU_INPUT);
+		//menuInput.write<MenuOptions>(game.getClientMenuOptions());
+		//server->send(menuInput);
 	};
 
 	/*
 	 * This is the callback function that is responsible for handling confirmation
 	 * from the server about the menu options selected by a client
 	 */
+	/*
 	auto handleMenuConfirmed = [&](Connection *server, NetBuffer &serverMessage)
 	{
 		cout << "server sent confirmation" << endl;
@@ -195,6 +179,7 @@ int main(int argc, char **argv) {
 
 		//update the client to match the server
 		game.setCurrentMenuOptions(currentMenuOptions);
+		
 
 		if (confirmedID == game.getPlayerId())
 		{
@@ -241,17 +226,15 @@ int main(int argc, char **argv) {
 			{
 			}
 		}
-	};
+	};*/
 
 	// this is the server confirming a new selection to all connected clients 
-	Network::on(NetMessage::MENU_OPTIONS, handleMenuOptions);
-	Network::on(NetMessage::MENU_CONFIRM, handleMenuConfirmed);
+	Network::on(NetMessage::MENU_OPTIONS,handleMenuOptions);
+	//Network::on(NetMessage::MENU_CONFIRM, handleMenuConfirmed);
 
-	while (1) {
-		Network::poll();
-	}
+
 	// Main loop /* TODO: re-enable */
-	while (1 == 2) {//!glfwWindowShouldClose(window)) {
+	while (1) {//!glfwWindowShouldClose(window)) {
 		auto dt = (float)glfwGetTime() - lastTime;
 		lastTime = (float)glfwGetTime();
 
@@ -261,7 +244,7 @@ int main(int argc, char **argv) {
 			Network::poll();
 		}
 
-		if (selectionComplete) {
+		if (menuPrompt->getSelectionComplete()) {
 			if (game.shouldExit) {
 				glfwSetWindowShouldClose(window, true);
 			}

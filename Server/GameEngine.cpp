@@ -61,7 +61,7 @@ MenuOptions GameEngine::getTeams() {
  * player) and will return false if they were caught. It returns true 
  * if there were no conflicts and replaces the teams. 
  */
-bool GameEngine::updateMenuOptions(MenuOptions playerMenuOptions) 
+bool GameEngine::updateMenuOptions(int playerMenuOptions, int playerId) 
 {
 	/*DEBUG: Printout the updated menu options */
 	MenuOptions currentMenuOptions = serverMenuOptions;
@@ -75,6 +75,7 @@ bool GameEngine::updateMenuOptions(MenuOptions playerMenuOptions)
 	/*END_DEBUG*/
 
 	//this is basically a big switcase to check the 4 spots in the struct
+	/*
 	if (serverMenuOptions.team_A_1 != playerMenuOptions.team_A_1) {
 		if (serverMenuOptions.team_A_1 != -1) {
 			return false;
@@ -94,10 +95,21 @@ bool GameEngine::updateMenuOptions(MenuOptions playerMenuOptions)
 		if (serverMenuOptions.team_B_2 != -1) {
 			return false;
 		}
+	}*/
+
+	
+	switch (playerMenuOptions) {
+		case 1: if (serverMenuOptions.team_A_1 != -1 && serverMenuOptions.team_A_1 != playerId) return false;
+				else serverMenuOptions.team_A_1 = playerId;
+		case 2: if (serverMenuOptions.team_B_1 != -1 && serverMenuOptions.team_B_1 != playerId) return false;
+			else serverMenuOptions.team_B_1 = playerId; 
+		case 3: if(serverMenuOptions.team_A_2 != -1 && serverMenuOptions.team_A_2 != playerId) return false;
+				else serverMenuOptions.team_A_2 = playerId;
+		case 4: if(serverMenuOptions.team_B_2 != -1 && serverMenuOptions.team_B_2 != playerId) return false;
+			else serverMenuOptions.team_B_2 = playerId; 
 	}
 	
 	/*DEBUG: Printout the updated menu options */
-	currentMenuOptions = playerMenuOptions;
 	cout << "-------------------------- " << endl;
 	cout << "HERE ARE THE UPDATED MENU OPTIONS: " << endl << endl;
 	cout << "Team A (1):             " << (int)currentMenuOptions.team_A_1 << endl;
@@ -108,7 +120,7 @@ bool GameEngine::updateMenuOptions(MenuOptions playerMenuOptions)
 	/*END_DEBUG*/
 
 	//no conflicts were caught, accept the update
-	serverMenuOptions = playerMenuOptions;
+	//serverMenuOptions = playerMenuOptions;
 	return true;
 }
 

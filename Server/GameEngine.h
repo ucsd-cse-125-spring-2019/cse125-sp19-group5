@@ -37,7 +37,7 @@ public:
 
 	/* Functions for handling the MenuOptions */
 	MenuOptions getTeams();//returns the serverMenuOptions currently (since the menu options are ony about teams right now)
-	bool updateMenuOptions(MenuOptions playerMenuOptions);//will return true if an update was legal, false if illegal
+	bool updateMenuOptions(int playerTeamSelection, int playerId);//will return true if an update was legal, false if illegal
 	int nextAvailableSpot(int clientID);//will return the next available spot in the game (default team picking) 
 	int getTeamOf(int clientID);//will return the team that the player belongs to (-1 if not assigned to a team)
 
