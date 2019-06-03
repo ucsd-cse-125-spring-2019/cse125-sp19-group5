@@ -8,7 +8,7 @@ constexpr auto FRUSTUM_NUM_CORNERS = 8;
 // The i_th and (i+1)_th z-values are used as the zNear and zFar for the i_th
 // light projection where i = 0, 1, ..., SHADOW_NUM_CASCADES.
 float ShadowMap::cascadeZCutoffs[SHADOW_NUM_CASCADES + 1] = {
-	0.01f, 50.0f, 100.0f, 250.0f, 500.0f
+	0.01f, 50.0f, 100.0f, 250.0f, 1000.0f
 };
 
 // Component wise min between 2 vectors u, v into u
@@ -139,21 +139,25 @@ void ShadowMap::setupLightTransform(int i, const DirectionalLight &light) {
 		centerFar - (up * heightFar * 0.5f) - (right * widthFar * 0.5f)
 	};
 
-	constexpr auto ORIGIN = vec3(0.0f);
+	auto center = vertices[0];
+	for (int j = 1; j < FRUSTUM_NUM_CORNERS; j++) { center += vertices[j]; }
+	center /= 8.0f;
+
 	constexpr auto UP = vec3(0.0f, 1.0f, 0.0f);
-	auto view = glm::lookAt(ORIGIN, -light.getDirection(), UP);
+	auto view = glm::lookAt(center + light.getDirection(), center, UP);
+
 	vec3 mins, maxs;
 	for (int j = 0; j < FRUSTUM_NUM_CORNERS; j++) {
-		vertices[j] = vec3(view * vec4(vertices[j], 1.0f));
+		auto v = vec3(view * vec4(vertices[j], 1.0f));
 		if (j == 0) {
-			maxs = mins = vertices[0];
+			maxs = mins = v;
 			continue;
 		}
-		vecMin(mins, vertices[j]);
-		vecMax(maxs, vertices[j]);
+		vecMin(mins, v);
+		vecMax(maxs, v);
 	}
 
-	auto proj = glm::ortho(mins.x, maxs.x, mins.y, maxs.y, mins.z - 20.0f, maxs.z + 20.0f);
+	auto proj = glm::ortho(mins.x, maxs.x, mins.y, maxs.y, mins.z, maxs.z);
 	toLightSpace[i] = proj * view;
 }
 

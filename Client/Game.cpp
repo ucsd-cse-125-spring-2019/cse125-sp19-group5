@@ -300,6 +300,9 @@ void Game::drawScene(Shader &shader, DrawPass pass) const {
 void Game::drawUI() const {
 	Gui::draw();
 
+	// Draw::setColor(vec4(1.0f));
+	// Draw::rect(0.0f, 0.0f, 0.25f, 0.25f, shadowMap->getTexture(2));
+
 	gTextRenderer->renderText();
 }
 
