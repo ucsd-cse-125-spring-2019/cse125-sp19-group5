@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -118,6 +118,7 @@
     <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Game\ParticleEmitter.cpp" />
+    <ClCompile Include="Game\Powerups\SpeedBoost.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MapLoader.cpp" />
     <ClCompile Include="Networking\Server.cpp" />
@@ -125,6 +126,7 @@
   <ItemGroup>
     <ClInclude Include="GameEngine.h" />
     <ClInclude Include="MapLoader.h" />
+    <ClInclude Include="Game\Powerups\SpeedBoost.h" />
     <ClInclude Include="Networking\Server.h" />
   </ItemGroup>
   <ItemGroup>
@@ -151,4 +153,7 @@
     <Error Condition="!Exists('..\packages\boost_date_time-vc141.1.69.0.0\build\boost_date_time-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost_date_time-vc141.1.69.0.0\build\boost_date_time-vc141.targets'))" />
     <Error Condition="!Exists('..\packages\glm.0.9.9.500\build\native\glm.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\glm.0.9.9.500\build\native\glm.targets'))" />
   </Target>
+  <PropertyGroup>
+    <LocalDebuggerWorkingDirectory>../Assets</LocalDebuggerWorkingDirectory>
+  </PropertyGroup>
 </Project>

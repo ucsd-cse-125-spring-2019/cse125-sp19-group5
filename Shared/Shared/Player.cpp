@@ -25,6 +25,27 @@ void Player::setDirection(const vec3 &newDirection) {
 	setOrientation(glm::quatLookAt(direction, vec3(0, 1, 0)));
 }
 
+void Player::removePowerup(const string &type) {
+	auto it = powerups.find(type);
+	if (it == powerups.end()) { return; }
+
+	it->second->onDeactivate();
+	delete it->second;
+	powerups.erase(it);
+}
+
+bool Player::hasPowerup(const string &type) const {
+	return powerups.find(type) != powerups.end();
+}
+
+void Player::setMoveSpeed(float newMoveSpeed) {
+	moveSpeed = newMoveSpeed;
+}
+
+float Player::getMoveSpeed() const {
+	return moveSpeed;
+}
+
 void Player::updateOnServerTick() {
 	for (auto & cd : this->cooldowns) {
 		if (std::get<0>(cd.second) > 0) {
@@ -36,14 +57,24 @@ void Player::updateOnServerTick() {
 		maxBoxHeight = 0.0f;
 		isGrounded = false;
 	}
-
 	if (!isGrounded && numLandings > 0) {
 		setPosition(vec3(getPosition().x, maxBoxHeight, getPosition().z));
 		isGrounded = true;
 		maxBoxHeight = 0.0f;
 	}
-
 	numLandings = 0;
+
+	auto it = powerups.begin();
+	while (it != powerups.end()) {
+		auto powerup = it->second;
+		if (powerup->shouldDeactivate()) {
+			powerup->onDeactivate();
+			delete powerup;
+			it = powerups.erase(it);
+		} else {
+			it++;
+		}
+	}
 }
 
 vec3 Player::getDirection() {
