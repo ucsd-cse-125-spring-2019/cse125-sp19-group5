@@ -288,6 +288,26 @@ void Player::onCollision(Ball * ball) {
 	this->ballVelocityComponent = moveDirection * (targetDist - currDist) * std::max(1.0f, glm::length(ball->getVelocity()));
 }
 
+void Player::onCollision(Goal * goal) {
+	for (Plane * p : CollisionDetection::getIntersectingPlanes(getBoundingSphere(), goal->getBoundingBox())) {
+		if (p == goal->getBoundingBox()->top) {
+			this->numLandings += 1;
+			this->maxBoxHeight = std::max(maxBoxHeight,
+				goal->getPosition().y + goal->getBoundingBox()->height + getBoundingSphere()->getRadius());
+		}
+		else {
+			vec3 planeNormal = glm::normalize(p->getNormal());
+			float angleBetweenVelocity = glm::angle(glm::normalize(getVelocity()), planeNormal);
+			float angleBetweenPosition = glm::angle(glm::normalize(getPosition() - getPrevPosition()), planeNormal);
+			if ((angleBetweenVelocity > glm::half_pi<float>() && angleBetweenVelocity < (3.0f * glm::half_pi<float>())) ||
+				(angleBetweenPosition > glm::half_pi<float>() && angleBetweenPosition < (3.0f * glm::half_pi<float>()))) {
+				float planeDistance = abs(p->pointDistance(getPosition()) - (1.01f * getBoundingSphere()->getRadius()));
+				setPosition(getPosition() + planeNormal * planeDistance);
+			}
+		}
+	}
+}
+
 void Player::onCollision(Paddle * paddle) { }
 
 void Player::onCollision(Player * player) { }

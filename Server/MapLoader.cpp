@@ -1,5 +1,6 @@
 #include "MapLoader.h"
 #include <Shared/Ball.h>
+#include <Shared/Goal.h>
 #include <Shared/Wall.h>
 #include <fstream>
 #include <iostream>
@@ -31,7 +32,22 @@ void MapLoader::loadMap(string mapFile) {
 	}
 
 	loadBoxGameObjects<Wall>(mapJson, "walls");
+
 	loadSphereGameObjects<Ball>(mapJson, "balls");
+
+	vector<Goal *> goals = loadBoxGameObjects<Goal>(mapJson, "goals");
+	if (!mapJson["goals"].is_null() && mapJson["goals"].is_array()) {
+		json11::Json::array goalsArr = mapJson["goals"].array_items();
+		for (int i = 0; i < goalsArr.size(); i++) {
+			goals[i]->setTeam(goalsArr[i]["team"].int_value());
+
+			tuple<float, float> xRange = toTuple(goalsArr[i], "xRange");
+			tuple<float, float> yRange = toTuple(goalsArr[i], "yRange");
+			tuple<float, float> zRange = toTuple(goalsArr[i], "zRange");
+
+			goals[i]->setBallSpawnRange(xRange, yRange, zRange);
+		}
+	}	
 }
 
 void MapLoader::loadGameObjectDefaults(json11::Json gameObjJson, GameObject * gameObject) {
@@ -71,7 +87,6 @@ vector<T *> MapLoader::loadBoxGameObjects(json11::Json mapJson, string key) {
 			vec3 direction = vec3(0);
 			if (!objData["direction"].is_null()) {
 				direction = toVec3(objData, "direction");
-				std::cout << glm::to_string(direction) << std::endl;
 			}
 
 			double width = 0, length = 0, height = 0;
@@ -80,7 +95,6 @@ vector<T *> MapLoader::loadBoxGameObjects(json11::Json mapJson, string key) {
 				width = arrayVals[0].number_value();
 				height = arrayVals[1].number_value();
 				length = arrayVals[2].number_value();
-				std::cout << width << " " << height << " " << length << std::endl;
 			}
 
 			gameObject->setBoundingShape(new BoundingBox(position, direction, width, height, length));
@@ -123,4 +137,9 @@ vec3 MapLoader::toVec3(json11::Json json, string key) {
 	else {
 		return vec3(json[key].number_value());
 	}
+}
+
+tuple<float, float> MapLoader::toTuple(json11::Json json, string key) {
+	json11::Json::array arr = json[key].array_items();
+	return std::make_tuple((float)arr[0].number_value(), (float)arr[1].number_value());
 }
