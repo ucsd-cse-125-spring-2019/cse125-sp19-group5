@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -126,6 +126,7 @@
     <ClInclude Include="Shared\CommonStructs.h" />
     <ClInclude Include="Shared\GameObject.h" />
     <ClInclude Include="Shared\GameState.h" />
+    <ClInclude Include="Shared\Game\Powerup.h" />
     <ClInclude Include="Shared\Goal.h" />
     <ClInclude Include="Shared\Game\ParticleEmitter.h" />
     <ClInclude Include="Shared\Paddle.h" />
@@ -138,6 +139,7 @@
     <ClInclude Include="Shared\PhysicsEngine.h" />
     <ClInclude Include="Shared\Player.h" />
     <ClInclude Include="Shared\SphereGameObject.h" />
+    <ClInclude Include="Shared\Util\CurTime.h" />
     <ClInclude Include="Shared\Util\json11.hpp" />
     <ClInclude Include="Shared\Wall.h" />
   </ItemGroup>
@@ -151,6 +153,7 @@
     <ClCompile Include="Shared\CollisionDetection.cpp" />
     <ClCompile Include="Shared\ConfigSettings.cpp" />
     <ClCompile Include="Shared\GameObject.cpp" />
+    <ClCompile Include="Shared\Game\Powerup.cpp" />
     <ClCompile Include="Shared\Goal.cpp" />
     <ClCompile Include="Shared\Game\ParticleEmitter.cpp" />
     <ClCompile Include="Shared\Paddle.cpp" />
