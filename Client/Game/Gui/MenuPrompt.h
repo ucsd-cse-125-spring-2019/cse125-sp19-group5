@@ -11,27 +11,27 @@
 
 class MenuPrompt: public GuiRect {
 	private:
-		bool connected;
+		bool selectionComplete;
 		int playerId;
 
-		void onIpEntered(const std::string &text);
-		void onPortEntered(const std::string &text);
-
 		void handleMenuInput(const std::string &text);
-		void handleMenuConfirmed();
+		void handleMenuConfirm(Connection *s, NetBuffer &menuMsg);
+		void handlePickAgain(Connection *s, NetBuffer &menuMsg);
 
 		Game *game;
 		GuiText *label;
 		GuiText *label_t1;
+		GuiText *team1;
 		GuiText *label_t2;
+		GuiText *team2;
 		GuiText *message;
 		GuiTextbox *ipInput;
 
 	public:
 		MenuPrompt();
-		~MenuPrompt();
+		void updateTeamGui();
 		void setGame(Game *game);
-		bool getConnected();
-		void ipPrompt();
+		void setPlayerId(int id);
 		void settingsPrompt();
+		bool getSelectionComplete();
 };

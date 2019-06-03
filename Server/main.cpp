@@ -51,10 +51,11 @@ int main(int argc, char **argv) {
 	//handle menu option selections made by the client 
 	auto handleMenuInput = [&](Connection *c, NetBuffer &playerMenuInput) 
 	{
-		MenuOptions playerMenuOptions = playerMenuInput.read<MenuOptions>();
+		int playerTeamSelection = playerMenuInput.read<int>();
+		int playerId = c->getId;
 
 		//check if the update is allowed
-		if (gameEngine.updateMenuOptions(playerMenuOptions)) 
+		if (gameEngine.updateMenuOptions(playerTeamSelection, playerId)) 
 		{
 			//the update was accepted, broadcast the confirmation to all clients
 			NetBuffer teamUpdate(NetMessage::MENU_CONFIRM);
@@ -101,7 +102,7 @@ int main(int argc, char **argv) {
 		NetBuffer menu_options(NetMessage::MENU_OPTIONS);
 		menu_options.write<MenuOptions>(gameEngine.getTeams());
 		c->send(menu_options);
-		c->on(NetMessage::MENU_INPUT, handleMenuInput);//callback for the client reply
+		c->on(NetMessage::TEAM, handleMenuInput);//callback for the client reply
 		cout << "send menu options" << endl;
 
 		for (auto gameObject : gameEngine.getGameObjects()) {
