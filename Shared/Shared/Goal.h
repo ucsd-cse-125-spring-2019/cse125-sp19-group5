@@ -8,6 +8,8 @@ public:
 	void setTeam(int team);
 	int & getTeam();
 	int & getGoalsScored();
+	void setBallSpawnRange(tuple<float, float> xRange, tuple<float, float> yRange, tuple<float, float> zRange);
+	vec3 getRandomSpawnPos();
 
 	// collision stuff below
 	void onCollision(GameObject * gameObject);
@@ -16,4 +18,7 @@ public:
 private:
 	int team;
 	int goalsScored = 0;
+	tuple<float, float> xRange;
+	tuple<float, float> yRange;
+	tuple<float, float> zRange;
 };

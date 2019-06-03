@@ -7,6 +7,8 @@
 #include "Player.h"
 #include "Wall.h"
 
+#define GROUNDED_TICKS_THRESHOLD 10
+
 class Ball : public SphereGameObject {
 public:
 	using SphereGameObject::SphereGameObject;
@@ -26,4 +28,6 @@ public:
 private:
 	bool goalScored = false;
 	std::set<Ball *> currentBallCollisions;
+	int ticksSinceGrounded = 0;
+	bool isGrounded = false;
 };

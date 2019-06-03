@@ -2,6 +2,7 @@
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
 #include "Networking/Server.h"
+#include <Shared/CollisionDetection.h>
 #include <Shared/Game/ParticleEmitter.h>
 
 template<class T, class V>
@@ -65,7 +66,6 @@ GameState & GameEngine::getGameState() {
 }
 
 void GameEngine::addGenericGameObject(GameObject *obj) {
-	std::cout << obj->to_string() << std::endl;
 	gameState.gameObjects[obj->getId()] = obj;
 
 	NetBuffer buffer(NetMessage::GAME_OBJ_CREATE);
@@ -221,6 +221,8 @@ void GameEngine::doPlayerCommands(vector<PlayerInputs> & playerInputs) {
 			addGenericGameObject(createdGameObject);
 			createdGameObject->setModel("Models/unit_sphere.obj");
 			createdGameObject->setMaterial("Materials/brick.json");
+
+			std::cout << createdGameObject->to_string() << std::endl;
 		}
 	}
 }
@@ -275,19 +277,38 @@ void GameEngine::updateGameObjectsOnServerTick() {
 	}
 }
 
-bool GameEngine::noCollisionMove(GameObject * gameObject, vec3 movement) {
-	vec3 destination = gameObject->getMoveDestination(movement);
-	// TODO: fix this method by moving adding a bounding box where the object would move
+bool GameEngine::noCollisionMove(Player * player, vec3 movement) {
+	vec3 currPosition = player->getPosition();
+	float diameter = player->getBoundingSphere()->getRadius() * 2;
+	vec3 move = player->getMoveDestination(movement) - player->getPosition();
+	float dist = glm::length(move);
 
-	//for (GameObject * otherGameObject : gameState.gameObjects) {
-	//	if (gameObject != gameObject) {
-	//		float distance = glm::distance(destination, otherGameObject->getPosition());
-	//		if (distance < (gameObject->getRadius() + otherGameObject->getRadius())) {
-	//			return false;
-	//		}
-	//	}
-	//}
-	gameObject->setPosition(destination);
+	while (dist > 0.0f) {
+		if (dist > diameter) {
+			player->setPosition(player->getPosition() + glm::normalize(move) * diameter);
+			dist -= diameter;
+		}
+		else {
+			player->setPosition(player->getPosition() + glm::normalize(move) * dist);
+			dist = 0.0f;
+		}
+
+		for (Player * p : gameState.players) {
+			if (player->collidesWith(p)) {
+				player->setPosition(currPosition);
+				return false;
+			}
+		}
+
+		for (Wall * wall : gameState.walls) {
+			if (player->collidesWith(wall)) {
+				player->onCollision(wall);
+				wall->onCollision(player);
+			}
+		}
+
+		currPosition = player->getPosition();
+	}
 
 	return true;
 }

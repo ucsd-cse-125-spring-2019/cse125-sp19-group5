@@ -12,7 +12,7 @@ GAMEOBJECT_TYPES Ball::getGameObjectType() const {
 }
 
 void Ball::updateOnServerTick() {
-	if (glm::length(getVelocity()) > 0) { 
+	if (glm::length(getVelocity()) > 0) {
 		vec3 direction = glm::normalize(getVelocity());
 		vec3 updatedVelocity = getVelocity() - (direction * 0.01f);
 		// vec3 updatedVelocity = getVelocity() * 0.99f;
@@ -34,6 +34,16 @@ void Ball::updateOnServerTick() {
 			++it;
 		}
 	}
+
+	if (!this->isGrounded) {
+		setVelocity(PhysicsEngine::applyGravity(getVelocity(), PhysicsEngine::getGravity()));
+	}
+
+	if (ticksSinceGrounded > GROUNDED_TICKS_THRESHOLD) {
+		isGrounded = false;
+	}
+
+	this->ticksSinceGrounded += 1;
 }
 
 bool Ball::getGoalScored() {
@@ -75,24 +85,19 @@ void Ball::onCollision(Ball * ball) {
 
 			setVelocity(newVelocity);
 			ball->setVelocity(ballNewVelocity);
-
-			/*float intersectDist = getBoundingSphere()->getRadius() + ball->getBoundingSphere()->getRadius() - distanceFrom(ball);
-			while (collidesWith(ball)) {
-				move(glm::normalize(newVelocity));
-				ball->move(glm::normalize(ballNewVelocity));
-			}*/
 		}
 	}
 }
 
 void Ball::onCollision(Bullet * bullet) {
-	std::cout << bullet->to_string() << std::endl;
+	// std::cout << bullet->to_string() << std::endl;
 	setVelocity(getVelocity() + bullet->getVelocity() * 0.01f);
 }
 
 void Ball::onCollision(Goal * goal) {
-	setPosition(vec3(0, 3, 0));
+	setPosition(goal->getRandomSpawnPos());
 	setVelocity(vec3(0));
+	this->isGrounded = false;
 	this->goalScored = true;
 }
 
@@ -104,11 +109,13 @@ void Ball::onCollision(Paddle * paddle) {
 		paddle->getObjectsHit().insert(this);
 		currentBallCollisions.clear();
 	}
+
+	this->isGrounded = false;
 }
 
 
 void Ball::onCollision(Player * player) { 
-	setVelocity(vec3(0.0f));
+	// setVelocity(getVelocity() * 0.9f);
 }
 
 void Ball::onCollision(Wall * wall) {
@@ -121,6 +128,18 @@ void Ball::onCollision(Wall * wall) {
 
 	vector<Plane * > collisionPlanes;
 	for (Plane * p : CollisionDetection::getIntersectingPlanes(this->getBoundingSphere(), wall->getBoundingBox())) {
+		if (p == wall->getBoundingBox()->top) {
+			if (!this->isGrounded) {
+				if (this->ticksSinceGrounded < GROUNDED_TICKS_THRESHOLD) {
+					isGrounded = true;
+					this->velocity.y = 0;
+					vec3 adjustedPos = getPosition();
+					adjustedPos.y = wall->getPosition().y + wall->getBoundingBox()->height + getBoundingSphere()->getRadius();
+					setPosition(adjustedPos);
+				}
+			}
+			this->ticksSinceGrounded = 0;
+		}
 		vec3 planeNormal = glm::normalize(p->getNormal());
 		float angleBetween = glm::angle(glm::normalize(getVelocity()), planeNormal);
 		if (angleBetween > glm::half_pi<float>() && angleBetween < (3.0f * glm::half_pi<float>())) {
