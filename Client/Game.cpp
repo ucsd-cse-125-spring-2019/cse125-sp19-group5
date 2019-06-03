@@ -104,9 +104,12 @@ int Game::getScreenHeight() const {
 
 Game::Game() : gameObjects({ nullptr }) {
 	Draw::init();
+	ParticleEmitters::init(&gameState);
 
 	// TODO (bhang): Integrate this with connecting.
 	// Gui::create<GuiConnectMenu>();
+
+	hud = Gui::create<GuiHUD>();
 	
 	Input::setMouseVisible(false);
 
@@ -281,6 +284,12 @@ void Game::update(float dt) {
 	}
 
 	ParticleEmitters::update(dt, camera);
+
+	cout << "Time left: " << gameState.timeLeft << endl;
+	cout << "Score: " << std::get<0>(gameState.score) << " : " << std::get<1>(gameState.score) << endl;
+	hud->setTime(gameState.timeLeft);
+	hud->setLeftTeamScore(std::get<0>(gameState.score));
+	hud->setRightTeamScore(std::get<1>(gameState.score));
 }
 
 void Game::drawScene(Shader &shader, DrawPass pass) const {

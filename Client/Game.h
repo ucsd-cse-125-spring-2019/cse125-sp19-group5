@@ -9,6 +9,7 @@
 #include "Renderer/ShadowMap.h"
 #include "Renderer/DrawPass.h"
 #include "Sound/SoundEngine.h"
+#include "Game/Gui/GuiHUD.h"
 #include "ClientGameObject.h"
 #include <Shared/GameState.h>
 #include "Networking/Client.h"
@@ -38,6 +39,7 @@ class Game {
 	std::array<ClientGameObject*, MAX_GAME_OBJS> gameObjects;
 
 	Sound *soundtrack = nullptr;
+	GuiHUD *hud = nullptr;
 
 	int playerId;
 

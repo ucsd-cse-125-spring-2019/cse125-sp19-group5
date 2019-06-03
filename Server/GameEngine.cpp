@@ -32,7 +32,7 @@ void GameEngine::removeGameObjectById(int id) {
 void GameEngine::init() {
 	gameState.in_progress = false;
 	gameState.score = std::make_tuple(1, 2);
-	gameState.timeLeft = 30;
+	gameState.timeLeft = 1000 * 60 * 5; // 5 minutes in ms
 }
 
 void GameEngine::onPlayerDisconnected(Connection *c) {
@@ -40,13 +40,7 @@ void GameEngine::onPlayerDisconnected(Connection *c) {
 }
 
 void GameEngine::updateGameState(vector<PlayerInputs> & playerInputs) {
-	//for (Player * p : gameState.players) {
-	//	if (p) {
-	//		if (glm::length(p->getVelocity()) != 0) {
-	//			std::cout << glm::to_string(p->getVelocity()) << std::endl;
-	//		}
-	//	}
-	//}
+	gameState.timeLeft -= PhysicsEngine::getDeltaTime();
 
 	movePlayers(playerInputs);
 	doPlayerCommands(playerInputs);
