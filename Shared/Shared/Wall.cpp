@@ -17,10 +17,6 @@ void Wall::onCollision(Player * player) { }
 
 void Wall::onCollision(Wall * wall) { }
 
-GAMEOBJECT_TYPES Wall::getGameObjectType() const {
-	return WALL_TYPE;
-}
-
 void Wall::onCreated() {
 	setBoundingShape(new BoundingBox(position, direction, 1.0f, 2.0f, 2.0f));
 	setModel("Models/wall.obj");

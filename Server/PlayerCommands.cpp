@@ -4,17 +4,30 @@
 void Player::doAction(PlayerCommands action) {
 	switch (action) {
 		case SWING: {
-			// std::cout << "Swing with charge " << actionCharge << std::endl;
-			// assumes direction is unit vector
-			vec3 paddlePosition = getPosition() + getDirection() * vec3(2.05f * this->radius);
-			// vec3 paddleVelocity = getDirection() * vec3((float)(actionCharge));
+			if (std::get<0>(getCooldown(SWING)) > 0) { break; }
+			useCooldown(SWING);
+
+			vec3 paddlePosition = getPosition() + getDirection() * vec3(2.05f * getBoundingSphere()->getRadius());
 			vec3 paddleVelocity = vec3(getDirection().x, 0, getDirection().z) * vec3((float)(actionCharge));
-			int paddleLifespan = 100;
+			int paddleLifespan = 10;
 
 			auto p = gGameEngine->addGameObject<Paddle>();
 			p->setPosition(paddlePosition);
 			p->setVelocity(paddleVelocity * 0.2f);
 			p->setLifespan(paddleLifespan);
+
+			break;
+		}
+		case SHOOT: {
+			if (std::get<0>(getCooldown(SHOOT)) > 0) { break; }
+			useCooldown(SHOOT);
+
+			vec3 bulletStart = vec3(getPosition().x, 5, getPosition().z);
+			vec3 bulletVelocity = glm::normalize(vec3(getDirection().x, 0, getDirection().z)) * 5.0f;
+
+			auto b = gGameEngine->addGameObject<Bullet>();
+			b->setPosition(bulletStart);
+			b->setVelocity(bulletVelocity);
 
 			break;
 		}
