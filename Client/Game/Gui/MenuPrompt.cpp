@@ -158,7 +158,7 @@ void MenuPrompt::handleMenuInput(const std::string &text) {
 	);
 	Network::on(
 		NetMessage::MENU_INPUT,
-		boost::bind(&MenuPropmt::handelPickAgain, this, _1, _2)
+		boost::bind(&MenuPrompt::handlePickAgain, this, _1, _2)
 	);
 }
 

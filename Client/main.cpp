@@ -244,7 +244,7 @@ int main(int argc, char **argv) {
 			Network::poll();
 		}
 
-		if (menuPrompt->getMenuComplete()) {
+		if (menuPrompt->getSelectionComplete()) {
 			if (game.shouldExit) {
 				glfwSetWindowShouldClose(window, true);
 			}
