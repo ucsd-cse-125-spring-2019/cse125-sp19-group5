@@ -104,6 +104,7 @@ int Game::getScreenHeight() const {
 
 Game::Game() : gameObjects({ nullptr }) {
 	Draw::init();
+	ParticleEmitters::init(&gameState);
 
 	// TODO (bhang): Integrate this with connecting.
 	// Gui::create<GuiConnectMenu>();

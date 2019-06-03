@@ -19,7 +19,9 @@ void ParticleEmitter::serialize(NetBuffer &buffer) const {
 	buffer.write(_CollElasticity);
 	buffer.write(_CollFriction);
 	buffer.write(_Texture);
+	buffer.write(_ParentId);
 	buffer.write(_CreationTime);
+  
 	buffer.write(_ParticleColor.size());
 	for (auto &color : _ParticleColor) {
 		buffer.write(color);
@@ -41,6 +43,7 @@ void ParticleEmitter::deserialize(NetBuffer &buffer) {
 	_CollElasticity = buffer.read<float>();
 	_CollFriction = buffer.read<float>();
 	_Texture = buffer.read<string>();
+	_ParentId = buffer.read<int>();
 	_CreationTime = buffer.read<float>();
 
 	const auto numColors = buffer.read<size_t>();

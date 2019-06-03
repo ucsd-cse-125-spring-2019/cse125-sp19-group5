@@ -3,8 +3,12 @@
 
 ParticleEmitter::ParticleEmitter() { }
 
-void ParticleEmitter::update() const { }
+void ParticleEmitter::update() { }
 
 void ParticleEmitter::updateAll() { }
+
+void ParticleEmitter::setParent(GameObject*) { }
+
+GameObject *ParticleEmitter::getParent() const { return nullptr; }
 
 ParticleEmitter::~ParticleEmitter() { }

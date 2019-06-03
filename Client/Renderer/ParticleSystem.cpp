@@ -33,9 +33,10 @@ ParticleSystem::ParticleSystem(const unsigned int maxParticles, const float part
 	, collFriction(0.2f)
 	, particleColor(vector<vec4>{ vec4(1.0f), vec4(1.0f, 1.0f, 1.0f, 0.0f) })
 	, VAO(0)
-	, creationTime(1.0f)
-	, texture(Assets::getTexture2d("Textures/white.png")) {
-
+	, texture(Assets::getTexture2d("Textures/white.png"))
+	, parentId(-1)
+  , creationTime(1.0f)
+{
 	for (unsigned int i = 0; i < maxParticles; i++)
 	{
 		Particle* p = new Particle(particleMass, position);
