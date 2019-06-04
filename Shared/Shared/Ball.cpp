@@ -142,7 +142,7 @@ void Ball::onCollision(Wall * wall) {
 		}
 		vec3 planeNormal = glm::normalize(p->getNormal());
 		float angleBetween = glm::angle(glm::normalize(getVelocity()), planeNormal);
-		if (angleBetween > glm::half_pi<float>() && angleBetween < (3.0f * glm::half_pi<float>())) {
+		if (angleBetween > glm::half_pi<float>()) {
 			collisionPlanes.push_back(p);
 		}
 	}

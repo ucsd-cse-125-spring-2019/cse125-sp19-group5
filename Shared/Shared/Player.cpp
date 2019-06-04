@@ -237,8 +237,7 @@ void Player::onCollision(Goal * goal) {
 			vec3 planeNormal = glm::normalize(p->getNormal());
 			float angleBetweenVelocity = glm::angle(glm::normalize(getVelocity()), planeNormal);
 			float angleBetweenPosition = glm::angle(glm::normalize(getPosition() - getPrevPosition()), planeNormal);
-			if ((angleBetweenVelocity > glm::half_pi<float>() && angleBetweenVelocity < (3.0f * glm::half_pi<float>())) ||
-				(angleBetweenPosition > glm::half_pi<float>() && angleBetweenPosition < (3.0f * glm::half_pi<float>()))) {
+			if ((angleBetweenVelocity > glm::half_pi<float>()) || (angleBetweenPosition > glm::half_pi<float>())) {
 				float planeDistance = abs(p->pointDistance(getPosition()) - (1.01f * getBoundingSphere()->getRadius()));
 				setPosition(getPosition() + planeNormal * planeDistance);
 			}
@@ -256,13 +255,18 @@ void Player::onCollision(Wall * wall) {
 			this->numLandings += 1;
 			this->maxBoxHeight = std::max(maxBoxHeight,
 				wall->getPosition().y + wall->getBoundingBox()->height + getBoundingSphere()->getRadius());
+			setPosition(vec3(
+				getPosition().x,
+				wall->getPosition().y + wall->getBoundingBox()->height + getBoundingSphere()->getRadius(),
+				getPosition().z)
+			);
+			break;
 		}
 		else {
 			vec3 planeNormal = glm::normalize(p->getNormal());
 			float angleBetweenVelocity = glm::angle(glm::normalize(getVelocity()), planeNormal);
 			float angleBetweenPosition = glm::angle(glm::normalize(getPosition() - getPrevPosition()), planeNormal);
-			if ((angleBetweenVelocity > glm::half_pi<float>() && angleBetweenVelocity < (3.0f * glm::half_pi<float>())) ||
-				(angleBetweenPosition > glm::half_pi<float>() && angleBetweenPosition < (3.0f * glm::half_pi<float>()))) {
+			if ((angleBetweenVelocity > glm::half_pi<float>()) || (angleBetweenPosition > glm::half_pi<float>())) {
 				float planeDistance = abs(p->pointDistance(getPosition()) - (1.01f * getBoundingSphere()->getRadius()));
 				setPosition(getPosition() + planeNormal * planeDistance);
 			}
