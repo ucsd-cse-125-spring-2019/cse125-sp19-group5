@@ -40,7 +40,7 @@ void Player::doAction(PlayerCommands action) {
 		case WALL: {
 			auto wallPos = getPosition() + getDirection() * 5.0f;
 			wallPos.y = 0;
-			vec3 size(10.0f, 5.0f, 2.0f);
+			vec3 size(10.0f, getPosition().y + 3.0f, 2.0f);
 
 			vec3 direction = getDirection();
 			direction.y = 0;
