@@ -110,16 +110,19 @@ int main(int argc, char **argv) {
 		player->setCooldown(SHOOT, std::make_tuple(0, 60));
 		gameEngine.addGameObject(player);
 
-		player->setModel("Models/unit_sphere.obj");
+		player->setModel("Models/beararm.fbx");
 		player->setDirection(vec3(0, 0, -1));
 		player->setMaterial("Materials/brick.json");
-		player->setScale(vec3(2));
+		player->setScale(vec3(0.5f));
+		player->setAnimation(0);
 
 		auto ps = new ParticleEmitter();
 		ps->setGravity(-15.0f);
-		ps->setCreationSpeed(500);
+		ps->setCreationSpeed(10);
+		ps->setCreationTime(0.2f);
 		ps->setInitialVel(vec3(0, 10, 0));
 		ps->setTexture("Textures/gary.png");
+		ps->setParent(player);
 
 		// Receive player keyboard and mouse(TODO) input
 		c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);
