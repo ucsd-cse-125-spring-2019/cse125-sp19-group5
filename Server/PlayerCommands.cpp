@@ -27,8 +27,11 @@ void Player::doAction(PlayerCommands action) {
 			vec3 bulletVelocity = glm::normalize(vec3(getDirection().x, 0, getDirection().z)) * 5.0f;
 
 			auto b = gGameEngine->addGameObject<Bullet>();
+			b->setBoundingShape(new BoundingSphere(vec3(0.0f), 0.5f));
+			b->setModel("Models/unit_sphere.obj");
 			b->setPosition(bulletStart);
 			b->setVelocity(bulletVelocity);
+			b->setScale(vec3(0.5f));
 
 			break;
 		}
@@ -57,7 +60,7 @@ void Player::doAction(PlayerCommands action) {
 */
 void Player::processCommand(int inputs)
 {
-	vector<PlayerCommands> chargeCommands = { SWING, WALL };
+	vector<PlayerCommands> chargeCommands = { SWING, WALL, SHOOT };
 
 	//TODO for command in chargable commands
 	//TODO return GameObject (Ball, Wall) based on input to be rendered by the GameEngine

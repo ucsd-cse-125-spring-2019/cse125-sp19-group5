@@ -36,7 +36,7 @@ void Ball::updateOnServerTick() {
 	}
 
 	if (!this->isGrounded) {
-		setVelocity(PhysicsEngine::applyGravity(getVelocity(), PhysicsEngine::getGravity()));
+		setVelocity(PhysicsEngine::applyGravity(getVelocity(), PhysicsEngine::getGravity() * 5.0f));
 	}
 
 	if (ticksSinceGrounded > GROUNDED_TICKS_THRESHOLD) {
@@ -91,7 +91,7 @@ void Ball::onCollision(Ball * ball) {
 
 void Ball::onCollision(Bullet * bullet) {
 	// std::cout << bullet->to_string() << std::endl;
-	setVelocity(getVelocity() + bullet->getVelocity() * 0.01f);
+	setVelocity(getVelocity() + bullet->getVelocity() * 0.1f);
 }
 
 void Ball::onCollision(Goal * goal) {
