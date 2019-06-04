@@ -8,7 +8,8 @@ void Player::doAction(PlayerCommands action) {
 			useCooldown(SWING);
 
 			vec3 paddlePosition = getPosition() + getDirection() * vec3(2.05f * getBoundingSphere()->getRadius());
-			vec3 paddleVelocity = vec3(getDirection().x, 0, getDirection().z) * vec3((float)(actionCharge));
+			float y = glm::max(getDirection().y * 0.5f, 0.0f);
+			vec3 paddleVelocity = vec3(getDirection().x, y, getDirection().z) * vec3((float)(actionCharge));
 			int paddleLifespan = 10;
 
 			auto p = gGameEngine->addGameObject<Paddle>();
@@ -32,8 +33,15 @@ void Player::doAction(PlayerCommands action) {
 			break;
 		}
 		case WALL: {
+			auto wallPos = getPosition() + getDirection() * 5.0f;
+			wallPos.y = 0;
+			vec3 size(10.0f, 5.0f, 2.0f);
 			auto wall = gGameEngine->addGameObject<Wall>();
-			wall->setPosition(getPosition() + getDirection()*2.0f);
+			wall->setBoundingShape(new BoundingBox(wallPos, vec3(1, 0, 0), size.x, size.y, size.z));
+			wall->setPosition(wallPos);
+			wall->setModel("Models/unit_cube.obj");
+			wall->setMaterial("Materials/brick.json");
+			wall->setScale(size);
 			
 			break;
 		}

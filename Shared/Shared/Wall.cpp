@@ -18,7 +18,4 @@ void Wall::onCollision(Player * player) { }
 void Wall::onCollision(Wall * wall) { }
 
 void Wall::onCreated() {
-	setBoundingShape(new BoundingBox(position, direction, 1.0f, 2.0f, 2.0f));
-	setModel("Models/wall.obj");
-	setMaterial("Materials/brick.json");
 }

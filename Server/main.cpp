@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
 	vector<PlayerInputs> playerInputs;
   
 	MapLoader mapLoader(&gameEngine);
-	mapLoader.loadMap("Maps/basic_map.json");
+	mapLoader.loadMap("Maps/map_with_goals.json");
 
 	/*auto goal1 = gameEngine.addGameObject<Goal>();
 	goal1->setBoundingShape(new BoundingBox(vec3(0, 0, 100), vec3(1, 0, 0), 200, 20, 10));
