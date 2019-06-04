@@ -1,5 +1,7 @@
 #include <Shared/Player.h>
 #include "GameEngine.h"
+#include <glm/gtx/euler_angles.hpp>
+#include <glm/gtx/vector_angle.hpp>
 
 void Player::doAction(PlayerCommands action) {
 	switch (action) {
@@ -39,12 +41,22 @@ void Player::doAction(PlayerCommands action) {
 			auto wallPos = getPosition() + getDirection() * 5.0f;
 			wallPos.y = 0;
 			vec3 size(10.0f, 5.0f, 2.0f);
+
+			vec3 direction = getDirection();
+			direction.y = 0;
+			direction = glm::normalize(glm::cross(direction, vec3(0, 1, 0)));
+
 			auto wall = gGameEngine->addGameObject<Wall>();
-			wall->setBoundingShape(new BoundingBox(wallPos, vec3(1, 0, 0), size.x, size.y, size.z));
+			wall->setBoundingShape(new BoundingBox(wallPos, direction, size.x, size.y, size.z));
 			wall->setPosition(wallPos);
 			wall->setModel("Models/unit_cube.obj");
 			wall->setMaterial("Materials/brick.json");
 			wall->setScale(size);
+			
+			float yaw = glm::orientedAngle(vec2(direction.x, direction.z), vec2(1, 0));
+			quat orientation = glm::eulerAngleY(yaw);
+			wall->setOrientation(orientation);
+
 			
 			break;
 		}
