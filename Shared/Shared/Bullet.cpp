@@ -24,6 +24,10 @@ void Bullet::onCollision(Ball * ball) {
 	this->hit = true;
 }
 
+void Bullet::onCollision(Player * player) {
+	this->hit = true;
+}
+
 void Bullet::onCollision(Wall * wall) {
 	this->hit = true;
 }

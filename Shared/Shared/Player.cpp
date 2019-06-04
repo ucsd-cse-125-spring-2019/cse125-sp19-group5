@@ -169,8 +169,8 @@ vec3 Player::getMoveDestination(vec3 movement) {
 
 	// Prevent the player from ever falling through the floor
 	// ATTEMPT TO MOVE GROUND CHECK TO WALL COLLISIONS - KEENAN
-	vec3 newPos = getPosition() + newVelocity * PhysicsEngine::getDeltaTime() + currVelocity + this->ballVelocityComponent;
-	this->ballVelocityComponent = vec3(0);
+	vec3 newPos = getPosition() + newVelocity * PhysicsEngine::getDeltaTime() + currVelocity + this->collisionVelocityComponent;
+	this->collisionVelocityComponent = vec3(0);
 	/*if (newPos.y < PhysicsEngine::getFloorY()) {
 		newPos.y = PhysicsEngine::getFloorY();
 		isGrounded = true;
@@ -223,7 +223,11 @@ void Player::onCollision(Ball * ball) {
 	vec3 moveDirection = getPosition() - ball->getPosition();
 	moveDirection.y = 0;
 	moveDirection = glm::normalize(moveDirection);
-	this->ballVelocityComponent = moveDirection * (targetDist - currDist) * std::max(1.0f, glm::length(ball->getVelocity()));
+	this->collisionVelocityComponent += moveDirection * (targetDist - currDist) * std::max(1.0f, glm::length(ball->getVelocity()));
+}
+
+void Player::onCollision(Bullet * bullet) {
+	this->collisionVelocityComponent += bullet->getVelocity();
 }
 
 void Player::onCollision(Goal * goal) {

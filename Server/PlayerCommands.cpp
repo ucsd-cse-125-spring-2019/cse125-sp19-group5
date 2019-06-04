@@ -11,10 +11,11 @@ void Player::doAction(PlayerCommands action) {
 
 			vec3 paddlePosition = getPosition() + getDirection() * vec3(2.05f * getBoundingSphere()->getRadius());
 			float y = glm::max(getDirection().y * 0.5f, 0.0f);
-			vec3 paddleVelocity = vec3(getDirection().x, y, getDirection().z) * vec3((float)(actionCharge));
+			vec3 paddleVelocity = vec3(getDirection().x, y, getDirection().z) * (float)(actionCharge);
 			int paddleLifespan = 10;
 
 			auto p = gGameEngine->addGameObject<Paddle>();
+			p->setBoundingShape(new BoundingSphere(paddlePosition, 5.0f));
 			p->setPosition(paddlePosition);
 			p->setVelocity(paddleVelocity * 0.2f);
 			p->setLifespan(paddleLifespan);
@@ -25,15 +26,16 @@ void Player::doAction(PlayerCommands action) {
 			if (std::get<0>(getCooldown(SHOOT)) > 0) { break; }
 			useCooldown(SHOOT);
 
-			vec3 bulletStart = vec3(getPosition().x, 5, getPosition().z);
+			float bulletRadius = 0.5f * (actionCharge * 0.2f);
+			vec3 bulletStart = getPosition() + (vec3(getDirection().x, 0, getDirection().z) * ((2 * getBoundingSphere()->getRadius()) + bulletRadius));
 			vec3 bulletVelocity = glm::normalize(vec3(getDirection().x, 0, getDirection().z)) * 5.0f;
 
 			auto b = gGameEngine->addGameObject<Bullet>();
-			b->setBoundingShape(new BoundingSphere(vec3(0.0f), 0.5f));
+			b->setBoundingShape(new BoundingSphere(vec3(0.0f), bulletRadius));
 			b->setModel("Models/unit_sphere.obj");
 			b->setPosition(bulletStart);
 			b->setVelocity(bulletVelocity);
-			b->setScale(vec3(0.5f));
+			b->setScale(vec3(bulletRadius));
 
 			break;
 		}
