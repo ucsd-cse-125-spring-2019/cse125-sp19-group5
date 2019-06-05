@@ -5,6 +5,8 @@
 #include <Shared/CollisionDetection.h>
 #include <Shared/Game/ParticleEmitter.h>
 
+#define _DEBUG
+
 template<class T, class V>
 void inline safeRemoveFromVec(std::vector<T> &v, V &val) {
 	auto it = std::find(v.begin(), v.end(), val);
@@ -31,8 +33,31 @@ void GameEngine::removeGameObjectById(int id) {
 
 void GameEngine::init() {
 	gameState.in_progress = false;
-	gameState.score = std::make_tuple(1, 2);
+	gameState.score = std::make_tuple(0, 0);
 	gameState.timeLeft = 1000 * 60 * 5; // 5 minutes in ms
+}
+
+bool GameEngine::shouldGameStart() {
+#ifdef _DEBUG
+	if (readyPlayers.size() != 2) {
+		return false;
+	}
+#else
+	if (readyPlayers.size() != 4) {
+		return false;
+	}
+#endif
+	return true;
+}
+
+void GameEngine::startGame() {
+	gameState.in_progress = true;
+	gameState.score = std::make_tuple(0, 0);
+	gameState.timeLeft = 1000 * 6 * 5; // 5 minutes in ms
+}
+
+void GameEngine::endGame() {
+	gameState.in_progress = false;
 }
 
 void GameEngine::onPlayerDisconnected(Connection *c) {
@@ -40,7 +65,17 @@ void GameEngine::onPlayerDisconnected(Connection *c) {
 }
 
 void GameEngine::updateGameState(vector<PlayerInputs> & playerInputs) {
+	if (!gameState.in_progress) {
+		if (shouldGameStart()) {
+			startGame();
+		}
+		return;
+	}
 	gameState.timeLeft -= PhysicsEngine::getDeltaTime();
+	if (gameState.timeLeft <= 0) {
+		endGame();
+		return;
+	}
 
 	movePlayers(playerInputs);
 	doPlayerCommands(playerInputs);
@@ -200,6 +235,7 @@ void GameEngine::moveBalls() {
 }
 
 void GameEngine::doPlayerCommands(vector<PlayerInputs> & playerInputs) {
+
 	vector<int> aggregatePlayerCommands;
 
 	// Use bitwise or to get all player inputs within one server tick
@@ -315,4 +351,16 @@ bool GameEngine::noCollisionMove(Player * player, vec3 movement) {
 
 const std::array<GameObject*, MAX_GAME_OBJS> &GameEngine::getGameObjects() const {
 	return gameState.gameObjects;
+}
+
+void GameEngine::onPlayerReady(Connection *c, NetBuffer &buffer) {
+	if (gameState.in_progress) { return; }
+	auto id = c->getId();
+	auto it = readyPlayers.find(id);
+	if (it == readyPlayers.end()) {
+		readyPlayers.emplace(id);
+	} else {
+		readyPlayers.erase(it);
+	}
+
 }

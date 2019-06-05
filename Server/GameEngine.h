@@ -9,10 +9,17 @@
 #include <Shared/Goal.h>
 #include <Shared/GameState.h>
 #include <Shared/Networking/Connection.h>
+#include <unordered_set>
 
 #define NUM_PLAYERS 1
 #define MOVEMENT_MASK 0b11111
 #define COMMAND_MASK 0b11100000
+
+enum class RoundState {
+	COUNTDOWN,
+	ACTIVE,
+	END,
+};
 
 class GameEngine {
 public:
@@ -54,7 +61,14 @@ public:
 
 	const std::array<GameObject*, MAX_GAME_OBJS> &getGameObjects() const;
 
+	void onPlayerReady(Connection *c, NetBuffer &buffer);
+
 private:
+	std::unordered_set<int> readyPlayers;
 	GameState gameState;
 	void addGenericGameObject(GameObject *player);
+
+	bool shouldGameStart();
+	void startGame();
+	void endGame();
 };
