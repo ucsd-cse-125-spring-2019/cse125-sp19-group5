@@ -25,14 +25,14 @@ GuiTeamMenu::GuiTeamMenu()
 	label->setFont("Arial");
 
 	label_t1 = Gui::create<GuiText>(this);
-	label_t1->setPosition(vec2(0.0f, 1.0f));
+	label_t1->setPosition(vec2(0.3f, 1.0f));
 	label_t1->setAlignment(TextAlign::CENTER);
 	label_t1->setSize(vec2(1.0f, 0.1f));
 	label_t1->setText("Team Red:");
 	label_t1->setFont("Arial");
 
 	team1 = Gui::create<GuiText>(this);
-	team1->setPosition(vec2(0.0f, 1.0f));
+	team1->setPosition(vec2(0.3f, 1.0f));
 	team1->setAlignment(TextAlign::CENTER);
 	team1->setSize(vec2(1.0f, 0.1f));
 	team1->setText("");

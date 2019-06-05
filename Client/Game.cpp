@@ -109,8 +109,6 @@ Game::Game() : gameObjects({ nullptr }) {
 	ParticleEmitters::init(&gameState);
 
 	Gui::create<GuiConnectMenu>();
-	GuiTeamMenu *teamMenu = Gui::create<GuiTeamMenu>();
-	teamMenu->setPlayerId(playerId);
 
 	// TODO (bhang): Integrate this with connecting.
 	// Gui::create<GuiConnectMenu>();
@@ -170,7 +168,9 @@ Game::Game() : gameObjects({ nullptr }) {
 	Network::on(NetMessage::CONNECTION_ID, [this] (Connection *c, NetBuffer &buffer) {
 		playerId = buffer.read<int>();
 		cout << "I am Player " << playerId << "." << endl;
-		Input::setMouseVisible(false);
+		Input::setMouseVisible(true);
+		GuiTeamMenu *teamMenu = Gui::create<GuiTeamMenu>();
+		teamMenu->setPlayerId(playerId);
 	});
 
 	Network::on(NetMessage::GAME_STATE_UPDATE, [&](Connection *c, NetBuffer &buffer) {
