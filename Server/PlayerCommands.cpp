@@ -50,6 +50,7 @@ void Player::doAction(PlayerCommands action) {
 
 			auto wall = gGameEngine->addGameObject<Wall>();
 			wall->setBoundingShape(new BoundingBox(wallPos, direction, size.x, size.y, size.z));
+			wall->setDestroyable(true);
 			wall->setPosition(wallPos);
 			wall->setModel("Models/unit_cube.obj");
 			wall->setMaterial("Materials/brick.json");
