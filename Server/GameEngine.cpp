@@ -6,6 +6,10 @@
 #include <Shared/Game/ParticleEmitter.h>
 #include <Shared/Util/CurTime.h>
 
+constexpr auto COUNTDOWN_TIME = 3;
+constexpr auto ROUND_SCORE_TIME = 3;
+constexpr auto SCORE_SHOW_TIME = 10;
+
 #define _DEBUG
 
 template<class T, class V>
@@ -35,7 +39,7 @@ void GameEngine::removeGameObjectById(int id) {
 void GameEngine::init() {
 	gameState.in_progress = false;
 	gameState.score = std::make_tuple(0, 0);
-	gameState.timeLeft = 1000 * 60 * 5; // 5 minutes in ms
+	gameState.timeLeft = 0;
 
 	for (int i = 1; i < 10; i++) {
 		TimerCallback cb = [i]() {
@@ -46,8 +50,11 @@ void GameEngine::init() {
 }
 
 bool GameEngine::shouldGameStart() {
+	if (roundState != RoundState::READY) {
+		return false;
+	}
 #ifdef _DEBUG
-	if (readyPlayers.size() != 2) {
+	if (gameState.players.size() != 2) {
 		return false;
 	}
 #else
@@ -58,14 +65,52 @@ bool GameEngine::shouldGameStart() {
 	return true;
 }
 
+void GameEngine::prepRound() {
+	roundState = RoundState::COUNTDOWN;
+	std::cout << "Round starting soon..." << std::endl;
+
+	// TODO: move players to spawn
+	// TODO: move ball(s) to spawn
+	// TODO: show countdown on screen
+
+	setTimer("startRound", COUNTDOWN_TIME, [&]() {
+		std::cout << "Round started!" << std::endl;
+		gameState.in_progress = true;
+		roundState = RoundState::ACTIVE;
+	});
+}
+
 void GameEngine::startGame() {
-	gameState.in_progress = true;
+	std::cout << "Starting a new game..." << std::endl;
+	prepRound();
 	gameState.score = std::make_tuple(0, 0);
 	gameState.timeLeft = 1000 * 6 * 5; // 5 minutes in ms
 }
 
 void GameEngine::endGame() {
+	std::cout << "Game over, showing scores..." << std::endl;
 	gameState.in_progress = false;
+	roundState = RoundState::SHOWING_SCORES;
+	// TODO: show scores
+
+	setTimer("scores", SCORE_SHOW_TIME, [&]() {
+		std::cout << "Game over, back to lobby" << std::endl;
+		// TODO: go back to lobby
+	});
+}
+
+void GameEngine::onGoalScored(int team) {
+	std::cout << std::get<0>(gameState.score) << " " << std::get<1>(gameState.score) << std::endl;
+
+	// TODO: show GUI stuff for winner
+	gameState.in_progress = false;
+	roundState = RoundState::TEAM_SCORED;
+
+	std::cout << "Team " << (team + 1) << " has scored!" << std::endl;
+
+	setTimer("roundScore", ROUND_SCORE_TIME, [&]() {
+		prepRound();
+	});
 }
 
 void GameEngine::onPlayerDisconnected(Connection *c) {
@@ -299,8 +344,13 @@ void GameEngine::updateScore() {
 		}
 	}
 
-	if (std::get<0>(gameState.score) != team1Score || std::get<1>(gameState.score) != team2Score) {
-		std::cout << team1Score << " " << team2Score << std::endl;
+	auto team1Scored = std::get<0>(gameState.score) != team1Score;
+	auto team2Scored = std::get<1>(gameState.score) != team2Score;
+	if (team1Scored) {
+		onGoalScored(0);
+	}
+	if (team2Scored) {
+		onGoalScored(1);
 	}
 
 	std::get<0>(gameState.score) = team1Score;

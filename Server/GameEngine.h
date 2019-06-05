@@ -19,9 +19,11 @@
 using TimerCallback = std::function<void()>;
 
 enum class RoundState {
+	READY,
 	COUNTDOWN,
 	ACTIVE,
-	END,
+	SHOWING_SCORES,
+	TEAM_SCORED,
 };
 
 struct Timer {
@@ -76,11 +78,15 @@ private:
 	std::unordered_map<string, Timer*> timers;
 	std::unordered_set<int> readyPlayers;
 	GameState gameState;
+	RoundState roundState = RoundState::READY;
+
 	void addGenericGameObject(GameObject *player);
 
 	bool shouldGameStart();
 	void startGame();
 	void endGame();
+	void onGoalScored(int team);
+	void prepRound();
 
 	void updateTimers();
 };
