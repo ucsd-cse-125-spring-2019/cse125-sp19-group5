@@ -1,3 +1,4 @@
+#include <GL/glew.h>
 #include "Game.h"
 #include "Game/Gui/GuiConnectMenu.h"
 #include "Game/Gui/GuiTeamMenu.h"

@@ -1,5 +1,5 @@
 #pragma once
-
+#include <GL/glew.h>
 #include "../Renderer/Gui/Gui.h"
 #include "../Renderer/Gui/GuiTextbox.h"
 #include "../Renderer/Gui/GuiButton.h"
@@ -16,7 +16,6 @@ private:
 
 	void handleSwitch();
 
-	Game *game;
 	GuiText *label;
 	GuiText *label_t1;
 	GuiText *team1;
@@ -29,7 +28,6 @@ private:
 
 public:
 	GuiTeamMenu();
-	void setGame(Game *game);
 	void setPlayerId(int id);
 	void updateTeamGui(Connection *c, NetBuffer &menuMsg);
 	void setReady(Connection *c, NetBuffer &readyMsg);

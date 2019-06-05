@@ -4,7 +4,7 @@ const std::string ERRKLANG_ERROR_MSG = "Error: irrKlang audio failed to initiali
 
 SoundEngine::SoundEngine() {
 	engine = irrklang::createIrrKlangDevice();
-	engine->setDefault3DSoundMinDistance(3.0f);
+	//engine->setDefault3DSoundMinDistance(3.0f);
 	if (!engine) {
 		std::cout << ERRKLANG_ERROR_MSG << std::endl;
 		didInitialize = false;

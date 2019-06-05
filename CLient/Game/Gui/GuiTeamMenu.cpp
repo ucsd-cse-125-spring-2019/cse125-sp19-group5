@@ -2,7 +2,6 @@
 
 GuiTeamMenu::GuiTeamMenu()
 {
-	using std::placeholders::_1;
 
 	setColor(vec4(0.2f, 0.2f, 0.2f, 1.0f));
 	setPosition(vec2(0.0f, 0.0f));
@@ -53,7 +52,7 @@ GuiTeamMenu::GuiTeamMenu()
 	team2->setText("");
 	team2->setFont("Arial");
 
-	auto onClick = std::bind(&MenuPrompt::handleSwitch, this, _1);
+	auto onClick = std::bind(&GuiTeamMenu::handleSwitch, this);
 
 	swtch = Gui::create<GuiButton>(this);
 	swtch->setBgColor(vec4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -63,13 +62,8 @@ GuiTeamMenu::GuiTeamMenu()
 	swtch->setText("switch");
 	swtch->addCallback(onClick);
 
-	Network::on(NetMessage::TEAM, boost::bind(updateTeamGui, this, _1, _2));
-	Network::on(NetMessage::READY, boost::bind(setReady, this, _1, _2));
-}
-
-void GuiTeamMenu::setGame(Game *game) {
-	this->game = game;
-	updateTeamGui();
+	Network::on(NetMessage::TEAM, boost::bind(&GuiTeamMenu::updateTeamGui, this, _1, _2));
+	Network::on(NetMessage::READY, boost::bind(&GuiTeamMenu::setReady, this, _1, _2));
 }
 
 void GuiTeamMenu::setPlayerId(int id) {
