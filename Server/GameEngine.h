@@ -10,15 +10,23 @@
 #include <Shared/GameState.h>
 #include <Shared/Networking/Connection.h>
 #include <unordered_set>
+#include <functional>
 
 #define NUM_PLAYERS 1
 #define MOVEMENT_MASK 0b11111
 #define COMMAND_MASK 0b11100000
 
+using TimerCallback = std::function<void()>;
+
 enum class RoundState {
 	COUNTDOWN,
 	ACTIVE,
 	END,
+};
+
+struct Timer {
+	float expire;
+	TimerCallback onExpire;
 };
 
 class GameEngine {
@@ -63,7 +71,9 @@ public:
 
 	void onPlayerReady(Connection *c, NetBuffer &buffer);
 
+	void setTimer(const string &id, float time, TimerCallback callback);
 private:
+	std::unordered_map<string, Timer*> timers;
 	std::unordered_set<int> readyPlayers;
 	GameState gameState;
 	void addGenericGameObject(GameObject *player);
@@ -71,4 +81,6 @@ private:
 	bool shouldGameStart();
 	void startGame();
 	void endGame();
+
+	void updateTimers();
 };

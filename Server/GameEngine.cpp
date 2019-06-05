@@ -4,6 +4,7 @@
 #include "Networking/Server.h"
 #include <Shared/CollisionDetection.h>
 #include <Shared/Game/ParticleEmitter.h>
+#include <Shared/Util/CurTime.h>
 
 #define _DEBUG
 
@@ -35,6 +36,13 @@ void GameEngine::init() {
 	gameState.in_progress = false;
 	gameState.score = std::make_tuple(0, 0);
 	gameState.timeLeft = 1000 * 60 * 5; // 5 minutes in ms
+
+	for (int i = 1; i < 10; i++) {
+		TimerCallback cb = [i]() {
+			std::cout << i << std::endl;
+		};
+		setTimer(std::to_string(i), i, cb);
+	}
 }
 
 bool GameEngine::shouldGameStart() {
@@ -65,6 +73,8 @@ void GameEngine::onPlayerDisconnected(Connection *c) {
 }
 
 void GameEngine::updateGameState(vector<PlayerInputs> & playerInputs) {
+	updateTimers();
+
 	if (!gameState.in_progress) {
 		if (shouldGameStart()) {
 			startGame();
@@ -363,4 +373,33 @@ void GameEngine::onPlayerReady(Connection *c, NetBuffer &buffer) {
 		readyPlayers.erase(it);
 	}
 
+}
+
+void GameEngine::setTimer(
+	const string &id,
+	float time,
+	TimerCallback callback
+) {
+	auto it = timers.find(id);
+	if (it != timers.end()) {
+		auto timer = it->second;
+		timer->expire = curTime() + time;
+		timer->onExpire = callback;
+		return;
+	}
+	timers[id] = new Timer{ curTime() + time, callback };
+}
+
+void GameEngine::updateTimers() {
+	auto it = timers.begin();
+	auto time = curTime();
+	while (it != timers.end()) {
+		auto timer = it->second;
+		if (timer->expire <= time) {
+			timer->onExpire();
+			it = timers.erase(it);
+		} else {
+			it++;
+		}
+	}
 }
