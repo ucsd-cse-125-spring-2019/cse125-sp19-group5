@@ -12,6 +12,7 @@
 #include <Shared/Game/ParticleEmitter.h>
 #include "MapLoader.h"
 #include "Game/Powerups/SpeedBoost.h"
+#include <unordered_map>
 
 constexpr auto TICKS_PER_SECOND = 60; // How many updates per second.
 
@@ -27,6 +28,10 @@ int main(int argc, char **argv) {
   
 	MapLoader mapLoader(&gameEngine);
 	mapLoader.loadMap("Maps/basic_map.json");
+
+	unordered_map<int, int> player_team;
+	int teamR = 0;
+	int teamB = 0;
 
 	/*auto goal1 = gameEngine.addGameObject<Goal>();
 	goal1->setBoundingShape(new BoundingBox(vec3(0, 0, 100), vec3(1, 0, 0), 200, 20, 10));
@@ -64,6 +69,19 @@ int main(int argc, char **argv) {
 		playerInputs.push_back(input);
 	};
 
+	auto handleTeamSelection = [&](Connection*c, NetBuffer &buffer) {
+		
+		if (player_team.at(c->getId()) == 0) teamR -= 1;
+		else teamB -= 1;
+
+		player_team[c->getId()] = buffer.read<int>();
+
+		if (player_team.at(c->getId()) == 0) teamR += 1;
+		else teamB += 1;
+
+		gameEngine.updateTeamReady(player_team, teamR, teamB);
+	};
+
 	Network::onClientConnected([&](Connection *c) {
 		std::cout << "Player " << c->getId() << " has connected." << std::endl;
 
@@ -78,6 +96,13 @@ int main(int argc, char **argv) {
 		NetBuffer buffer(NetMessage::CONNECTION_ID);
 		buffer.write<int>(c->getId());
 		c->send(buffer);
+		player_team[c->getId()] = (player_team.size() + 1) % 2;
+		if (player_team.at(c->getId()) == 0) teamR += 1;
+		else teamB += 1;
+
+		gameEngine.updateTeamReady(player_team, teamR, teamB);
+
+		c->on(NetMessage::TEAM, handleTeamSelection);
 
 		for (auto gameObject : gameEngine.getGameObjects()) {
 			if (!gameObject) { continue; }

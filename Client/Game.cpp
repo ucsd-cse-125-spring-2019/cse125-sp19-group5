@@ -1,4 +1,6 @@
 #include "Game.h"
+#include "Game/Gui/GuiConnectMenu.h"
+#include "Game/Gui/GuiTeamMenu.h"
 #include <Shared/Common.h>
 #include <Shared/CommonStructs.h>
 #include <Shared/ConfigSettings.h>
@@ -13,7 +15,6 @@
 #include "Renderer/ParticleSystem.h"
 #include "Assets.h"
 #include "Game/ParticleEmitters.h"
-#include "Game/Gui/GuiConnectMenu.h"
 
 void Game::onGameObjectCreated(Connection *c, NetBuffer &buffer) {
 	auto gameObjectType = buffer.read<GAMEOBJECT_TYPES>();
@@ -107,6 +108,8 @@ Game::Game() : gameObjects({ nullptr }) {
 	ParticleEmitters::init(&gameState);
 
 	Gui::create<GuiConnectMenu>();
+	GuiTeamMenu *teamMenu = Gui::create<GuiTeamMenu>();
+	teamMenu->setPlayerId(playerId);
 
 	// TODO (bhang): Integrate this with connecting.
 	// Gui::create<GuiConnectMenu>();

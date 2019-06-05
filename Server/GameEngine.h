@@ -9,6 +9,7 @@
 #include <Shared/Goal.h>
 #include <Shared/GameState.h>
 #include <Shared/Networking/Connection.h>
+#include <unordered_map>
 
 #define NUM_PLAYERS 1
 #define MOVEMENT_MASK 0b11111
@@ -21,6 +22,7 @@ public:
 	void onPlayerDisconnected(Connection *c);
 
 	void updateGameState(vector<PlayerInputs> & playerInputs);
+	void updateTeamReady(unordered_map<int, int> p_t, int teamR, int teamB);
 	void synchronizeGameState();
 	GameState & getGameState();
 	

@@ -57,6 +57,30 @@ void GameEngine::updateGameState(vector<PlayerInputs> & playerInputs) {
 	// send getNetworkGameState() to client
 }
 
+void GameEngine::updateTeamReady(unordered_map<int, int> p_t, int teamR, int teamB) {
+
+	tuple<int, int> temp;
+	bool t_ready;
+	NetBuffer ready(NetMessage::READY);
+	NetBuffer team(NetMessage::TEAM);
+	team.write<int>(p_t.size());
+	for (auto it = p_t.begin(); it != p_t.end(); it++) {
+		team.write<tuple<int, int>>(std::make_tuple(it->first, it->second));
+	}
+
+	Network::broadcast(team);
+
+	if (teamR == 2 && teamB == 2) {
+		t_ready = true;
+	}
+	else {
+		t_ready = false;
+	}
+
+	ready.write<bool>(t_ready);
+	Network::broadcast(ready);
+}
+
 void GameEngine::synchronizeGameState() {
 	Network::broadcast(NetMessage::GAME_STATE_UPDATE, gameState);
 }
