@@ -36,7 +36,7 @@ void Ball::updateOnServerTick() {
 	}
 
 	if (!this->isGrounded) {
-		setVelocity(PhysicsEngine::applyGravity(getVelocity(), PhysicsEngine::getGravity()));
+		setVelocity(PhysicsEngine::applyGravity(getVelocity(), PhysicsEngine::getGravity() * 5.0f));
 	}
 
 	if (ticksSinceGrounded > GROUNDED_TICKS_THRESHOLD) {
@@ -91,7 +91,7 @@ void Ball::onCollision(Ball * ball) {
 
 void Ball::onCollision(Bullet * bullet) {
 	// std::cout << bullet->to_string() << std::endl;
-	setVelocity(getVelocity() + bullet->getVelocity() * 0.01f);
+	setVelocity(getVelocity() + bullet->getVelocity() * 0.1f);
 }
 
 void Ball::onCollision(Goal * goal) {
@@ -142,7 +142,7 @@ void Ball::onCollision(Wall * wall) {
 		}
 		vec3 planeNormal = glm::normalize(p->getNormal());
 		float angleBetween = glm::angle(glm::normalize(getVelocity()), planeNormal);
-		if (angleBetween > glm::half_pi<float>() && angleBetween < (3.0f * glm::half_pi<float>())) {
+		if (angleBetween > glm::half_pi<float>()) {
 			collisionPlanes.push_back(p);
 		}
 	}
@@ -162,7 +162,7 @@ void Ball::onCollision(Wall * wall) {
 
 	// move sphere so it no longer intersects with plane
 	if (closestPlane) {
-		float planeDistance = abs(closestPlane->pointDistance(getPosition()) - (1.01f * getBoundingSphere()->getRadius()));
+		float planeDistance = abs(closestPlane->pointDistance(getPosition()) - (getBoundingSphere()->getRadius()));
 		move(glm::normalize(closestPlane->getNormal()) * planeDistance);
 		setVelocity(glm::reflect(getVelocity(), glm::normalize(closestPlane->getNormal())));
 	}

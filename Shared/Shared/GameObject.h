@@ -82,6 +82,8 @@ public:
 	void playSound(const string &sound, float volume = 1.0f, bool loop = false);
 	void stopSound(const string &sound);
 
+	virtual void onCreated();
+
 protected:
 	quat orientation = quat();
 	vec3 position;

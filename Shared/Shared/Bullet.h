@@ -15,6 +15,7 @@ public:
 	// collision interactions below
 	void onCollision(GameObject * gameObject);
 	void onCollision(Ball * ball);
+	void onCollision(Player * player);
 	void onCollision(Wall * wall);
 
 private:
