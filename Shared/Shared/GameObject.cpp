@@ -114,6 +114,9 @@ void GameObject::onCollision(Player * player) {
 void GameObject::onCollision(PowerUpItem * item) {
 }
 
+void GameObject::onCollision(StunBullet * stunBullet) {
+}
+
 void GameObject::onCollision(Wall * wall) { 
 	// std::cout << "not implemented" << std::endl; 
 }

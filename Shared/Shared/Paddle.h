@@ -1,9 +1,6 @@
 #pragma once
 #include <set>
 #include "SphereGameObject.h"
-#include "Ball.h"
-#include "Player.h"
-#include "Wall.h"
 
 class Paddle : public SphereGameObject {
 public:

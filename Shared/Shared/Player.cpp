@@ -1,6 +1,13 @@
 #include "CollisionDetection.h"
 #include "Player.h"
 #include "BoundingSphere.h"
+#include "Ball.h"
+#include "Bullet.h"
+#include "Goal.h"
+#include "Paddle.h"
+#include "PowerUpItem.h"
+#include "StunBullet.h"
+#include "Wall.h"
 #include <iostream>
 #include <glm/gtx/euler_angles.hpp>
 #include <glm/gtx/vector_angle.hpp>
@@ -38,30 +45,6 @@ bool Player::hasPowerup(const POWERUP_TYPES &type) const {
 	return powerups.find(type) != powerups.end();
 }
 
-void Player::setMoveSpeed(float newMoveSpeed) {
-	moveSpeed = newMoveSpeed;
-}
-
-float Player::getMoveSpeed() const {
-	return moveSpeed;
-}
-
-void Player::setStrength(float newStrength) {
-	strength = newStrength;
-}
-
-float Player::getStrength() const {
-	return strength;
-}
-
-void Player::setNumBullets(int numBullets) {
-	this->numBullets = numBullets;
-}
-
-int Player::getNumBullets() const {
-	return numBullets;
-}
-
 void Player::updateOnServerTick() {
 	for (auto & cd : this->cooldowns) {
 		if (std::get<0>(cd.second) > 0) {
@@ -90,6 +73,13 @@ void Player::updateOnServerTick() {
 		} else {
 			it++;
 		}
+	}
+
+	if (stunDir == 0 && !hasPowerup(POWERUP_SPEEDBOOST)) {
+		setMoveSpeed(PhysicsEngine::getPlayerDefaultMoveSpeed());
+	}
+	else {
+		stunDir--;
 	}
 }
 
@@ -165,7 +155,7 @@ vec3 Player::getMoveDestination(vec3 movement) {
 	vec3 newVelocity = getVelocity();
 	if (isGrounded) {
 		newVelocity.y = PhysicsEngine::applyGravity(vec3(0.0f), PhysicsEngine::getGravity()).y; // Reset gravity
-		if (wishJump) {
+		if (wishJump && stunDir == 0) {
 			newVelocity = PhysicsEngine::movePlayerOnGround(accelDir, newVelocity, moveSpeed);
 			newVelocity = PhysicsEngine::jumpPlayer(newVelocity);
 			isGrounded = false;
@@ -272,6 +262,11 @@ void Player::onCollision(Paddle * paddle) { }
 
 void Player::onCollision(Player * player) { }
 
+void Player::onCollision(StunBullet * stunBullet) {
+	this->stunDir = -1;
+	setMoveSpeed(0);
+}
+
 void Player::onCollision(Wall * wall) { 	
 	for (Plane * p : CollisionDetection::getIntersectingPlanes(getBoundingSphere(), wall->getBoundingBox())) {
 		if (p == wall->getBoundingBox()->bottom) {
@@ -298,4 +293,35 @@ void Player::onCollision(Wall * wall) {
 			}
 		}
 	}
+}
+
+void Player::setMoveSpeed(float newMoveSpeed) {
+	moveSpeed = newMoveSpeed;
+}
+
+float Player::getMoveSpeed() const {
+	return moveSpeed;
+}
+
+void Player::setStrength(float newStrength) {
+	strength = newStrength;
+}
+
+float Player::getStrength() const {
+	return strength;
+}
+
+void Player::setNumBullets(int numBullets) {
+	this->numBullets = numBullets;
+}
+
+int Player::getNumBullets() const {
+	return numBullets;
+}
+
+void Player::setBulletType(BULLET_TYPES bulletType) {
+	this->bulletType = bulletType;
+}
+BULLET_TYPES Player::getBulletType() const {
+	return this->bulletType;
 }

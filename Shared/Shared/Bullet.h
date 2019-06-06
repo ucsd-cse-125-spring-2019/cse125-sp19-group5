@@ -1,7 +1,5 @@
 #pragma once
 #include "SphereGameObject.h"
-#include "Ball.h"
-#include "Wall.h"
 
 class Bullet : public SphereGameObject {
 public:

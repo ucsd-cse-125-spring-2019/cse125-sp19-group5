@@ -5,6 +5,11 @@
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/vector_angle.hpp>
 #include <glm/gtx/projection.hpp>
+#include "Bullet.h"
+#include "Goal.h"
+#include "Paddle.h"
+#include "Wall.h"
+#include "PhysicsEngine.h"
 
 
 GAMEOBJECT_TYPES Ball::getGameObjectType() const {

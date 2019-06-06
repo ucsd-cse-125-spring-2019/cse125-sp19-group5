@@ -1,4 +1,6 @@
+#include <Shared/Paddle.h>
 #include <Shared/Player.h>
+#include <Shared/StunBullet.h>
 #include "GameEngine.h"
 #include <glm/gtx/euler_angles.hpp>
 #include <glm/gtx/vector_angle.hpp>
@@ -35,7 +37,17 @@ void Player::doAction(PlayerCommands action) {
 				vec3 bulletStart = getPosition() + (bulletDir * ((1.5f * getBoundingSphere()->getRadius()) + bulletRadius));
 				vec3 bulletVelocity = glm::normalize(bulletDir) * 5.0f;
 
-				auto b = gGameEngine->addGameObject<Bullet>();
+				Bullet * b = nullptr;
+				switch (getBulletType()) {
+					case BULLET_STUN: {
+						b = gGameEngine->addGameObject<StunBullet>();
+						break;
+					}
+					default: {
+						b = gGameEngine->addGameObject<Bullet>();
+						break;
+					}
+				}
 				b->setBoundingShape(new BoundingSphere(vec3(0.0f), bulletRadius));
 				b->setModel("Models/unit_sphere.obj");
 				b->setMaterial("Materials/brick.json");

@@ -1,10 +1,5 @@
 #pragma once
 #include "BoxGameObject.h"
-#include "Ball.h"
-#include "Bullet.h"
-#include "Paddle.h"
-#include "Player.h"
-
 
 class Wall : public BoxGameObject {
 public:

@@ -1,5 +1,6 @@
 #include "Bullet.h"
 #include "CollisionDetection.h"
+#include "Wall.h"
 
 Bullet::Bullet(vec3 position, vec3 velocity, float radius) : SphereGameObject(position, velocity, 0) {
 	setBoundingShape(new BoundingSphere(position, radius));

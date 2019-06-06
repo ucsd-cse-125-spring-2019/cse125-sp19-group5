@@ -1,14 +1,13 @@
 #pragma once
 #include <map>
 #include "SphereGameObject.h"
-#include "BoundingSphere.h"
-#include "Ball.h"
-#include "Bullet.h"
-#include "Paddle.h"
-#include "PowerUpItem.h"
-#include "Wall.h"
 #include "CommonStructs.h"
 #include "PhysicsEngine.h"
+
+enum BULLET_TYPES {
+	BULLET_DEFAULT,
+	BULLET_STUN
+};
 
 class Powerup;
 #include "Game/Powerup.h"
@@ -47,6 +46,7 @@ public:
 	void onCollision(Paddle * paddle);
 	void onCollision(Player * player);
 	void onCollision(PowerUpItem * item);
+	void onCollision(StunBullet * stunBullet);
 	void onCollision(Wall * wall);
 
 	// Powerups
@@ -77,6 +77,9 @@ public:
 	void setNumBullets(int numBullets);
 	int getNumBullets() const;
 
+	void setBulletType(BULLET_TYPES bulletType);
+	BULLET_TYPES getBulletType() const;
+
 private:
 	vec3 direction;
 	int actionCharge;
@@ -99,4 +102,6 @@ private:
 	float moveSpeed = PhysicsEngine::getPlayerDefaultMoveSpeed();
 	float strength = 1.0f;
 	int numBullets = 1;
+	BULLET_TYPES bulletType = BULLET_DEFAULT;
+	int stunDir = 0;
 };

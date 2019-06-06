@@ -121,6 +121,7 @@
     <ClCompile Include="Game\Powerups\BulletSpray.cpp" />
     <ClCompile Include="Game\Powerups\PowerBoost.cpp" />
     <ClCompile Include="Game\Powerups\SpeedBoost.cpp" />
+    <ClCompile Include="Game\Powerups\StunGun.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MapLoader.cpp" />
     <ClCompile Include="Networking\Server.cpp" />
@@ -131,6 +132,7 @@
     <ClInclude Include="GameEngine.h" />
     <ClInclude Include="Game\Powerups\BulletSpray.h" />
     <ClInclude Include="Game\Powerups\PowerBoost.h" />
+    <ClInclude Include="Game\Powerups\StunGun.h" />
     <ClInclude Include="MapLoader.h" />
     <ClInclude Include="Game\Powerups\SpeedBoost.h" />
     <ClInclude Include="Networking\Server.h" />

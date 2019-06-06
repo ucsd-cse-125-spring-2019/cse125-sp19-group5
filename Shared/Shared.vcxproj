@@ -140,6 +140,7 @@
     <ClInclude Include="Shared\Player.h" />
     <ClInclude Include="Shared\PowerUpItem.h" />
     <ClInclude Include="Shared\SphereGameObject.h" />
+    <ClInclude Include="Shared\StunBullet.h" />
     <ClInclude Include="Shared\Util\CurTime.h" />
     <ClInclude Include="Shared\Util\json11.hpp" />
     <ClInclude Include="Shared\Wall.h" />
@@ -164,6 +165,7 @@
     <ClCompile Include="Shared\Player.cpp" />
     <ClCompile Include="Shared\PowerUpItem.cpp" />
     <ClCompile Include="Shared\SphereGameObject.cpp" />
+    <ClCompile Include="Shared\StunBullet.cpp" />
     <ClCompile Include="Shared\Util\json11.cpp" />
     <ClCompile Include="Shared\Wall.cpp" />
   </ItemGroup>

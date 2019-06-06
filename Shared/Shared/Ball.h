@@ -1,11 +1,6 @@
 #pragma once
 #include <set>
 #include "SphereGameObject.h"
-#include "Bullet.h"
-#include "Goal.h"
-#include "Paddle.h"
-#include "Player.h"
-#include "Wall.h"
 
 #define GROUNDED_TICKS_THRESHOLD 10
 
