@@ -46,6 +46,14 @@ float Player::getMoveSpeed() const {
 	return moveSpeed;
 }
 
+void Player::setStrength(float newStrength) {
+	strength = newStrength;
+}
+
+float Player::getStrength() const {
+	return strength;
+}
+
 void Player::updateOnServerTick() {
 	for (auto & cd : this->cooldowns) {
 		if (std::get<0>(cd.second) > 0) {

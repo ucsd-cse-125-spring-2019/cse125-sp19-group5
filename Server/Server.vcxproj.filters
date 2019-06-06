@@ -60,6 +60,9 @@
     <ClCompile Include="PlayerPowerups.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Powerups\PowerBoost.cpp">
+      <Filter>Source Files\Game\Powerups</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -76,6 +79,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Game\Powerups\SpeedBoost.h">
+      <Filter>Header Files\Game\Powerups</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Powerups\PowerBoost.h">
       <Filter>Header Files\Game\Powerups</Filter>
     </ClInclude>
   </ItemGroup>

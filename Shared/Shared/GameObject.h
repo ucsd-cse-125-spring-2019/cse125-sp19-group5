@@ -26,7 +26,8 @@ enum GAMEOBJECT_TYPES {
 };
 
 enum POWERUP_TYPES {
-	POWERUP_SPEEDBOOST
+	POWERUP_SPEEDBOOST,
+	POWERUP_POWERBOOST
 };
 
 class GameObject : public Serializable {

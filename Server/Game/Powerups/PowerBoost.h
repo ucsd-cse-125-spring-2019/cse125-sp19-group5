@@ -1,7 +1,7 @@
 #pragma once
 #include <Shared/Game/Powerup.h>
 
-class SpeedBoost : public Powerup {
+class PowerBoost : public Powerup {
 public:
 	using Powerup::Powerup;
 	static const POWERUP_TYPES TYPE;

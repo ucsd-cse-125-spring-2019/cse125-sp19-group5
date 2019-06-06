@@ -29,6 +29,7 @@ int main(int argc, char **argv) {
 	mapLoader.loadMap("Maps/map_with_goals.json");
 
 	auto speedboost = gameEngine.addGameObject<PowerUpItem>();
+	speedboost->setPowerUpType(POWERUP_POWERBOOST);
 	speedboost->setBoundingShape(new BoundingSphere(vec3(0, 3, 0), 3.0f));
 	speedboost->setPosition(vec3(10, 3, 10));
 	speedboost->setScale(vec3(3));

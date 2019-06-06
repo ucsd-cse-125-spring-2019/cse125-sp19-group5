@@ -17,7 +17,7 @@ void Player::doAction(PlayerCommands action) {
 			auto p = gGameEngine->addGameObject<Paddle>();
 			p->setBoundingShape(new BoundingSphere(paddlePosition, 5.0f));
 			p->setPosition(paddlePosition);
-			p->setVelocity(paddleVelocity * 0.2f);
+			p->setVelocity(paddleVelocity * 0.2f * strength);
 			p->setLifespan(paddleLifespan);
 
 			break;

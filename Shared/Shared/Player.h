@@ -71,6 +71,9 @@ public:
 	void setMoveSpeed(float newMoveSpeed);
 	float getMoveSpeed() const;
 
+	void setStrength(float newStrength);
+	float getStrength() const;
+
 private:
 	vec3 direction;
 	int actionCharge;
@@ -82,7 +85,6 @@ private:
 	// get<0> = current cooldown, get<1> = total cooldown
 	std::map<PlayerCommands, tuple<int, int>> cooldowns;
 
-	float moveSpeed = PhysicsEngine::getPlayerDefaultMoveSpeed();
 	bool isGrounded = false;
 	bool isJumpKeyDown = false; // For bhop
 	bool isJumpKey = false;
@@ -90,5 +92,7 @@ private:
 	float maxBoxHeight = 0.0f;
 	int numLandings = 0;
 	vec3 collisionVelocityComponent = vec3(0);
-	vec3 prevPosition;
+
+	float moveSpeed = PhysicsEngine::getPlayerDefaultMoveSpeed();
+	float strength = 1.0f;
 };
