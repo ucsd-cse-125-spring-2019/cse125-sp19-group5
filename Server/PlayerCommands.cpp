@@ -35,7 +35,7 @@ void Player::doAction(PlayerCommands action) {
 				vec3 bulletDir = glm::normalize(vec3(getDirection().x, 0, getDirection().z));
 				bulletDir = glm::rotateY(bulletDir, glm::radians(angle));
 				vec3 bulletStart = getPosition() + (bulletDir * ((1.5f * getBoundingSphere()->getRadius()) + bulletRadius));
-				vec3 bulletVelocity = glm::normalize(bulletDir) * 5.0f;
+				vec3 bulletVelocity = glm::normalize(bulletDir) * 3.0f;
 
 				Bullet * b = nullptr;
 				switch (getBulletType()) {
@@ -59,8 +59,10 @@ void Player::doAction(PlayerCommands action) {
 			break;
 		}
 		case WALL: {
+			if (std::get<0>(getCooldown(WALL)) > 0) { break; }
+			useCooldown(WALL);
 			auto wallPos = getPosition() + getDirection() * 5.0f;
-			wallPos.y = 0;
+			wallPos.y = -(getPosition().y + 3.0f);
 			vec3 size(10.0f, getPosition().y + 3.0f, 2.0f);
 
 			vec3 direction = getDirection();

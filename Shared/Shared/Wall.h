@@ -5,6 +5,7 @@ class Wall : public BoxGameObject {
 public:
 	using BoxGameObject::BoxGameObject;
 	GAMEOBJECT_TYPES getGameObjectType() const;
+	void updateOnServerTick();
 	bool deleteOnServerTick();
 	void setDestroyable(bool destroyable);
 	void setHealth(int health);
