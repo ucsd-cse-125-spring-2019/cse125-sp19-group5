@@ -130,6 +130,9 @@ Game::Game() : gameObjects({ nullptr }) {
 	ParticleEmitters::init(&gameState);
 
 	Gui::create<GuiConnectMenu>();
+	gSound->setMasterVolume(1.0f);
+	ConnectMenuBackground = gSound->loadFlatSound("Sounds/ConnectMenuMusic.wav", 0.1f);
+	ConnectMenuBackground->play(true);
 
 	hud = Gui::create<GuiHUD>();
 	
@@ -153,9 +156,8 @@ Game::Game() : gameObjects({ nullptr }) {
 	);
 	fpsText = gTextRenderer->addText(TextRenderer::DEFAULT_FONT_NAME, "fps", 0.02f, 0.02f, 0.4f, glm::vec3(1.0f, 1.0f, 0.0f));
 
-	gSound->setMasterVolume(1.0f);
-	soundtrack = gSound->loadFlatSound("Sounds/minecraft_wet_hands.wav", 0.1f);
-	soundtrack->play(true);
+	//soundtrack = gSound->loadFlatSound("Sounds/minecraft_wet_hands.wav", 0.1f);
+	//soundtrack->play(false);
 
 	// Handle game object creation and deletion.
 	Network::on(
@@ -187,6 +189,9 @@ Game::Game() : gameObjects({ nullptr }) {
 	});
 
 	Network::on(NetMessage::NAME, [this](Connection*c, NetBuffer &buffer) {
+		MainMenuBackground = gSound->loadFlatSound("Sounds/MainMenuMusic.wav", 0.1f);
+		ConnectMenuBackground->stop();
+		MainMenuBackground->play(true);
 		tuple<int, std::string> id_n = buffer.read<tuple<int, std::string>>();
 		id_name[std::get<0>(id_n)] = std::get<1>(id_n);
 		if (std::get<0>(id_n) == playerId) {
