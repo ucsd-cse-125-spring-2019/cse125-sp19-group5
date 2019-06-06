@@ -7,11 +7,12 @@ class RandomSound
 {
 public:
 	RandomSound();
-	RandomSound(vector<Sound> sounds);
+	RandomSound(vector<Sound *> sounds);
 
-	void addSound(Sound sound);
+	void addSound(Sound * sound);
 	void playSound();
 
 private:
-	vector<Sound> sounds;
+	vector<Sound *> sounds;
+	Sound * lastPlayed = nullptr;
 };

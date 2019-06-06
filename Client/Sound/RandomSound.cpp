@@ -1,20 +1,23 @@
 #include "RandomSound.h"
 
 RandomSound::RandomSound() {
-	std::srand(time(nullptr));
+	std::srand((unsigned int) time(nullptr));
 }
 
-RandomSound::RandomSound(vector<Sound> sounds)
+RandomSound::RandomSound(vector<Sound *> sounds)
 	: sounds(sounds) {
-	std::srand(time(nullptr));
+	std::srand((unsigned int) time(nullptr));
 };
 
-void RandomSound::addSound(Sound sound) {
+void RandomSound::addSound(Sound * sound) {
 	sounds.push_back(sound);
 }
 
 void RandomSound::playSound() {
-	int numSounds = sounds.size();
+	if (lastPlayed && !lastPlayed->isFinished()) return;
+
+	size_t numSounds = sounds.size();
 	int randIndex = std::rand() % numSounds;
-	sounds[randIndex].play(false);
+	sounds[randIndex]->play(false);
+	lastPlayed = sounds[randIndex];
 }
