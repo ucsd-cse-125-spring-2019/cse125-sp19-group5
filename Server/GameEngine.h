@@ -74,11 +74,20 @@ public:
 	void onPlayerReady(Connection *c, NetBuffer &buffer);
 
 	void setTimer(const string &id, float time, TimerCallback callback);
+
+	std::vector<std::pair<int, vec3>> spawns;
+	void spawnPlayers();
+
+	void spawnBalls();
+
+	void setGameText(const string &newText);
+	void syncGameText(Connection *c);
 private:
 	std::unordered_map<string, Timer*> timers;
 	std::unordered_set<int> readyPlayers;
 	GameState gameState;
 	RoundState roundState = RoundState::READY;
+	string curGameText = "";
 
 	void addGenericGameObject(GameObject *player);
 

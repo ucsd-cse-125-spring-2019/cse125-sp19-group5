@@ -15,4 +15,5 @@ enum NetMessage {
 	PARTICLES_DELETE,
 	SOUND,
 	READY_TOGGLE,
+	GAME_TEXT,
 };

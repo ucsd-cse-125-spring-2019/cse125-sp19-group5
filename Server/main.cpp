@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
 	vector<PlayerInputs> playerInputs;
   
 	MapLoader mapLoader(&gameEngine);
-	mapLoader.loadMap("Maps/basic_map.json");
+	mapLoader.loadMap("Maps/map_with_goals.json");
 
 	/*auto goal1 = gameEngine.addGameObject<Goal>();
 	goal1->setBoundingShape(new BoundingBox(vec3(0, 0, 100), vec3(1, 0, 0), 200, 20, 10));
@@ -125,6 +125,8 @@ int main(int argc, char **argv) {
 		ps->setCreationSpeed(500);
 		ps->setInitialVel(vec3(0, 10, 0));
 		ps->setTexture("Textures/gary.png");
+
+		gameEngine.syncGameText(c);
 
 		// Receive player keyboard and mouse(TODO) input
 		c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);

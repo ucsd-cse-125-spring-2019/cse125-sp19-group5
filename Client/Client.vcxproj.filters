@@ -171,6 +171,9 @@
     <ClCompile Include="Game\Gui\GuiHUD.cpp">
       <Filter>Source Files\Game\Gui</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Gui\GuiGameText.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -307,6 +310,9 @@
     </ClInclude>
     <ClInclude Include="Game\Gui\GuiHUD.h">
       <Filter>Header Files\Game\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Gui\GuiGameText.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

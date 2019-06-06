@@ -20,6 +20,19 @@ void inline safeRemoveFromVec(std::vector<T> &v, V &val) {
 	}
 }
 
+void GameEngine::setGameText(const std::string &newText) {
+	NetBuffer buffer(NetMessage::GAME_TEXT);
+	buffer.write(newText);
+	Network::broadcast(buffer);
+	curGameText = newText;
+}
+
+void GameEngine::syncGameText(Connection *c) {
+	NetBuffer buffer(NetMessage::GAME_TEXT);
+	buffer.write(curGameText);
+	c->send(buffer);
+}
+
 void GameEngine::removeGameObjectById(int id) {
 	auto gameObject = gameState.gameObjects[id];
 	if (gameObject) {
@@ -69,12 +82,20 @@ void GameEngine::prepRound() {
 	roundState = RoundState::COUNTDOWN;
 	std::cout << "Round starting soon..." << std::endl;
 
-	// TODO: move players to spawn
+	spawnPlayers();
 	// TODO: move ball(s) to spawn
 	// TODO: show countdown on screen
 
+	for (int i = 0; i < COUNTDOWN_TIME; i++) {
+		auto text = "Starting in " + std::to_string(COUNTDOWN_TIME - i) + "...";
+		setTimer("cd" + i, i, [this, text]() {
+			setGameText(text);
+		});
+	}
+
 	setTimer("startRound", COUNTDOWN_TIME, [&]() {
 		std::cout << "Round started!" << std::endl;
+		setGameText("");
 		gameState.in_progress = true;
 		roundState = RoundState::ACTIVE;
 	});
@@ -106,10 +127,13 @@ void GameEngine::onGoalScored(int team) {
 	gameState.in_progress = false;
 	roundState = RoundState::TEAM_SCORED;
 
-	std::cout << "Team " << (team + 1) << " has scored!" << std::endl;
-
+	auto text = "Team " + std::to_string(team + 1) + " has scored!";
+	std::cout << text << std::endl;
+	setGameText(text);
+	
 	setTimer("roundScore", ROUND_SCORE_TIME, [&]() {
 		prepRound();
+		setGameText("");
 	});
 }
 
@@ -440,9 +464,26 @@ void GameEngine::setTimer(
 	timers[id] = new Timer{ curTime() + time, callback };
 }
 
+void GameEngine::spawnPlayers() {
+	auto playerIt = gameState.players.begin();
+	for (auto &spawnInfo : spawns) {
+		auto team = spawnInfo.first;
+		auto position = spawnInfo.second;
+		// TODO: team checks
+		if (playerIt != gameState.players.end()) {
+			(*playerIt)->setPosition(position);
+			playerIt++;
+		}
+	}
+}
+
+void GameEngine::spawnBalls() {
+}
+
 void GameEngine::updateTimers() {
 	auto it = timers.begin();
 	auto time = curTime();
+	std::cout << "Updating timers" << std::endl;
 	while (it != timers.end()) {
 		auto timer = it->second;
 		if (timer->expire <= time) {

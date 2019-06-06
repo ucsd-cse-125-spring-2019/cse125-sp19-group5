@@ -15,6 +15,7 @@ public:
 	vec3 toVec3(json11::Json json, string key);
 	tuple<float, float> toTuple(json11::Json json, string key);
 
+	void loadSpawns(const json11::Json &json);
 private:
 	GameEngine * gameEngine;
 };
