@@ -84,8 +84,6 @@ int main(int argc, char **argv) {
 		id_name.write(name);
 		Network::broadcast(id_name);
 
-		
-
 		player_team[c->getId()] = (player_team.size() + 1) % 2;
 		if (player_team.at(c->getId()) == 0) teamR += 1;
 		else teamB += 1;

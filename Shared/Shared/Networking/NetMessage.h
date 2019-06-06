@@ -19,4 +19,5 @@ enum NetMessage {
 	SOUND,
 	READY_TOGGLE,
 	GAME_TEXT,
+	START
 };

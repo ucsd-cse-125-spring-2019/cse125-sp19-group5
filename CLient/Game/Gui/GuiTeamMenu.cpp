@@ -70,6 +70,7 @@ GuiTeamMenu::GuiTeamMenu()
 
 	Network::on(NetMessage::TEAM, boost::bind(&GuiTeamMenu::updateTeamGui, this, _1, _2));
 	Network::on(NetMessage::READY, boost::bind(&GuiTeamMenu::setReady, this, _1, _2));
+	Network::on(NetMessage::START, boost::bind(&GuiTeamMenu::startGame, this, _1, _2));
 }
 
 void GuiTeamMenu::setPlayerId(int id) {
@@ -142,10 +143,17 @@ void GuiTeamMenu::setReady(Connection *c, NetBuffer &readyMsg) {
 	bool ready = readyMsg.read<bool>();
 	if (ready) {
 		message->setText("Game is ready!");
-		remove();
+		Input::setMouseVisible(false);
 	}
 	else {
 		message->setText("The game needs 2 players on each team!");
+	}
+}
+
+void GuiTeamMenu::startGame(Connection *c, NetBuffer &startMsg) {
+	bool start = startMsg.read<bool>();
+	if (start) {
+		remove();
 	}
 }
 
