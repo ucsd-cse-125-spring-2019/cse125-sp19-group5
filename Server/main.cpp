@@ -102,15 +102,15 @@ int main(int argc, char **argv) {
 		}
 
 		auto player = new Player(vec3(0, 2, 0), origin, origin, c->getId(), 2, 0);
-		player->setCooldown(SWING, std::make_tuple(0, 60));
-		player->setCooldown(SHOOT, std::make_tuple(0, 60));
+		player->setCooldown(SWING, std::make_tuple(0, 20));
+		player->setCooldown(SHOOT, std::make_tuple(0, 20));
 		gameEngine.addGameObject(player);
 
-		player->setModel("Models/Bear.fbx");
+		player->setModel("Models/unit_sphere.obj");
 		player->setAnimation(0);
 		player->setDirection(vec3(0, 0, -1));
 		player->setMaterial("Materials/brick.json");
-		player->setScale(vec3(0.2));
+		player->setScale(vec3(2));
 
 		auto ps = new ParticleEmitter();
 		ps->setGravity(-15.0f);

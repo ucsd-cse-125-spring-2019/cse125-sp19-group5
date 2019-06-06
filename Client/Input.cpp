@@ -39,6 +39,7 @@ void Input::init(GLFWwindow *window) {
 	glfwSetKeyCallback(window, keyCallback);
 	glfwSetMouseButtonCallback(window, mouseButtonCallback);
 	glfwSetWindowFocusCallback(window, windowFocusCallback);
+
 }
 
 void Input::setMouseVisible(bool isVisible) {
@@ -98,6 +99,10 @@ bool Input::wasKeyPressed(int key) {
 
 bool Input::wasKeyReleased(int key) {
 	return keys[key] == GLFW_RELEASE;
+}
+
+bool Input::isMouseClicked(int key) {
+	return glfwGetMouseButton(curWindow, key) == GLFW_PRESS;
 }
 
 double Input::getMouseX() {

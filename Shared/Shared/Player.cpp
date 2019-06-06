@@ -274,6 +274,9 @@ void Player::onCollision(Player * player) { }
 
 void Player::onCollision(Wall * wall) { 	
 	for (Plane * p : CollisionDetection::getIntersectingPlanes(getBoundingSphere(), wall->getBoundingBox())) {
+		if (p == wall->getBoundingBox()->bottom) {
+			continue;
+		}
 		if (p == wall->getBoundingBox()->top) {
 			this->numLandings += 1;
 			this->maxBoxHeight = std::max(maxBoxHeight,
