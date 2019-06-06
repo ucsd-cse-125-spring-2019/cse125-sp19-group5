@@ -18,6 +18,9 @@
 #include "Assets.h"
 #include "Game/ParticleEmitters.h"
 
+// Define this if you just want to go right to the game.
+#define _DEBUG_SP
+
 GuiGameText *gameText = nullptr;
 
 static void setGameText(Connection *c, NetBuffer &buffer) {
@@ -129,7 +132,13 @@ Game::Game() : gameObjects({ nullptr }) {
 	Draw::init();
 	ParticleEmitters::init(&gameState);
 
+#ifdef _DEBUG_SP
 	Gui::create<GuiConnectMenu>();
+#else
+	int port = 1234;
+	ConfigSettings::get().getValue("Port", port);
+	Network::init("127.0.0.1", port);
+#endif
 
 	hud = Gui::create<GuiHUD>();
 	
