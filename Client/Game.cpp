@@ -186,6 +186,12 @@ Game::Game() : gameObjects({ nullptr }) {
 	Network::on(NetMessage::CONNECTION_ID, [this] (Connection *c, NetBuffer &buffer) {
 		playerId = buffer.read<int>();
 		cout << "I am Player " << playerId << "." << endl;
+		int size = buffer.read<int>();
+		tuple<int, std::string> temp;
+		for (int i = 0; i < size; i++) {
+			temp = buffer.read<tuple<int, std::string>>();
+			id_name[std::get<0>(temp)] = std::get<1>(temp);
+		}
 	});
 
 	Network::on(NetMessage::NAME, [this](Connection*c, NetBuffer &buffer) {

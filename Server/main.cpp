@@ -84,6 +84,8 @@ int main(int argc, char **argv) {
 		id_name.write(name);
 		Network::broadcast(id_name);
 
+		
+
 		player_team[c->getId()] = (player_team.size() + 1) % 2;
 		if (player_team.at(c->getId()) == 0) teamR += 1;
 		else teamB += 1;
@@ -104,6 +106,10 @@ int main(int argc, char **argv) {
 		// Send Client the connection/player ID 
 		NetBuffer buffer(NetMessage::CONNECTION_ID);
 		buffer.write<int>(c->getId());
+		buffer.write<int>(id_name.size());
+		for (auto it = id_name.begin(); it != id_name.end(); it++) {
+			buffer.write<tuple<int, std::string>>(std::make_tuple(it->first, it->second));
+		}
 		c->send(buffer);
 		c->on(NetMessage::NAME, addPlayerName);
 		c->on(NetMessage::TEAM, handleTeamSelection);
