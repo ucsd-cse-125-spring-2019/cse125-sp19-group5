@@ -140,6 +140,10 @@ Game::Game() : gameObjects({ nullptr }) {
 	Network::init("127.0.0.1", port);
 #endif
 
+	gSound->setMasterVolume(1.0f);
+	ConnectMenuBackground = gSound->loadFlatSound("Sounds/ConnectMenuMusic.wav", 0.1f);
+	ConnectMenuBackground->play(true);
+
 	hud = Gui::create<GuiHUD>();
 	
 	lightShader = new Shader("Shaders/light");
@@ -162,9 +166,8 @@ Game::Game() : gameObjects({ nullptr }) {
 	);
 	fpsText = gTextRenderer->addText(TextRenderer::DEFAULT_FONT_NAME, "fps", 0.02f, 0.02f, 0.4f, glm::vec3(1.0f, 1.0f, 0.0f));
 
-	gSound->setMasterVolume(1.0f);
-	soundtrack = gSound->loadFlatSound("Sounds/minecraft_wet_hands.wav", 0.1f);
-	soundtrack->play(true);
+	//soundtrack = gSound->loadFlatSound("Sounds/minecraft_wet_hands.wav", 0.1f);
+	//soundtrack->play(false);
 
 	// Handle game object creation and deletion.
 	Network::on(
@@ -200,6 +203,9 @@ Game::Game() : gameObjects({ nullptr }) {
 		auto name = buffer.read<string>();
 		id_name[id] = name;
 		if (id == playerId) {
+			MainMenuBackground = gSound->loadFlatSound("Sounds/MainMenuMusic.wav", 0.1f);
+			ConnectMenuBackground->stop();
+			MainMenuBackground->play(true);
 			GuiTeamMenu *teamMenu = Gui::create<GuiTeamMenu>();
 			teamMenu->setPlayerId(playerId);
 			teamMenu->setGame(this);
