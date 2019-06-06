@@ -30,6 +30,7 @@ int main(int argc, char **argv) {
 	mapLoader.loadMap("Maps/map_with_goals.json");
 
 	unordered_map<int, int> player_team;
+	unordered_map<int, std::string> id_name;
 	int teamR = 0;
 	int teamB = 0;
 
@@ -74,6 +75,21 @@ int main(int argc, char **argv) {
 		gameEngine.updateTeamReady(player_team, teamR, teamB);
 	};
 
+	auto addPlayerName = [&](Connection*c, NetBuffer &buffer) {
+
+		std::string name = buffer.read<std::string>();
+		id_name[c->getId()] = name;
+		NetBuffer id_name(NetMessage::NAME);
+		id_name.write<tuple<int, std::string>>(std::make_tuple(c->getId(), name));
+		Network::broadcast(id_name);
+
+		player_team[c->getId()] = (player_team.size() + 1) % 2;
+		if (player_team.at(c->getId()) == 0) teamR += 1;
+		else teamB += 1;
+
+		gameEngine.updateTeamReady(player_team, teamR, teamB);
+	};
+
 	Network::onClientConnected([&](Connection *c) {
 		std::cout << "Player " << c->getId() << " has connected." << std::endl;
 
@@ -88,12 +104,7 @@ int main(int argc, char **argv) {
 		NetBuffer buffer(NetMessage::CONNECTION_ID);
 		buffer.write<int>(c->getId());
 		c->send(buffer);
-		player_team[c->getId()] = (player_team.size() + 1) % 2;
-		if (player_team.at(c->getId()) == 0) teamR += 1;
-		else teamB += 1;
-
-		gameEngine.updateTeamReady(player_team, teamR, teamB);
-
+		c->on(NetMessage::NAME, addPlayerName);
 		c->on(NetMessage::TEAM, handleTeamSelection);
 
 		for (auto gameObject : gameEngine.getGameObjects()) {
