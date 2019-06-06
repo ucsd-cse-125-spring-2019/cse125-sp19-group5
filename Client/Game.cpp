@@ -14,6 +14,27 @@
 #include "Assets.h"
 #include "Game/ParticleEmitters.h"
 #include "Game/Gui/GuiConnectMenu.h"
+#include "Game/Gui/GuiGameText.h"
+
+GuiGameText *gameText = nullptr;
+
+static void setGameText(Connection *c, NetBuffer &buffer) {
+	auto newText = buffer.read<string>();
+	if (newText == "") {
+		if (gameText) {
+			gameText->remove();
+			gameText = nullptr;
+		}
+		return;
+	}
+	if (gameText) {
+		gameText->setText(newText);
+		return;
+	}
+	gameText = Gui::create<GuiGameText>();
+	gameText->setText(newText);
+
+}
 
 void Game::onGameObjectCreated(Connection *c, NetBuffer &buffer) {
 	auto gameObjectType = buffer.read<GAMEOBJECT_TYPES>();
@@ -176,6 +197,8 @@ Game::Game() : gameObjects({ nullptr }) {
 		NetMessage::SOUND,
 		boost::bind(&Game::onPlaySound, this, _1, _2)
 	);
+
+	Network::on(NetMessage::GAME_TEXT, setGameText);
 }
 
 Game::~Game() {

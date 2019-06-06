@@ -110,5 +110,11 @@
       "yRange": [ 70, 80 ],
       "zRange": [ -50, 50 ]
     }
+  ],
+  "spawns": [
+    { "team": 0, "position": [ -5, 3, -5 ] },
+    { "team": 0, "position": [ 5, 3, -5 ] },
+    { "team": 1, "position": [ -5, 3, 5 ] },
+    { "team": 1, "position": [ 5, 3, 5 ] }
   ]
 }

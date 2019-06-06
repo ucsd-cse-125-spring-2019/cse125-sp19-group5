@@ -51,6 +51,11 @@ int main(int argc, char **argv) {
 		playerInputs.push_back(input);
 	};
 
+	auto handlePlayerReady = boost::bind(
+		&GameEngine::onPlayerReady, &gameEngine,
+		_1, _2
+	);
+
 	Network::onClientConnected([&](Connection *c) {
 		std::cout << "Player " << c->getId() << " has connected." << std::endl;
 
@@ -108,8 +113,11 @@ int main(int argc, char **argv) {
 		ps->setInitialVel(vec3(0, 10, 0));
 		ps->setTexture("Textures/gary.png");
 
+		gameEngine.syncGameText(c);
+
 		// Receive player keyboard and mouse(TODO) input
 		c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);
+		c->on(NetMessage::READY_TOGGLE, handlePlayerReady);
 		c->onDisconnected([&](Connection *c) {
 			gameEngine.onPlayerDisconnected(c);
 			std::cout << "Player " << c->getId() << " has disconnected."
