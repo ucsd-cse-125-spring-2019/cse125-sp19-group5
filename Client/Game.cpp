@@ -133,7 +133,7 @@ Game::Game() : gameObjects({ nullptr }) {
 	Draw::init();
 	ParticleEmitters::init(&gameState);
 
-#ifdef _DEBUG_SP
+#ifndef _DEBUG_SP
 	Gui::create<GuiConnectMenu>();
 #else
 	int port = 1234;
