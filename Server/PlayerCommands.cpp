@@ -27,7 +27,7 @@ void Player::doAction(PlayerCommands action) {
 			useCooldown(SHOOT);
 
 			float bulletRadius = 0.5f * (actionCharge * 0.2f);
-			vec3 bulletStart = getPosition() + (vec3(getDirection().x, 0, getDirection().z) * ((2 * getBoundingSphere()->getRadius()) + bulletRadius));
+			vec3 bulletStart = getPosition() + (glm::normalize(vec3(getDirection().x, 0, getDirection().z)) * ((2 * getBoundingSphere()->getRadius()) + bulletRadius));
 			vec3 bulletVelocity = glm::normalize(vec3(getDirection().x, 0, getDirection().z)) * 5.0f;
 
 			auto b = gGameEngine->addGameObject<Bullet>();
