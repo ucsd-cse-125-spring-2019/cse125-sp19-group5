@@ -13,7 +13,7 @@ Font::~Font() {
 
 }
 
-Font::Font(const std::string &filepath)
+Font::Font(const FontInfo &info)
 {
 	// FreeType
 	FT_Library ft;
@@ -22,12 +22,12 @@ Font::Font(const std::string &filepath)
 	}
 
 	FT_Face face;
-	if (FT_New_Face(ft, filepath.c_str(), 0, &face)) {
-		throw std::runtime_error("Failed to load font at " + filepath);
+	if (FT_New_Face(ft, info.path.c_str(), 0, &face)) {
+		throw std::runtime_error("Failed to load font at " + info.path);
 	}
 
 	// Set size to load glyphs as
-	FT_Set_Pixel_Sizes(face, 0, 48);
+	FT_Set_Pixel_Sizes(face, 0, info.size);
 
 	// Disable byte-alignment restriction
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);

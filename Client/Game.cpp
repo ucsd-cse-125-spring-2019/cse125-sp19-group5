@@ -17,6 +17,7 @@
 #include "Renderer/ParticleSystem.h"
 #include "Assets.h"
 #include "Game/ParticleEmitters.h"
+#include "Game/Gui/GuiScoreboard.h"
 
 // Define this if you just want to go right to the game.
 #define _DEBUG_SP
@@ -162,7 +163,7 @@ Game::Game() : gameObjects({ nullptr }) {
 
 	gTextRenderer->loadFont(
 		TextRenderer::DEFAULT_FONT_NAME,
-		TextRenderer::DEFAULT_FONT_FILEPATH
+		{ 48, TextRenderer::DEFAULT_FONT_FILEPATH }
 	);
 	fpsText = gTextRenderer->addText(TextRenderer::DEFAULT_FONT_NAME, "fps", 0.02f, 0.02f, 0.4f, glm::vec3(1.0f, 1.0f, 0.0f));
 
@@ -224,6 +225,16 @@ Game::Game() : gameObjects({ nullptr }) {
 	);
 
 	Network::on(NetMessage::GAME_TEXT, setGameText);
+	Network::on(
+		NetMessage::SCOREBOARD_SHOW,
+		[&](Connection *c, NetBuffer &buffer) {
+			if (hud) {
+				hud->remove();
+				hud = nullptr;
+			}
+			Gui::create<GuiScoreboard>();
+		}
+	);
 }
 
 Game::~Game() {

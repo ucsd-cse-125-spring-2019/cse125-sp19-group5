@@ -8,7 +8,6 @@ GuiTeamMenu::GuiTeamMenu()
 
 	Input::setMouseVisible(true);
 
-
 	auto mainContainer = Gui::create<GuiRect>(this);
 	mainContainer->setPosition(vec2(0.1f, 0.1f));
 	mainContainer->setColor(vec4(0.75f, 0.5f, 0.25, 1.0f));
