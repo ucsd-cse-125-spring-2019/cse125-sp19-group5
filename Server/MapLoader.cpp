@@ -31,7 +31,10 @@ void MapLoader::loadMap(string mapFile) {
 			<< parseErr << std::endl;
 	}
 
-	loadBoxGameObjects<Wall>(mapJson, "walls");
+	auto walls = loadBoxGameObjects<Wall>(mapJson, "walls");
+	for (auto wall : walls) {
+		wall->setCastShadow(false);
+	}
 
 	loadSphereGameObjects<Ball>(mapJson, "balls");
 

@@ -101,6 +101,7 @@ void ShadowMap::prePass(int i) {
 		glGetIntegerv(GL_VIEWPORT, viewport);
 		glViewport(0, 0, width, height);
 		glDisable(GL_BLEND);
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 	shadowShader.use();
@@ -210,6 +211,7 @@ void ShadowMap::postPass(int i) {
 		glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
 		glEnable(GL_BLEND);
 		glBindTexture(GL_TEXTURE_2D, 0);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	}
 }
 
