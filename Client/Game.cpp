@@ -354,6 +354,12 @@ void Game::update(float dt) {
 void Game::drawScene(Shader &shader, DrawPass pass) const {
 	for (auto gameObject : gameObjects) {
 		if (!gameObject) { continue; }
+		if (
+			pass == DrawPass::SHADOW &&
+			!gameObject->getGameObject()->shouldCastShadow()
+		) {
+			continue;
+		}
 		gameObject->draw(shader, camera, pass);
 	}
 }
