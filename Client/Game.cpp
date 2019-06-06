@@ -187,16 +187,18 @@ Game::Game() : gameObjects({ nullptr }) {
 		playerId = buffer.read<int>();
 		cout << "I am Player " << playerId << "." << endl;
 		int size = buffer.read<int>();
-		tuple<int, std::string> temp;
+		int p;
+		std::string n;
 		for (int i = 0; i < size; i++) {
-			temp = buffer.read<tuple<int, std::string>>();
-			id_name[std::get<0>(temp)] = std::get<1>(temp);
+			p = buffer.read<int>();
+			n = buffer.read<std::string>();
+			id_name[p] = n;
 		}
 	});
 
 	Network::on(NetMessage::NAME, [this](Connection*c, NetBuffer &buffer) {
-		auto id = buffer.read<int>();
-		auto name = buffer.read<string>();
+		int id = buffer.read<int>();
+		std::string name = buffer.read<std::string>();
 		id_name[id] = name;
 		if (id == playerId) {
 			MainMenuBackground = gSound->loadFlatSound("Sounds/MainMenuMusic.wav", 0.1f);
