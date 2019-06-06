@@ -39,6 +39,8 @@ class Game {
 	std::array<ClientGameObject*, MAX_GAME_OBJS> gameObjects;
 
 	Sound *soundtrack = nullptr;
+	Sound *ConnectMenuBackground = nullptr;
+	Sound *MainMenuBackground = nullptr;
 	GuiHUD *hud = nullptr;
 
 	int playerId;
