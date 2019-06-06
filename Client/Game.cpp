@@ -108,14 +108,12 @@ Game::Game() : gameObjects({ nullptr }) {
 	Draw::init();
 	ParticleEmitters::init(&gameState);
 
+	Input::setMouseVisible(true);
 	Gui::create<GuiConnectMenu>();
-
-	// TODO (bhang): Integrate this with connecting.
-	// Gui::create<GuiConnectMenu>();
 
 	hud = Gui::create<GuiHUD>();
 	
-	Input::setMouseVisible(false);
+	Input::setMouseVisible(true);
 
 	lightShader = new Shader("Shaders/light");
 	camera = new Camera(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f), 70, 1.0f);
@@ -168,7 +166,6 @@ Game::Game() : gameObjects({ nullptr }) {
 	Network::on(NetMessage::CONNECTION_ID, [this] (Connection *c, NetBuffer &buffer) {
 		playerId = buffer.read<int>();
 		cout << "I am Player " << playerId << "." << endl;
-		Input::setMouseVisible(true);
 		GuiTeamMenu *teamMenu = Gui::create<GuiTeamMenu>();
 		teamMenu->setPlayerId(playerId);
 	});

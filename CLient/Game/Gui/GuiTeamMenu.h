@@ -9,6 +9,9 @@
 #include "../../Networking/Client.h"
 #include "../Game.h"
 
+#include <iostream>
+using std::string;
+
 class GuiTeamMenu : public GuiRect {
 private:
 	bool selectionComplete;

@@ -2,65 +2,71 @@
 
 GuiTeamMenu::GuiTeamMenu()
 {
-
 	setColor(vec4(0.2f, 0.2f, 0.2f, 1.0f));
 	setPosition(vec2(0.0f, 0.0f));
 	setSize(vec2(1.0f, 1.0f));
 
 	Input::setMouseVisible(true);
 
-	message = Gui::create<GuiText>(this);
-	message->setPosition(vec2(0.0f, 0.8f));
-	message->setColor(vec4(1.0f, 0.1f, 0.1, 1.0f));
-	message->setText("");
-	message->setSize(vec2(1.0f, 0.1f));
-	message->setFont("Arial");
-	message->setAlignment(TextAlign::CENTER);
 
-	label = Gui::create<GuiText>(this);
-	label->setPosition(vec2(0.0f, 0.7f));
+	auto mainContainer = Gui::create<GuiRect>(this);
+	mainContainer->setPosition(vec2(0.1f, 0.1f));
+	mainContainer->setColor(vec4(0.75f, 0.5f, 0.25, 1.0f));
+	mainContainer->setSize(vec2(0.8f, 0.8f));
+
+	label = Gui::create<GuiText>(mainContainer);
+	label->setPosition(vec2(0.4f, 0.75f));
 	label->setAlignment(TextAlign::CENTER);
-	label->setSize(vec2(1.0f, 0.1f));
 	label->setText("Team Selection");
 	label->setFont("Arial");
 
-	label_t1 = Gui::create<GuiText>(this);
-	label_t1->setPosition(vec2(0.3f, 1.0f));
-	label_t1->setAlignment(TextAlign::CENTER);
-	label_t1->setSize(vec2(1.0f, 0.1f));
-	label_t1->setText("Team Red:");
+	message = Gui::create<GuiText>(mainContainer);
+	message->setPosition(vec2(0.4f, 0.05f));
+	message->setAlignment(TextAlign::CENTER);
+	message->setText("");
+	message->setFont("Arial");
+
+	auto container_t1 = Gui::create<GuiRect>(mainContainer);
+	container_t1->setColor(vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	container_t1->setPosition(vec2(0.15f, 0.35f));
+	container_t1->setSize(vec2(0.3f, 0.3f));
+
+	auto container_t2 = Gui::create<GuiRect>(mainContainer);
+	container_t2->setColor(vec4(0.0f, 0.0f, 1.0f, 1.0f));
+	container_t2->setPosition(vec2(0.4f, 0.35f));
+	container_t2->setSize(vec2(0.3f, 0.3f));
+
+	label_t1 = Gui::create<GuiText>(container_t1);
+	label_t1->setPosition(vec2(0.06f, 0.1f));
 	label_t1->setFont("Arial");
 
-	team1 = Gui::create<GuiText>(this);
-	team1->setPosition(vec2(0.3f, 1.0f));
+	label_t2 = Gui::create<GuiText>(container_t2);
+	label_t2->setPosition(vec2(0.06f, 0.1f));
+	label_t2->setFont("Arial");
+
+	swtch = Gui::create<GuiButton>(mainContainer);
+	swtch->setBgColor(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	swtch->setPosition(vec2(0.2f, 0.1f));
+	swtch->setFont("Arial");
+	swtch->setSize(vec2(0.5f, 0.2f));
+	swtch->setText("switch");
+	swtch->setAlignment(TextAlign::CENTER);
+	auto onClick = std::bind(&GuiTeamMenu::handleSwitch, this);
+	swtch->addCallback(onClick);
+
+	team1 = Gui::create<GuiText>(container_t1);
+	team1->setPosition(vec2(-0.1f, 0.1f));
 	team1->setAlignment(TextAlign::CENTER);
 	team1->setSize(vec2(1.0f, 0.1f));
 	team1->setText("");
 	team1->setFont("Arial");
 
-	label_t2 = Gui::create<GuiText>(this);
-	label_t2->setPosition(vec2(0.0f, 1.0f));
-	label_t2->setAlignment(TextAlign::CENTER);
-	label_t2->setSize(vec2(1.0f, 0.1f));
-	label_t2->setText("Team Blue:");
-	label_t2->setFont("Arial");
-
-	team2 = Gui::create<GuiText>(this);
-	team2->setPosition(vec2(0.0f, 1.0f));
+	team2 = Gui::create<GuiText>(container_t2);
+	team2->setPosition(vec2(0.0f, 0.1f));
 	team2->setAlignment(TextAlign::CENTER);
 	team2->setSize(vec2(1.0f, 0.1f));
 	team2->setText("");
 	team2->setFont("Arial");
-
-	auto onClick = std::bind(&GuiTeamMenu::handleSwitch, this);
-
-	swtch = Gui::create<GuiButton>(this);
-	swtch->setBgColor(vec4(0.0f, 0.0f, 0.0f, 1.0f));
-	swtch->setPosition(vec2(0.2f, 0.3f));
-	swtch->setFont("Arial");
-	swtch->setSize(vec2(0.6f, 0.25f));
-	swtch->setText("switch");
-	swtch->addCallback(onClick);
 
 	Network::on(NetMessage::TEAM, boost::bind(&GuiTeamMenu::updateTeamGui, this, _1, _2));
 	Network::on(NetMessage::READY, boost::bind(&GuiTeamMenu::setReady, this, _1, _2));
@@ -68,10 +74,10 @@ GuiTeamMenu::GuiTeamMenu()
 
 void GuiTeamMenu::setPlayerId(int id) {
 	this->playerId = id;
+	label->setText("Team Selection: Player " + std::to_string(playerId));
 }
 
 void GuiTeamMenu::updateTeamGui(Connection *c, NetBuffer &buffer) {
-
 	int size = buffer.read<int>();
 	tuple<int, int> temp;
 	int t;
@@ -101,19 +107,18 @@ void GuiTeamMenu::updateTeamGui(Connection *c, NetBuffer &buffer) {
 }
 
 void GuiTeamMenu::handleSwitch() {
-
 	player_team[playerId] ^= 1;
 
 	NetBuffer playerTeamSelection(NetMessage::TEAM);
 	playerTeamSelection.write<int>(player_team.at(playerId));
 	Network::connection->send(playerTeamSelection);
-
 }
 
 void GuiTeamMenu::setReady(Connection *c, NetBuffer &readyMsg) {
 	bool ready = readyMsg.read<bool>();
 	if (ready) {
 		message->setText("Game is ready!");
+		remove();
 	}
 	else {
 		message->setText("The game needs 2 players on each team!");
