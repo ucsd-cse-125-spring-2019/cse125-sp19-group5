@@ -28,7 +28,15 @@ int main(int argc, char **argv) {
 	MapLoader mapLoader(&gameEngine);
 	mapLoader.loadMap("Maps/map_with_goals.json");
 
-	auto jumpableBox = gameEngine.addGameObject<Wall>();
+	auto speedboost = gameEngine.addGameObject<PowerUpItem>();
+	speedboost->setBoundingShape(new BoundingSphere(vec3(0, 3, 0), 3.0f));
+	speedboost->setPosition(vec3(10, 3, 10));
+	speedboost->setScale(vec3(3));
+	speedboost->setModel("Models/unit_sphere.obj");
+	speedboost->setMaterial("Materials/grass.json");
+
+
+	/*auto jumpableBox = gameEngine.addGameObject<Wall>();
 	jumpableBox->setBoundingShape(new BoundingBox(vec3(0, 0, 30), vec3(1, 0, 0), 30, 8, 30));
 	jumpableBox->setPosition(vec3(0, 0, 30));
 	jumpableBox->setScale(vec3(30, 8, 30));
@@ -40,7 +48,7 @@ int main(int argc, char **argv) {
 	jumpableBox2->setPosition(vec3(0, 0, 60));
 	jumpableBox2->setScale(vec3(30, 16, 30));
 	jumpableBox2->setModel("Models/unit_cube.obj");
-	jumpableBox2->setMaterial("Materials/brick.json");
+	jumpableBox2->setMaterial("Materials/brick.json");*/
 
 	// Handle player keyboard/mouse inputs
 	auto handlePlayerInput = [&playerInputs](Connection *c, NetBuffer &buffer) {

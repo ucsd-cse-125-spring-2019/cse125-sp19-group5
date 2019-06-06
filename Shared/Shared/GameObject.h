@@ -11,6 +11,7 @@ class Bullet;
 class Goal;
 class Paddle;
 class Player;
+class PowerUpItem;
 class Wall;
 
 enum GAMEOBJECT_TYPES {
@@ -20,7 +21,12 @@ enum GAMEOBJECT_TYPES {
 	BULLET_TYPE,
 	WALL_TYPE,
 	PADDLE_TYPE,
-	GOAL_TYPE
+	GOAL_TYPE,
+	POWERUP_ITEM_TYPE
+};
+
+enum POWERUP_TYPES {
+	POWERUP_SPEEDBOOST
 };
 
 class GameObject : public Serializable {
@@ -56,6 +62,7 @@ public:
 	virtual void onCollision(Goal * goal);
 	virtual void onCollision(Paddle * paddle);
 	virtual void onCollision(Player * player);
+	virtual void onCollision(PowerUpItem * item);
 	virtual void onCollision(Wall * wall);
 	double distanceFrom(GameObject * gameObject);
 

@@ -14,3 +14,6 @@ void GameObject::playSound(const string &sound, float volume, bool loop) {
 	DO_NOT_CALL;
 }
 void GameObject::stopSound(const string &sound) { DO_NOT_CALL; }
+
+#include <Shared/Player.h>
+void Player::addPowerup(POWERUP_TYPES powerup) {}

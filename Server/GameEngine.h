@@ -7,6 +7,7 @@
 #include <Shared/Bullet.h>
 #include <Shared/Wall.h>
 #include <Shared/Goal.h>
+#include <Shared/PowerUpItem.h>
 #include <Shared/GameState.h>
 #include <Shared/Networking/Connection.h>
 

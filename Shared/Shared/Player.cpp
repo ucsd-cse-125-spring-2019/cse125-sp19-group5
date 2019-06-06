@@ -193,13 +193,16 @@ void Player::useCooldown(PlayerCommands command) {
 }
 
 #ifdef _CLIENT
-GameObject *Player::doAction(PlayerCommands action) {
+void Player::doAction(PlayerCommands action) {
 	return nullptr;
 }
 
-GameObject *Player::processCommand(int inputs) {
+void Player::processCommand(int inputs) {
 	return nullptr;
->>>>>>> Move player actions to server
+}
+
+void Player::onCollision(PowerUpItem * item) {
+	return;
 }
 #endif
 
@@ -252,6 +255,10 @@ void Player::onCollision(Goal * goal) {
 void Player::onCollision(Paddle * paddle) { }
 
 void Player::onCollision(Player * player) { }
+
+void Player::onCollision(PowerUpItem * item) {
+	addPowerup(item->getPowerUpType());
+}
 
 void Player::onCollision(Wall * wall) { 	
 	for (Plane * p : CollisionDetection::getIntersectingPlanes(getBoundingSphere(), wall->getBoundingBox())) {

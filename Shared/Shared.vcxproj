@@ -138,6 +138,7 @@
     <ClInclude Include="Shared\Networking\Serializable.h" />
     <ClInclude Include="Shared\PhysicsEngine.h" />
     <ClInclude Include="Shared\Player.h" />
+    <ClInclude Include="Shared\PowerUpItem.h" />
     <ClInclude Include="Shared\SphereGameObject.h" />
     <ClInclude Include="Shared\Util\CurTime.h" />
     <ClInclude Include="Shared\Util\json11.hpp" />
@@ -161,6 +162,7 @@
     <ClCompile Include="Shared\Networking\Network.cpp" />
     <ClCompile Include="Shared\PhysicsEngine.cpp" />
     <ClCompile Include="Shared\Player.cpp" />
+    <ClCompile Include="Shared\PowerUpItem.cpp" />
     <ClCompile Include="Shared\SphereGameObject.cpp" />
     <ClCompile Include="Shared\Util\json11.cpp" />
     <ClCompile Include="Shared\Wall.cpp" />

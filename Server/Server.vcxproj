@@ -123,6 +123,7 @@
     <ClCompile Include="MapLoader.cpp" />
     <ClCompile Include="Networking\Server.cpp" />
     <ClCompile Include="PlayerCommands.cpp" />
+    <ClCompile Include="PlayerPowerups.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine.h" />

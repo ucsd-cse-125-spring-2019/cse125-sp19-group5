@@ -1,11 +1,13 @@
 #pragma once
 #include <map>
 #include "SphereGameObject.h"
-#include "CommonStructs.h"
+#include "BoundingSphere.h"
 #include "Ball.h"
 #include "Bullet.h"
 #include "Paddle.h"
+#include "PowerUpItem.h"
 #include "Wall.h"
+#include "CommonStructs.h"
 #include "PhysicsEngine.h"
 
 class Powerup;
@@ -44,6 +46,7 @@ public:
 	void onCollision(Goal * goal);
 	void onCollision(Paddle * paddle);
 	void onCollision(Player * player);
+	void onCollision(PowerUpItem * item);
 	void onCollision(Wall * wall);
 
 	// Powerups
@@ -60,6 +63,8 @@ public:
 		powerup->activate();
 		powerup->onActivate();
 	}
+
+	void addPowerup(POWERUP_TYPES powerup);
 
 	void removePowerup(const string &type);
 
