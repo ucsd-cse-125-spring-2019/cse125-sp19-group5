@@ -21,15 +21,19 @@ private:
 
 	GuiText *label;
 	GuiText *label_t1;
-	GuiText *team1;
+	//GuiText *team1;
 	GuiText *label_t2;
-	GuiText *team2;
+	//GuiText *team2;
 	GuiText *message;
 	GuiButton *swtch;
+	GuiRect *container_t1;
+	GuiRect *container_t2;
 
 	Game*game;
 	unordered_map<int, int> player_team;
 	unordered_map<int, std::string> id_name;
+	vector<GuiText*> team1;
+	vector<GuiText*> team2;
 
 public:
 	GuiTeamMenu();
