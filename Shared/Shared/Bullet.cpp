@@ -11,10 +11,11 @@ GAMEOBJECT_TYPES Bullet::getGameObjectType() const {
 
 void Bullet::updateOnServerTick() {
 	move(getVelocity());
+	lifespan--;
 }
 
 bool Bullet::deleteOnServerTick() {
-	return this->hit;
+	return this->hit || lifespan == 0;
 }
 
 void Bullet::onCollision(GameObject * gameObject) {

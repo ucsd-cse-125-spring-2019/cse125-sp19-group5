@@ -2,6 +2,7 @@
 #include "GameEngine.h"
 #include <glm/gtx/euler_angles.hpp>
 #include <glm/gtx/vector_angle.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 
 void Player::doAction(PlayerCommands action) {
 	switch (action) {
@@ -27,15 +28,21 @@ void Player::doAction(PlayerCommands action) {
 			useCooldown(SHOOT);
 
 			float bulletRadius = 0.5f * (actionCharge * 0.2f);
-			vec3 bulletStart = getPosition() + (glm::normalize(vec3(getDirection().x, 0, getDirection().z)) * ((2 * getBoundingSphere()->getRadius()) + bulletRadius));
-			vec3 bulletVelocity = glm::normalize(vec3(getDirection().x, 0, getDirection().z)) * 5.0f;
+			for (int i = 0; i < numBullets; i++) {
+				float angle = (i - numBullets / 2) * 5;
+				vec3 bulletDir = glm::normalize(vec3(getDirection().x, 0, getDirection().z));
+				bulletDir = glm::rotateY(bulletDir, glm::radians(angle));
+				vec3 bulletStart = getPosition() + (bulletDir * ((1.5f * getBoundingSphere()->getRadius()) + bulletRadius));
+				vec3 bulletVelocity = glm::normalize(bulletDir) * 5.0f;
 
-			auto b = gGameEngine->addGameObject<Bullet>();
-			b->setBoundingShape(new BoundingSphere(vec3(0.0f), bulletRadius));
-			b->setModel("Models/unit_sphere.obj");
-			b->setPosition(bulletStart);
-			b->setVelocity(bulletVelocity);
-			b->setScale(vec3(bulletRadius));
+				auto b = gGameEngine->addGameObject<Bullet>();
+				b->setBoundingShape(new BoundingSphere(vec3(0.0f), bulletRadius));
+				b->setModel("Models/unit_sphere.obj");
+				b->setMaterial("Materials/brick.json");
+				b->setPosition(bulletStart);
+				b->setVelocity(bulletVelocity);
+				b->setScale(vec3(bulletRadius));
+			}		
 
 			break;
 		}

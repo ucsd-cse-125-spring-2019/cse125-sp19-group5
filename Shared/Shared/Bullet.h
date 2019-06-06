@@ -20,4 +20,5 @@ public:
 
 private:
 	bool hit = false;
+	int lifespan = 100;
 };

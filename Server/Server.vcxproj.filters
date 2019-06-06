@@ -63,6 +63,9 @@
     <ClCompile Include="Game\Powerups\PowerBoost.cpp">
       <Filter>Source Files\Game\Powerups</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Powerups\BulletSpray.cpp">
+      <Filter>Source Files\Game\Powerups</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -82,6 +85,9 @@
       <Filter>Header Files\Game\Powerups</Filter>
     </ClInclude>
     <ClInclude Include="Game\Powerups\PowerBoost.h">
+      <Filter>Header Files\Game\Powerups</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Powerups\BulletSpray.h">
       <Filter>Header Files\Game\Powerups</Filter>
     </ClInclude>
   </ItemGroup>

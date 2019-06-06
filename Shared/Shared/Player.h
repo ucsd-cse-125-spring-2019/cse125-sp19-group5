@@ -74,6 +74,9 @@ public:
 	void setStrength(float newStrength);
 	float getStrength() const;
 
+	void setNumBullets(int numBullets);
+	int getNumBullets() const;
+
 private:
 	vec3 direction;
 	int actionCharge;
@@ -95,4 +98,5 @@ private:
 
 	float moveSpeed = PhysicsEngine::getPlayerDefaultMoveSpeed();
 	float strength = 1.0f;
+	int numBullets = 1;
 };

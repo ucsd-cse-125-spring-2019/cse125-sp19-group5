@@ -54,6 +54,14 @@ float Player::getStrength() const {
 	return strength;
 }
 
+void Player::setNumBullets(int numBullets) {
+	this->numBullets = numBullets;
+}
+
+int Player::getNumBullets() const {
+	return numBullets;
+}
+
 void Player::updateOnServerTick() {
 	for (auto & cd : this->cooldowns) {
 		if (std::get<0>(cd.second) > 0) {

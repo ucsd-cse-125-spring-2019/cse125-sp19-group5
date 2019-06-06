@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
 	mapLoader.loadMap("Maps/map_with_goals.json");
 
 	auto speedboost = gameEngine.addGameObject<PowerUpItem>();
-	speedboost->setPowerUpType(POWERUP_POWERBOOST);
+	speedboost->setPowerUpType(POWERUP_BULLET_SPRAY);
 	speedboost->setBoundingShape(new BoundingSphere(vec3(0, 3, 0), 3.0f));
 	speedboost->setPosition(vec3(10, 3, 10));
 	speedboost->setScale(vec3(3));
@@ -106,10 +106,11 @@ int main(int argc, char **argv) {
 		player->setCooldown(SHOOT, std::make_tuple(0, 60));
 		gameEngine.addGameObject(player);
 
-		player->setModel("Models/unit_sphere.obj");
+		player->setModel("Models/Bear.fbx");
+		player->setAnimation(0);
 		player->setDirection(vec3(0, 0, -1));
 		player->setMaterial("Materials/brick.json");
-		player->setScale(vec3(2));
+		player->setScale(vec3(0.2));
 
 		auto ps = new ParticleEmitter();
 		ps->setGravity(-15.0f);
