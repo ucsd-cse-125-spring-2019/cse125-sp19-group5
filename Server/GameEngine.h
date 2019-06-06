@@ -14,7 +14,6 @@
 
 #define NUM_PLAYERS 1
 #define MOVEMENT_MASK 0b11111
-#define COMMAND_MASK 0b11100000
 
 using TimerCallback = std::function<void()>;
 
@@ -53,6 +52,7 @@ public:
 	void addGameObject(Ball *ball);
 	void addGameObject(Wall *wall);
 	void addGameObject(Goal * goal);
+	void addGameObject(GameObject *obj);
 	void removeGameObjectById(int id);
 
 	vec3 movementInputToVector(int movementInput);
@@ -90,7 +90,6 @@ private:
 	string curGameText = "";
 
 	void addGenericGameObject(GameObject *player);
-
 	bool shouldGameStart();
 	void startGame();
 	void endGame();
@@ -99,3 +98,5 @@ private:
 
 	void updateTimers();
 };
+
+extern GameEngine *gGameEngine;

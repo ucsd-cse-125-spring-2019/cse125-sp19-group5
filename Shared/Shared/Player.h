@@ -27,8 +27,9 @@ public:
 	tuple<int, int> & getCooldown(PlayerCommands command);
 	void setCooldown(PlayerCommands command, tuple<int, int> cd);
 	void useCooldown(PlayerCommands command);
-	GameObject * doAction(PlayerCommands action);
-	GameObject * processCommand(int inputs);
+
+	void doAction(PlayerCommands action);
+	void processCommand(int inputs);
 
 	bool getIsGrounded() const { return isGrounded; }
 	void setIsGrounded(const bool grounded) { isGrounded = grounded; }
@@ -39,6 +40,7 @@ public:
 	// collision interactions below
 	void onCollision(GameObject * gameObject);
 	void onCollision(Ball * ball);
+	void onCollision(Bullet * bullet);
 	void onCollision(Goal * goal);
 	void onCollision(Paddle * paddle);
 	void onCollision(Player * player);
@@ -84,6 +86,6 @@ private:
 	bool isJumpKeyUp = false;
 	float maxBoxHeight = 0.0f;
 	int numLandings = 0;
-	vec3 ballVelocityComponent = vec3(0);
+	vec3 collisionVelocityComponent = vec3(0);
 	vec3 prevPosition;
 };

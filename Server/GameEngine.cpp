@@ -186,6 +186,8 @@ void GameEngine::addGenericGameObject(GameObject *obj) {
 	buffer.write<GAMEOBJECT_TYPES>(obj->getGameObjectType());
 	obj->serialize(buffer);
 	Network::broadcast(buffer);
+
+	obj->onCreated();
 }
 
 void GameEngine::addGameObject(Player *player) {
@@ -206,6 +208,10 @@ void GameEngine::addGameObject(Wall *wall) {
 void GameEngine::addGameObject(Goal *goal) {
 	addGenericGameObject(goal);
 	gameState.goals.push_back(goal);
+}
+
+void GameEngine::addGameObject(GameObject *obj) {
+	addGenericGameObject(obj);
 }
 
 vec3 GameEngine::movementInputToVector(int movementInput) {
@@ -324,21 +330,10 @@ void GameEngine::doPlayerCommands(vector<PlayerInputs> & playerInputs) {
 	for (PlayerInputs playerInput : playerInputs) {
 		aggregatePlayerCommands[playerInput.id] = aggregatePlayerCommands[playerInput.id] | playerInput.inputs;
 	}
-	for (int i = 0; i < gameState.players.size(); i++) {
-		aggregatePlayerCommands[i] = aggregatePlayerCommands[i] & COMMAND_MASK;
-	}
 
 	// Process player commands
 	for (int i = 0; i < gameState.players.size(); i++) {
-		GameObject * createdGameObject = gameState.players[i]->processCommand(aggregatePlayerCommands[i]);
-		if (createdGameObject) {
-			createdGameObject->setId(gameState.getFreeId());
-			addGenericGameObject(createdGameObject);
-			createdGameObject->setModel("Models/unit_sphere.obj");
-			createdGameObject->setMaterial("Materials/brick.json");
-
-			std::cout << createdGameObject->to_string() << std::endl;
-		}
+		gameState.players[i]->processCommand(aggregatePlayerCommands[i]);
 	}
 }
 
@@ -494,3 +489,6 @@ void GameEngine::updateTimers() {
 		}
 	}
 }
+
+GameEngine *gGameEngine = new GameEngine();
+
