@@ -43,6 +43,7 @@ class Game {
 
 	int playerId;
 
+	unordered_map<int, std::string> id_name;
 	GameState gameState;
 	Player *playerObj = nullptr;
 
@@ -65,6 +66,7 @@ public:
 	void onGameObjectMaterialSet(Connection *c, NetBuffer &buffer);
 	void onPlaySound(Connection *c, NetBuffer &buffer);
 
+	unordered_map<int, std::string> getIdName();
 	int getScreenWidth() const;
 	int getScreenHeight() const;
 

@@ -83,6 +83,7 @@ void GuiTeamMenu::updateTeamGui(Connection *c, NetBuffer &buffer) {
 	int t;
 	int p;
 
+	id_name = game->getIdName();
 	for (int i = 0; i < size; i++) {
 		temp = buffer.read<tuple<int, int>>();
 		player_team[std::get<0>(temp)] = std::get<1>(temp);
@@ -95,10 +96,10 @@ void GuiTeamMenu::updateTeamGui(Connection *c, NetBuffer &buffer) {
 		t = it->second;
 		if (!team[t].empty()) {
 			team[t] += ", ";
-			team[t] += std::to_string(p);
+			team[t] += id_name[p];
 		}
 		else {
-			team[t] += std::to_string(p);
+			team[t] += id_name[p];
 		}
 	}
 
@@ -127,4 +128,8 @@ void GuiTeamMenu::setReady(Connection *c, NetBuffer &readyMsg) {
 
 bool GuiTeamMenu::getSelectionComplete() {
 	return selectionComplete;
+}
+
+void GuiTeamMenu::setGame(Game *game) {
+	this->game = game;
 }

@@ -166,8 +166,16 @@ Game::Game() : gameObjects({ nullptr }) {
 	Network::on(NetMessage::CONNECTION_ID, [this] (Connection *c, NetBuffer &buffer) {
 		playerId = buffer.read<int>();
 		cout << "I am Player " << playerId << "." << endl;
-		GuiTeamMenu *teamMenu = Gui::create<GuiTeamMenu>();
-		teamMenu->setPlayerId(playerId);
+	});
+
+	Network::on(NetMessage::NAME, [this](Connection*c, NetBuffer &buffer) {
+		tuple<int, std::string> id_n = buffer.read<tuple<int, std::string>>();
+		id_name[std::get<0>(id_n)] = std::get<1>(id_n);
+		if (std::get<0>(id_n) == playerId) {
+			GuiTeamMenu *teamMenu = Gui::create<GuiTeamMenu>();
+			teamMenu->setPlayerId(playerId);
+			teamMenu->setGame(this);
+		}
 	});
 
 	Network::on(NetMessage::GAME_STATE_UPDATE, [&](Connection *c, NetBuffer &buffer) {
@@ -338,4 +346,9 @@ void Game::draw(float dt) const {
 	Draw::setupContext();
 	drawUI();
 	glEnable(GL_DEPTH_TEST);
+}
+
+
+unordered_map<int, std::string> Game::getIdName() {
+	return id_name;
 }

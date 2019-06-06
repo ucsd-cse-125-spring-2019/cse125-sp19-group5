@@ -27,7 +27,9 @@ private:
 	GuiText *message;
 	GuiButton *swtch;
 
+	Game*game;
 	unordered_map<int, int> player_team;
+	unordered_map<int, std::string> id_name;
 
 public:
 	GuiTeamMenu();
@@ -35,4 +37,5 @@ public:
 	void updateTeamGui(Connection *c, NetBuffer &menuMsg);
 	void setReady(Connection *c, NetBuffer &readyMsg);
 	bool getSelectionComplete();
+	void setGame(Game *game);
 };

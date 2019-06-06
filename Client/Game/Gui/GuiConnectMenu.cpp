@@ -26,14 +26,31 @@ GuiConnectMenu::GuiConnectMenu() {
 	label->setText("Connect to:");
 	label->setFont("Arial");
 
-	auto onEnter = std::bind(&GuiConnectMenu::onIpEntered, this, _1);
+	//auto onEnter = std::bind(&GuiConnectMenu::onIpEntered, this, _1);
 
 	ipInput = Gui::create<GuiTextbox>(this);
 	ipInput->setBgColor(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	ipInput->setPosition(vec2(0.2f, 0.3f));
 	ipInput->setFont("Arial");
 	ipInput->setSize(vec2(0.6f, 0.25f));
-	ipInput->addEnterCallback(onEnter);
+	//ipInput->addEnterCallback(onEnter);
+
+	nameInput = Gui::create<GuiTextbox>(this);
+	nameInput->setBgColor(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	nameInput->setPosition(vec2(0.2f, 0.6f));
+	nameInput->setFont("Arial");
+	nameInput->setSize(vec2(0.6f, 0.25f));
+
+	enter = Gui::create<GuiButton>(this);
+	enter->setBgColor(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	enter->setPosition(vec2(0.2f, 0.1f));
+	enter->setFont("Arial");
+	enter->setSize(vec2(0.5f, 0.2f));
+	enter->setText("Enter");
+	enter->setAlignment(TextAlign::CENTER);
+
+	auto onClick = std::bind(&GuiConnectMenu::handleEnter, this);
+	enter->addCallback(onClick);
 }
 
 void GuiConnectMenu::onIpEntered(const std::string &text) {
@@ -42,6 +59,22 @@ void GuiConnectMenu::onIpEntered(const std::string &text) {
 	if (Network::init(text, port)) {
 		remove();
 	} else {
+		message->setText("Failed to connect!");
+	}
+}
+
+void GuiConnectMenu::handleEnter() {
+	auto port = 1234;
+	ConfigSettings::get().getValue("Port", port);
+	std::string ip = ipInput->getText();
+	std::string name = nameInput->getText();
+	if (Network::init(ip, port)) {
+		NetBuffer namebuf(NetMessage::NAME);
+		namebuf.write<std::string>(name);
+		Network::send(namebuf);
+		remove();
+	}
+	else {
 		message->setText("Failed to connect!");
 	}
 }
