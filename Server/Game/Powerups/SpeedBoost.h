@@ -5,7 +5,7 @@
 class SpeedBoost : public Powerup {
 	public:
 	using Powerup::Powerup;
-	static const string TYPE;
+	static const POWERUP_TYPES TYPE;
 
 	float getDuration() const override;
 	void onActivate() override;

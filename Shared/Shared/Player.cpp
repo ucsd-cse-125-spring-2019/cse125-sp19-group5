@@ -25,7 +25,7 @@ void Player::setDirection(const vec3 &newDirection) {
 	setOrientation(glm::quatLookAt(direction, vec3(0, 1, 0)));
 }
 
-void Player::removePowerup(const string &type) {
+void Player::removePowerup(const POWERUP_TYPES &type) {
 	auto it = powerups.find(type);
 	if (it == powerups.end()) { return; }
 
@@ -34,7 +34,7 @@ void Player::removePowerup(const string &type) {
 	powerups.erase(it);
 }
 
-bool Player::hasPowerup(const string &type) const {
+bool Player::hasPowerup(const POWERUP_TYPES &type) const {
 	return powerups.find(type) != powerups.end();
 }
 
@@ -255,10 +255,6 @@ void Player::onCollision(Goal * goal) {
 void Player::onCollision(Paddle * paddle) { }
 
 void Player::onCollision(Player * player) { }
-
-void Player::onCollision(PowerUpItem * item) {
-	addPowerup(item->getPowerUpType());
-}
 
 void Player::onCollision(Wall * wall) { 	
 	for (Plane * p : CollisionDetection::getIntersectingPlanes(getBoundingSphere(), wall->getBoundingBox())) {

@@ -52,7 +52,7 @@ public:
 	// Powerups
 	template<class T>
 	void addPowerup() {
-		const string &type = T::TYPE;
+		const POWERUP_TYPES &type = T::TYPE;
 		T *powerup = new T(*this);
 		auto it = powerups.find(type);
 		if (it != powerups.end()) {
@@ -64,11 +64,9 @@ public:
 		powerup->onActivate();
 	}
 
-	void addPowerup(POWERUP_TYPES powerup);
+	void removePowerup(const POWERUP_TYPES &type);
 
-	void removePowerup(const string &type);
-
-	bool hasPowerup(const string &type) const;
+	bool hasPowerup(const POWERUP_TYPES &type) const;
 
 	void setMoveSpeed(float newMoveSpeed);
 	float getMoveSpeed() const;
@@ -79,7 +77,7 @@ private:
 	int team;
 	PlayerCommands currentAction;
 	vector<Wall *> walls;
-	std::unordered_map<string, Powerup*> powerups;
+	std::unordered_map<POWERUP_TYPES, Powerup*> powerups;
 
 	// get<0> = current cooldown, get<1> = total cooldown
 	std::map<PlayerCommands, tuple<int, int>> cooldowns;
