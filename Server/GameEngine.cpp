@@ -4,6 +4,13 @@
 #include "Networking/Server.h"
 #include <Shared/CollisionDetection.h>
 #include <Shared/Game/ParticleEmitter.h>
+#include <Shared/Util/CurTime.h>
+
+constexpr auto COUNTDOWN_TIME = 3;
+constexpr auto ROUND_SCORE_TIME = 3;
+constexpr auto SCORE_SHOW_TIME = 10;
+
+#define _DEBUG
 
 template<class T, class V>
 void inline safeRemoveFromVec(std::vector<T> &v, V &val) {
@@ -11,6 +18,19 @@ void inline safeRemoveFromVec(std::vector<T> &v, V &val) {
 	if (it != v.end()) {
 		v.erase(it);
 	}
+}
+
+void GameEngine::setGameText(const std::string &newText) {
+	NetBuffer buffer(NetMessage::GAME_TEXT);
+	buffer.write(newText);
+	Network::broadcast(buffer);
+	curGameText = newText;
+}
+
+void GameEngine::syncGameText(Connection *c) {
+	NetBuffer buffer(NetMessage::GAME_TEXT);
+	buffer.write(curGameText);
+	c->send(buffer);
 }
 
 void GameEngine::removeGameObjectById(int id) {
@@ -31,8 +51,85 @@ void GameEngine::removeGameObjectById(int id) {
 
 void GameEngine::init() {
 	gameState.in_progress = false;
-	gameState.score = std::make_tuple(1, 2);
-	gameState.timeLeft = 1000 * 60 * 5; // 5 minutes in ms
+	gameState.score = std::make_tuple(0, 0);
+	gameState.timeLeft = 0;
+
+	setGameText("Waiting for players...");
+}
+
+bool GameEngine::shouldGameStart() {
+	if (roundState != RoundState::READY) {
+		return false;
+	}
+#ifdef _DEBUG
+	if (gameState.players.size() != 2) {
+		return false;
+	}
+#else
+	if (readyPlayers.size() != 4) {
+		return false;
+	}
+#endif
+	return true;
+}
+
+void GameEngine::prepRound() {
+	roundState = RoundState::COUNTDOWN;
+	std::cout << "Round starting soon..." << std::endl;
+
+	spawnPlayers();
+	// TODO: move ball(s) to spawn
+	// TODO: show countdown on screen
+
+	for (int i = 0; i < COUNTDOWN_TIME; i++) {
+		auto text = "Starting in " + std::to_string(COUNTDOWN_TIME - i) + "...";
+		setTimer("cd" + i, i, [this, text]() {
+			setGameText(text);
+		});
+	}
+
+	setTimer("startRound", COUNTDOWN_TIME, [&]() {
+		std::cout << "Round started!" << std::endl;
+		setGameText("");
+		gameState.in_progress = true;
+		roundState = RoundState::ACTIVE;
+	});
+}
+
+void GameEngine::startGame() {
+	std::cout << "Starting a new game..." << std::endl;
+	prepRound();
+	gameState.score = std::make_tuple(0, 0);
+	gameState.timeLeft = 1000 * 6 * 5; // 5 minutes in ms
+}
+
+void GameEngine::endGame() {
+	std::cout << "Game over, showing scores..." << std::endl;
+	gameState.in_progress = false;
+	roundState = RoundState::SHOWING_SCORES;
+	// TODO: show scores
+
+	setTimer("scores", SCORE_SHOW_TIME, [&]() {
+		std::cout << "Game over, back to lobby" << std::endl;
+		// TODO: go back to lobby
+	});
+}
+
+void GameEngine::onGoalScored(int team) {
+	std::cout << std::get<0>(gameState.score) << " " << std::get<1>(gameState.score) << std::endl;
+
+	// TODO: show GUI stuff for winner
+	gameState.in_progress = false;
+	roundState = RoundState::TEAM_SCORED;
+
+	auto text = "Team " + std::to_string(team + 1) + " has scored!";
+	std::cout << text << std::endl;
+	setGameText(text);
+	
+	setTimer("roundScore", ROUND_SCORE_TIME, [&]() {
+		prepRound();
+		setGameText("");
+	});
 }
 
 void GameEngine::onPlayerDisconnected(Connection *c) {
@@ -40,7 +137,19 @@ void GameEngine::onPlayerDisconnected(Connection *c) {
 }
 
 void GameEngine::updateGameState(vector<PlayerInputs> & playerInputs) {
+	updateTimers();
+
+	if (!gameState.in_progress) {
+		if (shouldGameStart()) {
+			startGame();
+		}
+		return;
+	}
 	gameState.timeLeft -= PhysicsEngine::getDeltaTime();
+	if (gameState.timeLeft <= 0) {
+		endGame();
+		return;
+	}
 
 	movePlayers(playerInputs);
 	doPlayerCommands(playerInputs);
@@ -96,6 +205,8 @@ void GameEngine::addGenericGameObject(GameObject *obj) {
 	buffer.write<GAMEOBJECT_TYPES>(obj->getGameObjectType());
 	obj->serialize(buffer);
 	Network::broadcast(buffer);
+
+	obj->onCreated();
 }
 
 void GameEngine::addGameObject(Player *player) {
@@ -116,6 +227,10 @@ void GameEngine::addGameObject(Wall *wall) {
 void GameEngine::addGameObject(Goal *goal) {
 	addGenericGameObject(goal);
 	gameState.goals.push_back(goal);
+}
+
+void GameEngine::addGameObject(GameObject *obj) {
+	addGenericGameObject(obj);
 }
 
 vec3 GameEngine::movementInputToVector(int movementInput) {
@@ -224,6 +339,7 @@ void GameEngine::moveBalls() {
 }
 
 void GameEngine::doPlayerCommands(vector<PlayerInputs> & playerInputs) {
+
 	vector<int> aggregatePlayerCommands;
 
 	// Use bitwise or to get all player inputs within one server tick
@@ -233,21 +349,10 @@ void GameEngine::doPlayerCommands(vector<PlayerInputs> & playerInputs) {
 	for (PlayerInputs playerInput : playerInputs) {
 		aggregatePlayerCommands[playerInput.id] = aggregatePlayerCommands[playerInput.id] | playerInput.inputs;
 	}
-	for (int i = 0; i < gameState.players.size(); i++) {
-		aggregatePlayerCommands[i] = aggregatePlayerCommands[i] & COMMAND_MASK;
-	}
 
 	// Process player commands
 	for (int i = 0; i < gameState.players.size(); i++) {
-		GameObject * createdGameObject = gameState.players[i]->processCommand(aggregatePlayerCommands[i]);
-		if (createdGameObject) {
-			createdGameObject->setId(gameState.getFreeId());
-			addGenericGameObject(createdGameObject);
-			createdGameObject->setModel("Models/unit_sphere.obj");
-			createdGameObject->setMaterial("Materials/brick.json");
-
-			std::cout << createdGameObject->to_string() << std::endl;
-		}
+		gameState.players[i]->processCommand(aggregatePlayerCommands[i]);
 	}
 }
 
@@ -277,8 +382,13 @@ void GameEngine::updateScore() {
 		}
 	}
 
-	if (std::get<0>(gameState.score) != team1Score || std::get<1>(gameState.score) != team2Score) {
-		std::cout << team1Score << " " << team2Score << std::endl;
+	auto team1Scored = std::get<0>(gameState.score) != team1Score;
+	auto team2Scored = std::get<1>(gameState.score) != team2Score;
+	if (team1Scored) {
+		onGoalScored(0);
+	}
+	if (team2Scored) {
+		onGoalScored(1);
 	}
 
 	std::get<0>(gameState.score) = team1Score;
@@ -340,3 +450,63 @@ bool GameEngine::noCollisionMove(Player * player, vec3 movement) {
 const std::array<GameObject*, MAX_GAME_OBJS> &GameEngine::getGameObjects() const {
 	return gameState.gameObjects;
 }
+
+void GameEngine::onPlayerReady(Connection *c, NetBuffer &buffer) {
+	if (gameState.in_progress) { return; }
+	auto id = c->getId();
+	auto it = readyPlayers.find(id);
+	if (it == readyPlayers.end()) {
+		readyPlayers.emplace(id);
+	} else {
+		readyPlayers.erase(it);
+	}
+
+}
+
+void GameEngine::setTimer(
+	const string &id,
+	float time,
+	TimerCallback callback
+) {
+	auto it = timers.find(id);
+	if (it != timers.end()) {
+		auto timer = it->second;
+		timer->expire = curTime() + time;
+		timer->onExpire = callback;
+		return;
+	}
+	timers[id] = new Timer{ curTime() + time, callback };
+}
+
+void GameEngine::spawnPlayers() {
+	auto playerIt = gameState.players.begin();
+	for (auto &spawnInfo : spawns) {
+		auto team = spawnInfo.first;
+		auto position = spawnInfo.second;
+		// TODO: team checks
+		if (playerIt != gameState.players.end()) {
+			(*playerIt)->setPosition(position);
+			playerIt++;
+		}
+	}
+}
+
+void GameEngine::spawnBalls() {
+}
+
+void GameEngine::updateTimers() {
+	auto it = timers.begin();
+	auto time = curTime();
+	while (it != timers.end()) {
+		auto timer = it->second;
+		if (timer->expire <= time) {
+			timer->onExpire();
+			it = timers.erase(it);
+		} else {
+			it++;
+		}
+	}
+}
+
+GameEngine *gGameEngine = new GameEngine();
+

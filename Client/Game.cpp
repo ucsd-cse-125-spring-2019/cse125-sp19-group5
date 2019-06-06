@@ -1,6 +1,7 @@
 #include <GL/glew.h>
 #include "Game.h"
 #include "Game/Gui/GuiConnectMenu.h"
+#include "Game/Gui/GuiGameText.h"
 #include "Game/Gui/GuiTeamMenu.h"
 #include <Shared/Common.h>
 #include <Shared/CommonStructs.h>
@@ -16,6 +17,26 @@
 #include "Renderer/ParticleSystem.h"
 #include "Assets.h"
 #include "Game/ParticleEmitters.h"
+
+GuiGameText *gameText = nullptr;
+
+static void setGameText(Connection *c, NetBuffer &buffer) {
+	auto newText = buffer.read<string>();
+	if (newText == "") {
+		if (gameText) {
+			gameText->remove();
+			gameText = nullptr;
+		}
+		return;
+	}
+	if (gameText) {
+		gameText->setText(newText);
+		return;
+	}
+	gameText = Gui::create<GuiGameText>();
+	gameText->setText(newText);
+
+}
 
 void Game::onGameObjectCreated(Connection *c, NetBuffer &buffer) {
 	auto gameObjectType = buffer.read<GAMEOBJECT_TYPES>();
@@ -108,13 +129,10 @@ Game::Game() : gameObjects({ nullptr }) {
 	Draw::init();
 	ParticleEmitters::init(&gameState);
 
-	Input::setMouseVisible(true);
 	Gui::create<GuiConnectMenu>();
 
 	hud = Gui::create<GuiHUD>();
 	
-	Input::setMouseVisible(true);
-
 	lightShader = new Shader("Shaders/light");
 	camera = new Camera(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f), 70, 1.0f);
 	shadowMap = new ShadowMap(camera);
@@ -166,6 +184,7 @@ Game::Game() : gameObjects({ nullptr }) {
 	Network::on(NetMessage::CONNECTION_ID, [this] (Connection *c, NetBuffer &buffer) {
 		playerId = buffer.read<int>();
 		cout << "I am Player " << playerId << "." << endl;
+		Input::setMouseVisible(true);
 		GuiTeamMenu *teamMenu = Gui::create<GuiTeamMenu>();
 		teamMenu->setPlayerId(playerId);
 	});
@@ -180,6 +199,8 @@ Game::Game() : gameObjects({ nullptr }) {
 		NetMessage::SOUND,
 		boost::bind(&Game::onPlaySound, this, _1, _2)
 	);
+
+	Network::on(NetMessage::GAME_TEXT, setGameText);
 }
 
 Game::~Game() {
@@ -251,7 +272,9 @@ void Game::updateInputs() {
 	if (Input::isKeyDown(GLFW_KEY_Q)) {
 		keyInputs += SHOOT;
 	}
-
+	if (Input::isKeyDown(GLFW_KEY_F)) {
+		keyInputs += WALL;
+	}
 	if (Input::isKeyDown(GLFW_KEY_ESCAPE)) {
 		shouldExit = true;
 	}

@@ -9,11 +9,27 @@
 #include <Shared/Goal.h>
 #include <Shared/GameState.h>
 #include <Shared/Networking/Connection.h>
+#include <unordered_set>
+#include <functional>
 #include <unordered_map>
 
 #define NUM_PLAYERS 1
 #define MOVEMENT_MASK 0b11111
-#define COMMAND_MASK 0b11100000
+
+using TimerCallback = std::function<void()>;
+
+enum class RoundState {
+	READY,
+	COUNTDOWN,
+	ACTIVE,
+	SHOWING_SCORES,
+	TEAM_SCORED,
+};
+
+struct Timer {
+	float expire;
+	TimerCallback onExpire;
+};
 
 class GameEngine {
 public:
@@ -38,6 +54,7 @@ public:
 	void addGameObject(Ball *ball);
 	void addGameObject(Wall *wall);
 	void addGameObject(Goal * goal);
+	void addGameObject(GameObject *obj);
 	void removeGameObjectById(int id);
 
 	vec3 movementInputToVector(int movementInput);
@@ -56,7 +73,32 @@ public:
 
 	const std::array<GameObject*, MAX_GAME_OBJS> &getGameObjects() const;
 
+	void onPlayerReady(Connection *c, NetBuffer &buffer);
+
+	void setTimer(const string &id, float time, TimerCallback callback);
+
+	std::vector<std::pair<int, vec3>> spawns;
+	void spawnPlayers();
+
+	void spawnBalls();
+
+	void setGameText(const string &newText);
+	void syncGameText(Connection *c);
 private:
+	std::unordered_map<string, Timer*> timers;
+	std::unordered_set<int> readyPlayers;
 	GameState gameState;
+	RoundState roundState = RoundState::READY;
+	string curGameText = "";
+
 	void addGenericGameObject(GameObject *player);
+	bool shouldGameStart();
+	void startGame();
+	void endGame();
+	void onGoalScored(int team);
+	void prepRound();
+
+	void updateTimers();
 };
+
+extern GameEngine *gGameEngine;

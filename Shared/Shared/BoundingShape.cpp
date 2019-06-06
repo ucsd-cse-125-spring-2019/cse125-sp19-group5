@@ -10,5 +10,5 @@ vec3 BoundingShape::getPosition() {
 }
 
 void BoundingShape::setPosition(vec3 position) {
-	this->position = position;
+this->position = position;
 }

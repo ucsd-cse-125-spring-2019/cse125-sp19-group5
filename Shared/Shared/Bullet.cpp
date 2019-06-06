@@ -1,4 +1,5 @@
 #include "Bullet.h"
+#include "CollisionDetection.h"
 
 Bullet::Bullet(vec3 position, vec3 velocity, float radius) : SphereGameObject(position, velocity, 0) {
 	setBoundingShape(new BoundingSphere(position, radius));
@@ -24,6 +25,14 @@ void Bullet::onCollision(Ball * ball) {
 	this->hit = true;
 }
 
-void Bullet::onCollision(Wall * wall) {
+void Bullet::onCollision(Player * player) {
 	this->hit = true;
+}
+
+void Bullet::onCollision(Wall * wall) {
+	for (Plane * p : CollisionDetection::getIntersectingPlanes(this->getBoundingSphere(), wall->getBoundingBox())) {
+		if (p != wall->getBoundingBox()->top && p != wall->getBoundingBox()->bottom) {
+			this->hit = true;
+		}
+	}
 }

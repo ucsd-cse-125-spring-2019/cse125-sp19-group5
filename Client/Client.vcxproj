@@ -85,6 +85,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)include;%(AdditionalIncludeDirectories);../Shared;;$(ProjectDir)include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CLIENT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>irrKlang.lib;irrKlang.exp;soil2.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -112,6 +113,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)include;%(AdditionalIncludeDirectories);../Shared;$(ProjectDir)Renderer/SOIL2;$(ProjectDir)include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CLIENT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -125,6 +127,7 @@
     <ClCompile Include="ClientGameObject.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Game\Gui\GuiGameText.cpp" />
     <ClCompile Include="Game\Gui\GuiHUD.cpp" />
     <ClCompile Include="Game\Gui\GuiTeamMenu.cpp" />
     <ClCompile Include="Game\ParticleEmitter.cpp" />
@@ -170,6 +173,7 @@
     <ClInclude Include="Assets.h" />
     <ClInclude Include="ClientGameObject.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Game\Gui\GuiGameText.h" />
     <ClInclude Include="Game\Gui\GuiHUD.h" />
     <ClInclude Include="Game\Gui\GuiTeamMenu.h" />
     <ClInclude Include="Game\ParticleEmitters.h" />

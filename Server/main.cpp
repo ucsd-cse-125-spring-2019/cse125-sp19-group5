@@ -19,7 +19,7 @@ constexpr auto TICKS_PER_SECOND = 60; // How many updates per second.
 int main(int argc, char **argv) {
 	Network::init(1234);
 
-	GameEngine gameEngine;
+	GameEngine &gameEngine = *gGameEngine;
 	gameEngine.init();
 
 	auto origin = vec3(0.0f);
@@ -27,38 +27,25 @@ int main(int argc, char **argv) {
 	vector<PlayerInputs> playerInputs;
   
 	MapLoader mapLoader(&gameEngine);
-	mapLoader.loadMap("Maps/basic_map.json");
+	mapLoader.loadMap("Maps/map_with_goals.json");
 
 	unordered_map<int, int> player_team;
 	int teamR = 0;
 	int teamB = 0;
 
-	/*auto goal1 = gameEngine.addGameObject<Goal>();
-	goal1->setBoundingShape(new BoundingBox(vec3(0, 0, 100), vec3(1, 0, 0), 200, 20, 10));
-	goal1->setScale(vec3(200, 40, 10));
-	goal1->setPosition(vec3(0, 0, 100));
-	goal1->setTeam(0);
-	goal1->setModel("Models/unit_cube.obj");
-	goal1->setMaterial("Materials/brick.json");
+	auto jumpableBox = gameEngine.addGameObject<Wall>();
+	jumpableBox->setBoundingShape(new BoundingBox(vec3(0, 0, 30), vec3(1, 0, 0), 30, 8, 30));
+	jumpableBox->setPosition(vec3(0, 0, 30));
+	jumpableBox->setScale(vec3(30, 8, 30));
+	jumpableBox->setModel("Models/unit_cube.obj");
+	jumpableBox->setMaterial("Materials/brick.json");
 
-	auto goal2 = gameEngine.addGameObject<Goal>();
-	goal2->setBoundingShape(new BoundingBox(vec3(0, 0, -100), vec3(1, 0, 0), 200, 20, 10));
-	goal2->setScale(vec3(200, 40, 10));
-	goal2->setPosition(vec3(0, 0, -100));
-	goal2->setTeam(1);
-	goal2->setModel("Models/unit_cube.obj");
-	goal2->setMaterial("Materials/brick.json");*/
-	
-	/*auto wall5 = gameEngine.addGameObject<Wall>();
-	wall5->setBoundingShape(new BoundingBox(vec3(-20, 0, 10), vec3(1, 0, 1), 50, 20, 5));
-	wall5->setScale(vec3(50, 40, 5));
-	wall5->setPosition(vec3(-20, 0, 10));
-	wall5->setModel("models/unit_cube.obj");
-	wall5->setMaterial("materials/grass.json");
-
-	auto quat4 = quat(vec3(0, glm::radians(-45.0f), 0));
-	wall5->setOrientation(quat4);*/
-
+	auto jumpableBox2 = gameEngine.addGameObject<Wall>();
+	jumpableBox2->setBoundingShape(new BoundingBox(vec3(0, 0, 60), vec3(1, 0, 0), 30, 16, 30));
+	jumpableBox2->setPosition(vec3(0, 0, 60));
+	jumpableBox2->setScale(vec3(30, 16, 30));
+	jumpableBox2->setModel("Models/unit_cube.obj");
+	jumpableBox2->setMaterial("Materials/brick.json");
 
 	// Handle player keyboard/mouse inputs
 	auto handlePlayerInput = [&playerInputs](Connection *c, NetBuffer &buffer) {
@@ -68,6 +55,11 @@ int main(int argc, char **argv) {
 		input.direction = buffer.read<vec3>();
 		playerInputs.push_back(input);
 	};
+
+	auto handlePlayerReady = boost::bind(
+		&GameEngine::onPlayerReady, &gameEngine,
+		_1, _2
+	);
 
 	auto handleTeamSelection = [&](Connection*c, NetBuffer &buffer) {
 		
@@ -146,8 +138,11 @@ int main(int argc, char **argv) {
 		ps->setInitialVel(vec3(0, 10, 0));
 		ps->setTexture("Textures/gary.png");
 
+		gameEngine.syncGameText(c);
+
 		// Receive player keyboard and mouse(TODO) input
 		c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);
+		c->on(NetMessage::READY_TOGGLE, handlePlayerReady);
 		c->onDisconnected([&](Connection *c) {
 			gameEngine.onPlayerDisconnected(c);
 			std::cout << "Player " << c->getId() << " has disconnected."
