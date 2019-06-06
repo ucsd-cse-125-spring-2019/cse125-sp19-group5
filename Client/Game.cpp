@@ -133,7 +133,7 @@ Game::Game() : gameObjects({ nullptr }) {
 	Draw::init();
 	ParticleEmitters::init(&gameState);
 
-#ifdef _DEBUG_SP
+#ifndef _DEBUG_SP
 	Gui::create<GuiConnectMenu>();
 #else
 	int port = 1234;
@@ -153,7 +153,7 @@ Game::Game() : gameObjects({ nullptr }) {
 	sun = new DirectionalLight(0);
 	sun->setDirection(vec3(0.009395, -0.500647, -0.713446));
 	sun->setAmbient(vec3(0.04f, 0.05f, 0.13f));
-	sun->setColor(vec3(0.8f, 0.7f, 0.55f));
+	sun->setColor(vec3(0.8f, 0.9f, 0.55f));
 
 	shadowMap = new ShadowMap(camera);
 
