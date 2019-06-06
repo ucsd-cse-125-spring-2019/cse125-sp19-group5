@@ -163,6 +163,7 @@
     <ClCompile Include="Renderer\Texture.cpp" />
     <ClCompile Include="Renderer\Texture2d.cpp" />
     <ClCompile Include="Renderer\TextureCubemap.cpp" />
+    <ClCompile Include="Sound\RandomSound.cpp" />
     <ClCompile Include="Sound\Sound.cpp" />
     <ClCompile Include="Sound\SoundEngine.cpp" />
   </ItemGroup>
@@ -210,6 +211,7 @@
     <ClInclude Include="Renderer\Texture.h" />
     <ClInclude Include="Renderer\Texture2d.h" />
     <ClInclude Include="Renderer\TextureCubemap.h" />
+    <ClInclude Include="Sound\RandomSound.h" />
     <ClInclude Include="Sound\Sound.h" />
     <ClInclude Include="Sound\SoundEngine.h" />
   </ItemGroup>
