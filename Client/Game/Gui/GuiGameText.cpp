@@ -3,7 +3,7 @@
 
 GuiGameText::GuiGameText() {
 	setPosition(vec2(0.0f, 0.4f));
-	setSize(vec2(1.0f, 0.1f));
+	setSize(vec2(1.0f, 0.2f));
 	setFont("Arial");
 	setAlignment(TextAlign::CENTER);
 	setColor(vec4(1.0f));

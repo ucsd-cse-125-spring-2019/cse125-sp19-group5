@@ -54,12 +54,7 @@ void GameEngine::init() {
 	gameState.score = std::make_tuple(0, 0);
 	gameState.timeLeft = 0;
 
-	for (int i = 1; i < 10; i++) {
-		TimerCallback cb = [i]() {
-			std::cout << i << std::endl;
-		};
-		setTimer(std::to_string(i), i, cb);
-	}
+	setGameText("Waiting for players...");
 }
 
 bool GameEngine::shouldGameStart() {
@@ -478,7 +473,6 @@ void GameEngine::spawnBalls() {
 void GameEngine::updateTimers() {
 	auto it = timers.begin();
 	auto time = curTime();
-	std::cout << "Updating timers" << std::endl;
 	while (it != timers.end()) {
 		auto timer = it->second;
 		if (timer->expire <= time) {
