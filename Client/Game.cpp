@@ -187,9 +187,10 @@ Game::Game() : gameObjects({ nullptr }) {
 	});
 
 	Network::on(NetMessage::NAME, [this](Connection*c, NetBuffer &buffer) {
-		tuple<int, std::string> id_n = buffer.read<tuple<int, std::string>>();
-		id_name[std::get<0>(id_n)] = std::get<1>(id_n);
-		if (std::get<0>(id_n) == playerId) {
+		auto id = buffer.read<int>();
+		auto name = buffer.read<string>();
+		id_name[id] = name;
+		if (id == playerId) {
 			GuiTeamMenu *teamMenu = Gui::create<GuiTeamMenu>();
 			teamMenu->setPlayerId(playerId);
 			teamMenu->setGame(this);

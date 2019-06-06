@@ -268,6 +268,9 @@ void GameEngine::movePlayers(vector<PlayerInputs> & playerInputs) {
 	vector<vec3> directions(gameState.players.size());
 
 	for (PlayerInputs playerInput : playerInputs) {
+		if (aggregatePlayerMovements.size() < playerInput.id) {
+			continue;
+		}
 		aggregatePlayerMovements[playerInput.id] |= playerInput.inputs;
 		directions[playerInput.id] = playerInput.direction;
 	}

@@ -80,7 +80,8 @@ int main(int argc, char **argv) {
 		std::string name = buffer.read<std::string>();
 		id_name[c->getId()] = name;
 		NetBuffer id_name(NetMessage::NAME);
-		id_name.write<tuple<int, std::string>>(std::make_tuple(c->getId(), name));
+		id_name.write(c->getId());
+		id_name.write(name);
 		Network::broadcast(id_name);
 
 		player_team[c->getId()] = (player_team.size() + 1) % 2;
