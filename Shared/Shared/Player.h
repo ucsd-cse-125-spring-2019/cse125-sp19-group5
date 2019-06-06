@@ -103,5 +103,4 @@ private:
 	float strength = 1.0f;
 	int numBullets = 1;
 	BULLET_TYPES bulletType = BULLET_DEFAULT;
-	int stunDir = 0;
 };

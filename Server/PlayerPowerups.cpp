@@ -4,6 +4,7 @@
 #include "Game/Powerups/PowerBoost.h"
 #include "Game/Powerups/BulletSpray.h"
 #include "Game/Powerups/StunGun.h"
+#include "Game/Powerups/StunDebuff.h"
 
 void Player::onCollision(PowerUpItem * item) {
 	switch (item->getPowerUpType()) {
@@ -23,4 +24,8 @@ void Player::onCollision(PowerUpItem * item) {
 		default:
 			break;
 	}
+}
+
+void Player::onCollision(StunBullet * stunBullet) {
+	addPowerup<StunDebuff>();
 }

@@ -69,6 +69,9 @@
     <ClCompile Include="Game\Powerups\StunGun.cpp">
       <Filter>Source Files\Game\Powerups</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Powerups\StunDebuff.cpp">
+      <Filter>Source Files\Game\Powerups</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -94,6 +97,9 @@
       <Filter>Header Files\Game\Powerups</Filter>
     </ClInclude>
     <ClInclude Include="Game\Powerups\StunGun.h">
+      <Filter>Header Files\Game\Powerups</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Powerups\StunDebuff.h">
       <Filter>Header Files\Game\Powerups</Filter>
     </ClInclude>
   </ItemGroup>

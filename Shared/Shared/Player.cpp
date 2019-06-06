@@ -74,13 +74,6 @@ void Player::updateOnServerTick() {
 			it++;
 		}
 	}
-
-	if (stunDir == 0 && !hasPowerup(POWERUP_SPEEDBOOST)) {
-		setMoveSpeed(PhysicsEngine::getPlayerDefaultMoveSpeed());
-	}
-	else {
-		stunDir--;
-	}
 }
 
 vec3 Player::getDirection() {
@@ -155,7 +148,7 @@ vec3 Player::getMoveDestination(vec3 movement) {
 	vec3 newVelocity = getVelocity();
 	if (isGrounded) {
 		newVelocity.y = PhysicsEngine::applyGravity(vec3(0.0f), PhysicsEngine::getGravity()).y; // Reset gravity
-		if (wishJump && stunDir == 0) {
+		if (wishJump && !hasPowerup(POWERUP_STUN_DEBUFF)) {
 			newVelocity = PhysicsEngine::movePlayerOnGround(accelDir, newVelocity, moveSpeed);
 			newVelocity = PhysicsEngine::jumpPlayer(newVelocity);
 			isGrounded = false;
@@ -261,11 +254,6 @@ void Player::onCollision(Goal * goal) {
 void Player::onCollision(Paddle * paddle) { }
 
 void Player::onCollision(Player * player) { }
-
-void Player::onCollision(StunBullet * stunBullet) {
-	this->stunDir = -1;
-	setMoveSpeed(0);
-}
 
 void Player::onCollision(Wall * wall) { 	
 	for (Plane * p : CollisionDetection::getIntersectingPlanes(getBoundingSphere(), wall->getBoundingBox())) {
