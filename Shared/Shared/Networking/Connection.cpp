@@ -42,19 +42,11 @@ void Connection::handleHeader(const ErrorCode &error, size_t bytes) {
 	if (bytes != sizeof(NetBufferHeader)) {
 		std::cerr << "BAD HEADER READ!" << std::endl;
 		std::cerr << "LAST GOOD HEADER: " << lastGoodHeader << std::endl;
-		throw std::exception("Bad header read");
 	}
 	NetBufferHeader header;
 	std::memcpy(&header, messageData, sizeof(NetBufferHeader));
-	std::cerr << header.message << std::endl;
-	if (header.message <= 0 || header.message >= NetMessage::numValues) {
-		std::cerr << "BAD MESSAGE" << std::endl;
-		std::cerr << "LAST GOOD HEADER: " << lastGoodHeader << std::endl;
-		throw std::exception("Bad message");
-	}
 	readBuffer(header);
 }
-
 
 void Connection::handleBuffer(
 	NetBufferHeader header,
