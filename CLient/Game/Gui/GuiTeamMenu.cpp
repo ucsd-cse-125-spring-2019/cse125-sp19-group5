@@ -6,7 +6,6 @@ static bool firstTime = true;
 GuiTeamMenu::GuiTeamMenu()
 {
 	teamMenu = this;
-	//setColor(vec4(0.2f, 0.2f, 0.2f, 1.0f));
 	setImage("Textures/image2.png");
 	setPosition(vec2(0.0f, 0.0f));
 	setSize(vec2(1.0f, 1.0f));
@@ -90,20 +89,6 @@ GuiTeamMenu::GuiTeamMenu()
 	ready->setColor(vec4(43.0f / 255.0f, 27.0f / 255.0f, 42.0f / 255.0f, 1.0f));
 	auto onClickRdy = std::bind(&GuiTeamMenu::handleReady, this);
 	ready->addCallback(onClickRdy);
-
-	//team1 = Gui::create<GuiText>(container_t1);
-	//team1->setPosition(vec2(-0.1f, 0.1f));
-	//team1->setAlignment(TextAlign::CENTER);
-	//team1->setSize(vec2(1.0f, 0.1f));
-	//team1->setText("");
-	//team1->setFont("Arial");
-
-	//team2 = Gui::create<GuiText>(container_t2);
-	//team2->setPosition(vec2(0.0f, 0.1f));
-	//team2->setAlignment(TextAlign::CENTER);
-	//team2->setSize(vec2(1.0f, 0.1f));
-	//team2->setText("");
-	//team2->setFont("Arial");
 
 	if (firstTime) {
 		firstTime = false;
@@ -198,17 +183,22 @@ void GuiTeamMenu::handleSwitch() {
 }
 
 void GuiTeamMenu::handleReady() {
+
+	NetBuffer readybuf(NetMessage::READY);
 	if (isReady) {
 		ready->setBgColor(vec4(167.0f / 255.0f, 136.0f / 255.0f, 99.0f / 255.0f, 1.0f));
 		ready->setColor(vec4(43.0f / 255.0f, 27.0f / 255.0f, 42.0f / 255.0f, 1.0f));
 		ready->setText("ready here");
+		readybuf.write<bool>(!isReady);
 	}
 	else {
 		ready->setBgColor(vec4(43.0f / 255.0f, 27.0f / 255.0f, 42.0f / 255.0f, 1.0f));
 		ready->setColor(vec4(167.0f / 255.0f, 136.0f / 255.0f, 99.0f / 255.0f, 1.0f));
 		ready->setText("you are ready");
+		readybuf.write<bool>(!isReady);
 	}
 
+	Network::send(readybuf);
 	isReady = !isReady;
 }
 

@@ -121,6 +121,12 @@ int main(int argc, char **argv) {
 		c->send(buffer);
 		c->on(NetMessage::NAME, addPlayerName);
 		c->on(NetMessage::TEAM, handleTeamSelection);
+		c->on(NetMessage::READY, [&] (Connection *c, NetBuffer &buffer){
+			bool ready2go = buffer.read < bool >();
+			if (ready2go) gameEngine.readyPlayers += 1;
+			else gameEngine.readyPlayers -= 1;
+			gameEngine.updateTeamReady();
+		});
 
 		for (auto gameObject : gameEngine.getGameObjects()) {
 			if (!gameObject) { continue; }

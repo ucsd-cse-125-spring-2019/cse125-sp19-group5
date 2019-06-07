@@ -193,7 +193,7 @@ void GameEngine::updateTeamReady() {
 	bool t_ready;
 	NetBuffer ready(NetMessage::READY);
 	NetBuffer team(NetMessage::TEAM);
-	cout << "team message being sent" << endl;
+
 	team.write<int>(player_team.size());
 	for (auto it = player_team.begin(); it != player_team.end(); it++) {
 		team.write(it->first);
@@ -202,7 +202,7 @@ void GameEngine::updateTeamReady() {
 
 	Network::broadcast(team);
 
-	if (teamR == 1 && teamB == 1) {
+	if (teamR == 1 && teamB == 1 && readyPlayers == 4) {
 		t_ready = true;
 	}
 	else {
