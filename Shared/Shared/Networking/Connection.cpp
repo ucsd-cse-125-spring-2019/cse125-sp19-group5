@@ -46,6 +46,8 @@ void Connection::handleHeader(const ErrorCode &error, size_t bytes) {
 	readBuffer(header);
 }
 
+static NetMessage lastGoodHeader = NetMessage::TEST;
+
 void Connection::handleBuffer(
 	NetBufferHeader header,
 	const ErrorCode &error,
@@ -53,10 +55,11 @@ void Connection::handleBuffer(
 ) {
 	if (bytes != (header.size - sizeof(NetBufferHeader))) {
 		std::cerr << "BAD BUFFER READ!" << std::endl;
+		std::cerr << "LAST GOOD HEADER: " << lastGoodHeader << std::endl;
 		throw std::exception("BAD BUFFER READ");
 	}
 	if (handleDisconnect(error)) { return; }
-
+	lastGoodHeader = (NetMessage)header.message;
 	NetMessage message = (NetMessage)header.message;
 	NetBuffer buffer(message, NetBufferType::READ);
 	buffer.setData(messageData, header.size);
