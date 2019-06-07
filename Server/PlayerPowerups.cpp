@@ -5,6 +5,7 @@
 #include "Game/Powerups/BulletSpray.h"
 #include "Game/Powerups/StunGun.h"
 #include "Game/Powerups/StunDebuff.h"
+#include "Game/Powerups/LowerCooldowns.h"
 
 void Player::onCollision(PowerUpItem * item) {
 	switch (item->getPowerUpType()) {
@@ -19,9 +20,13 @@ void Player::onCollision(PowerUpItem * item) {
 		case POWERUP_BULLET_SPRAY: {
 			addPowerup<BulletSpray>();
 			break;
-		} case POWERUP_STUNGUN: {
+		} 
+		case POWERUP_STUNGUN: {
 			addPowerup<StunGun>();
 			break;
+		}
+		case POWERUP_LOWER_COOLDOWNS: {
+			addPowerup<LowerCooldowns>();
 		}
 		default:
 			break;
