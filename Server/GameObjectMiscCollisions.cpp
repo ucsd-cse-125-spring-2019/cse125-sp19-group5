@@ -3,6 +3,8 @@
 void Bomb::updateOnServerTick() {
 	if (hit) {
 		setBoundingShape(new BoundingSphere(getPosition(), lifespan / 10.0f));
+		setModel("Models/unit_sphere.obj");
+		setMaterial("Materials/ball.json");
 		setScale(vec3(getBoundingSphere()->getRadius()));
 		lifespan -= 5;
 	}

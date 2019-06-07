@@ -48,8 +48,8 @@ void Player::doAction(PlayerCommands action) {
 				bomb->setBoundingShape(new BoundingSphere(bombStart, bombRadius));
 				bomb->setPosition(bombStart);
 				bomb->setVelocity(bombVelocity);
-				bomb->setModel("Models/unit_sphere.obj");
-				bomb->setMaterial("");
+				bomb->setModel("Models/bomb.obj");
+				bomb->setMaterial("Materials/bomb.json");
 				bomb->setScale(vec3(bombRadius));
 				bomb->setOwner(this);
 			}
