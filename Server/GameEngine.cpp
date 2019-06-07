@@ -393,6 +393,7 @@ void GameEngine::doPlayerCommands(vector<PlayerInputs> & playerInputs) {
 		aggregatePlayerCommands.push_back(0);
 	}
 	for (PlayerInputs playerInput : playerInputs) {
+		if (playerInput.id >= aggregatePlayerCommands.size()) { continue; }
 		aggregatePlayerCommands[playerInput.id] = aggregatePlayerCommands[playerInput.id] | playerInput.inputs;
 	}
 
