@@ -141,7 +141,7 @@ void Ball::onCollision(Goal * goal) {
 	this->isGrounded = false;
 	this->goalScored = true;
 
-	if (this->lastHitBy->getTeam() == goal->getTeam()) {
+	if (this->lastHitBy->getTeam() != goal->getTeam()) {
 		this->lastHitBy->setGoalsScored(this->lastHitBy->getGoalsScored() - 1);
 	}
 	else {

@@ -92,11 +92,11 @@ public:
 
 	int static getRandIndex(int size) { return std::rand() % size; };
 	float static getRandPercent() { return static_cast <float> (std::rand()) / static_cast <float> (RAND_MAX); };
+	int team;
 
 private:
 	vec3 direction;
 	int actionCharge;
-	int team;
 	PlayerCommands currentAction;
 	vector<Wall *> walls;
 	std::unordered_map<POWERUP_TYPES, Powerup*> powerups;

@@ -103,28 +103,28 @@ GuiScoreboard::GuiScoreboard() {
 	Network::on(
 		NetMessage::SCOREBOARD_HIDE,
 		[&](Connection *c, NetBuffer &buffer) {
-			if (scoreboard) {
-				scoreboard->remove();
-				scoreboard = nullptr;
-			}
+		if (scoreboard == this) {
+			scoreboard->remove();
+			scoreboard = nullptr;
 		}
+	}
 	);
 	Network::on(
 		NetMessage::SCOREBOARD_SCORE,
 		[&](Connection *c, NetBuffer &buffer) {
-			if (!scoreboard) { return; }
-			auto team = buffer.read<int>();
-			auto name = buffer.read<string>();
-			auto score = buffer.read<int>();
-			addScore(team, name, score);
-		}
+		if (this != scoreboard) { return; }
+		auto team = buffer.read<int>();
+		auto name = buffer.read<string>();
+		auto score = buffer.read<int>();
+		addScore(team, name, score);
+	}
 	);
 	Network::on(
-		NetMessage::SCOREBOARD_SCORE,
+		NetMessage::SCOREBOARD_TITLE,
 		[&](Connection *c, NetBuffer &buffer) {
-			if (!scoreboard) { return; }
-			title->setText(buffer.read<string>());
-		}
+		if (this != scoreboard) { return; }
+		title->setText(buffer.read<string>());
+	}
 	);
 }
 
