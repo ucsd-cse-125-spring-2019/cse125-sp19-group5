@@ -134,15 +134,7 @@ int main(int argc, char **argv) {
 			c->send(matBuffer);
 		}
 
-		auto player = new Player(vec3(0, 2, 0), origin, origin, c->getId(), 2, 0);
-		player->setCooldown(SWING, std::make_tuple(0, 60));
-		player->setCooldown(SHOOT, std::make_tuple(0, 60));
-		gameEngine.addGameObject(player);
-
-		player->setModel("Models/unit_sphere.obj");
-		player->setDirection(vec3(0, 0, -1));
-		player->setMaterial("Materials/brick.json");
-		player->setScale(vec3(2));
+		gameEngine.createPlayer(c);
 
 		auto ps = new ParticleEmitter();
 		ps->setGravity(-15.0f);

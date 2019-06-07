@@ -1,3 +1,4 @@
+#include "..\..\Shared\Shared\Game\ParticleEmitter.h"
 #include <Shared/Game/ParticleEmitter.h>
 #include "../Networking/Server.h"
 #include <Shared/Util/CurTime.h>
@@ -51,6 +52,12 @@ void ParticleEmitter::updateAll() {
 
 void ParticleEmitter::setLifeTime(float seconds) {
 	dieTime = curTime() + seconds;
+}
+
+void ParticleEmitter::deleteAll() {
+	for (auto emitter : emitters) {
+		delete emitter;
+	}
 }
 
 void ParticleEmitter::setParent(GameObject *newParent) {
