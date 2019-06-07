@@ -101,7 +101,13 @@ void GameEngine::startGame() {
 	std::cout << "Starting a new game..." << std::endl;
 	prepRound();
 	gameState.score = std::make_tuple(0, 0);
+
+#ifdef _DEBUG_SP
+	gameState.timeLeft = 100000 * 10; // a long time
+#else
 	gameState.timeLeft = 1000 * 60 * 5; // 5 minutes in ms
+#endif
+
 	NetBuffer start(NetMessage::START);
 	start.write<bool>(true);
 	Network::broadcast(start);
@@ -120,6 +126,9 @@ void GameEngine::endGame() {
 		hideScoreboard();
 		// TODO: move this later to when teams are finalized
 		roundState = RoundState::READY;
+		teamsReady = false;
+		NetBuffer reset(NetMessage::RESET);
+		Network::broadcast(reset);
 	});
 }
 
@@ -168,6 +177,7 @@ void GameEngine::updateGameState(vector<PlayerInputs> & playerInputs) {
 	updateScore();
 	updateGameObjectsOnServerTick();
 	removeDeadObjects();
+	spawnItems();
 
 	ParticleEmitter::updateAll();
 
@@ -282,7 +292,7 @@ void GameEngine::movePlayers(vector<PlayerInputs> & playerInputs) {
 	vector<vec3> directions(gameState.players.size());
 
 	for (PlayerInputs playerInput : playerInputs) {
-		if (aggregatePlayerMovements.size() < playerInput.id) {
+		if (aggregatePlayerMovements.size() <= playerInput.id) {
 			continue;
 		}
 		aggregatePlayerMovements[playerInput.id] |= playerInput.inputs;
@@ -304,7 +314,8 @@ void GameEngine::movePlayers(vector<PlayerInputs> & playerInputs) {
 }
 
 void GameEngine::incrementalMoveBall(Ball * ball, float dist) {
-	float diameter = ball->getBoundingSphere()->getRadius() * 2.0f;
+	//float diameter = ball->getBoundingSphere()->getRadius() * 2.0f;
+	float diameter = 0.2f;
 
 	while (dist > 0.0f && !ball->getGoalScored()) {
 		if (dist > diameter) {
@@ -328,6 +339,15 @@ void GameEngine::incrementalMoveBall(Ball * ball, float dist) {
 			if (ball->collidesWith(wall)) {
 				ball->onCollision(wall);
 				wall->onCollision(ball);
+			}
+		}
+
+		for (Player * player : gameState.players) {
+			for (Wall * wall : gameState.walls) {
+				if (player->collidesWith(wall)) {
+					player->onCollision(wall);
+					wall->onCollision(player);
+				}
 			}
 		}
 	}
@@ -430,7 +450,9 @@ void GameEngine::updateGameObjectsOnServerTick() {
 
 bool GameEngine::noCollisionMove(Player * player, vec3 movement) {
 	vec3 currPosition = player->getPosition();
-	float diameter = player->getBoundingSphere()->getRadius() * 2;
+	// float diameter = player->getBoundingSphere()->getRadius() * 2;
+	float diameter = 0.2f;
+
 	vec3 move = player->getMoveDestination(movement) - player->getPosition();
 	float dist = glm::length(move);
 
@@ -444,10 +466,17 @@ bool GameEngine::noCollisionMove(Player * player, vec3 movement) {
 			dist = 0.0f;
 		}
 
-		for (Player * p : gameState.players) {
+		/*for (Player * p : gameState.players) {
 			if (player->collidesWith(p)) {
 				player->setPosition(currPosition);
 				return false;
+			}
+		}*/
+
+		for (Ball * ball : gameState.balls) {
+			if (player->collidesWith(ball)) {
+				player->onCollision(ball);
+				ball->onCollision(player);
 			}
 		}
 
@@ -462,6 +491,30 @@ bool GameEngine::noCollisionMove(Player * player, vec3 movement) {
 	}
 
 	return true;
+}
+
+void GameEngine::spawnItems() {
+	if (itemTimer == 0) {
+		PowerUpItem * powerUpItem = addGameObject<PowerUpItem>();
+		powerUpItem->setPowerUpType(POWERUP_TYPES(rand() % NUM_POWERUPS));
+		powerUpItem->setBoundingShape(new BoundingSphere(vec3(0, 3, 0), 3.0f));
+		powerUpItem->setScale(vec3(3));
+		powerUpItem->setModel("Models/unit_sphere.obj");
+		powerUpItem->setMaterial("Materials/grass.json");
+
+		tuple<float, float> xRange = std::make_tuple(-50.0f, 50.0f);
+		tuple<float, float> yRange = std::make_tuple(70.0f, 80.0f);
+		tuple<float, float> zRange = std::make_tuple(-50.0f, 50.0f);
+		float xPos = (rand() / (float)RAND_MAX * (std::get<1>(xRange) - std::get<0>(xRange))) + std::get<0>(xRange);
+		float yPos = (rand() / (float)RAND_MAX * (std::get<1>(yRange) - std::get<0>(yRange))) + std::get<0>(yRange);
+		float zPos = (rand() / (float)RAND_MAX * (std::get<1>(zRange) - std::get<0>(zRange))) + std::get<0>(zRange);
+
+		powerUpItem->setPosition(vec3(xPos, yPos, zPos));
+		itemTimer = 900;
+	}
+	else {
+		itemTimer--;
+	}
 }
 
 const std::array<GameObject*, MAX_GAME_OBJS> &GameEngine::getGameObjects() const {
@@ -551,10 +604,11 @@ Player *GameEngine::createPlayer(Connection *c) {
 	player->setCooldown(SHOOT, std::make_tuple(0, 60));
 	addGameObject(player);
 
-	player->setModel("Models/unit_sphere.obj");
+	player->setModel("Models/AntiDeformBear.fbx");
 	player->setDirection(vec3(0, 0, -1));
-	player->setMaterial("Materials/brick.json");
-	player->setScale(vec3(2));
+	player->setMaterial("Materials/brown_bear.json");
+	player->setScale(vec3(.2));
+	player->setAnimation(0);
 
 	return player;
 }

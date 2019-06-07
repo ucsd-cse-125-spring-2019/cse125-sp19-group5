@@ -1,6 +1,13 @@
 #include "CollisionDetection.h"
 #include "Player.h"
 #include "BoundingSphere.h"
+#include "Ball.h"
+#include "Bullet.h"
+#include "Goal.h"
+#include "Paddle.h"
+#include "PowerUpItem.h"
+#include "StunBullet.h"
+#include "Wall.h"
 #include <iostream>
 #include <glm/gtx/euler_angles.hpp>
 #include <glm/gtx/vector_angle.hpp>
@@ -28,7 +35,7 @@ void Player::setDirection(const vec3 &newDirection) {
 	setOrientation(glm::quatLookAt(direction, vec3(0, 1, 0)));
 }
 
-void Player::removePowerup(const string &type) {
+void Player::removePowerup(const POWERUP_TYPES &type) {
 	auto it = powerups.find(type);
 	if (it == powerups.end()) { return; }
 
@@ -37,16 +44,8 @@ void Player::removePowerup(const string &type) {
 	powerups.erase(it);
 }
 
-bool Player::hasPowerup(const string &type) const {
+bool Player::hasPowerup(const POWERUP_TYPES &type) const {
 	return powerups.find(type) != powerups.end();
-}
-
-void Player::setMoveSpeed(float newMoveSpeed) {
-	moveSpeed = newMoveSpeed;
-}
-
-float Player::getMoveSpeed() const {
-	return moveSpeed;
 }
 
 void Player::updateOnServerTick() {
@@ -61,7 +60,9 @@ void Player::updateOnServerTick() {
 		isGrounded = false;
 	}
 	if (!isGrounded && numLandings > 0) {
-		setPosition(vec3(getPosition().x, maxBoxHeight, getPosition().z));
+		// dont change previous position
+		setPositionNoUpdate(vec3(getPosition().x, maxBoxHeight, getPosition().z));
+
 		isGrounded = true;
 		maxBoxHeight = 0.0f;
 	}
@@ -79,6 +80,17 @@ void Player::updateOnServerTick() {
 		}
 	}
 
+	auto iter = currentBallCollisions.begin();
+	while (iter != currentBallCollisions.end()) {
+		if (iter->second == 0) {
+			iter = currentBallCollisions.erase(iter);
+		}
+		else {
+			iter->second--;
+			iter++;
+		}
+	}
+  
 	// Player movement sounds
 	if (isGrounded && soundFootstepsDist >= SOUND_FOOTSTEPS_REQ_DIST) {
 		string soundToPlay = soundFootsteps[getRandIndex(soundFootsteps.size())];
@@ -100,6 +112,12 @@ void Player::updateOnServerTick() {
 
 vec3 Player::getDirection() {
 	return glm::normalize(this->direction);
+}
+
+void Player::setPositionNoUpdate(vec3 pos) {
+	vec3 prev = getPrevPosition();
+	setPosition(pos);
+	this->prevPosition = prev;
 }
 
 vec3 Player::getMoveDestination(vec3 movement) {
@@ -170,7 +188,7 @@ vec3 Player::getMoveDestination(vec3 movement) {
 	vec3 newVelocity = getVelocity();
 	if (isGrounded) {
 		newVelocity.y = PhysicsEngine::applyGravity(vec3(0.0f), PhysicsEngine::getGravity()).y; // Reset gravity
-		if (wishJump) {
+		if (wishJump && !hasPowerup(POWERUP_STUN_DEBUFF)) {
 			newVelocity = PhysicsEngine::movePlayerOnGround(accelDir, newVelocity, moveSpeed);
 			newVelocity = PhysicsEngine::jumpPlayer(newVelocity);
 			isGrounded = false;
@@ -190,8 +208,10 @@ vec3 Player::getMoveDestination(vec3 movement) {
 
 	// Prevent the player from ever falling through the floor
 	// ATTEMPT TO MOVE GROUND CHECK TO WALL COLLISIONS - KEENAN
-	vec3 newPos = getPosition() + newVelocity * PhysicsEngine::getDeltaTime() + currVelocity + this->collisionVelocityComponent;
-	this->collisionVelocityComponent = vec3(0);
+	vec3 newPos = getPosition() + newVelocity * PhysicsEngine::getDeltaTime() + currVelocity + collisionVelocityComponent;
+	if (isGrounded) {
+		this->collisionVelocityComponent = vec3(0);
+	}
 	/*if (newPos.y < PhysicsEngine::getFloorY()) {
 		newPos.y = PhysicsEngine::getFloorY();
 		isGrounded = true;
@@ -229,13 +249,16 @@ void Player::useCooldown(PlayerCommands command) {
 }
 
 #ifdef _CLIENT
-GameObject *Player::doAction(PlayerCommands action) {
+void Player::doAction(PlayerCommands action) {
 	return nullptr;
 }
 
-GameObject *Player::processCommand(int inputs) {
+void Player::processCommand(int inputs) {
 	return nullptr;
->>>>>>> Move player actions to server
+}
+
+void Player::onCollision(PowerUpItem * item) {
+	return;
 }
 #endif
 
@@ -259,11 +282,24 @@ void Player::onCollision(Ball * ball) {
 	vec3 moveDirection = getPosition() - ball->getPosition();
 	moveDirection.y = 0;
 	moveDirection = glm::normalize(moveDirection);
-	this->collisionVelocityComponent += moveDirection * (targetDist - currDist) * std::max(1.0f, glm::length(ball->getVelocity()));
+	
+	if (this->currentBallCollisions.find(ball) == currentBallCollisions.end() && (glm::length(ball->getVelocity()) > 0.1f)) {
+		this->collisionVelocityComponent += moveDirection * (targetDist - currDist) * glm::length(ball->getVelocity()) * 0.8f;
+		this->collisionVelocityComponent += vec3(0, 1, 0) * glm::length(ball->getVelocity()) * 0.5f;
+		this->currentBallCollisions[ball] = 0;
+		isGrounded = false;
+	}
+	else {
+		float horizDist = sqrt(pow(getBoundingSphere()->getRadius() + ball->getBoundingSphere()->getRadius(), 2) - pow(getPosition().y - ball->getPosition().y, 2));
+		vec3 startPosition = vec3(ball->getPosition().x, getPosition().y, ball->getPosition().z);
+		setPositionNoUpdate(startPosition + moveDirection * horizDist);
+	}
 }
 
 void Player::onCollision(Bullet * bullet) {
 	this->collisionVelocityComponent += bullet->getVelocity();
+	this->collisionVelocityComponent += vec3(0, 0.5, 0);
+	isGrounded = false;
 }
 
 void Player::onCollision(Goal * goal) {
@@ -272,6 +308,12 @@ void Player::onCollision(Goal * goal) {
 			this->numLandings += 1;
 			this->maxBoxHeight = std::max(maxBoxHeight,
 				goal->getPosition().y + goal->getBoundingBox()->height + getBoundingSphere()->getRadius());
+			setPositionNoUpdate(vec3(
+				getPosition().x,
+				goal->getPosition().y + goal->getBoundingBox()->height + getBoundingSphere()->getRadius(),
+				getPosition().z)
+			);
+			break;
 		}
 		else {
 			vec3 planeNormal = glm::normalize(p->getNormal());
@@ -279,15 +321,28 @@ void Player::onCollision(Goal * goal) {
 			float angleBetweenPosition = glm::angle(glm::normalize(getPosition() - getPrevPosition()), planeNormal);
 			if ((angleBetweenVelocity > glm::half_pi<float>()) || (angleBetweenPosition > glm::half_pi<float>())) {
 				float planeDistance = abs(p->pointDistance(getPosition()) - (1.01f * getBoundingSphere()->getRadius()));
-				setPosition(getPosition() + planeNormal * planeDistance);
+				setPositionNoUpdate(getPosition() + planeNormal * planeDistance);
 			}
 		}
 	}
 }
 
-void Player::onCollision(Paddle * paddle) { }
+void Player::onCollision(Paddle * paddle) {
+	if (paddle->getObjectsHit().find(this) == paddle->getObjectsHit().end() && paddle->getOwner() != this) {
+		this->collisionVelocityComponent += paddle->getVelocity() * 0.8f;
+		this->collisionVelocityComponent += vec3(0, 1, 0) * glm::length(paddle->getVelocity()) * 0.1f;
+	}
+}
 
-void Player::onCollision(Player * player) { }
+void Player::onCollision(Player * player) {
+	if (this->collidesWith(player)) {
+		vec3 midPoint = (getPosition() + player->getPosition()) * 0.5f;
+
+		vec3 moveDir = glm::normalize(getPosition() - midPoint);
+		setPositionNoUpdate(midPoint + (moveDir * getBoundingSphere()->getRadius() * 1.01f));
+		player->setPositionNoUpdate(midPoint + (-moveDir * getBoundingSphere()->getRadius() * 1.01f));
+	}
+}
 
 void Player::onCollision(Wall * wall) { 	
 	for (Plane * p : CollisionDetection::getIntersectingPlanes(getBoundingSphere(), wall->getBoundingBox())) {
@@ -295,7 +350,7 @@ void Player::onCollision(Wall * wall) {
 			this->numLandings += 1;
 			this->maxBoxHeight = std::max(maxBoxHeight,
 				wall->getPosition().y + wall->getBoundingBox()->height + getBoundingSphere()->getRadius());
-			setPosition(vec3(
+			setPositionNoUpdate(vec3(
 				getPosition().x,
 				wall->getPosition().y + wall->getBoundingBox()->height + getBoundingSphere()->getRadius(),
 				getPosition().z)
@@ -308,8 +363,52 @@ void Player::onCollision(Wall * wall) {
 			float angleBetweenPosition = glm::angle(glm::normalize(getPosition() - getPrevPosition()), planeNormal);
 			if ((angleBetweenVelocity > glm::half_pi<float>()) || (angleBetweenPosition > glm::half_pi<float>())) {
 				float planeDistance = abs(p->pointDistance(getPosition()) - (1.01f * getBoundingSphere()->getRadius()));
-				setPosition(getPosition() + planeNormal * planeDistance);
+				setPositionNoUpdate(getPosition() + planeNormal * planeDistance);
 			}
 		}
 	}
+}
+
+void Player::setMoveSpeed(float newMoveSpeed) {
+	moveSpeed = newMoveSpeed;
+}
+
+float Player::getMoveSpeed() const {
+	return moveSpeed;
+}
+
+void Player::setStrength(float newStrength) {
+	strength = newStrength;
+}
+
+float Player::getStrength() const {
+	return strength;
+}
+
+void Player::setNumBullets(int numBullets) {
+	this->numBullets = numBullets;
+}
+
+int Player::getNumBullets() const {
+	return numBullets;
+}
+
+void Player::setBulletType(BULLET_TYPES bulletType) {
+	this->bulletType = bulletType;
+}
+
+BULLET_TYPES Player::getBulletType() {
+	return this->bulletType;
+}
+
+void Player::setGoalsScored(int goals) {
+	this->goalsScored = goals;
+}
+
+int Player::getGoalsScored() {
+	return this->goalsScored;
+}
+
+int Player::getTeam() const {
+	return this->team;
 }

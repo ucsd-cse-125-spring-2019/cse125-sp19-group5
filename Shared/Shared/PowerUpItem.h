@@ -1,22 +1,24 @@
 #pragma once
 #include "SphereGameObject.h"
 
-class Bullet : public SphereGameObject {
+class PowerUpItem : public SphereGameObject {
 public:
 	using SphereGameObject::SphereGameObject;
 
-	Bullet(vec3 position, vec3 velocity, float radius);
 	GAMEOBJECT_TYPES getGameObjectType() const;
 	void updateOnServerTick();
 	bool deleteOnServerTick();
 
+	void setPowerUpType(POWERUP_TYPES powerUpType);
+	POWERUP_TYPES getPowerUpType();
+
 	// collision interactions below
 	void onCollision(GameObject * gameObject);
-	void onCollision(Ball * ball);
 	void onCollision(Player * player);
 	void onCollision(Wall * wall);
 
 private:
-	bool hit = false;
-	int lifespan = 100;
+	bool pickedUp = false;
+	bool grounded = false;
+	POWERUP_TYPES powerUpType;
 };

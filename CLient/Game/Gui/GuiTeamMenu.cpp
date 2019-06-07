@@ -21,39 +21,48 @@ GuiTeamMenu::GuiTeamMenu()
 	label->setPosition(vec2(0.4f, 0.75f));
 	label->setAlignment(TextAlign::CENTER);
 	label->setText("Team Selection");
-	label->setFont("Arial");
+	label->setFont("BearPong");
+	label->setColor(vec4(167.0f / 255.0f, 136.0f / 255.0f, 99.0f / 255.0f, 1.0f));
 
 	message = Gui::create<GuiText>(mainContainer);
 	message->setPosition(vec2(0.4f, 0.05f));
 	message->setAlignment(TextAlign::CENTER);
 	message->setText("");
-	message->setFont("Arial");
+	message->setFont("NormalText");
+	message->setColor(vec4(167.0f / 255.0f, 136.0f / 255.0f, 99.0f / 255.0f, 1.0f));
+
+	GuiText * title_t1 = Gui::create<GuiText>(mainContainer);
+	title_t1->setColor(vec4(167.0f / 255.0f, 136.0f / 255.0f, 99.0f / 255.0f, 1.0f));
+	title_t1->setPosition(vec2(0.225f, 0.6f));
+	title_t1->setFont("NormalText");
+	title_t1->setAlignment(TextAlign::CENTER);
+	title_t1->setText("red");
 
 	container_t1 = Gui::create<GuiRect>(mainContainer);
-	container_t1->setColor(vec4(1.0f, 0.0f, 0.0f, 0.0f));
-	container_t1->setPosition(vec2(0.15f, 0.35f));
-	container_t1->setSize(vec2(0.3f, 0.3f));
+	container_t1->setColor(vec4(0.9f, 0.1f, 0.1f, 1.0f) * 0.5f);
+	container_t1->setPosition(vec2(0.1f, 0.25f));
+	container_t1->setSize(vec2(0.25f / 0.8f, 0.3f / 0.8f));
+
+	GuiText * title_t2 = Gui::create<GuiText>(mainContainer);
+	title_t2->setColor(vec4(167.0f / 255.0f, 136.0f / 255.0f, 99.0f / 255.0f, 1.0f));
+	title_t2->setPosition(vec2(0.575f, 0.6f));
+	title_t2->setFont("NormalText");
+	title_t2->setAlignment(TextAlign::CENTER);
+	title_t2->setText("blue");
 
 	container_t2 = Gui::create<GuiRect>(mainContainer);
-	container_t2->setColor(vec4(0.0f, 0.0f, 1.0f, 0.0f));
-	container_t2->setPosition(vec2(0.4f, 0.35f));
-	container_t2->setSize(vec2(0.3f, 0.3f));
-
-	label_t1 = Gui::create<GuiText>(container_t1);
-	label_t1->setPosition(vec2(0.06f, 0.1f));
-	label_t1->setFont("Arial");
-
-	label_t2 = Gui::create<GuiText>(container_t2);
-	label_t2->setPosition(vec2(0.06f, 0.1f));
-	label_t2->setFont("Arial");
+	container_t2->setColor(vec4(0.1f, 0.1f, 0.9f, 1.0f) * 0.5f);
+	container_t2->setPosition(vec2(0.45f, 0.25f));
+	container_t2->setSize(vec2(0.25f / 0.8f, 0.3f / 0.8f));
 
 	swtch = Gui::create<GuiButton>(mainContainer);
-	swtch->setBgColor(vec4(0.0f, 0.0f, 0.0f, 1.0f));
-	swtch->setPosition(vec2(0.2f, 0.1f));
-	swtch->setFont("Arial");
-	swtch->setSize(vec2(0.3f, 0.2f));
-	swtch->setText("switch");
+	swtch->setBgColor(vec4(167.0f / 255.0f, 136.0f / 255.0f, 99.0f / 255.0f, 1.0f));
+	swtch->setPosition(vec2(0.25f, 0.1f));
+	swtch->setFont("BearPongSmall");
+	swtch->setSize(vec2(0.375f, 0.1f));
+	swtch->setText("switch teams");
 	swtch->setAlignment(TextAlign::CENTER);
+	swtch->setColor(vec4(43.0f / 255.0f, 27.0f / 255.0f, 42.0f / 255.0f, 1.0f));
 	auto onClick = std::bind(&GuiTeamMenu::handleSwitch, this);
 	swtch->addCallback(onClick);
 
@@ -103,8 +112,8 @@ void GuiTeamMenu::updateTeamGui(Connection *c, NetBuffer &buffer) {
 	int size = buffer.read<int>();
 	int t;
 	int p;
-	float t1_pos = 0.1f;
-	float t2_pos = 0.1f;
+	float t1_pos = 0.125f;
+	float t2_pos = 0.125f;
 
 	id_name = game->getIdName();
 	for (int i = 0; i < size; i++) {
@@ -131,21 +140,21 @@ void GuiTeamMenu::updateTeamGui(Connection *c, NetBuffer &buffer) {
 		t = it->second;
 		if (t == 0) {
 			label = Gui::create<GuiText>(container_t1);
-			label->setPosition(vec2(-0.1f, t1_pos));
+			label->setPosition(vec2(-0.03f, t1_pos));
 			label->setAlignment(TextAlign::CENTER);
 			label->setSize(vec2(1.0f, 0.1f));
 			label->setText(id_name[p]);
-			label->setFont("Arial");
+			label->setFont("NormalText");
 			t1_pos += 0.1f;
 			team1.push_back(label);
 		}
 		else {
 			label = Gui::create<GuiText>(container_t2);
-			label->setPosition(vec2(0.0f, t2_pos));
+			label->setPosition(vec2(-0.03f, t2_pos));
 			label->setAlignment(TextAlign::CENTER);
 			label->setSize(vec2(1.0f, 0.1f));
 			label->setText(id_name[p]);
-			label->setFont("Arial");
+			label->setFont("NormalText");
 			t2_pos += 0.1f;
 			team2.push_back(label);
 		}

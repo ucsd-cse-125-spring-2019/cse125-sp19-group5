@@ -118,14 +118,23 @@
     <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Game\ParticleEmitter.cpp" />
+    <ClCompile Include="Game\Powerups\BulletSpray.cpp" />
+    <ClCompile Include="Game\Powerups\PowerBoost.cpp" />
     <ClCompile Include="Game\Powerups\SpeedBoost.cpp" />
+    <ClCompile Include="Game\Powerups\StunDebuff.cpp" />
+    <ClCompile Include="Game\Powerups\StunGun.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MapLoader.cpp" />
     <ClCompile Include="Networking\Server.cpp" />
     <ClCompile Include="PlayerCommands.cpp" />
+    <ClCompile Include="PlayerPowerups.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine.h" />
+    <ClInclude Include="Game\Powerups\BulletSpray.h" />
+    <ClInclude Include="Game\Powerups\PowerBoost.h" />
+    <ClInclude Include="Game\Powerups\StunDebuff.h" />
+    <ClInclude Include="Game\Powerups\StunGun.h" />
     <ClInclude Include="MapLoader.h" />
     <ClInclude Include="Game\Powerups\SpeedBoost.h" />
     <ClInclude Include="Networking\Server.h" />

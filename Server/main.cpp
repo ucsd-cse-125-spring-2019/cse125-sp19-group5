@@ -34,6 +34,14 @@ int main(int argc, char **argv) {
 	int teamR = 0;
 	int teamB = 0;
 
+	/*auto jumpableBox = gameEngine.addGameObject<Wall>();
+	mapLoader.loadMap("Maps/map_with_goals.json");
+
+	unordered_map<int, int> player_team;
+	unordered_map<int, std::string> id_name;
+	int teamR = 0;
+	int teamB = 0;
+
 	auto jumpableBox = gameEngine.addGameObject<Wall>();
 	jumpableBox->setBoundingShape(new BoundingBox(vec3(0, 0, 30), vec3(1, 0, 0), 30, 8, 30));
 	jumpableBox->setPosition(vec3(0, 0, 30));
@@ -46,7 +54,7 @@ int main(int argc, char **argv) {
 	jumpableBox2->setPosition(vec3(0, 0, 60));
 	jumpableBox2->setScale(vec3(30, 16, 30));
 	jumpableBox2->setModel("Models/unit_cube.obj");
-	jumpableBox2->setMaterial("Materials/brick.json");
+	jumpableBox2->setMaterial("Materials/brick.json");*/
 
 	// Handle player keyboard/mouse inputs
 	auto handlePlayerInput = [&playerInputs](Connection *c, NetBuffer &buffer) {
@@ -140,7 +148,7 @@ int main(int argc, char **argv) {
 		}
 
 		gameEngine.createPlayer(c);
-
+    
 		auto ps = new ParticleEmitter();
 		ps->setGravity(-15.0f);
 		ps->setCreationSpeed(500);
@@ -201,7 +209,6 @@ int main(int argc, char **argv) {
 			//server has taken too long to process the update!
 			//std::cerr << "SERVER TOOK TOO LONG TO UPDATE!" << endl;
 		}
-	
 		gameEngine.synchronizeGameState();
 	}
 }

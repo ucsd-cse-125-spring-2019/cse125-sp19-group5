@@ -35,7 +35,7 @@ void Mesh::updateAnimation(float time) {
 		(float)animation->mDuration
 	);
 	mat4 identity(1.0f);
-	buildBoneTransformations(time, data->getSceneRoot(), identity);
+	buildBoneTransformations(time-1, data->getSceneRoot(), identity);
 }
 
 void interpolateTranslation(float time, aiNodeAnim *nodeAnim, mat4 &transform) {

@@ -2,7 +2,7 @@
 #include <iostream>
 #include <Shared/PhysicsEngine.h>
 
-const string SpeedBoost::TYPE = "speed";
+const POWERUP_TYPES SpeedBoost::TYPE = POWERUP_SPEEDBOOST;
 
 float SpeedBoost::getDuration() const {
 	return 10.0f;

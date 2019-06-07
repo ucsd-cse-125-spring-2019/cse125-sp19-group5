@@ -1,13 +1,8 @@
 #pragma once
 #include <set>
 #include "SphereGameObject.h"
-#include "Bullet.h"
-#include "Goal.h"
-#include "Paddle.h"
-#include "Player.h"
-#include "Wall.h"
 
-#define GROUNDED_TICKS_THRESHOLD 10
+#define GROUNDED_TICKS_THRESHOLD 30
 
 class Ball : public SphereGameObject {
 public:
@@ -33,6 +28,7 @@ private:
 	std::set<Ball *> currentBallCollisions;
 	int ticksSinceGrounded = 0;
 	bool isGrounded = false;
+	Player * lastHitBy = nullptr;
 
 	vector<string> soundHit{ "Sounds/ping_pong_hit_1.wav", "Sounds/ping_pong_hit_2.wav" , "Sounds/ping_pong_hit_3.wav" };
 	const float SOUND_HIT_CD = 500.0f;
