@@ -54,6 +54,12 @@ void Ball::updateOnServerTick() {
 	soundHitTimer = glm::max(0.0f, soundHitTimer - PhysicsEngine::getDeltaTime());
 	soundBounceTimer = glm::max(0.0f, soundBounceTimer - PhysicsEngine::getDeltaTime());
 	soundOofTimer = glm::max(0.0f, soundOofTimer - PhysicsEngine::getDeltaTime());
+
+	if (glm::all(glm::isnan(getPosition()))) {
+		vec3 prev = getPrevPosition();
+		setPosition(prev);
+		this->prevPosition = prev;
+	}
 }
 
 bool Ball::getGoalScored() {
