@@ -125,8 +125,8 @@ void GuiTeamMenu::updateTeamGui(Connection *c, NetBuffer &buffer) {
 	int size = buffer.read<size_t>();
 	int t;
 	int p;
-	float t1_pos = 0.125f;
-	float t2_pos = 0.125f;
+	float t1_pos = 0.26f;
+	float t2_pos = 0.26f;
 
 	id_name = game->getIdName();
 	for (size_t i = 0; i < size; i++) {
@@ -158,7 +158,7 @@ void GuiTeamMenu::updateTeamGui(Connection *c, NetBuffer &buffer) {
 			label->setSize(vec2(1.0f, 0.1f));
 			label->setText(id_name[p]);
 			label->setFont("NormalText");
-			t1_pos += 0.1f;
+			t1_pos -= 0.05f;
 			team1.push_back(label);
 		}
 		else {
@@ -168,7 +168,7 @@ void GuiTeamMenu::updateTeamGui(Connection *c, NetBuffer &buffer) {
 			label->setSize(vec2(1.0f, 0.1f));
 			label->setText(id_name[p]);
 			label->setFont("NormalText");
-			t2_pos += 0.1f;
+			t2_pos -= 0.09f;
 			team2.push_back(label);
 		}
 	}

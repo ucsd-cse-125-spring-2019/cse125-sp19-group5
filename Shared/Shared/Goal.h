@@ -18,6 +18,7 @@ public:
 private:
 	int team;
 	int goalsScored = 0;
+	Player *scorer = nullptr;
 	tuple<float, float> xRange;
 	tuple<float, float> yRange;
 	tuple<float, float> zRange;
