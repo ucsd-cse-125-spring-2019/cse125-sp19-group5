@@ -57,7 +57,11 @@ void Player::updateOnServerTick() {
 		isGrounded = false;
 	}
 	if (!isGrounded && numLandings > 0) {
+		// dont change previous position
+		// vec3 prev = getPrevPosition();
 		setPosition(vec3(getPosition().x, maxBoxHeight, getPosition().z));
+		// this->prevPosition = prev;
+
 		isGrounded = true;
 		maxBoxHeight = 0.0f;
 	}
@@ -168,8 +172,10 @@ vec3 Player::getMoveDestination(vec3 movement) {
 
 	// Prevent the player from ever falling through the floor
 	// ATTEMPT TO MOVE GROUND CHECK TO WALL COLLISIONS - KEENAN
-	vec3 newPos = getPosition() + newVelocity * PhysicsEngine::getDeltaTime() + currVelocity + this->collisionVelocityComponent;
-	this->collisionVelocityComponent = vec3(0);
+	vec3 newPos = getPosition() + newVelocity * PhysicsEngine::getDeltaTime() + currVelocity + collisionVelocityComponent;
+	if (isGrounded) {
+		this->collisionVelocityComponent = vec3(0);
+	}
 	/*if (newPos.y < PhysicsEngine::getFloorY()) {
 		newPos.y = PhysicsEngine::getFloorY();
 		isGrounded = true;
@@ -225,11 +231,18 @@ void Player::onCollision(Ball * ball) {
 	vec3 moveDirection = getPosition() - ball->getPosition();
 	moveDirection.y = 0;
 	moveDirection = glm::normalize(moveDirection);
-	this->collisionVelocityComponent += moveDirection * (targetDist - currDist) * std::max(1.0f, glm::length(ball->getVelocity()));
+	this->collisionVelocityComponent += moveDirection * (targetDist - currDist) * glm::length(ball->getVelocity());
+	this->collisionVelocityComponent += vec3(0, 1, 0) * glm::length(ball->getVelocity());
+
+	float horizDist = sqrt(pow(getBoundingSphere()->getRadius() + ball->getBoundingSphere()->getRadius(), 2) - pow(getPosition().y - ball->getPosition().y, 2));
+	vec3 startPosition = vec3(ball->getPosition().x, getPosition().y, ball->getPosition().z);
+	setPosition(startPosition + moveDirection * horizDist);
+	std::cout << glm::length(getPosition() - getPrevPosition()) << std::endl;
 }
 
 void Player::onCollision(Bullet * bullet) {
 	this->collisionVelocityComponent += bullet->getVelocity();
+	this->collisionVelocityComponent += vec3(0, 1, 0);
 }
 
 void Player::onCollision(Goal * goal) {
@@ -257,9 +270,6 @@ void Player::onCollision(Player * player) { }
 
 void Player::onCollision(Wall * wall) { 	
 	for (Plane * p : CollisionDetection::getIntersectingPlanes(getBoundingSphere(), wall->getBoundingBox())) {
-		if (p == wall->getBoundingBox()->bottom) {
-			continue;
-		}
 		if (p == wall->getBoundingBox()->top) {
 			this->numLandings += 1;
 			this->maxBoxHeight = std::max(maxBoxHeight,
