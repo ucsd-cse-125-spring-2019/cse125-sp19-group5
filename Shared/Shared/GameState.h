@@ -38,7 +38,7 @@ struct GameState : public Serializable {
 				size++;
 			}
 		}
-		buffer.write<size_t>(size);
+		buffer.write(size);
 		for (auto gameObject : gameObjects) {
 			if (!gameObject) {
 				continue;
@@ -48,14 +48,15 @@ struct GameState : public Serializable {
 		}
 
 		buffer.write<long>(timeLeft);
-		buffer.write<tuple<int, int>>(score);
+		buffer.write(std::get<0>(score));
+		buffer.write(std::get<1>(score));
 		buffer.write<bool>(in_progress);
 	}
 
 	void deserialize(NetBuffer &buffer) {
 		constexpr auto origin = vec3(0.0f);
 
-		auto numGameObjects = buffer.read<size_t>();
+		auto numGameObjects = buffer.read<int>();
 		for (int i = 0; i < numGameObjects; i++) {
 			auto gameObject = gameObjects[buffer.read<int>()];
 			if (gameObject) {
@@ -64,7 +65,8 @@ struct GameState : public Serializable {
 		}
 
 		timeLeft = buffer.read<long>();
-		score = buffer.read<tuple<int, int>>();
+		std::get<0>(score) = buffer.read<int>();
+		std::get<1>(score) = buffer.read<int>();
 		in_progress = buffer.read<bool>();
 	}
 };
