@@ -38,7 +38,7 @@ public:
 	void onPlayerDisconnected(Connection *c);
 
 	void updateGameState(vector<PlayerInputs> & playerInputs);
-	void updateTeamReady(unordered_map<int, int> p_t, int teamR, int teamB);
+	void updateTeamReady(unordered_map<int, int> &p_t, int teamR, int teamB);
 	void synchronizeGameState();
 	GameState & getGameState();
 	

@@ -117,8 +117,11 @@ void GameEngine::endGame() {
 		// TODO: move this later to when teams are finalized
 		roundState = RoundState::READY;
 		teamsReady = false;
-		NetBuffer reset(NetMessage::RESET);
-		Network::broadcast(reset);
+		NetBuffer resetbuf(NetMessage::RESET);
+		Network::broadcast(resetbuf);
+		NetBuffer teambuf(NetMessage::TEAM);
+		teambuf.write<int>(0);
+		Network::broadcast(teambuf);
 	});
 }
 
@@ -173,12 +176,13 @@ void GameEngine::updateGameState(vector<PlayerInputs> & playerInputs) {
 	// send getNetworkGameState() to client
 }
 
-void GameEngine::updateTeamReady(unordered_map<int, int> p_t, int teamR, int teamB) {
+void GameEngine::updateTeamReady(unordered_map<int, int> &p_t, int teamR, int teamB) {
 
 	tuple<int, int> temp;
 	bool t_ready;
 	NetBuffer ready(NetMessage::READY);
 	NetBuffer team(NetMessage::TEAM);
+	cout << "team message being sent" << endl;
 	team.write<int>(p_t.size());
 	for (auto it = p_t.begin(); it != p_t.end(); it++) {
 		team.write(it->first);
