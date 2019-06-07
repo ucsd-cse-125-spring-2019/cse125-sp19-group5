@@ -98,6 +98,9 @@ void GameEngine::startGame() {
 	prepRound();
 	gameState.score = std::make_tuple(0, 0);
 	gameState.timeLeft = 1000 * 10; // 5 minutes in ms
+	NetBuffer start(NetMessage::START);
+	start.write<bool>(true);
+	Network::broadcast(start);
 }
 
 void GameEngine::endGame() {
@@ -190,6 +193,9 @@ void GameEngine::updateTeamReady(unordered_map<int, int> p_t, int teamR, int tea
 
 	ready.write<bool>(t_ready);
 	Network::broadcast(ready);
+	if (t_ready) {
+		teamsReady = true;
+	}
 }
 
 void GameEngine::synchronizeGameState() {
