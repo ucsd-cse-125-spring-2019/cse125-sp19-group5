@@ -221,7 +221,7 @@ void Player::useCooldown(PlayerCommands command) {
 		this->playSound(soundToPlay, 1.0f, false);
 	}
 	else if (command == SHOOT) {
-		this->playSound(soundFire, 1.0f, false);
+		this->playSound(soundFire, 0.5f, false);
 	}
 	else if (command == WALL) {
 		this->playSound(soundBuilding, 1.0f, false);
