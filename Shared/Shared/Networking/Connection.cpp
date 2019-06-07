@@ -1,6 +1,8 @@
 #include "Connection.h"
 #include <iostream>
 
+static NetMessage lastGoodHeader = NetMessage::TEST;
+
 Connection::Connection(int id, TcpSocket *socket) : id(id), socket(socket) {
 	readHeader();
 	socket->set_option(boost::asio::socket_base::keep_alive(true));
@@ -47,7 +49,6 @@ void Connection::handleHeader(const ErrorCode &error, size_t bytes) {
 	readBuffer(header);
 }
 
-static NetMessage lastGoodHeader = NetMessage::TEST;
 
 void Connection::handleBuffer(
 	NetBufferHeader header,

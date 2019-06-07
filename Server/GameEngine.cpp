@@ -15,7 +15,7 @@ constexpr auto SCORE_SHOW_TIME = 10;
 
 #define _DEBUG
 
-static const int PLAYER_NUM = 1;
+static const int PLAYER_NUM = 2;
 
 template<class T, class V>
 void inline safeRemoveFromVec(std::vector<T> &v, V &val) {
