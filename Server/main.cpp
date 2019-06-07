@@ -104,6 +104,11 @@ int main(int argc, char **argv) {
 		// Send Client the connection/player ID 
 		NetBuffer buffer(NetMessage::CONNECTION_ID);
 		buffer.write<int>(c->getId());
+		buffer.write<int>(id_name.size());
+		for (auto it = id_name.begin(); it != id_name.end(); it++) {
+			buffer.write<int>(it->first);
+			buffer.write<std::string>(it->second);
+		}
 		c->send(buffer);
 		c->on(NetMessage::NAME, addPlayerName);
 		c->on(NetMessage::TEAM, handleTeamSelection);
@@ -134,16 +139,7 @@ int main(int argc, char **argv) {
 			c->send(matBuffer);
 		}
 
-		auto player = new Player(vec3(0, 2, 0), origin, origin, c->getId(), 2, 0);
-		player->setCooldown(SWING, std::make_tuple(0, 60));
-		player->setCooldown(SHOOT, std::make_tuple(0, 60));
-		gameEngine.addGameObject(player);
-
-		player->setModel("Models/AntiDeformBear.fbx");
-		player->setDirection(vec3(0, 0, -1));
-		player->setMaterial("Materials/brown_bear.json");
-		player->setScale(vec3(.2));
-		player->setAnimation(0);
+		gameEngine.createPlayer(c);
 
 		auto ps = new ParticleEmitter();
 		ps->setGravity(-15.0f);

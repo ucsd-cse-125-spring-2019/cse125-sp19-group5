@@ -68,6 +68,9 @@ public:
 	void setMoveSpeed(float newMoveSpeed);
 	float getMoveSpeed() const;
 
+	int static getRandIndex(int size) { return std::rand() % size; };
+	float static getRandPercent() { return static_cast <float> (std::rand()) / static_cast <float> (RAND_MAX); };
+
 private:
 	vec3 direction;
 	int actionCharge;
@@ -88,4 +91,22 @@ private:
 	int numLandings = 0;
 	vec3 collisionVelocityComponent = vec3(0);
 	vec3 prevPosition;
+
+	vector<string> soundFootsteps{ "Sounds/grass_run_1.wav", "Sounds/grass_run_2.wav" , "Sounds/grass_run_3.wav" };
+	const float SOUND_FOOTSTEPS_REQ_DIST = 25.0f;
+	float soundFootstepsDist = 0.0f;
+
+	vector<string> soundLanding{ "Sounds/grass_jump_land_1.wav", "Sounds/grass_jump_land_2.wav" , "Sounds/grass_jump_land_3.wav" };
+	bool prevIsGrounded = false;
+	bool shouldLandSound = false;
+
+	string soundFire = "Sounds/guy_says_pew.wav";
+	string soundSuperFire = "Sounds/awp_shot.wav";
+
+	vector<string> soundSwing{ "Sounds/swing_1.wav", "Sounds/swing_2.wav" , "Sounds/swing_3.wav" };
+
+	string soundSpeedBoost = "Sounds/speed_boost.wav";
+	string soundSuperSpeedBoost = "Sounds/speed_boost_meme.mp3";
+
+	string soundBuilding = "Sounds/building.wav";
 };

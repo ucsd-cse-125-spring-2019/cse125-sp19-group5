@@ -5,6 +5,7 @@
 #include <Shared/CollisionDetection.h>
 #include <Shared/Game/ParticleEmitter.h>
 #include <Shared/Util/CurTime.h>
+#include "MapLoader.h"
 
 constexpr auto COUNTDOWN_TIME = 3;
 constexpr auto ROUND_SCORE_TIME = 3;
@@ -49,6 +50,10 @@ void GameEngine::removeGameObjectById(int id) {
 	}
 }
 
+void GameEngine::removeGameObject(GameObject *obj) {
+	removeGameObjectById(obj->getId());
+}
+
 void GameEngine::init() {
 	gameState.in_progress = false;
 	gameState.score = std::make_tuple(0, 0);
@@ -62,7 +67,7 @@ bool GameEngine::shouldGameStart() {
 		return false;
 	}
 #ifdef _DEBUG
-	if (gameState.players.size() != 2) {
+	if (gameState.players.size() == 0) {
 		return false;
 	}
 #else
@@ -78,6 +83,7 @@ void GameEngine::prepRound() {
 	std::cout << "Round starting soon..." << std::endl;
 
 	spawnPlayers();
+	setHUDVisible(true);
 	// TODO: move ball(s) to spawn
 	// TODO: show countdown on screen
 
@@ -100,18 +106,22 @@ void GameEngine::startGame() {
 	std::cout << "Starting a new game..." << std::endl;
 	prepRound();
 	gameState.score = std::make_tuple(0, 0);
-	gameState.timeLeft = 1000 * 6 * 5; // 5 minutes in ms
+	gameState.timeLeft = 1000 * 10; // 5 minutes in ms
 }
 
 void GameEngine::endGame() {
 	std::cout << "Game over, showing scores..." << std::endl;
 	gameState.in_progress = false;
 	roundState = RoundState::SHOWING_SCORES;
-	// TODO: show scores
+
+	showScoreboard();
 
 	setTimer("scores", SCORE_SHOW_TIME, [&]() {
+		cleanMap();
 		std::cout << "Game over, back to lobby" << std::endl;
-		// TODO: go back to lobby
+		hideScoreboard();
+		// TODO: move this later to when teams are finalized
+		roundState = RoundState::READY;
 	});
 }
 
@@ -188,6 +198,13 @@ void GameEngine::updateTeamReady(unordered_map<int, int> p_t, int teamR, int tea
 
 	ready.write<bool>(t_ready);
 	Network::broadcast(ready);
+	NetBuffer start(NetMessage::START);
+	setTimer("start", 10, [&] {
+		if (shouldGameStart()) {
+			start.write<bool>(true);
+			Network::broadcast(start);
+		}
+	});
 }
 
 void GameEngine::synchronizeGameState() {
@@ -507,6 +524,59 @@ void GameEngine::updateTimers() {
 			it = timers.erase(it);
 		} else {
 			it++;
+		}
+	}
+}
+
+void GameEngine::showScoreboard() {
+	NetBuffer showBuf(NetMessage::SCOREBOARD_SHOW);
+	Network::broadcast(showBuf);
+
+	// TODO: show scores
+}
+
+void GameEngine::hideScoreboard() {
+	NetBuffer buffer(NetMessage::SCOREBOARD_HIDE);
+	Network::broadcast(buffer);
+}
+
+void GameEngine::setHUDVisible(bool isVisible) {
+	NetBuffer buffer(NetMessage::HUD_VISIBLE);
+	buffer.write(isVisible);
+	Network::broadcast(buffer);
+}
+
+Player *GameEngine::createPlayer(Connection *c) {
+	constexpr vec3 origin(0.0f);
+
+	auto player = new Player(vec3(0, 2, 0), origin, origin, c->getId(), 2, 0);
+	player->setCooldown(SWING, std::make_tuple(0, 60));
+	player->setCooldown(SHOOT, std::make_tuple(0, 60));
+	addGameObject(player);
+
+	player->setModel("Models/unit_sphere.obj");
+	player->setDirection(vec3(0, 0, -1));
+	player->setMaterial("Materials/brick.json");
+	player->setScale(vec3(2));
+
+	return player;
+}
+
+void GameEngine::cleanMap() {
+	for (auto gameObject : gameState.gameObjects) {
+		if (gameObject) {
+			removeGameObject(gameObject);
+		}
+	}
+	ParticleEmitter::deleteAll();
+
+	MapLoader mapLoader(this);
+	// TODO: change this to some variable - potentially for map votes
+	mapLoader.loadMap("Maps/map_with_goals.json");
+
+	for (auto conn : Network::connections) {
+		if (conn) {
+			createPlayer(conn);
 		}
 	}
 }

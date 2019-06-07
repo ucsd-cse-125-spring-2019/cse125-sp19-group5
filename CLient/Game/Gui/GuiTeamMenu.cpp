@@ -25,12 +25,12 @@ GuiTeamMenu::GuiTeamMenu()
 	message->setText("");
 	message->setFont("Arial");
 
-	auto container_t1 = Gui::create<GuiRect>(mainContainer);
+	container_t1 = Gui::create<GuiRect>(mainContainer);
 	container_t1->setColor(vec4(1.0f, 0.0f, 0.0f, 1.0f));
 	container_t1->setPosition(vec2(0.15f, 0.35f));
 	container_t1->setSize(vec2(0.3f, 0.3f));
 
-	auto container_t2 = Gui::create<GuiRect>(mainContainer);
+	container_t2 = Gui::create<GuiRect>(mainContainer);
 	container_t2->setColor(vec4(0.0f, 0.0f, 1.0f, 1.0f));
 	container_t2->setPosition(vec2(0.4f, 0.35f));
 	container_t2->setSize(vec2(0.3f, 0.3f));
@@ -53,22 +53,23 @@ GuiTeamMenu::GuiTeamMenu()
 	auto onClick = std::bind(&GuiTeamMenu::handleSwitch, this);
 	swtch->addCallback(onClick);
 
-	team1 = Gui::create<GuiText>(container_t1);
-	team1->setPosition(vec2(-0.1f, 0.1f));
-	team1->setAlignment(TextAlign::CENTER);
-	team1->setSize(vec2(1.0f, 0.1f));
-	team1->setText("");
-	team1->setFont("Arial");
+	//team1 = Gui::create<GuiText>(container_t1);
+	//team1->setPosition(vec2(-0.1f, 0.1f));
+	//team1->setAlignment(TextAlign::CENTER);
+	//team1->setSize(vec2(1.0f, 0.1f));
+	//team1->setText("");
+	//team1->setFont("Arial");
 
-	team2 = Gui::create<GuiText>(container_t2);
-	team2->setPosition(vec2(0.0f, 0.1f));
-	team2->setAlignment(TextAlign::CENTER);
-	team2->setSize(vec2(1.0f, 0.1f));
-	team2->setText("");
-	team2->setFont("Arial");
+	//team2 = Gui::create<GuiText>(container_t2);
+	//team2->setPosition(vec2(0.0f, 0.1f));
+	//team2->setAlignment(TextAlign::CENTER);
+	//team2->setSize(vec2(1.0f, 0.1f));
+	//team2->setText("");
+	//team2->setFont("Arial");
 
 	Network::on(NetMessage::TEAM, boost::bind(&GuiTeamMenu::updateTeamGui, this, _1, _2));
 	Network::on(NetMessage::READY, boost::bind(&GuiTeamMenu::setReady, this, _1, _2));
+	Network::on(NetMessage::START, boost::bind(&GuiTeamMenu::startGame, this, _1, _2));
 }
 
 void GuiTeamMenu::setPlayerId(int id) {
@@ -81,6 +82,8 @@ void GuiTeamMenu::updateTeamGui(Connection *c, NetBuffer &buffer) {
 	tuple<int, int> temp;
 	int t;
 	int p;
+	float t1_pos = 0.1f;
+	float t2_pos = 0.1f;
 
 	id_name = game->getIdName();
 	for (int i = 0; i < size; i++) {
@@ -88,22 +91,43 @@ void GuiTeamMenu::updateTeamGui(Connection *c, NetBuffer &buffer) {
 		player_team[std::get<0>(temp)] = std::get<1>(temp);
 	}
 	
-	std::string team[2];
-	
+	GuiText* label;
+
+	for (auto it = team1.begin(); it != team1.end(); it++) {
+		(*it)->remove();
+	}
+
+	for (auto it = team2.begin(); it != team2.end(); it++) {
+		(*it)->remove();
+	}
+
+	team1.clear();
+	team2.clear();
+
 	for (auto it = player_team.begin(); it != player_team.end(); it++) {
 		p = it->first;
 		t = it->second;
-		if (!team[t].empty()) {
-			team[t] += ", ";
-			team[t] += id_name[p];
+		if (t == 0) {
+			label = Gui::create<GuiText>(container_t1);
+			label->setPosition(vec2(-0.1f, t1_pos));
+			label->setAlignment(TextAlign::CENTER);
+			label->setSize(vec2(1.0f, 0.1f));
+			label->setText(id_name[p]);
+			label->setFont("Arial");
+			t1_pos += 0.1f;
+			team1.push_back(label);
 		}
 		else {
-			team[t] += id_name[p];
+			label = Gui::create<GuiText>(container_t2);
+			label->setPosition(vec2(0.0f, t2_pos));
+			label->setAlignment(TextAlign::CENTER);
+			label->setSize(vec2(1.0f, 0.1f));
+			label->setText(id_name[p]);
+			label->setFont("Arial");
+			t2_pos += 0.1f;
+			team2.push_back(label);
 		}
 	}
-
-	team1->setText(team[0]);
-	team2->setText(team[1]);
 }
 
 void GuiTeamMenu::handleSwitch() {
@@ -118,10 +142,17 @@ void GuiTeamMenu::setReady(Connection *c, NetBuffer &readyMsg) {
 	bool ready = readyMsg.read<bool>();
 	if (ready) {
 		message->setText("Game is ready!");
-		remove();
+		Input::setMouseVisible(false);
 	}
 	else {
 		message->setText("The game needs 2 players on each team!");
+	}
+}
+
+void GuiTeamMenu::startGame(Connection *c, NetBuffer &startMsg) {
+	bool start = startMsg.read<bool>();
+	if (start) {
+		remove();
 	}
 }
 

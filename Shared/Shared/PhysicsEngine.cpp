@@ -11,7 +11,7 @@ float PhysicsEngine::playerAccelerationAir = 0.005f;
 float PhysicsEngine::playerMaxVelocityAir = 0.02f;
 float PhysicsEngine::playerMoveFriction = 0.8f;
 float PhysicsEngine::playerJumpSpeed = 0.09f;
-bool PhysicsEngine::autoBhopEnabled = true;
+bool PhysicsEngine::autoBhopEnabled = false;
 
 /* accelDir: The normalized direction the player wants to accelerate in,
  *			 accounting for movement keys and lookDirection
