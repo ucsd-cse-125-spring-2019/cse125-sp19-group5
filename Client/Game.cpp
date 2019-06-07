@@ -165,9 +165,6 @@ Game::Game() : gameObjects({ nullptr }) {
 	);
 	fpsText = gTextRenderer->addText(TextRenderer::DEFAULT_FONT_NAME, "fps", 0.02f, 0.02f, 0.4f, glm::vec3(1.0f, 1.0f, 0.0f));
 
-	//soundtrack = gSound->loadFlatSound("Sounds/minecraft_wet_hands.wav", 0.1f);
-	//soundtrack->play(false);
-
 	// Handle game object creation and deletion.
 	Network::on(
 		NetMessage::GAME_OBJ_CREATE,
