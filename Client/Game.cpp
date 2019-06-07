@@ -132,7 +132,7 @@ Game::Game() : gameObjects({ nullptr }) {
 	Draw::init();
 	ParticleEmitters::init(&gameState);
 
-#ifdef _DEBUG_SP
+#ifndef _DEBUG_SP
 	Gui::create<GuiConnectMenu>();
 #else
 	int port = 1234;
@@ -165,9 +165,6 @@ Game::Game() : gameObjects({ nullptr }) {
 		TextRenderer::DEFAULT_FONT_FILEPATH
 	);
 	fpsText = gTextRenderer->addText(TextRenderer::DEFAULT_FONT_NAME, "fps", 0.02f, 0.02f, 0.4f, glm::vec3(1.0f, 1.0f, 0.0f));
-
-	//soundtrack = gSound->loadFlatSound("Sounds/minecraft_wet_hands.wav", 0.1f);
-	//soundtrack->play(false);
 
 	// Handle game object creation and deletion.
 	Network::on(

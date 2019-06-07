@@ -84,6 +84,7 @@ public:
 
 	void setGameText(const string &newText);
 	void syncGameText(Connection *c);
+
 private:
 	std::unordered_map<string, Timer*> timers;
 	std::unordered_set<int> readyPlayers;

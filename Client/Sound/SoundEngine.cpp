@@ -3,8 +3,10 @@
 const std::string ERRKLANG_ERROR_MSG = "Error: irrKlang audio failed to initialize.";
 
 SoundEngine::SoundEngine() {
-	engine = irrklang::createIrrKlangDevice();
-	//engine->setDefault3DSoundMinDistance(3.0f);
+	engine = irrklang::createIrrKlangDevice(irrklang::ESOD_AUTO_DETECT, irrklang::ESEO_LINEAR_ROLLOFF);
+	engine->setDefault3DSoundMinDistance(3.0f);
+	engine->setDefault3DSoundMaxDistance(100.0f);
+
 	if (!engine) {
 		std::cout << ERRKLANG_ERROR_MSG << std::endl;
 		didInitialize = false;

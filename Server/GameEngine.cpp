@@ -62,7 +62,7 @@ bool GameEngine::shouldGameStart() {
 		return false;
 	}
 #ifdef _DEBUG
-	if (gameState.players.size() != 2) {
+	if (gameState.players.size() == 0) {
 		return false;
 	}
 #else
