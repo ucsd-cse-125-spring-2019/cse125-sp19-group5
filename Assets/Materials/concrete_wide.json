@@ -1,0 +1,6 @@
+{
+  "diffuse": "Textures/Concrete_Wall_001_Base_Color.jpg",
+  "normal": "Textures/Concrete_Wall_001_Normal.jpg",
+  "specular": "Textures/Concrete_Wall_001_Roughness.jpg",
+  "texScale": [ 4, 1 ]
+}

@@ -334,6 +334,14 @@ void Game::updateInputs() {
 		shouldExit = true;
 	}
 
+#ifdef _DEBUG_MAP_EDITOR
+	if (Input::isKeyDown(GLFW_KEY_F1)) {
+		NetBuffer buf(NetMessage::DEBUG_MAP);
+		Network::send(buf);
+		Input::setMouseVisible(false);
+	}
+#endif
+
 	// Sending player input 
 	NetBuffer buffer(NetMessage::PLAYER_INPUT);
 	buffer.write(keyInputs);

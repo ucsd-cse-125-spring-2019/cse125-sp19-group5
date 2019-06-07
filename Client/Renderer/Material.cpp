@@ -61,7 +61,15 @@ Material::Material(const std::string &path): Material() {
 		shininess = (float)info["shininess"].number_value();
 	}
 	if (info["texScale"].is_number()) {
-		texScale = (float)info["texScale"].number_value();
+		texScale = vec2((float)info["texScale"].number_value());
+	} else if (info["texScale"].is_array()) {
+		auto items = info["texScale"].array_items();
+		if (items.size() >= 2) {
+			texScale = vec2(
+				items[0].number_value(),
+				items[1].number_value()
+			);
+		}
 	}
 }
 

@@ -10,8 +10,8 @@
 // 3D model is done.
 class Material {
 	private:
-	float texScale = 1.0f;
 	float shininess = 32.0f;
+	vec2 texScale = vec2(1.0f);
 	vec3 diffuse = vec3(0.0f);
 	vec3 specular = vec3(1.0f);
 	vec3 emission = vec3(0.0f);
