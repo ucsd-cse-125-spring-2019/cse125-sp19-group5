@@ -17,6 +17,7 @@ public:
 	void setMinDist(float dist);
 	void setMaxDist(float dist);
 	void stop();
+	bool isFinished() { return sound->isFinished();  };
 
 private:
 	std::string filepath;

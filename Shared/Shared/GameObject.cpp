@@ -142,6 +142,7 @@ const quat &GameObject::getOrientation() const {
 }
 
 void GameObject::serialize(NetBuffer &buffer) const {
+	buffer.write(castShadow);
 	buffer.write<quat>(orientation);
 	buffer.write<vec3>(position);
 	buffer.write<vec3>(velocity);
@@ -153,6 +154,7 @@ void GameObject::serialize(NetBuffer &buffer) const {
 }
 
 void GameObject::deserialize(NetBuffer &buffer) {
+	castShadow = buffer.read<bool>();
 	orientation = buffer.read<quat>();
 	position = buffer.read<vec3>();
 	velocity = buffer.read<vec3>();
@@ -188,3 +190,11 @@ string GameObject::to_string() {
 }
 
 void GameObject::onCreated() { }
+
+void GameObject::setCastShadow(bool shouldCastShadow) {
+	castShadow = shouldCastShadow;
+}
+
+bool GameObject::shouldCastShadow() const {
+	return castShadow;
+}

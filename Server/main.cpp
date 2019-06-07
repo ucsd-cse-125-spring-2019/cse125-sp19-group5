@@ -12,6 +12,7 @@
 #include <Shared/Game/ParticleEmitter.h>
 #include "MapLoader.h"
 #include "Game/Powerups/SpeedBoost.h"
+#include <unordered_map>
 
 constexpr auto TICKS_PER_SECOND = 60; // How many updates per second.
 
@@ -29,6 +30,14 @@ int main(int argc, char **argv) {
 	mapLoader.loadMap("Maps/basic_map.json");
 	
 	/*auto jumpableBox = gameEngine.addGameObject<Wall>();
+	mapLoader.loadMap("Maps/map_with_goals.json");
+
+	unordered_map<int, int> player_team;
+	unordered_map<int, std::string> id_name;
+	int teamR = 0;
+	int teamB = 0;
+
+	auto jumpableBox = gameEngine.addGameObject<Wall>();
 	jumpableBox->setBoundingShape(new BoundingBox(vec3(0, 0, 30), vec3(1, 0, 0), 30, 8, 30));
 	jumpableBox->setPosition(vec3(0, 0, 30));
 	jumpableBox->setScale(vec3(30, 8, 30));
@@ -51,6 +60,40 @@ int main(int argc, char **argv) {
 		playerInputs.push_back(input);
 	};
 
+	auto handlePlayerReady = boost::bind(
+		&GameEngine::onPlayerReady, &gameEngine,
+		_1, _2
+	);
+
+	auto handleTeamSelection = [&](Connection*c, NetBuffer &buffer) {
+		
+		if (player_team.at(c->getId()) == 0) teamR -= 1;
+		else teamB -= 1;
+
+		player_team[c->getId()] = buffer.read<int>();
+
+		if (player_team.at(c->getId()) == 0) teamR += 1;
+		else teamB += 1;
+
+		gameEngine.updateTeamReady(player_team, teamR, teamB);
+	};
+
+	auto addPlayerName = [&](Connection*c, NetBuffer &buffer) {
+
+		std::string name = buffer.read<std::string>();
+		id_name[c->getId()] = name;
+		NetBuffer id_name(NetMessage::NAME);
+		id_name.write(c->getId());
+		id_name.write(name);
+		Network::broadcast(id_name);
+
+		player_team[c->getId()] = (player_team.size() + 1) % 2;
+		if (player_team.at(c->getId()) == 0) teamR += 1;
+		else teamB += 1;
+
+		gameEngine.updateTeamReady(player_team, teamR, teamB);
+	};
+
 	Network::onClientConnected([&](Connection *c) {
 		std::cout << "Player " << c->getId() << " has connected." << std::endl;
 
@@ -64,7 +107,14 @@ int main(int argc, char **argv) {
 		// Send Client the connection/player ID 
 		NetBuffer buffer(NetMessage::CONNECTION_ID);
 		buffer.write<int>(c->getId());
+		buffer.write<int>(id_name.size());
+		for (auto it = id_name.begin(); it != id_name.end(); it++) {
+			buffer.write<int>(it->first);
+			buffer.write<std::string>(it->second);
+		}
 		c->send(buffer);
+		c->on(NetMessage::NAME, addPlayerName);
+		c->on(NetMessage::TEAM, handleTeamSelection);
 
 		for (auto gameObject : gameEngine.getGameObjects()) {
 			if (!gameObject) { continue; }
@@ -92,26 +142,19 @@ int main(int argc, char **argv) {
 			c->send(matBuffer);
 		}
 
-		auto player = new Player(vec3(0, 2, 0), origin, origin, c->getId(), 2, 0);
-		player->setCooldown(SWING, std::make_tuple(0, 20));
-		player->setCooldown(SHOOT, std::make_tuple(0, 20));
-		player->setCooldown(WALL, std::make_tuple(0, 120));
-		gameEngine.addGameObject(player);
-
-		player->setModel("Models/unit_sphere.obj");
-		player->setAnimation(0);
-		player->setDirection(vec3(0, 0, -1));
-		player->setMaterial("Materials/brick.json");
-		player->setScale(vec3(2));
-
+		gameEngine.createPlayer(c);
+    
 		auto ps = new ParticleEmitter();
 		ps->setGravity(-15.0f);
 		ps->setCreationSpeed(500);
 		ps->setInitialVel(vec3(0, 10, 0));
 		ps->setTexture("Textures/gary.png");
 
+		gameEngine.syncGameText(c);
+
 		// Receive player keyboard and mouse(TODO) input
 		c->on(NetMessage::PLAYER_INPUT, handlePlayerInput);
+		c->on(NetMessage::READY_TOGGLE, handlePlayerReady);
 		c->onDisconnected([&](Connection *c) {
 			gameEngine.onPlayerDisconnected(c);
 			std::cout << "Player " << c->getId() << " has disconnected."

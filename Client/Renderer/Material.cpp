@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <Shared/Util/json11.hpp>
+#include "../Assets.h"
 
 #define SET_MATERIAL_PARAM(param) shader.setUniform("material." #param, ##param)
 #define SET_MATERIAL_TEX_PARAM(position, tex) if (##tex) { \
@@ -25,8 +26,7 @@ void loadTextureFromConfig(
 ) {
 	auto value = info[key].string_value();
 	if (value != "") {
-		// TODO (bhang): use some resource cache for textures.
-		tex = new Texture2d(info[key].string_value());
+		tex = Assets::getTexture2d(info[key].string_value());
 	}
 }
 
@@ -60,11 +60,17 @@ Material::Material(const std::string &path): Material() {
 	if (info["shininess"].is_number()) {
 		shininess = (float)info["shininess"].number_value();
 	}
+	if (info["texScale"].is_number()) {
+		texScale = (float)info["texScale"].number_value();
+	}
 }
 
 void Material::bind(Shader &shader) const {
 	// Set shininess float.
 	SET_MATERIAL_PARAM(shininess);
+
+	// Texture scale
+	SET_MATERIAL_PARAM(texScale);
 
 	// Then, bind the diffuse, specular, emission, and normal maps.
 	SET_MATERIAL_TEX_PARAM(0, diffuseTex);

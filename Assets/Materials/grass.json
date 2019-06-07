@@ -1,3 +1,6 @@
 {
-    "diffuse": "Textures/grass.png"
+    "diffuse": "Textures/grass.png",
+    "normal": "Textures/grass_n.jpg",
+    "texScale": 40,
+    "specular": "Textures/black.png"
 }

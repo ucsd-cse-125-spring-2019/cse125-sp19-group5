@@ -31,7 +31,10 @@ void MapLoader::loadMap(string mapFile) {
 			<< parseErr << std::endl;
 	}
 
-	loadBoxGameObjects<Wall>(mapJson, "walls");
+	auto walls = loadBoxGameObjects<Wall>(mapJson, "walls");
+	for (auto wall : walls) {
+		wall->setCastShadow(false);
+	}
 
 	loadSphereGameObjects<Ball>(mapJson, "balls");
 
@@ -48,6 +51,20 @@ void MapLoader::loadMap(string mapFile) {
 			goals[i]->setBallSpawnRange(xRange, yRange, zRange);
 		}
 	}	
+
+	loadSpawns(mapJson);
+}
+
+void MapLoader::loadSpawns(const json11::Json &json) {
+	gameEngine->spawns.clear();
+	auto spawns = json["spawns"];
+	if (!spawns.is_array()) { return; }
+
+	for (auto &spawnData : spawns.array_items()) {
+		auto team = spawnData["team"].int_value();
+		auto position = toVec3(spawnData, "position");
+		gameEngine->spawns.push_back(std::make_pair(team, position));
+	}
 }
 
 void MapLoader::loadGameObjectDefaults(json11::Json gameObjJson, GameObject * gameObject) {

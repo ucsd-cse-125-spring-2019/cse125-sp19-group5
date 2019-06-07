@@ -90,6 +90,9 @@ void Gui::setupInputListeners(GLFWwindow *window) {
 }
 
 void Gui::onElementRemoved(GuiElement *element) {
+	for (auto child : element->getChildren()) {
+		child->remove();
+	}
 	auto it = std::find(rootElements.begin(), rootElements.end(), element);
 	if (it != rootElements.end()) {
 		rootElements.erase(it);

@@ -127,7 +127,10 @@
     <ClCompile Include="ClientGameObject.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Game\Gui\GuiGameText.cpp" />
     <ClCompile Include="Game\Gui\GuiHUD.cpp" />
+    <ClCompile Include="Game\Gui\GuiScoreboard.cpp" />
+    <ClCompile Include="Game\Gui\GuiTeamMenu.cpp" />
     <ClCompile Include="Game\ParticleEmitter.cpp" />
     <ClCompile Include="Game\ParticleEmitters.cpp" />
     <ClCompile Include="Game\Gui\GuiConnectMenu.cpp" />
@@ -161,6 +164,7 @@
     <ClCompile Include="Renderer\Texture.cpp" />
     <ClCompile Include="Renderer\Texture2d.cpp" />
     <ClCompile Include="Renderer\TextureCubemap.cpp" />
+    <ClCompile Include="Sound\RandomSound.cpp" />
     <ClCompile Include="Sound\Sound.cpp" />
     <ClCompile Include="Sound\SoundEngine.cpp" />
   </ItemGroup>
@@ -171,7 +175,10 @@
     <ClInclude Include="Assets.h" />
     <ClInclude Include="ClientGameObject.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Game\Gui\GuiGameText.h" />
     <ClInclude Include="Game\Gui\GuiHUD.h" />
+    <ClInclude Include="Game\Gui\GuiScoreboard.h" />
+    <ClInclude Include="Game\Gui\GuiTeamMenu.h" />
     <ClInclude Include="Game\ParticleEmitters.h" />
     <ClInclude Include="Game\Gui\GuiConnectMenu.h" />
     <ClInclude Include="Input.h" />
@@ -206,6 +213,7 @@
     <ClInclude Include="Renderer\Texture.h" />
     <ClInclude Include="Renderer\Texture2d.h" />
     <ClInclude Include="Renderer\TextureCubemap.h" />
+    <ClInclude Include="Sound\RandomSound.h" />
     <ClInclude Include="Sound\Sound.h" />
     <ClInclude Include="Sound\SoundEngine.h" />
   </ItemGroup>

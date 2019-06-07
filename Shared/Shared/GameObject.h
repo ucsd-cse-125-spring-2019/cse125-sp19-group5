@@ -99,7 +99,11 @@ public:
 
 	virtual void onCreated();
 
+	void setCastShadow(bool shouldCastShadow);
+	bool shouldCastShadow() const;
+
 protected:
+	bool castShadow = true;
 	quat orientation = quat();
 	vec3 position;
 	vec3 prevPosition;

@@ -8,9 +8,9 @@ TextRenderer *gTextRenderer = new TextRenderer();
 const std::string TextRenderer::DEFAULT_FONT_NAME = "Arial";
 const std::string TextRenderer::DEFAULT_FONT_FILEPATH = "Fonts/Arial.ttf";
 
-bool TextRenderer::loadFont(const std::string &name, const std::string &filepath) {
+bool TextRenderer::loadFont(const std::string &name, const FontInfo &info) {
 	try {
-		Font font = Font(filepath);
+		Font font = Font(info);
 		fonts.insert(std::pair<std::string, Font>(name, font));
 		return true;
 	}

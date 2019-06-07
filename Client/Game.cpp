@@ -1,4 +1,8 @@
+#include <GL/glew.h>
 #include "Game.h"
+#include "Game/Gui/GuiConnectMenu.h"
+#include "Game/Gui/GuiGameText.h"
+#include "Game/Gui/GuiTeamMenu.h"
 #include <Shared/Common.h>
 #include <Shared/CommonStructs.h>
 #include <Shared/ConfigSettings.h>
@@ -13,7 +17,30 @@
 #include "Renderer/ParticleSystem.h"
 #include "Assets.h"
 #include "Game/ParticleEmitters.h"
-#include "Game/Gui/GuiConnectMenu.h"
+#include "Game/Gui/GuiScoreboard.h"
+
+// Define this if you just want to go right to the game.
+#define _DEBUG_SP
+
+GuiGameText *gameText = nullptr;
+
+static void setGameText(Connection *c, NetBuffer &buffer) {
+	auto newText = buffer.read<string>();
+	if (newText == "") {
+		if (gameText) {
+			gameText->remove();
+			gameText = nullptr;
+		}
+		return;
+	}
+	if (gameText) {
+		gameText->setText(newText);
+		return;
+	}
+	gameText = Gui::create<GuiGameText>();
+	gameText->setText(newText);
+
+}
 
 void Game::onGameObjectCreated(Connection *c, NetBuffer &buffer) {
 	auto gameObjectType = buffer.read<GAMEOBJECT_TYPES>();
@@ -106,18 +133,20 @@ Game::Game() : gameObjects({ nullptr }) {
 	Draw::init();
 	ParticleEmitters::init(&gameState);
 
-	// TODO (bhang): Integrate this with connecting.
-	// Gui::create<GuiConnectMenu>();
+	Gui::create<GuiConnectMenu>();
+	int port = 1234;
+	ConfigSettings::get().getValue("Port", port);
+	//Network::init("127.0.0.1", port);
 
-	hud = Gui::create<GuiHUD>();
+	gSound->setMasterVolume(1.0f);
+	ConnectMenuBackground = gSound->loadFlatSound("Sounds/ConnectMenuMusic.wav", 0.1f);
+	ConnectMenuBackground->play(true);
 	
-	Input::setMouseVisible(false);
-
 	lightShader = new Shader("Shaders/light");
 	camera = new Camera(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f), 70, 1.0f);
 	shadowMap = new ShadowMap(camera);
 	sun = new DirectionalLight(0);
-	sun->setDirection(vec3(0.009395, -0.500647, -0.713446));
+	sun->setDirection(vec3(0.009395, -0.800647, -0.713446));
 	sun->setAmbient(vec3(0.04f, 0.05f, 0.13f));
 	sun->setColor(vec3(0.8f, 0.7f, 0.55f));
 
@@ -129,13 +158,9 @@ Game::Game() : gameObjects({ nullptr }) {
 
 	gTextRenderer->loadFont(
 		TextRenderer::DEFAULT_FONT_NAME,
-		TextRenderer::DEFAULT_FONT_FILEPATH
+		{ 48, TextRenderer::DEFAULT_FONT_FILEPATH }
 	);
 	fpsText = gTextRenderer->addText(TextRenderer::DEFAULT_FONT_NAME, "fps", 0.02f, 0.02f, 0.4f, glm::vec3(1.0f, 1.0f, 0.0f));
-
-	gSound->setMasterVolume(1.0f);
-	soundtrack = gSound->loadFlatSound("Sounds/minecraft_wet_hands.wav", 0.1f);
-	soundtrack->play(true);
 
 	// Handle game object creation and deletion.
 	Network::on(
@@ -164,6 +189,37 @@ Game::Game() : gameObjects({ nullptr }) {
 	Network::on(NetMessage::CONNECTION_ID, [this] (Connection *c, NetBuffer &buffer) {
 		playerId = buffer.read<int>();
 		cout << "I am Player " << playerId << "." << endl;
+		int size = buffer.read<int>();
+		int p;
+		std::string n;
+		for (int i = 0; i < size; i++) {
+			p = buffer.read<int>();
+			n = buffer.read<std::string>();
+			id_name[p] = n;
+		}
+	});
+
+	Network::on(NetMessage::NAME, [this](Connection*c, NetBuffer &buffer) {
+		int id = buffer.read<int>();
+		std::string name = buffer.read<std::string>();
+		id_name[id] = name;
+		if (id == playerId) {
+			MainMenuBackground = gSound->loadFlatSound("Sounds/MainMenuMusic.wav", 0.1f);
+			ConnectMenuBackground->stop();
+			MainMenuBackground->play(true);
+			GuiTeamMenu *teamMenu = Gui::create<GuiTeamMenu>();
+			teamMenu->setPlayerId(playerId);
+			teamMenu->setGame(this);
+		}
+	});
+
+	Network::on(NetMessage::RESET, [this](Connection*c, NetBuffer &buffer) {
+		MainMenuBackground = gSound->loadFlatSound("Sounds/MainMenuMusic.wav", 0.1f);
+		ConnectMenuBackground->stop();
+		MainMenuBackground->play(true);
+		GuiTeamMenu *teamMenu = Gui::create<GuiTeamMenu>();
+		teamMenu->setPlayerId(playerId);
+		teamMenu->setGame(this);
 	});
 
 	Network::on(NetMessage::GAME_STATE_UPDATE, [&](Connection *c, NetBuffer &buffer) {
@@ -175,6 +231,30 @@ Game::Game() : gameObjects({ nullptr }) {
 	Network::on(
 		NetMessage::SOUND,
 		boost::bind(&Game::onPlaySound, this, _1, _2)
+	);
+
+	Network::on(NetMessage::GAME_TEXT, setGameText);
+	Network::on(
+		NetMessage::SCOREBOARD_SHOW,
+		[&](Connection *c, NetBuffer &buffer) {
+			if (hud) {
+				hud->remove();
+				hud = nullptr;
+			}
+			Gui::create<GuiScoreboard>();
+		}
+	);
+	Network::on(
+		NetMessage::HUD_VISIBLE,
+		[&](Connection *c, NetBuffer &buffer) {
+			auto isVisible = buffer.read<bool>();
+			if (isVisible && !hud) {
+				hud = Gui::create<GuiHUD>();
+			} else if (!isVisible && hud) {
+				hud->remove();
+				hud = nullptr;
+			}
+		}
 	);
 }
 
@@ -287,14 +367,22 @@ void Game::update(float dt) {
 
 	ParticleEmitters::update(dt, camera);
 
-	hud->setTime(gameState.timeLeft);
-	hud->setLeftTeamScore(std::get<0>(gameState.score));
-	hud->setRightTeamScore(std::get<1>(gameState.score));
+	if (hud) {
+		hud->setTime(gameState.timeLeft);
+		hud->setLeftTeamScore(std::get<0>(gameState.score));
+		hud->setRightTeamScore(std::get<1>(gameState.score));
+	}
 }
 
 void Game::drawScene(Shader &shader, DrawPass pass) const {
 	for (auto gameObject : gameObjects) {
 		if (!gameObject) { continue; }
+		if (
+			pass == DrawPass::SHADOW &&
+			!gameObject->getGameObject()->shouldCastShadow()
+		) {
+			continue;
+		}
 		gameObject->draw(shader, camera, pass);
 	}
 }
@@ -336,4 +424,9 @@ void Game::draw(float dt) const {
 	Draw::setupContext();
 	drawUI();
 	glEnable(GL_DEPTH_TEST);
+}
+
+
+unordered_map<int, std::string> Game::getIdName() {
+	return id_name;
 }

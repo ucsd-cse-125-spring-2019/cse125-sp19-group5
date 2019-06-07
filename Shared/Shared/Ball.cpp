@@ -50,6 +50,10 @@ void Ball::updateOnServerTick() {
 	}
 
 	this->ticksSinceGrounded += 1;
+
+	soundHitTimer = glm::max(0.0f, soundHitTimer - PhysicsEngine::getDeltaTime());
+	soundBounceTimer = glm::max(0.0f, soundBounceTimer - PhysicsEngine::getDeltaTime());
+	soundOofTimer = glm::max(0.0f, soundOofTimer - PhysicsEngine::getDeltaTime());
 }
 
 bool Ball::getGoalScored() {
@@ -100,6 +104,12 @@ void Ball::onCollision(Ball * ball) {
 void Ball::onCollision(Bullet * bullet) {
 	// std::cout << bullet->to_string() << std::endl;
 	setVelocity(getVelocity() + bullet->getVelocity() * 0.3f);
+
+	if (soundHitTimer <= 0.0f) {
+		string soundToPlay = soundHit[getRandIndex(soundHit.size())];
+		this->playSound(soundToPlay, 1.0f, false);
+		soundHitTimer = SOUND_HIT_CD;
+	}
 }
 
 void Ball::onCollision(Goal * goal) {
@@ -114,6 +124,7 @@ void Ball::onCollision(Goal * goal) {
 	else {
 		this->lastHitBy->setGoalsScored(this->lastHitBy->getGoalsScored() + 1);
 	}
+	this->playSound(soundCrowdCheer, 1.0f, false);
 }
 
 void Ball::onCollision(Paddle * paddle) {
@@ -126,12 +137,28 @@ void Ball::onCollision(Paddle * paddle) {
 		this->isGrounded = false;
 
 		this->lastHitBy = paddle->getOwner();
-	}
+    
+	  if (soundHitTimer <= 0.0f) {
+		  string soundToPlay = soundHit[getRandIndex(soundHit.size())];
+		  this->playSound(soundToPlay, 1.0f, false);
+		  soundHitTimer = SOUND_HIT_CD;
+	  }
 }
 
 
 void Ball::onCollision(Player * player) { 
 	// setVelocity(getVelocity() * 0.9f);
+
+	if (soundOofTimer <= 0.0f) {
+		if (glm::length(getVelocity()) > 4.0f) {
+			this->playSound(soundPlayerSuperOof, 1.0f, false);
+			soundOofTimer = SOUND_OOF_CD;
+		}
+		else if (glm::length(getVelocity()) > 2.0f) {
+			this->playSound(soundPlayerOof, 1.0f, false);
+			soundOofTimer = SOUND_OOF_CD;
+		}
+	}
 }
 
 void Ball::onCollision(Wall * wall) {
@@ -141,6 +168,8 @@ void Ball::onCollision(Wall * wall) {
 	if (getVelocity() == vec3(0.0f)) {
 		return;
 	}
+
+	bool didCollideSide = false;
 
 	vector<Plane * > collisionPlanes;
 	for (Plane * p : CollisionDetection::getIntersectingPlanes(this->getBoundingSphere(), wall->getBoundingBox())) {
@@ -155,6 +184,9 @@ void Ball::onCollision(Wall * wall) {
 				}
 			}
 			this->ticksSinceGrounded = 0;
+		}
+		else {
+			didCollideSide = true;
 		}
 		vec3 planeNormal = glm::normalize(p->getNormal());
 		float angleBetween = glm::angle(glm::normalize(getVelocity()), planeNormal);
@@ -181,5 +213,11 @@ void Ball::onCollision(Wall * wall) {
 		float planeDistance = abs(closestPlane->pointDistance(getPosition()) - (getBoundingSphere()->getRadius()));
 		move(glm::normalize(closestPlane->getNormal()) * planeDistance);
 		setVelocity(glm::reflect(getVelocity(), glm::normalize(closestPlane->getNormal())));
+	}
+
+	if (soundBounceTimer <= 0.0f && (glm::length(getVelocity().y) > 0.19f || didCollideSide)) {
+		string soundToPlay = soundBounce[getRandIndex(soundBounce.size())];
+		this->playSound(soundToPlay, 1.0f, false);
+		soundBounceTimer = SOUND_BOUNCE_CD;
 	}
 }

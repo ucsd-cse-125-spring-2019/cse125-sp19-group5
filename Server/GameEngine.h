@@ -10,9 +10,27 @@
 #include <Shared/PowerUpItem.h>
 #include <Shared/GameState.h>
 #include <Shared/Networking/Connection.h>
+#include <unordered_set>
+#include <functional>
+#include <unordered_map>
 
 #define NUM_PLAYERS 1
 #define MOVEMENT_MASK 0b11111
+
+using TimerCallback = std::function<void()>;
+
+enum class RoundState {
+	READY,
+	COUNTDOWN,
+	ACTIVE,
+	SHOWING_SCORES,
+	TEAM_SCORED,
+};
+
+struct Timer {
+	float expire;
+	TimerCallback onExpire;
+};
 
 class GameEngine {
 public:
@@ -21,6 +39,7 @@ public:
 	void onPlayerDisconnected(Connection *c);
 
 	void updateGameState(vector<PlayerInputs> & playerInputs);
+	void updateTeamReady(unordered_map<int, int> p_t, int teamR, int teamB);
 	void synchronizeGameState();
 	GameState & getGameState();
 	
@@ -38,6 +57,7 @@ public:
 	void addGameObject(Goal * goal);
 	void addGameObject(GameObject *obj);
 	void removeGameObjectById(int id);
+	void removeGameObject(GameObject *obj);
 
 	vec3 movementInputToVector(int movementInput);
 	void movePlayers(vector<PlayerInputs> & playerInputs);
@@ -56,10 +76,45 @@ public:
 	void spawnItems();
 	const std::array<GameObject*, MAX_GAME_OBJS> &getGameObjects() const;
 
+	void onPlayerReady(Connection *c, NetBuffer &buffer);
+
+	void setTimer(const string &id, float time, TimerCallback callback);
+
+	std::vector<std::pair<int, vec3>> spawns;
+	void spawnPlayers();
+
+	void spawnBalls();
+
+	void setGameText(const string &newText);
+	void syncGameText(Connection *c);
+
+	void showScoreboard();
+	void hideScoreboard();
+
+	void cleanMap();
+
+	void setHUDVisible(bool isVisible);
+
+	Player *GameEngine::createPlayer(Connection *c);
+
 private:
+	std::unordered_map<string, Timer*> timers;
+	std::unordered_set<int> readyPlayers;
 	GameState gameState;
+	RoundState roundState = RoundState::READY;
+	string curGameText = "";
+	bool teamsReady;
+
 	void addGenericGameObject(GameObject *player);
-	int itemTimer = 0;
+	bool shouldGameStart();
+	void startGame();
+	void endGame();
+	void onGoalScored(int team);
+	void prepRound();
+
+	void updateTimers();
+  
+  int itemTimer = 0;
 };
 
 extern GameEngine *gGameEngine;

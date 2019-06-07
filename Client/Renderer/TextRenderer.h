@@ -30,7 +30,7 @@ public:
 	static const std::string DEFAULT_FONT_NAME;
 	static const std::string DEFAULT_FONT_FILEPATH;
 
-	bool loadFont(const std::string &name, const std::string &filepath);
+	bool loadFont(const std::string &name, const FontInfo &info);
 	Text* addText(const std::string &fontname, const std::string text, const GLfloat widthPercent, const GLfloat heightPercent, const GLfloat scale, const glm::vec3 color);
 	void renderText();
 	void renderText(
