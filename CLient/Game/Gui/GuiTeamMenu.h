@@ -4,6 +4,7 @@
 #include "../Renderer/Gui/GuiTextbox.h"
 #include "../Renderer/Gui/GuiButton.h"
 #include "../Renderer/Gui/GuiRect.h"
+#include "../Renderer/Gui/GuiImage.h"
 #include "../Renderer/Gui/GuiText.h"
 #include "../../Shared/Shared/CommonStructs.h"
 #include "../../Networking/Client.h"
@@ -11,7 +12,7 @@
 
 #include <iostream>
 
-class GuiTeamMenu : public GuiRect {
+class GuiTeamMenu : public GuiImage {
 private:
 	bool selectionComplete;
 	int playerId;

@@ -2,7 +2,8 @@
 
 GuiTeamMenu::GuiTeamMenu()
 {
-	setColor(vec4(0.2f, 0.2f, 0.2f, 1.0f));
+	//setColor(vec4(0.2f, 0.2f, 0.2f, 1.0f));
+	setImage("Textures/image2.png");
 	setPosition(vec2(0.0f, 0.0f));
 	setSize(vec2(1.0f, 1.0f));
 
@@ -10,7 +11,7 @@ GuiTeamMenu::GuiTeamMenu()
 
 	auto mainContainer = Gui::create<GuiRect>(this);
 	mainContainer->setPosition(vec2(0.1f, 0.1f));
-	mainContainer->setColor(vec4(0.75f, 0.5f, 0.25, 1.0f));
+	mainContainer->setColor(vec4(0.75f, 0.5f, 0.25, 0.0f));
 	mainContainer->setSize(vec2(0.8f, 0.8f));
 
 	label = Gui::create<GuiText>(mainContainer);
@@ -26,12 +27,12 @@ GuiTeamMenu::GuiTeamMenu()
 	message->setFont("Arial");
 
 	container_t1 = Gui::create<GuiRect>(mainContainer);
-	container_t1->setColor(vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	container_t1->setColor(vec4(1.0f, 0.0f, 0.0f, 0.0f));
 	container_t1->setPosition(vec2(0.15f, 0.35f));
 	container_t1->setSize(vec2(0.3f, 0.3f));
 
 	container_t2 = Gui::create<GuiRect>(mainContainer);
-	container_t2->setColor(vec4(0.0f, 0.0f, 1.0f, 1.0f));
+	container_t2->setColor(vec4(0.0f, 0.0f, 1.0f, 0.0f));
 	container_t2->setPosition(vec2(0.4f, 0.35f));
 	container_t2->setSize(vec2(0.3f, 0.3f));
 
@@ -47,7 +48,7 @@ GuiTeamMenu::GuiTeamMenu()
 	swtch->setBgColor(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	swtch->setPosition(vec2(0.2f, 0.1f));
 	swtch->setFont("Arial");
-	swtch->setSize(vec2(0.5f, 0.2f));
+	swtch->setSize(vec2(0.3f, 0.2f));
 	swtch->setText("switch");
 	swtch->setAlignment(TextAlign::CENTER);
 	auto onClick = std::bind(&GuiTeamMenu::handleSwitch, this);

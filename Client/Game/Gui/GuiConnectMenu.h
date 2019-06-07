@@ -6,6 +6,7 @@
 #include "../Renderer/Gui/GuiText.h"
 #include "../Renderer/Gui/GuiTextbox.h"
 #include "../Renderer/Gui/GuiButton.h"
+#include "../Renderer/TextRenderer.h"
 
 class GuiConnectMenu : public GuiImage {
 	private:

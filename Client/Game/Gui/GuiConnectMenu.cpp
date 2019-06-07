@@ -10,6 +10,10 @@ GuiConnectMenu::GuiConnectMenu() {
 	setPosition(vec2(0.0f, 0.0f));
 	setSize(vec2(1.0f, 1.0f));
 
+	gTextRenderer->loadFont("BearPong", {
+		100, "Fonts/Arial.ttf"
+	});
+
 	Input::setMouseVisible(true);
 
 	GuiText *title = Gui::create<GuiText>(this);
@@ -17,7 +21,7 @@ GuiConnectMenu::GuiConnectMenu() {
 	title->setAlignment(TextAlign::CENTER);
 	title->setSize(vec2(1.0f, 0.2f));
 	title->setText("Bear Pong");
-	title->setFont("Arial");
+	title->setFont("BearPong");
 
 	message = Gui::create<GuiText>(this);
 	message->setPosition(vec2(0.0f, 0.7f));
