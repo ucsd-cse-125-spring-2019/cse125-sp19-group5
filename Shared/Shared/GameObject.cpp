@@ -33,6 +33,10 @@ void GameObject::setBoundingShape(BoundingShape * boundingShape) {
 }
 
 vec3 GameObject::setPosition(vec3 pos) {
+	if (glm::all(glm::isnan(pos))) {
+		return getPosition();
+	}
+
 	this->prevPosition = this->position;
 	this->position = pos;
 	this->boundingShape->setPosition(pos);
