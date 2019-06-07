@@ -165,9 +165,6 @@ Game::Game() : gameObjects({ nullptr }) {
 	);
 	fpsText = gTextRenderer->addText(TextRenderer::DEFAULT_FONT_NAME, "fps", 0.02f, 0.02f, 0.4f, glm::vec3(1.0f, 1.0f, 0.0f));
 
-	//soundtrack = gSound->loadFlatSound("Sounds/minecraft_wet_hands.wav", 0.1f);
-	//soundtrack->play(false);
-
 	// Handle game object creation and deletion.
 	Network::on(
 		NetMessage::GAME_OBJ_CREATE,
@@ -195,11 +192,19 @@ Game::Game() : gameObjects({ nullptr }) {
 	Network::on(NetMessage::CONNECTION_ID, [this] (Connection *c, NetBuffer &buffer) {
 		playerId = buffer.read<int>();
 		cout << "I am Player " << playerId << "." << endl;
+		int size = buffer.read<int>();
+		int p;
+		std::string n;
+		for (int i = 0; i < size; i++) {
+			p = buffer.read<int>();
+			n = buffer.read<std::string>();
+			id_name[p] = n;
+		}
 	});
 
 	Network::on(NetMessage::NAME, [this](Connection*c, NetBuffer &buffer) {
-		auto id = buffer.read<int>();
-		auto name = buffer.read<string>();
+		int id = buffer.read<int>();
+		std::string name = buffer.read<std::string>();
 		id_name[id] = name;
 		if (id == playerId) {
 			MainMenuBackground = gSound->loadFlatSound("Sounds/MainMenuMusic.wav", 0.1f);

@@ -6,11 +6,14 @@
 #include <glm/gtx/vector_angle.hpp>
 #include <glm/gtx/projection.hpp>
 #include <algorithm>
+#include <ctime>
 
 Player::Player(vec3 position, vec3 velocity, vec3 direction, int id, float radius, int team) : SphereGameObject(position, velocity, id, radius) {
 	this->direction = direction;
 	this->actionCharge = 0;
 	this->team = team;
+
+	std::srand((unsigned int) time(nullptr));
 }
 
 GAMEOBJECT_TYPES Player::getGameObjectType() const {
@@ -75,6 +78,24 @@ void Player::updateOnServerTick() {
 			it++;
 		}
 	}
+
+	// Player movement sounds
+	if (isGrounded && soundFootstepsDist >= SOUND_FOOTSTEPS_REQ_DIST) {
+		string soundToPlay = soundFootsteps[Player::getRandIndex(soundFootsteps.size())];
+		this->playSound(soundToPlay, 1.0f, false);
+		soundFootstepsDist -= SOUND_FOOTSTEPS_REQ_DIST;
+	}
+
+	if (glm::length(getVelocity().y) > 0.015f) {
+		shouldLandSound = true;
+	}
+	if (isGrounded && !prevIsGrounded && shouldLandSound) {
+		string soundToPlay = soundLanding[Player::getRandIndex(soundLanding.size())];
+		this->playSound(soundToPlay, 1.0f, false);
+		shouldLandSound = false;
+	}
+
+	prevIsGrounded = isGrounded;
 }
 
 vec3 Player::getDirection() {
@@ -176,6 +197,9 @@ vec3 Player::getMoveDestination(vec3 movement) {
 		isGrounded = true;
 	}*/
 
+	if (isGrounded)
+		soundFootstepsDist += glm::length(newPos - getPosition());
+
 	return newPos;
 }
 
@@ -190,6 +214,18 @@ void Player::setCooldown(PlayerCommands command, tuple<int, int> cd) {
 void Player::useCooldown(PlayerCommands command) {
 	tuple<int, int> usedAbility = std::make_tuple(std::get<1>(cooldowns[command]), std::get<1>(cooldowns[command]));
 	setCooldown(command, usedAbility);
+
+	// Player ability sounds
+	if (command == SWING) {
+		string soundToPlay = soundSwing[Player::getRandIndex(soundSwing.size())];
+		this->playSound(soundToPlay, 1.0f, false);
+	}
+	else if (command == SHOOT) {
+		this->playSound(soundFire, 1.0f, false);
+	}
+	else if (command == WALL) {
+		this->playSound(soundBuilding, 1.0f, false);
+	}
 }
 
 #ifdef _CLIENT

@@ -198,6 +198,13 @@ void GameEngine::updateTeamReady(unordered_map<int, int> p_t, int teamR, int tea
 
 	ready.write<bool>(t_ready);
 	Network::broadcast(ready);
+	NetBuffer start(NetMessage::START);
+	setTimer("start", 10, [&] {
+		if (shouldGameStart()) {
+			start.write<bool>(true);
+			Network::broadcast(start);
+		}
+	});
 }
 
 void GameEngine::synchronizeGameState() {

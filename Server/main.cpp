@@ -104,6 +104,11 @@ int main(int argc, char **argv) {
 		// Send Client the connection/player ID 
 		NetBuffer buffer(NetMessage::CONNECTION_ID);
 		buffer.write<int>(c->getId());
+		buffer.write<int>(id_name.size());
+		for (auto it = id_name.begin(); it != id_name.end(); it++) {
+			buffer.write<int>(it->first);
+			buffer.write<std::string>(it->second);
+		}
 		c->send(buffer);
 		c->on(NetMessage::NAME, addPlayerName);
 		c->on(NetMessage::TEAM, handleTeamSelection);
