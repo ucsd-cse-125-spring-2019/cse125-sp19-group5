@@ -9,7 +9,6 @@
 #include <chrono>
 #include "GameEngine.h"
 #include "Networking/Server.h"
-#include <Shared/Game/ParticleEmitter.h>
 #include "MapLoader.h"
 #include "Game/Powerups/SpeedBoost.h"
 #include <unordered_map>
@@ -93,7 +92,7 @@ int main(int argc, char **argv) {
 		id_name.write(name);
 		Network::broadcast(id_name);
 
-		gameEngine.player_team[c->getId()] = (gameEngine.player_team.size() + 1) % 2;
+		gameEngine.player_team[c->getId()] = (gameEngine.player_team.size() + 2) % 2;
 		if (gameEngine.player_team.at(c->getId()) == 0) gameEngine.teamR += 1;
 		else gameEngine.teamB += 1;
 
@@ -155,12 +154,7 @@ int main(int argc, char **argv) {
 		}
 
 		gameEngine.createPlayer(c);
-    
-		auto ps = new ParticleEmitter();
-		ps->setGravity(-15.0f);
-		ps->setCreationSpeed(500);
-		ps->setInitialVel(vec3(0, 10, 0));
-		ps->setTexture("Textures/gary.png");
+
 
 		gameEngine.syncGameText(c);
 
