@@ -42,7 +42,7 @@ void Input::init(GLFWwindow *window) {
 }
 
 void Input::setMouseVisible(bool isVisible) {
-	auto newMode = isVisible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_HIDDEN;
+	auto newMode = isVisible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED;
 	glfwSetInputMode(curWindow, GLFW_CURSOR, newMode);
 	mouseLock = !isVisible;
 }
