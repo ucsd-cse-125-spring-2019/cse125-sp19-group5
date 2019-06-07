@@ -603,8 +603,6 @@ Player *GameEngine::createPlayer(Connection *c) {
 	player->setScale(vec3(.2));
 	player->setAnimation(0);
 
-	player->addPowerup<BombPowerup>();
-
 	return player;
 }
 
