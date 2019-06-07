@@ -47,6 +47,7 @@ void Ball::updateOnServerTick() {
 
 	soundHitTimer = glm::max(0.0f, soundHitTimer - PhysicsEngine::getDeltaTime());
 	soundBounceTimer = glm::max(0.0f, soundBounceTimer - PhysicsEngine::getDeltaTime());
+	soundOofTimer = glm::max(0.0f, soundOofTimer - PhysicsEngine::getDeltaTime());
 }
 
 bool Ball::getGoalScored() {
@@ -133,6 +134,17 @@ void Ball::onCollision(Paddle * paddle) {
 
 void Ball::onCollision(Player * player) { 
 	// setVelocity(getVelocity() * 0.9f);
+
+	if (soundOofTimer <= 0.0f) {
+		if (glm::length(getVelocity()) > 4.0f) {
+			this->playSound(soundPlayerSuperOof, 1.0f, false);
+			soundOofTimer = SOUND_OOF_CD;
+		}
+		else if (glm::length(getVelocity()) > 2.0f) {
+			this->playSound(soundPlayerOof, 1.0f, false);
+			soundOofTimer = SOUND_OOF_CD;
+		}
+	}
 }
 
 void Ball::onCollision(Wall * wall) {

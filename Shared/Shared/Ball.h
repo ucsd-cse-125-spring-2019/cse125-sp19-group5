@@ -43,4 +43,9 @@ private:
 	float soundBounceTimer = 0.0f;
 
 	string soundCrowdCheer = "Sounds/crowd_cheer.wav";
+
+	string soundPlayerOof = "Sounds/player_oof.wav";
+	string soundPlayerSuperOof = "Sounds/player_ooooof.wav";
+	const float SOUND_OOF_CD = 200.0f;
+	float soundOofTimer = 0.0f;
 };
