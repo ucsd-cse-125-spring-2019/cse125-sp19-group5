@@ -163,7 +163,7 @@ void GuiTeamMenu::resetGui() {
 			label->setSize(vec2(1.0f, 0.1f));
 			label->setText(id_name[p]);
 			label->setFont("NormalText");
-			t2_pos -= 0.09f;
+			t2_pos -= 0.05f;
 			team2.push_back(label);
 		}
 	}
