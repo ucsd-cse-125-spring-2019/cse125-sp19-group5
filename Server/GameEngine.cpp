@@ -116,6 +116,9 @@ void GameEngine::endGame() {
 		hideScoreboard();
 		// TODO: move this later to when teams are finalized
 		roundState = RoundState::READY;
+		teamsReady = false;
+		NetBuffer reset(NetMessage::RESET);
+		Network::broadcast(reset);
 	});
 }
 
@@ -278,7 +281,7 @@ void GameEngine::movePlayers(vector<PlayerInputs> & playerInputs) {
 	vector<vec3> directions(gameState.players.size());
 
 	for (PlayerInputs playerInput : playerInputs) {
-		if (aggregatePlayerMovements.size() < playerInput.id) {
+		if (aggregatePlayerMovements.size() <= playerInput.id) {
 			continue;
 		}
 		aggregatePlayerMovements[playerInput.id] |= playerInput.inputs;

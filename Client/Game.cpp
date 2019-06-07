@@ -213,6 +213,15 @@ Game::Game() : gameObjects({ nullptr }) {
 		}
 	});
 
+	Network::on(NetMessage::RESET, [this](Connection*c, NetBuffer &buffer) {
+		MainMenuBackground = gSound->loadFlatSound("Sounds/MainMenuMusic.wav", 0.1f);
+		ConnectMenuBackground->stop();
+		MainMenuBackground->play(true);
+		GuiTeamMenu *teamMenu = Gui::create<GuiTeamMenu>();
+		teamMenu->setPlayerId(playerId);
+		teamMenu->setGame(this);
+	});
+
 	Network::on(NetMessage::GAME_STATE_UPDATE, [&](Connection *c, NetBuffer &buffer) {
 		gameState.deserialize(buffer);
 	});
