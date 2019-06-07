@@ -456,12 +456,12 @@ bool GameEngine::noCollisionMove(Player * player, vec3 movement) {
 			dist = 0.0f;
 		}
 
-		for (Player * p : gameState.players) {
+		/*for (Player * p : gameState.players) {
 			if (player->collidesWith(p)) {
 				player->setPosition(currPosition);
 				return false;
 			}
-		}
+		}*/
 
 		for (Ball * ball : gameState.balls) {
 			if (player->collidesWith(ball)) {

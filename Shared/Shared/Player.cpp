@@ -335,6 +335,13 @@ void Player::onCollision(Paddle * paddle) {
 }
 
 void Player::onCollision(Player * player) {
+	if (this->collidesWith(player)) {
+		vec3 midPoint = (getPosition() + player->getPosition()) * 0.5f;
+
+		vec3 moveDir = glm::normalize(getPosition() - midPoint);
+		setPositionNoUpdate(midPoint + (moveDir * getBoundingSphere()->getRadius() * 1.01f));
+		player->setPositionNoUpdate(midPoint + (-moveDir * getBoundingSphere()->getRadius() * 1.01f));
+	}
 }
 
 void Player::onCollision(Wall * wall) { 	
