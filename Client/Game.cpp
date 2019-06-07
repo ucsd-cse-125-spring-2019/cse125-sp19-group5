@@ -429,14 +429,6 @@ void Game::draw(float dt) const {
 
 void Game::setPlayerTeam(unordered_map<int, int> &p_t) {
 	player_team = p_t;
-	cout << "player_team" << endl;
-	for (auto it = player_team.begin(); it != player_team.end(); it++) {
-		cout << "player" << it->first << ": team" << it->second << endl;
-	}
-	cout << "p_t" << endl;
-	for (auto it = p_t.begin(); it != p_t.end(); it++) {
-		cout << "player" << it->first << ": team" << it->second << endl;
-	}
 }
 
 unordered_map<int, std::string> Game::getIdName() {

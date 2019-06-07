@@ -115,7 +115,6 @@ void GuiTeamMenu::updateTeamGui(Connection *c, NetBuffer &buffer) {
 		auto id = buffer.read<int>();
 		auto team = buffer.read<int>();
 		player_team[id] = team;
-		cout << "from server: p" << id << " t" << team << endl;
 	}
 	
 	GuiText* label;
@@ -135,7 +134,6 @@ void GuiTeamMenu::updateTeamGui(Connection *c, NetBuffer &buffer) {
 		p = it->first;
 		t = it->second;
 		if (t == 0) {
-			cout << "t0: " << p << endl;
 			label = Gui::create<GuiText>(container_t1);
 			label->setPosition(vec2(-0.1f, t1_pos));
 			label->setAlignment(TextAlign::CENTER);
@@ -146,7 +144,6 @@ void GuiTeamMenu::updateTeamGui(Connection *c, NetBuffer &buffer) {
 			team1.push_back(label);
 		}
 		else {
-			cout << "t1: " << p << endl;
 			label = Gui::create<GuiText>(container_t2);
 			label->setPosition(vec2(0.0f, t2_pos));
 			label->setAlignment(TextAlign::CENTER);
@@ -198,12 +195,4 @@ void GuiTeamMenu::setGame(Game *game) {
 
 void GuiTeamMenu::setPlayerTeam(unordered_map<int, int> &p_t) {
 	player_team = p_t;
-	cout << "player_team" << endl;
-	for (auto it = player_team.begin(); it != player_team.end(); it++) {
-		cout << "player" << it->first << ": team" << it->second << endl;
-	}
-	cout << "p_t" << endl;
-	for (auto it = p_t.begin(); it != p_t.end(); it++) {
-		cout << "player" << it->first << ": team" << it->second << endl;
-	}
 }

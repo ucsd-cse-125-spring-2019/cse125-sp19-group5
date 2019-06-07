@@ -176,15 +176,15 @@ void GameEngine::updateGameState(vector<PlayerInputs> & playerInputs) {
 	// send getNetworkGameState() to client
 }
 
-void GameEngine::updateTeamReady(unordered_map<int, int> &p_t, int teamR, int teamB) {
+void GameEngine::updateTeamReady() {
 
 	tuple<int, int> temp;
 	bool t_ready;
 	NetBuffer ready(NetMessage::READY);
 	NetBuffer team(NetMessage::TEAM);
 	cout << "team message being sent" << endl;
-	team.write<int>(p_t.size());
-	for (auto it = p_t.begin(); it != p_t.end(); it++) {
+	team.write<int>(player_team.size());
+	for (auto it = player_team.begin(); it != player_team.end(); it++) {
 		team.write(it->first);
 		team.write(it->second);
 	}
