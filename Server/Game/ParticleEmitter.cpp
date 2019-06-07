@@ -55,7 +55,9 @@ void ParticleEmitter::setLifeTime(float seconds) {
 }
 
 void ParticleEmitter::deleteAll() {
-	for (auto emitter : emitters) {
+	auto toDelete = emitters;
+	emitters.clear();
+	for (auto emitter : toDelete) {
 		delete emitter;
 	}
 }

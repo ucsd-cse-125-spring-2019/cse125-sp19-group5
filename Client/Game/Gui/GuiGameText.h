@@ -1,6 +1,6 @@
 #pragma once
-#include "../Renderer/Gui/GuiRect.h";
-#include "../Renderer/Gui/GuiText.h";
+#include "../Renderer/Gui/GuiRect.h"
+#include "../Renderer/Gui/GuiText.h"
 
 class GuiGameText : public GuiText {
 	public:

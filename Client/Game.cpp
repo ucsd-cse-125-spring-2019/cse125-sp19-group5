@@ -189,10 +189,10 @@ Game::Game() : gameObjects({ nullptr }) {
 	Network::on(NetMessage::CONNECTION_ID, [this] (Connection *c, NetBuffer &buffer) {
 		playerId = buffer.read<int>();
 		cout << "I am Player " << playerId << "." << endl;
-		int size = buffer.read<int>();
+		auto size = buffer.read<size_t>();
 		int p;
 		std::string n;
-		for (int i = 0; i < size; i++) {
+		for (size_t i = 0; i < size; i++) {
 			p = buffer.read<int>();
 			n = buffer.read<std::string>();
 			id_name[p] = n;
