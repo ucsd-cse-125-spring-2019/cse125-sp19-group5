@@ -569,7 +569,15 @@ void GameEngine::spawnPlayers() {
 		auto position = spawnInfo.second;
 		// TODO: team checks
 		if (playerIt != gameState.players.end()) {
-			(*playerIt)->setPosition(position);
+			auto player = *playerIt;
+			auto playerTeam = player_team[player->getId()];
+			player->setPosition(position);
+
+			auto shirt = playerTeam == 0
+				? "Materials/red_shirt_bear.json"
+				: "Materials/blue_shirt_bear.json";
+			player->setMaterial(shirt);
+
 			playerIt++;
 		}
 	}
