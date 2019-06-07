@@ -214,13 +214,9 @@ void GuiTeamMenu::setReady(Connection *c, NetBuffer &readyMsg) {
 }
 
 void GuiTeamMenu::startGame(Connection *c, NetBuffer &startMsg) {
-	bool start = startMsg.read<bool>();
-	if (start) {
-		game->setPlayerTeam(player_team);
-		firstTime = false;
-		remove();
-		teamMenu = nullptr;
-	}
+	game->setPlayerTeam(player_team);
+	remove();
+	teamMenu = nullptr;
 }
 
 bool GuiTeamMenu::getSelectionComplete() {

@@ -113,7 +113,6 @@ void GameEngine::startGame() {
 #endif
 
 	NetBuffer start(NetMessage::START);
-	start.write<bool>(true);
 	Network::broadcast(start);
 }
 
