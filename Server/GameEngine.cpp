@@ -524,7 +524,7 @@ void GameEngine::spawnItems() {
 			break;
 		}
 		case POWERUP_POWERBOOST: {
-			powerUpItem->setMaterial("Materials/box_strenth.json");
+			powerUpItem->setMaterial("Materials/box_strength.json");
 			break;
 		}
 		case POWERUP_BULLET_SPRAY: {
