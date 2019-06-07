@@ -121,6 +121,54 @@ void GuiTeamMenu::setPlayerId(int id) {
 	label->setText("Team Selection: Player " + std::to_string(playerId));
 }
 
+void GuiTeamMenu::resetGui() {
+	float t1_pos = 0.26f;
+	float t2_pos = 0.26f;
+
+	int p;
+	int t;
+
+	id_name = game->getIdName();
+
+	GuiText* label;
+
+	for (auto it = team1.begin(); it != team1.end(); it++) {
+		(*it)->remove();
+	}
+
+	for (auto it = team2.begin(); it != team2.end(); it++) {
+		(*it)->remove();
+	}
+
+	team1.clear();
+	team2.clear();
+
+	for (auto it = player_team.begin(); it != player_team.end(); it++) {
+		p = it->first;
+		t = it->second;
+		if (t == 0) {
+			label = Gui::create<GuiText>(container_t1);
+			label->setPosition(vec2(-0.03f, t1_pos));
+			label->setAlignment(TextAlign::CENTER);
+			label->setSize(vec2(1.0f, 0.1f));
+			label->setText(id_name[p]);
+			label->setFont("NormalText");
+			t1_pos -= 0.05f;
+			team1.push_back(label);
+		}
+		else {
+			label = Gui::create<GuiText>(container_t2);
+			label->setPosition(vec2(-0.03f, t2_pos));
+			label->setAlignment(TextAlign::CENTER);
+			label->setSize(vec2(1.0f, 0.1f));
+			label->setText(id_name[p]);
+			label->setFont("NormalText");
+			t2_pos -= 0.09f;
+			team2.push_back(label);
+		}
+	}
+}
+
 void GuiTeamMenu::updateTeamGui(Connection *c, NetBuffer &buffer) {
 	int size = buffer.read<size_t>();
 	int t;

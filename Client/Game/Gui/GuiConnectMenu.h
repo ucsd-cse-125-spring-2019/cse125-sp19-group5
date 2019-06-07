@@ -8,6 +8,7 @@
 #include "../Renderer/Gui/GuiButton.h"
 #include "../Renderer/Gui/GuiRect.h"
 #include "../Renderer/TextRenderer.h"
+#include "../Game.h"
 
 class GuiConnectMenu : public GuiImage {
 	private:
@@ -20,7 +21,10 @@ class GuiConnectMenu : public GuiImage {
 	void onIpEntered(const std::string &text);
 	void handleEnter();
 
+	Game * game = nullptr;
+
 	public:
 	GuiConnectMenu();
+	void setGame(Game *game);
 };
 

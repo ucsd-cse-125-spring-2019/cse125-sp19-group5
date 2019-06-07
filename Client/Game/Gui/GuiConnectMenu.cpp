@@ -113,9 +113,14 @@ void GuiConnectMenu::handleEnter() {
 		NetBuffer namebuf(NetMessage::NAME);
 		namebuf.write<std::string>(name);
 		Network::send(namebuf);
+		game->teamMenu();
 		remove();
 	}
 	else {
 		message->setText("Failed to connect!");
 	}
+}
+
+void GuiConnectMenu::setGame(Game * game) {
+	this->game = game;
 }

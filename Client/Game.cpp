@@ -1,8 +1,8 @@
 #include <GL/glew.h>
 #include "Game.h"
 #include "Game/Gui/GuiConnectMenu.h"
-#include "Game/Gui/GuiGameText.h"
 #include "Game/Gui/GuiTeamMenu.h"
+#include "Game/Gui/GuiGameText.h"
 #include <Shared/Common.h>
 #include <Shared/CommonStructs.h>
 #include <Shared/ConfigSettings.h>
@@ -133,7 +133,9 @@ Game::Game() : gameObjects({ nullptr }) {
 	Draw::init();
 	ParticleEmitters::init(&gameState);
 
-	Gui::create<GuiConnectMenu>();
+	auto connectMenu = Gui::create<GuiConnectMenu>();
+	connectMenu->setGame(this);
+
 	int port = 1234;
 	ConfigSettings::get().getValue("Port", port);
 	//Network::init("127.0.0.1", port);
@@ -197,30 +199,34 @@ Game::Game() : gameObjects({ nullptr }) {
 			n = buffer.read<std::string>();
 			id_name[p] = n;
 		}
+		guiTeamMenu->setPlayerId(playerId);
+		/*MainMenuBackground = gSound->loadFlatSound("Sounds/MainMenuMusic.wav", 0.1f);
+		ConnectMenuBackground->stop();
+		MainMenuBackground->play(true);
+		GuiTeamMenu *teamMenu = Gui::create<GuiTeamMenu>();
+		teamMenu->setPlayerId(playerId);
+		teamMenu->setGame(this);*/
 	});
 
 	Network::on(NetMessage::NAME, [this](Connection*c, NetBuffer &buffer) {
 		int id = buffer.read<int>();
 		std::string name = buffer.read<std::string>();
 		id_name[id] = name;
-		if (id == playerId) {
+		/*if (id == playerId) {
 			MainMenuBackground = gSound->loadFlatSound("Sounds/MainMenuMusic.wav", 0.1f);
 			ConnectMenuBackground->stop();
 			MainMenuBackground->play(true);
 			GuiTeamMenu *teamMenu = Gui::create<GuiTeamMenu>();
 			teamMenu->setPlayerId(playerId);
 			teamMenu->setGame(this);
-		}
+		}*/
 	});
 
-	Network::on(NetMessage::RESET, [this](Connection*c, NetBuffer &buffer) {
-		MainMenuBackground = gSound->loadFlatSound("Sounds/MainMenuMusic.wav", 0.1f);
-		ConnectMenuBackground->stop();
-		MainMenuBackground->play(true);
-		GuiTeamMenu *teamMenu = Gui::create<GuiTeamMenu>();
-		teamMenu->setPlayerTeam(player_team);
-		teamMenu->setPlayerId(playerId);
-		teamMenu->setGame(this);
+	Network::on(NetMessage::RESET, [&](Connection*c, NetBuffer &buffer) {
+		teamMenu();
+		guiTeamMenu->setPlayerTeam(player_team);
+		guiTeamMenu->setPlayerId(playerId);
+		guiTeamMenu->resetGui();
 	});
 
 	Network::on(NetMessage::GAME_STATE_UPDATE, [&](Connection *c, NetBuffer &buffer) {
@@ -444,4 +450,12 @@ void Game::setPlayerTeam(unordered_map<int, int> &p_t) {
 
 unordered_map<int, std::string> Game::getIdName() {
 	return id_name;
+}
+
+void Game::teamMenu() {
+	MainMenuBackground = gSound->loadFlatSound("Sounds/MainMenuMusic.wav", 0.1f);
+	ConnectMenuBackground->stop();
+	MainMenuBackground->play(true);
+	guiTeamMenu = Gui::create<GuiTeamMenu>();
+	guiTeamMenu->setGame(this);
 }

@@ -15,7 +15,7 @@ constexpr auto SCORE_SHOW_TIME = 10;
 
 #define _DEBUG
 
-static const int PLAYER_NUM = 1;
+static const int PLAYER_NUM = 2;
 
 static int playerScores[4] = { 0 };
 
@@ -65,7 +65,7 @@ void GameEngine::init() {
 	gameState.score = std::make_tuple(0, 0);
 	gameState.timeLeft = 0;
 
-	setGameText("Waiting for players...");
+	//setGameText("Waiting for players...");
 }
 
 bool GameEngine::shouldGameStart() {
@@ -133,12 +133,15 @@ void GameEngine::endGame() {
 		roundState = RoundState::READY;
 		teamsReady = false;
 		readyP = 0;
+
 		NetBuffer resetbuf(NetMessage::RESET);
 		Network::broadcast(resetbuf);
 
+		/*
 		NetBuffer teambuf(NetMessage::TEAM);
 		teambuf.write<size_t>((size_t)0);
-		Network::broadcast(teambuf);
+		Network::broadcast(teambuf);*/
+
 	});
 }
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <GL/glew.h>
 #include "Renderer/Shader.h"
 #include "Renderer/Camera.h"
 #include "Renderer/DirectionalLight.h"
@@ -14,6 +15,8 @@
 #include <Shared/GameState.h>
 #include "Networking/Client.h"
 #include <array>
+
+class GuiTeamMenu;
 
 class Game {
 	private:
@@ -49,6 +52,7 @@ class Game {
 	unordered_map<int, int> player_team;
 	GameState gameState;
 	Player *playerObj = nullptr;
+	GuiTeamMenu *guiTeamMenu = nullptr;
 
 	void updateInputs();
 
@@ -69,6 +73,7 @@ public:
 	void onGameObjectMaterialSet(Connection *c, NetBuffer &buffer);
 	void onPlaySound(Connection *c, NetBuffer &buffer);
 	void setPlayerTeam(unordered_map<int,int> &p_t);
+	void teamMenu();
 
 	unordered_map<int, std::string> getIdName();
 	int getScreenWidth() const;

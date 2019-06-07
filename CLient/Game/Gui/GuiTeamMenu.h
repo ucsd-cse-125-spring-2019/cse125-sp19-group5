@@ -1,4 +1,5 @@
 #pragma once
+
 #include <GL/glew.h>
 #include "../Renderer/Gui/Gui.h"
 #include "../Renderer/Gui/GuiTextbox.h"
@@ -32,7 +33,7 @@ private:
 	GuiRect *container_t1;
 	GuiRect *container_t2;
 
-	Game*game;
+	Game *game = nullptr;
 	unordered_map<int, int> player_team;
 	unordered_map<int, std::string> id_name;
 	vector<GuiText*> team1;
@@ -47,4 +48,5 @@ public:
 	void setReady(Connection *c, NetBuffer &readyMsg);
 	void startGame(Connection *c, NetBuffer &readyMsg);
 	void setPlayerTeam(unordered_map<int, int> &p_t);
+	void resetGui();
 };
