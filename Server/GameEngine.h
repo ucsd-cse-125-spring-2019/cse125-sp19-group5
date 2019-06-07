@@ -7,6 +7,7 @@
 #include <Shared/Bullet.h>
 #include <Shared/Wall.h>
 #include <Shared/Goal.h>
+#include <Shared/PowerUpItem.h>
 #include <Shared/GameState.h>
 #include <Shared/Networking/Connection.h>
 #include <unordered_set>
@@ -38,7 +39,7 @@ public:
 	void onPlayerDisconnected(Connection *c);
 
 	void updateGameState(vector<PlayerInputs> & playerInputs);
-	void updateTeamReady(unordered_map<int, int> p_t, int teamR, int teamB);
+	void updateTeamReady();
 	void synchronizeGameState();
 	GameState & getGameState();
 	
@@ -49,6 +50,12 @@ public:
 		addGameObject(obj);
 		return obj;
 	}
+
+	unordered_map<int, int> player_team;
+	unordered_map<int, std::string> id_name;
+	int teamR = 0;
+	int teamB = 0;
+	int readyP = 0;
 
 	void addGameObject(Player *player);
 	void addGameObject(Ball *ball);
@@ -72,6 +79,7 @@ public:
 	void updateGameObjectsOnServerTick();
 	bool noCollisionMove(Player * player, vec3 movement);
 
+	void spawnItems();
 	const std::array<GameObject*, MAX_GAME_OBJS> &getGameObjects() const;
 
 	void onPlayerReady(Connection *c, NetBuffer &buffer);
@@ -111,6 +119,8 @@ private:
 	void prepRound();
 
 	void updateTimers();
+  
+  int itemTimer = 0;
 };
 
 extern GameEngine *gGameEngine;

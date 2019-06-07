@@ -1,4 +1,5 @@
 {
     "diffuse": "Textures/brick.jpg",
-    "normal": "Textures/brick_normal.jpg"
+    "normal": "Textures/brick_normal.jpg",
+    "texScale": [ 4, 2 ]
 }

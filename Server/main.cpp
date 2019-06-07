@@ -29,6 +29,15 @@ int main(int argc, char **argv) {
 	MapLoader mapLoader(&gameEngine);
 	mapLoader.loadMap("Maps/map_with_goals.json");
 
+	/*
+	unordered_map<int, int> player_team;
+	unordered_map<int, std::string> id_name;
+	int teamR = 0;
+	int teamB = 0;*/
+
+	/*auto jumpableBox = gameEngine.addGameObject<Wall>();
+	mapLoader.loadMap("Maps/map_with_goals.json");
+
 	unordered_map<int, int> player_team;
 	unordered_map<int, std::string> id_name;
 	int teamR = 0;
@@ -46,7 +55,7 @@ int main(int argc, char **argv) {
 	jumpableBox2->setPosition(vec3(0, 0, 60));
 	jumpableBox2->setScale(vec3(30, 16, 30));
 	jumpableBox2->setModel("Models/unit_cube.obj");
-	jumpableBox2->setMaterial("Materials/brick.json");
+	jumpableBox2->setMaterial("Materials/brick.json");*/
 
 	// Handle player keyboard/mouse inputs
 	auto handlePlayerInput = [&playerInputs](Connection *c, NetBuffer &buffer) {
@@ -64,31 +73,31 @@ int main(int argc, char **argv) {
 
 	auto handleTeamSelection = [&](Connection*c, NetBuffer &buffer) {
 		
-		if (player_team.at(c->getId()) == 0) teamR -= 1;
-		else teamB -= 1;
+		if (gameEngine.player_team.at(c->getId()) == 0) gameEngine.teamR -= 1;
+		else gameEngine.teamB -= 1;
 
-		player_team[c->getId()] = buffer.read<int>();
+		gameEngine.player_team[c->getId()] = buffer.read<int>();
 
-		if (player_team.at(c->getId()) == 0) teamR += 1;
-		else teamB += 1;
+		if (gameEngine.player_team.at(c->getId()) == 0) gameEngine.teamR += 1;
+		else gameEngine.teamB += 1;
 
-		gameEngine.updateTeamReady(player_team, teamR, teamB);
+		gameEngine.updateTeamReady();
 	};
 
 	auto addPlayerName = [&](Connection*c, NetBuffer &buffer) {
 
 		std::string name = buffer.read<std::string>();
-		id_name[c->getId()] = name;
+		gameEngine.id_name[c->getId()] = name;
 		NetBuffer id_name(NetMessage::NAME);
 		id_name.write(c->getId());
 		id_name.write(name);
 		Network::broadcast(id_name);
 
-		player_team[c->getId()] = (player_team.size() + 1) % 2;
-		if (player_team.at(c->getId()) == 0) teamR += 1;
-		else teamB += 1;
+		gameEngine.player_team[c->getId()] = (gameEngine.player_team.size() + 1) % 2;
+		if (gameEngine.player_team.at(c->getId()) == 0) gameEngine.teamR += 1;
+		else gameEngine.teamB += 1;
 
-		gameEngine.updateTeamReady(player_team, teamR, teamB);
+		gameEngine.updateTeamReady();
 	};
 
 	Network::onClientConnected([&](Connection *c) {
@@ -104,14 +113,20 @@ int main(int argc, char **argv) {
 		// Send Client the connection/player ID 
 		NetBuffer buffer(NetMessage::CONNECTION_ID);
 		buffer.write<int>(c->getId());
-		buffer.write<int>(id_name.size());
-		for (auto it = id_name.begin(); it != id_name.end(); it++) {
+		buffer.write<int>(gameEngine.id_name.size());
+		for (auto it = gameEngine.id_name.begin(); it != gameEngine.id_name.end(); it++) {
 			buffer.write<int>(it->first);
 			buffer.write<std::string>(it->second);
 		}
 		c->send(buffer);
 		c->on(NetMessage::NAME, addPlayerName);
 		c->on(NetMessage::TEAM, handleTeamSelection);
+		c->on(NetMessage::READY, [&] (Connection *c, NetBuffer &buffer){
+			bool ready2go = buffer.read < bool >();
+			if (ready2go) gameEngine.readyP += 1;
+			else gameEngine.readyP -= 1;
+			gameEngine.updateTeamReady();
+		});
 
 		for (auto gameObject : gameEngine.getGameObjects()) {
 			if (!gameObject) { continue; }
@@ -140,7 +155,7 @@ int main(int argc, char **argv) {
 		}
 
 		gameEngine.createPlayer(c);
-
+    
 		auto ps = new ParticleEmitter();
 		ps->setGravity(-15.0f);
 		ps->setCreationSpeed(500);
@@ -157,6 +172,13 @@ int main(int argc, char **argv) {
 			std::cout << "Player " << c->getId() << " has disconnected."
 				<< std::endl;
 		});
+
+		c->on(
+			NetMessage::DEBUG_MAP,
+			[&](Connection *c, NetBuffer &buf) {
+				gameEngine.cleanMap();
+			}
+		);
 	});
 
 	//This is the total amount of time allowed for the server to update the game state
@@ -194,7 +216,6 @@ int main(int argc, char **argv) {
 			//server has taken too long to process the update!
 			//std::cerr << "SERVER TOOK TOO LONG TO UPDATE!" << endl;
 		}
-	
 		gameEngine.synchronizeGameState();
 	}
 }

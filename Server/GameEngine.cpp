@@ -7,11 +7,15 @@
 #include <Shared/Util/CurTime.h>
 #include "MapLoader.h"
 
+#include "Game/Powerups/BombPowerup.h"
+
 constexpr auto COUNTDOWN_TIME = 3;
 constexpr auto ROUND_SCORE_TIME = 3;
 constexpr auto SCORE_SHOW_TIME = 10;
 
 #define _DEBUG
+
+static const int PLAYER_NUM = 1;
 
 template<class T, class V>
 void inline safeRemoveFromVec(std::vector<T> &v, V &val) {
@@ -63,6 +67,10 @@ void GameEngine::init() {
 }
 
 bool GameEngine::shouldGameStart() {
+	if (roundState != RoundState::READY) { return false; }
+#ifdef _DEBUG_SP
+	return gameState.players.size() > 0;
+#endif
 	if (roundState != RoundState::READY) {
 		return false;
 	}
@@ -97,7 +105,13 @@ void GameEngine::startGame() {
 	std::cout << "Starting a new game..." << std::endl;
 	prepRound();
 	gameState.score = std::make_tuple(0, 0);
-	gameState.timeLeft = 1000 * 10; // 5 minutes in ms
+
+#ifdef _DEBUG_SP
+	gameState.timeLeft = 100000 * 10; // a long time
+#else
+	gameState.timeLeft = 1000 * 60 * 5; // 5 minutes in ms
+#endif
+
 	NetBuffer start(NetMessage::START);
 	start.write<bool>(true);
 	Network::broadcast(start);
@@ -117,8 +131,12 @@ void GameEngine::endGame() {
 		// TODO: move this later to when teams are finalized
 		roundState = RoundState::READY;
 		teamsReady = false;
-		NetBuffer reset(NetMessage::RESET);
-		Network::broadcast(reset);
+		readyP = 0;
+		NetBuffer resetbuf(NetMessage::RESET);
+		Network::broadcast(resetbuf);
+		NetBuffer teambuf(NetMessage::TEAM);
+		teambuf.write<int>(0);
+		Network::broadcast(teambuf);
 	});
 }
 
@@ -167,27 +185,29 @@ void GameEngine::updateGameState(vector<PlayerInputs> & playerInputs) {
 	updateScore();
 	updateGameObjectsOnServerTick();
 	removeDeadObjects();
+	spawnItems();
 
 	ParticleEmitter::updateAll();
 
 	// send getNetworkGameState() to client
 }
 
-void GameEngine::updateTeamReady(unordered_map<int, int> p_t, int teamR, int teamB) {
+void GameEngine::updateTeamReady() {
 
 	tuple<int, int> temp;
 	bool t_ready;
 	NetBuffer ready(NetMessage::READY);
 	NetBuffer team(NetMessage::TEAM);
-	team.write<int>(p_t.size());
-	for (auto it = p_t.begin(); it != p_t.end(); it++) {
+
+	team.write<int>(player_team.size());
+	for (auto it = player_team.begin(); it != player_team.end(); it++) {
 		team.write(it->first);
 		team.write(it->second);
 	}
 
 	Network::broadcast(team);
 
-	if (teamR == 1 && teamB == 1) {
+	if (teamR == PLAYER_NUM && teamB == PLAYER_NUM && readyP == PLAYER_NUM * 2) {
 		t_ready = true;
 	}
 	else {
@@ -303,7 +323,8 @@ void GameEngine::movePlayers(vector<PlayerInputs> & playerInputs) {
 }
 
 void GameEngine::incrementalMoveBall(Ball * ball, float dist) {
-	float diameter = ball->getBoundingSphere()->getRadius() * 2.0f;
+	//float diameter = ball->getBoundingSphere()->getRadius() * 2.0f;
+	float diameter = 0.2f;
 
 	while (dist > 0.0f && !ball->getGoalScored()) {
 		if (dist > diameter) {
@@ -327,6 +348,15 @@ void GameEngine::incrementalMoveBall(Ball * ball, float dist) {
 			if (ball->collidesWith(wall)) {
 				ball->onCollision(wall);
 				wall->onCollision(ball);
+			}
+		}
+
+		for (Player * player : gameState.players) {
+			for (Wall * wall : gameState.walls) {
+				if (player->collidesWith(wall)) {
+					player->onCollision(wall);
+					wall->onCollision(player);
+				}
 			}
 		}
 	}
@@ -429,7 +459,9 @@ void GameEngine::updateGameObjectsOnServerTick() {
 
 bool GameEngine::noCollisionMove(Player * player, vec3 movement) {
 	vec3 currPosition = player->getPosition();
-	float diameter = player->getBoundingSphere()->getRadius() * 2;
+	// float diameter = player->getBoundingSphere()->getRadius() * 2;
+	float diameter = 0.2f;
+
 	vec3 move = player->getMoveDestination(movement) - player->getPosition();
 	float dist = glm::length(move);
 
@@ -443,10 +475,17 @@ bool GameEngine::noCollisionMove(Player * player, vec3 movement) {
 			dist = 0.0f;
 		}
 
-		for (Player * p : gameState.players) {
+		/*for (Player * p : gameState.players) {
 			if (player->collidesWith(p)) {
 				player->setPosition(currPosition);
 				return false;
+			}
+		}*/
+
+		for (Ball * ball : gameState.balls) {
+			if (player->collidesWith(ball)) {
+				player->onCollision(ball);
+				ball->onCollision(player);
 			}
 		}
 
@@ -461,6 +500,30 @@ bool GameEngine::noCollisionMove(Player * player, vec3 movement) {
 	}
 
 	return true;
+}
+
+void GameEngine::spawnItems() {
+	if (itemTimer == 0) {
+		PowerUpItem * powerUpItem = addGameObject<PowerUpItem>();
+		powerUpItem->setPowerUpType(POWERUP_TYPES(rand() % NUM_POWERUPS));
+		powerUpItem->setBoundingShape(new BoundingSphere(vec3(0, 3, 0), 3.0f));
+		powerUpItem->setScale(vec3(3));
+		powerUpItem->setModel("Models/unit_sphere.obj");
+		powerUpItem->setMaterial("Materials/grass.json");
+
+		tuple<float, float> xRange = std::make_tuple(-50.0f, 50.0f);
+		tuple<float, float> yRange = std::make_tuple(70.0f, 80.0f);
+		tuple<float, float> zRange = std::make_tuple(-50.0f, 50.0f);
+		float xPos = (rand() / (float)RAND_MAX * (std::get<1>(xRange) - std::get<0>(xRange))) + std::get<0>(xRange);
+		float yPos = (rand() / (float)RAND_MAX * (std::get<1>(yRange) - std::get<0>(yRange))) + std::get<0>(yRange);
+		float zPos = (rand() / (float)RAND_MAX * (std::get<1>(zRange) - std::get<0>(zRange))) + std::get<0>(zRange);
+
+		powerUpItem->setPosition(vec3(xPos, yPos, zPos));
+		itemTimer = 900;
+	}
+	else {
+		itemTimer--;
+	}
 }
 
 const std::array<GameObject*, MAX_GAME_OBJS> &GameEngine::getGameObjects() const {
@@ -546,8 +609,9 @@ Player *GameEngine::createPlayer(Connection *c) {
 	constexpr vec3 origin(0.0f);
 
 	auto player = new Player(vec3(0, 2, 0), origin, origin, c->getId(), 2, 0);
-	player->setCooldown(SWING, std::make_tuple(0, 60));
-	player->setCooldown(SHOOT, std::make_tuple(0, 60));
+	player->setCooldown(SWING, std::make_tuple(0, 30));
+	player->setCooldown(SHOOT, std::make_tuple(0, 30));
+	player->setCooldown(WALL, std::make_tuple(0, 120));
 	addGameObject(player);
 
 	player->setModel("Models/AntiDeformBear.fbx");

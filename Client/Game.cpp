@@ -218,6 +218,7 @@ Game::Game() : gameObjects({ nullptr }) {
 		ConnectMenuBackground->stop();
 		MainMenuBackground->play(true);
 		GuiTeamMenu *teamMenu = Gui::create<GuiTeamMenu>();
+		teamMenu->setPlayerTeam(player_team);
 		teamMenu->setPlayerId(playerId);
 		teamMenu->setGame(this);
 	});
@@ -321,10 +322,10 @@ void Game::updateInputs() {
 	if (Input::isKeyDown(GLFW_KEY_SPACE)) {
 		keyInputs += JUMP;
 	}
-	if (Input::isKeyDown(GLFW_KEY_E)) {
+	if (Input::isMouseClicked(GLFW_MOUSE_BUTTON_LEFT)) {
 		keyInputs += SWING;
 	}
-	if (Input::isKeyDown(GLFW_KEY_Q)) {
+	if (Input::isMouseClicked(GLFW_MOUSE_BUTTON_RIGHT)) {
 		keyInputs += SHOOT;
 	}
 	if (Input::isKeyDown(GLFW_KEY_F)) {
@@ -333,6 +334,14 @@ void Game::updateInputs() {
 	if (Input::isKeyDown(GLFW_KEY_ESCAPE)) {
 		shouldExit = true;
 	}
+
+#ifdef _DEBUG_MAP_EDITOR
+	if (Input::isKeyDown(GLFW_KEY_F1)) {
+		NetBuffer buf(NetMessage::DEBUG_MAP);
+		Network::send(buf);
+		Input::setMouseVisible(false);
+	}
+#endif
 
 	// Sending player input 
 	NetBuffer buffer(NetMessage::PLAYER_INPUT);
@@ -426,6 +435,9 @@ void Game::draw(float dt) const {
 	glEnable(GL_DEPTH_TEST);
 }
 
+void Game::setPlayerTeam(unordered_map<int, int> &p_t) {
+	player_team = p_t;
+}
 
 unordered_map<int, std::string> Game::getIdName() {
 	return id_name;

@@ -14,3 +14,10 @@ void GameObject::playSound(const string &sound, float volume, bool loop) {
 	DO_NOT_CALL;
 }
 void GameObject::stopSound(const string &sound) { DO_NOT_CALL; }
+
+#include <Shared/Player.h>
+void Player::onCollision(PowerUpItem * item) { }
+void Player::onCollision(StunBullet * bullet) { }
+
+#include <Shared/Bomb.h>
+void Bomb::updateOnServerTick() { }

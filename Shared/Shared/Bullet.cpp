@@ -1,5 +1,6 @@
 #include "Bullet.h"
 #include "CollisionDetection.h"
+#include "Wall.h"
 
 Bullet::Bullet(vec3 position, vec3 velocity, float radius) : SphereGameObject(position, velocity, 0) {
 	setBoundingShape(new BoundingSphere(position, radius));
@@ -11,10 +12,19 @@ GAMEOBJECT_TYPES Bullet::getGameObjectType() const {
 
 void Bullet::updateOnServerTick() {
 	move(getVelocity());
+	lifespan--;
 }
 
 bool Bullet::deleteOnServerTick() {
-	return this->hit;
+	return this->hit || lifespan == 0;
+}
+
+void Bullet::setOwner(Player * p) {
+	this->owner = p;
+}
+
+Player * Bullet::getOwner() {
+	return this->owner;
 }
 
 void Bullet::onCollision(GameObject * gameObject) {

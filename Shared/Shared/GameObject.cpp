@@ -97,6 +97,9 @@ void GameObject::onCollision(Ball * ball) {
 	// std::cout << "not implemented" << std::endl; 
 }
 
+void GameObject::onCollision(Bomb * bomb) {
+}
+
 void GameObject::onCollision(Bullet * bullet) {
 }
 
@@ -109,6 +112,12 @@ void GameObject::onCollision(Paddle * paddle) {
 
 void GameObject::onCollision(Player * player) {
 	// std::cout << "not implemented" << std::endl;
+}
+
+void GameObject::onCollision(PowerUpItem * item) {
+}
+
+void GameObject::onCollision(StunBullet * stunBullet) {
 }
 
 void GameObject::onCollision(Wall * wall) { 

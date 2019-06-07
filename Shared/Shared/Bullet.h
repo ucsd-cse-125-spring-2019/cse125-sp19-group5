@@ -1,7 +1,5 @@
 #pragma once
 #include "SphereGameObject.h"
-#include "Ball.h"
-#include "Wall.h"
 
 class Bullet : public SphereGameObject {
 public:
@@ -12,6 +10,9 @@ public:
 	void updateOnServerTick();
 	bool deleteOnServerTick();
 
+	void setOwner(Player * p);
+	Player * getOwner();
+
 	// collision interactions below
 	void onCollision(GameObject * gameObject);
 	void onCollision(Ball * ball);
@@ -20,4 +21,6 @@ public:
 
 private:
 	bool hit = false;
+	int lifespan = 100;
+	Player * owner;
 };
