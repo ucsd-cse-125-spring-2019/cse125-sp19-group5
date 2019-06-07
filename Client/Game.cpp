@@ -144,8 +144,6 @@ Game::Game() : gameObjects({ nullptr }) {
 	gSound->setMasterVolume(1.0f);
 	ConnectMenuBackground = gSound->loadFlatSound("Sounds/ConnectMenuMusic.wav", 0.1f);
 	ConnectMenuBackground->play(true);
-
-	hud = Gui::create<GuiHUD>();
 	
 	lightShader = new Shader("Shaders/light");
 	camera = new Camera(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f), 70, 1.0f);
@@ -233,6 +231,18 @@ Game::Game() : gameObjects({ nullptr }) {
 				hud = nullptr;
 			}
 			Gui::create<GuiScoreboard>();
+		}
+	);
+	Network::on(
+		NetMessage::HUD_VISIBLE,
+		[&](Connection *c, NetBuffer &buffer) {
+			auto isVisible = buffer.read<bool>();
+			if (isVisible && !hud) {
+				hud = Gui::create<GuiHUD>();
+			} else if (!isVisible && hud) {
+				hud->remove();
+				hud = nullptr;
+			}
 		}
 	);
 }
@@ -346,9 +356,11 @@ void Game::update(float dt) {
 
 	ParticleEmitters::update(dt, camera);
 
-	hud->setTime(gameState.timeLeft);
-	hud->setLeftTeamScore(std::get<0>(gameState.score));
-	hud->setRightTeamScore(std::get<1>(gameState.score));
+	if (hud) {
+		hud->setTime(gameState.timeLeft);
+		hud->setLeftTeamScore(std::get<0>(gameState.score));
+		hud->setRightTeamScore(std::get<1>(gameState.score));
+	}
 }
 
 void Game::drawScene(Shader &shader, DrawPass pass) const {

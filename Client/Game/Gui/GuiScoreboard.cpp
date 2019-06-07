@@ -2,7 +2,11 @@
 #include "../Networking/Client.h"
 #include "GuiScoreboard.h"
 
+static GuiScoreboard *scoreboard = nullptr;
+
 GuiScoreboard::GuiScoreboard() {
+	scoreboard = this;
+
 	gTextRenderer->loadFont("ScoreboardBig", {
 		200, "Fonts/Arial.ttf"
 	});
@@ -99,12 +103,16 @@ GuiScoreboard::GuiScoreboard() {
 	Network::on(
 		NetMessage::SCOREBOARD_HIDE,
 		[&](Connection *c, NetBuffer &buffer) {
-			remove();
+			if (scoreboard) {
+				scoreboard->remove();
+				scoreboard = nullptr;
+			}
 		}
 	);
 	Network::on(
 		NetMessage::SCOREBOARD_SCORE,
 		[&](Connection *c, NetBuffer &buffer) {
+			if (!scoreboard) { return; }
 			auto team = buffer.read<int>();
 			auto name = buffer.read<string>();
 			auto score = buffer.read<int>();
@@ -114,6 +122,7 @@ GuiScoreboard::GuiScoreboard() {
 	Network::on(
 		NetMessage::SCOREBOARD_SCORE,
 		[&](Connection *c, NetBuffer &buffer) {
+			if (!scoreboard) { return; }
 			title->setText(buffer.read<string>());
 		}
 	);
