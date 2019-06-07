@@ -1,7 +1,10 @@
 #include "GuiTeamMenu.h"
 
+static GuiTeamMenu *teamMenu = nullptr;
+
 GuiTeamMenu::GuiTeamMenu()
 {
+	teamMenu = this;
 	//setColor(vec4(0.2f, 0.2f, 0.2f, 1.0f));
 	setImage("Textures/image2.png");
 	setPosition(vec2(0.0f, 0.0f));
@@ -68,9 +71,27 @@ GuiTeamMenu::GuiTeamMenu()
 	//team2->setText("");
 	//team2->setFont("Arial");
 
-	Network::on(NetMessage::TEAM, boost::bind(&GuiTeamMenu::updateTeamGui, this, _1, _2));
-	Network::on(NetMessage::READY, boost::bind(&GuiTeamMenu::setReady, this, _1, _2));
-	Network::on(NetMessage::START, boost::bind(&GuiTeamMenu::startGame, this, _1, _2));
+	Network::on(
+		NetMessage::TEAM,
+		[&](Connection *c, NetBuffer &buffer) {
+			if (!teamMenu) { return; }
+			teamMenu->updateTeamGui(c, buffer);
+		}
+	);
+	Network::on(
+		NetMessage::READY,
+		[&](Connection *c, NetBuffer &buffer) {
+			if (!teamMenu) { return; }
+			teamMenu->setReady(c, buffer);
+		}
+	);
+	Network::on(
+		NetMessage::START,
+		[&](Connection *c, NetBuffer &buffer) {
+			if (!teamMenu) { return; }
+			teamMenu->startGame(c, buffer);
+		}
+	);
 }
 
 void GuiTeamMenu::setPlayerId(int id) {
@@ -154,6 +175,7 @@ void GuiTeamMenu::startGame(Connection *c, NetBuffer &startMsg) {
 	bool start = startMsg.read<bool>();
 	if (start) {
 		remove();
+		teamMenu = nullptr;
 	}
 }
 

@@ -184,7 +184,7 @@ void GameEngine::updateTeamReady(unordered_map<int, int> p_t, int teamR, int tea
 
 	Network::broadcast(team);
 
-	if (teamR == 2 && teamB == 2) {
+	if (teamR == 1 && teamB == 1) {
 		t_ready = true;
 	}
 	else {

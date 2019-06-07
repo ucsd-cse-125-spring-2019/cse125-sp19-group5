@@ -34,13 +34,13 @@ private:
 	unordered_map<int, std::string> id_name;
 	vector<GuiText*> team1;
 	vector<GuiText*> team2;
-	void updateTeamGui(Connection *c, NetBuffer &menuMsg);
-	void setReady(Connection *c, NetBuffer &readyMsg);
-	void startGame(Connection *c, NetBuffer &readyMsg);
 
 public:
 	GuiTeamMenu();
 	void setPlayerId(int id);
 	bool getSelectionComplete();
 	void setGame(Game *game);
+	void updateTeamGui(Connection *c, NetBuffer &menuMsg);
+	void setReady(Connection *c, NetBuffer &readyMsg);
+	void startGame(Connection *c, NetBuffer &readyMsg);
 };
