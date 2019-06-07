@@ -123,8 +123,8 @@ int main(int argc, char **argv) {
 		c->on(NetMessage::TEAM, handleTeamSelection);
 		c->on(NetMessage::READY, [&] (Connection *c, NetBuffer &buffer){
 			bool ready2go = buffer.read < bool >();
-			if (ready2go) gameEngine.readyPlayers += 1;
-			else gameEngine.readyPlayers -= 1;
+			if (ready2go) gameEngine.readyP += 1;
+			else gameEngine.readyP -= 1;
 			gameEngine.updateTeamReady();
 		});
 

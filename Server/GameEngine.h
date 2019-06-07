@@ -55,7 +55,7 @@ public:
 	unordered_map<int, std::string> id_name;
 	int teamR = 0;
 	int teamB = 0;
-	int readyPlayers = 0;
+	int readyP = 0;
 
 	void addGameObject(Player *player);
 	void addGameObject(Ball *ball);

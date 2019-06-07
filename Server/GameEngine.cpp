@@ -13,6 +13,8 @@ constexpr auto SCORE_SHOW_TIME = 10;
 
 #define _DEBUG
 
+static const int PLAYER_NUM = 1;
+
 template<class T, class V>
 void inline safeRemoveFromVec(std::vector<T> &v, V &val) {
 	auto it = std::find(v.begin(), v.end(), val);
@@ -127,6 +129,7 @@ void GameEngine::endGame() {
 		// TODO: move this later to when teams are finalized
 		roundState = RoundState::READY;
 		teamsReady = false;
+		readyP = 0;
 		NetBuffer resetbuf(NetMessage::RESET);
 		Network::broadcast(resetbuf);
 		NetBuffer teambuf(NetMessage::TEAM);
@@ -202,7 +205,7 @@ void GameEngine::updateTeamReady() {
 
 	Network::broadcast(team);
 
-	if (teamR == 1 && teamB == 1 && readyPlayers == 4) {
+	if (teamR == PLAYER_NUM && teamB == PLAYER_NUM && readyP == PLAYER_NUM * 2) {
 		t_ready = true;
 	}
 	else {
