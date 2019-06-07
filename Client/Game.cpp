@@ -134,16 +134,10 @@ Game::Game() : gameObjects({ nullptr }) {
 	ParticleEmitters::init(&gameState);
 	auto connectMenu = Gui::create<GuiConnectMenu>();
 	connectMenu->setGame(this);
-	int port = 1234;
-	ConfigSettings::get().getValue("Port", port);
-
-#ifdef _DEBUG_SP
-	Network::init("127.0.0.1", port);
-#else
-	Gui::create<GuiConnectMenu>();
 	ConnectMenuBackground = gSound->loadFlatSound("Sounds/ConnectMenuMusic.wav", 0.3f);
 	ConnectMenuBackground->play(true);
-#endif
+	int port = 1234;
+	ConfigSettings::get().getValue("Port", port);
 
 	gSound->setMasterVolume(1.0f);
 	
