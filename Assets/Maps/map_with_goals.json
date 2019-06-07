@@ -69,6 +69,16 @@
       "model": "Models/unit_cube.obj",
       "material": "Materials/grass.json",
       "orientation": null
+    },
+    {
+      "name": "ceiling",
+      "position": [ 0, 100, 0 ],
+      "dimensions": [ 250, 3, 250 ],
+      "direction": [ 1, 0, 0 ],
+      "scale": [ 250, 3, 250 ],
+      "model": "",
+      "material": "",
+      "orientation": null
     }
   ],
   "balls": [

@@ -321,10 +321,10 @@ void Game::updateInputs() {
 	if (Input::isKeyDown(GLFW_KEY_SPACE)) {
 		keyInputs += JUMP;
 	}
-	if (Input::isKeyDown(GLFW_KEY_E)) {
+	if (Input::isMouseClicked(GLFW_MOUSE_BUTTON_LEFT)) {
 		keyInputs += SWING;
 	}
-	if (Input::isKeyDown(GLFW_KEY_Q)) {
+	if (Input::isMouseClicked(GLFW_MOUSE_BUTTON_RIGHT)) {
 		keyInputs += SHOOT;
 	}
 	if (Input::isKeyDown(GLFW_KEY_F)) {

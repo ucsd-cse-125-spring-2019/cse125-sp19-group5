@@ -45,3 +45,11 @@ void Paddle::setLifespan(int newLifespan) {
 int Paddle::getLifespan() const {
 	return lifespan;
 }
+
+void Paddle::setOwner(Player * player) {
+	this->owner = player;
+}
+
+Player * Paddle::getOwner() {
+	return this->owner;
+}

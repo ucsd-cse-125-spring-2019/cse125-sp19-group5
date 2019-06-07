@@ -6,6 +6,7 @@ BoundingBox::BoundingBox(vec3 position, vec3 direction, float width, float heigh
 	this->length = length;
 	this->width = width;
 	this->height = height;
+	this->direction = direction;
 
 	vec3 widthDir = glm::normalize(direction);
 	vec3 lengthDir = glm::normalize(glm::cross(widthDir, vec3(0, 1, 0)));
