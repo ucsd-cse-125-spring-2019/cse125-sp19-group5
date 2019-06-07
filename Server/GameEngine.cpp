@@ -9,6 +9,7 @@
 constexpr auto COUNTDOWN_TIME = 3;
 constexpr auto ROUND_SCORE_TIME = 3;
 constexpr auto SCORE_SHOW_TIME = 10;
+constexpr auto GAME_TIME = 30;
 
 #define _DEBUG
 
@@ -101,7 +102,7 @@ void GameEngine::startGame() {
 	std::cout << "Starting a new game..." << std::endl;
 	prepRound();
 	gameState.score = std::make_tuple(0, 0);
-	gameState.timeLeft = 1000 * 5; // 5 minutes in ms
+	gameState.timeLeft = 1000 * GAME_TIME; // Convert to ms
 }
 
 void GameEngine::endGame() {

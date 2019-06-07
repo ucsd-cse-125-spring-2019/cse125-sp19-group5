@@ -3,7 +3,8 @@
 const std::string ERRKLANG_ERROR_MSG = "Error: irrKlang audio failed to initialize.";
 
 SoundEngine::SoundEngine() {
-	engine = irrklang::createIrrKlangDevice(irrklang::ESOD_AUTO_DETECT, irrklang::ESEO_LINEAR_ROLLOFF);
+	//engine = irrklang::createIrrKlangDevice(irrklang::ESOD_AUTO_DETECT, irrklang::ESEO_LINEAR_ROLLOFF);
+	engine = irrklang::createIrrKlangDevice();
 	engine->setDefault3DSoundMinDistance(3.0f);
 	engine->setDefault3DSoundMaxDistance(100.0f);
 
@@ -52,7 +53,7 @@ void SoundEngine::update(vec3 pos, vec3 vel, vec3 lookDir) {
 
 	irrklang::vec3df position = irrklang::vec3df(pos.x, pos.y, pos.z);
 	irrklang::vec3df velocity = irrklang::vec3df(vel.x, vel.y, vel.z);
-	irrklang::vec3df lookAt = irrklang::vec3df(lookDir.x, lookDir.y, lookDir.z);
+	irrklang::vec3df lookAt = irrklang::vec3df(-lookDir.x, -lookDir.y, -lookDir.z);
 
 	engine->setListenerPosition(position, lookAt, velocity);
 	engine->update();

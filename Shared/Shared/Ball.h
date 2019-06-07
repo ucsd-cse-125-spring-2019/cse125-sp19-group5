@@ -25,9 +25,22 @@ public:
 	void onCollision(Player * player);
 	void onCollision(Wall * wall);
 
+	int static getRandIndex(int size) { return std::rand() % size; };
+	float static getRandPercent() { return static_cast <float> (std::rand()) / static_cast <float> (RAND_MAX); };
+
 private:
 	bool goalScored = false;
 	std::set<Ball *> currentBallCollisions;
 	int ticksSinceGrounded = 0;
 	bool isGrounded = false;
+
+	vector<string> soundHit{ "Sounds/ping_pong_hit_1.wav", "Sounds/ping_pong_hit_2.wav" , "Sounds/ping_pong_hit_3.wav" };
+	const float SOUND_HIT_CD = 500.0f;
+	float soundHitTimer = 0.0f;
+
+	vector<string> soundBounce{ "Sounds/ping_pong_bounce_1.wav", "Sounds/ping_pong_bounce_2.wav" , "Sounds/ping_pong_bounce_3.wav" };
+	const float SOUND_BOUNCE_CD = 200.0f;
+	float soundBounceTimer = 0.0f;
+
+	string soundCrowdCheer = "Sounds/crowd_cheer.wav";
 };

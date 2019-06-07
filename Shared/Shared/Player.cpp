@@ -81,7 +81,7 @@ void Player::updateOnServerTick() {
 
 	// Player movement sounds
 	if (isGrounded && soundFootstepsDist >= SOUND_FOOTSTEPS_REQ_DIST) {
-		string soundToPlay = soundFootsteps[Player::getRandIndex(soundFootsteps.size())];
+		string soundToPlay = soundFootsteps[getRandIndex(soundFootsteps.size())];
 		this->playSound(soundToPlay, 1.0f, false);
 		soundFootstepsDist -= SOUND_FOOTSTEPS_REQ_DIST;
 	}
@@ -90,7 +90,7 @@ void Player::updateOnServerTick() {
 		shouldLandSound = true;
 	}
 	if (isGrounded && !prevIsGrounded && shouldLandSound) {
-		string soundToPlay = soundLanding[Player::getRandIndex(soundLanding.size())];
+		string soundToPlay = soundLanding[getRandIndex(soundLanding.size())];
 		this->playSound(soundToPlay, 1.0f, false);
 		shouldLandSound = false;
 	}
@@ -217,7 +217,7 @@ void Player::useCooldown(PlayerCommands command) {
 
 	// Player ability sounds
 	if (command == SWING) {
-		string soundToPlay = soundSwing[Player::getRandIndex(soundSwing.size())];
+		string soundToPlay = soundSwing[getRandIndex(soundSwing.size())];
 		this->playSound(soundToPlay, 1.0f, false);
 	}
 	else if (command == SHOOT) {
