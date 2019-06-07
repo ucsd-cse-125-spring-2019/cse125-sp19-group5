@@ -133,13 +133,10 @@ Game::Game() : gameObjects({ nullptr }) {
 	Draw::init();
 	ParticleEmitters::init(&gameState);
 
-#ifndef _DEBUG_SP
 	Gui::create<GuiConnectMenu>();
-#else
 	int port = 1234;
 	ConfigSettings::get().getValue("Port", port);
-	Network::init("127.0.0.1", port);
-#endif
+	//Network::init("127.0.0.1", port);
 
 	gSound->setMasterVolume(1.0f);
 	ConnectMenuBackground = gSound->loadFlatSound("Sounds/ConnectMenuMusic.wav", 0.1f);
@@ -214,6 +211,15 @@ Game::Game() : gameObjects({ nullptr }) {
 			teamMenu->setPlayerId(playerId);
 			teamMenu->setGame(this);
 		}
+	});
+
+	Network::on(NetMessage::RESET, [this](Connection*c, NetBuffer &buffer) {
+		MainMenuBackground = gSound->loadFlatSound("Sounds/MainMenuMusic.wav", 0.1f);
+		ConnectMenuBackground->stop();
+		MainMenuBackground->play(true);
+		GuiTeamMenu *teamMenu = Gui::create<GuiTeamMenu>();
+		teamMenu->setPlayerId(playerId);
+		teamMenu->setGame(this);
 	});
 
 	Network::on(NetMessage::GAME_STATE_UPDATE, [&](Connection *c, NetBuffer &buffer) {

@@ -2,6 +2,7 @@
 
 enum NetMessage {
 	TEST,
+	RESET,
 	CONNECTION_ID,
 	PLAYER_INPUT,
 	TEAM,

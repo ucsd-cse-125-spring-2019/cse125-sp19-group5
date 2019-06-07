@@ -1,8 +1,12 @@
 #include "GuiTeamMenu.h"
 
+static GuiTeamMenu *teamMenu = nullptr;
+
 GuiTeamMenu::GuiTeamMenu()
 {
-	setColor(vec4(0.2f, 0.2f, 0.2f, 1.0f));
+	teamMenu = this;
+	//setColor(vec4(0.2f, 0.2f, 0.2f, 1.0f));
+	setImage("Textures/image2.png");
 	setPosition(vec2(0.0f, 0.0f));
 	setSize(vec2(1.0f, 1.0f));
 
@@ -10,7 +14,7 @@ GuiTeamMenu::GuiTeamMenu()
 
 	auto mainContainer = Gui::create<GuiRect>(this);
 	mainContainer->setPosition(vec2(0.1f, 0.1f));
-	mainContainer->setColor(vec4(0.75f, 0.5f, 0.25, 1.0f));
+	mainContainer->setColor(vec4(0.75f, 0.5f, 0.25, 0.0f));
 	mainContainer->setSize(vec2(0.8f, 0.8f));
 
 	label = Gui::create<GuiText>(mainContainer);
@@ -26,12 +30,12 @@ GuiTeamMenu::GuiTeamMenu()
 	message->setFont("Arial");
 
 	container_t1 = Gui::create<GuiRect>(mainContainer);
-	container_t1->setColor(vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	container_t1->setColor(vec4(1.0f, 0.0f, 0.0f, 0.0f));
 	container_t1->setPosition(vec2(0.15f, 0.35f));
 	container_t1->setSize(vec2(0.3f, 0.3f));
 
 	container_t2 = Gui::create<GuiRect>(mainContainer);
-	container_t2->setColor(vec4(0.0f, 0.0f, 1.0f, 1.0f));
+	container_t2->setColor(vec4(0.0f, 0.0f, 1.0f, 0.0f));
 	container_t2->setPosition(vec2(0.4f, 0.35f));
 	container_t2->setSize(vec2(0.3f, 0.3f));
 
@@ -47,7 +51,7 @@ GuiTeamMenu::GuiTeamMenu()
 	swtch->setBgColor(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	swtch->setPosition(vec2(0.2f, 0.1f));
 	swtch->setFont("Arial");
-	swtch->setSize(vec2(0.5f, 0.2f));
+	swtch->setSize(vec2(0.3f, 0.2f));
 	swtch->setText("switch");
 	swtch->setAlignment(TextAlign::CENTER);
 	auto onClick = std::bind(&GuiTeamMenu::handleSwitch, this);
@@ -67,9 +71,27 @@ GuiTeamMenu::GuiTeamMenu()
 	//team2->setText("");
 	//team2->setFont("Arial");
 
-	Network::on(NetMessage::TEAM, boost::bind(&GuiTeamMenu::updateTeamGui, this, _1, _2));
-	Network::on(NetMessage::READY, boost::bind(&GuiTeamMenu::setReady, this, _1, _2));
-	Network::on(NetMessage::START, boost::bind(&GuiTeamMenu::startGame, this, _1, _2));
+	Network::on(
+		NetMessage::TEAM,
+		[&](Connection *c, NetBuffer &buffer) {
+			if (!teamMenu) { return; }
+			teamMenu->updateTeamGui(c, buffer);
+		}
+	);
+	Network::on(
+		NetMessage::READY,
+		[&](Connection *c, NetBuffer &buffer) {
+			if (!teamMenu) { return; }
+			teamMenu->setReady(c, buffer);
+		}
+	);
+	Network::on(
+		NetMessage::START,
+		[&](Connection *c, NetBuffer &buffer) {
+			if (!teamMenu) { return; }
+			teamMenu->startGame(c, buffer);
+		}
+	);
 }
 
 void GuiTeamMenu::setPlayerId(int id) {
@@ -79,7 +101,6 @@ void GuiTeamMenu::setPlayerId(int id) {
 
 void GuiTeamMenu::updateTeamGui(Connection *c, NetBuffer &buffer) {
 	int size = buffer.read<int>();
-	tuple<int, int> temp;
 	int t;
 	int p;
 	float t1_pos = 0.1f;
@@ -87,8 +108,9 @@ void GuiTeamMenu::updateTeamGui(Connection *c, NetBuffer &buffer) {
 
 	id_name = game->getIdName();
 	for (int i = 0; i < size; i++) {
-		temp = buffer.read<tuple<int, int>>();
-		player_team[std::get<0>(temp)] = std::get<1>(temp);
+		auto id = buffer.read<int>();
+		auto team = buffer.read<int>();
+		player_team[id] = team;
 	}
 	
 	GuiText* label;
@@ -135,7 +157,7 @@ void GuiTeamMenu::handleSwitch() {
 
 	NetBuffer playerTeamSelection(NetMessage::TEAM);
 	playerTeamSelection.write<int>(player_team.at(playerId));
-	Network::connection->send(playerTeamSelection);
+	Network::send(playerTeamSelection);
 }
 
 void GuiTeamMenu::setReady(Connection *c, NetBuffer &readyMsg) {
@@ -153,6 +175,7 @@ void GuiTeamMenu::startGame(Connection *c, NetBuffer &startMsg) {
 	bool start = startMsg.read<bool>();
 	if (start) {
 		remove();
+		teamMenu = nullptr;
 	}
 }
 

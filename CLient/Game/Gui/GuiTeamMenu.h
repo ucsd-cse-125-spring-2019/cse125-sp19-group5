@@ -4,6 +4,7 @@
 #include "../Renderer/Gui/GuiTextbox.h"
 #include "../Renderer/Gui/GuiButton.h"
 #include "../Renderer/Gui/GuiRect.h"
+#include "../Renderer/Gui/GuiImage.h"
 #include "../Renderer/Gui/GuiText.h"
 #include "../../Shared/Shared/CommonStructs.h"
 #include "../../Networking/Client.h"
@@ -11,7 +12,7 @@
 
 #include <iostream>
 
-class GuiTeamMenu : public GuiRect {
+class GuiTeamMenu : public GuiImage {
 private:
 	bool selectionComplete;
 	int playerId;
@@ -33,13 +34,13 @@ private:
 	unordered_map<int, std::string> id_name;
 	vector<GuiText*> team1;
 	vector<GuiText*> team2;
-	void updateTeamGui(Connection *c, NetBuffer &menuMsg);
-	void setReady(Connection *c, NetBuffer &readyMsg);
-	void startGame(Connection *c, NetBuffer &readyMsg);
 
 public:
 	GuiTeamMenu();
 	void setPlayerId(int id);
 	bool getSelectionComplete();
 	void setGame(Game *game);
+	void updateTeamGui(Connection *c, NetBuffer &menuMsg);
+	void setReady(Connection *c, NetBuffer &readyMsg);
+	void startGame(Connection *c, NetBuffer &readyMsg);
 };

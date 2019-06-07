@@ -66,16 +66,7 @@ bool GameEngine::shouldGameStart() {
 	if (roundState != RoundState::READY) {
 		return false;
 	}
-#ifdef _DEBUG
-	if (gameState.players.size() == 0) {
-		return false;
-	}
-#else
-	if (readyPlayers.size() != 4) {
-		return false;
-	}
-#endif
-	return true;
+	return teamsReady;
 }
 
 void GameEngine::prepRound() {
@@ -107,6 +98,9 @@ void GameEngine::startGame() {
 	prepRound();
 	gameState.score = std::make_tuple(0, 0);
 	gameState.timeLeft = 1000 * 10; // 5 minutes in ms
+	NetBuffer start(NetMessage::START);
+	start.write<bool>(true);
+	Network::broadcast(start);
 }
 
 void GameEngine::endGame() {
@@ -122,6 +116,9 @@ void GameEngine::endGame() {
 		hideScoreboard();
 		// TODO: move this later to when teams are finalized
 		roundState = RoundState::READY;
+		teamsReady = false;
+		NetBuffer reset(NetMessage::RESET);
+		Network::broadcast(reset);
 	});
 }
 
@@ -184,12 +181,13 @@ void GameEngine::updateTeamReady(unordered_map<int, int> p_t, int teamR, int tea
 	NetBuffer team(NetMessage::TEAM);
 	team.write<int>(p_t.size());
 	for (auto it = p_t.begin(); it != p_t.end(); it++) {
-		team.write<tuple<int, int>>(std::make_tuple(it->first, it->second));
+		team.write(it->first);
+		team.write(it->second);
 	}
 
 	Network::broadcast(team);
 
-	if (teamR == 2 && teamB == 2) {
+	if (teamR == 1 && teamB == 1) {
 		t_ready = true;
 	}
 	else {
@@ -198,13 +196,11 @@ void GameEngine::updateTeamReady(unordered_map<int, int> p_t, int teamR, int tea
 
 	ready.write<bool>(t_ready);
 	Network::broadcast(ready);
-	NetBuffer start(NetMessage::START);
-	setTimer("start", 10, [&] {
-		if (shouldGameStart()) {
-			start.write<bool>(true);
-			Network::broadcast(start);
-		}
-	});
+	if (t_ready) {
+		setTimer("start", 3, [&] {
+			teamsReady = true;
+		});
+	}
 }
 
 void GameEngine::synchronizeGameState() {
@@ -285,7 +281,7 @@ void GameEngine::movePlayers(vector<PlayerInputs> & playerInputs) {
 	vector<vec3> directions(gameState.players.size());
 
 	for (PlayerInputs playerInput : playerInputs) {
-		if (aggregatePlayerMovements.size() < playerInput.id) {
+		if (aggregatePlayerMovements.size() <= playerInput.id) {
 			continue;
 		}
 		aggregatePlayerMovements[playerInput.id] |= playerInput.inputs;
