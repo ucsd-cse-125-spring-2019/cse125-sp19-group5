@@ -22,9 +22,13 @@ public:
 	void setLifespan(int newLifespan);
 	int getLifespan() const;
 
+	void setOwner(Player * owner);
+	Player * getOwner();
+
 	void onCreated() override;
 
 private:
 	int lifespan;
 	std::set<GameObject *> objectsHit;
+	Player * owner = nullptr;
 };

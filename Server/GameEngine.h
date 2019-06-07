@@ -53,11 +53,13 @@ public:
 	void updateGameObjectsOnServerTick();
 	bool noCollisionMove(Player * player, vec3 movement);
 
+	void spawnItems();
 	const std::array<GameObject*, MAX_GAME_OBJS> &getGameObjects() const;
 
 private:
 	GameState gameState;
 	void addGenericGameObject(GameObject *player);
+	int itemTimer = 0;
 };
 
 extern GameEngine *gGameEngine;

@@ -18,8 +18,10 @@ void Player::onCollision(PowerUpItem * item) {
 		}
 		case POWERUP_BULLET_SPRAY: {
 			addPowerup<BulletSpray>();
+			break;
 		} case POWERUP_STUNGUN: {
 			addPowerup<StunGun>();
+			break;
 		}
 		default:
 			break;

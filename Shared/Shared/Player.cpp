@@ -262,7 +262,8 @@ void Player::onCollision(Ball * ball) {
 
 void Player::onCollision(Bullet * bullet) {
 	this->collisionVelocityComponent += bullet->getVelocity();
-	this->collisionVelocityComponent += vec3(0, 1, 0);
+	this->collisionVelocityComponent += vec3(0, 0.5, 0);
+	isGrounded = false;
 }
 
 void Player::onCollision(Goal * goal) {
@@ -271,6 +272,12 @@ void Player::onCollision(Goal * goal) {
 			this->numLandings += 1;
 			this->maxBoxHeight = std::max(maxBoxHeight,
 				goal->getPosition().y + goal->getBoundingBox()->height + getBoundingSphere()->getRadius());
+			setPositionNoUpdate(vec3(
+				getPosition().x,
+				goal->getPosition().y + goal->getBoundingBox()->height + getBoundingSphere()->getRadius(),
+				getPosition().z)
+			);
+			break;
 		}
 		else {
 			vec3 planeNormal = glm::normalize(p->getNormal());
@@ -278,15 +285,21 @@ void Player::onCollision(Goal * goal) {
 			float angleBetweenPosition = glm::angle(glm::normalize(getPosition() - getPrevPosition()), planeNormal);
 			if ((angleBetweenVelocity > glm::half_pi<float>()) || (angleBetweenPosition > glm::half_pi<float>())) {
 				float planeDistance = abs(p->pointDistance(getPosition()) - (1.01f * getBoundingSphere()->getRadius()));
-				setPosition(getPosition() + planeNormal * planeDistance);
+				setPositionNoUpdate(getPosition() + planeNormal * planeDistance);
 			}
 		}
 	}
 }
 
-void Player::onCollision(Paddle * paddle) { }
+void Player::onCollision(Paddle * paddle) {
+	if (paddle->getObjectsHit().find(this) == paddle->getObjectsHit().end() && paddle->getOwner() != this) {
+		this->collisionVelocityComponent += paddle->getVelocity() * 0.8f;
+		this->collisionVelocityComponent += vec3(0, 1, 0) * glm::length(paddle->getVelocity()) * 0.1f;
+	}
+}
 
-void Player::onCollision(Player * player) { }
+void Player::onCollision(Player * player) {
+}
 
 void Player::onCollision(Wall * wall) { 	
 	for (Plane * p : CollisionDetection::getIntersectingPlanes(getBoundingSphere(), wall->getBoundingBox())) {
@@ -340,6 +353,7 @@ int Player::getNumBullets() const {
 void Player::setBulletType(BULLET_TYPES bulletType) {
 	this->bulletType = bulletType;
 }
-BULLET_TYPES Player::getBulletType() const {
+
+BULLET_TYPES Player::getBulletType() {
 	return this->bulletType;
 }

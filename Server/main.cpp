@@ -26,16 +26,16 @@ int main(int argc, char **argv) {
 	vector<PlayerInputs> playerInputs;
   
 	MapLoader mapLoader(&gameEngine);
-	mapLoader.loadMap("Maps/map_with_goals.json");
+	mapLoader.loadMap("Maps/basic_map.json");
 
 	auto speedboost = gameEngine.addGameObject<PowerUpItem>();
-	speedboost->setPowerUpType(POWERUP_STUNGUN);
+	speedboost->setPowerUpType(POWERUP_BULLET_SPRAY);
 	speedboost->setBoundingShape(new BoundingSphere(vec3(0, 3, 0), 3.0f));
 	speedboost->setPosition(vec3(10, 3, 10));
 	speedboost->setScale(vec3(3));
 	speedboost->setModel("Models/unit_sphere.obj");
 	speedboost->setMaterial("Materials/grass.json");
-
+	
 
 	/*auto jumpableBox = gameEngine.addGameObject<Wall>();
 	jumpableBox->setBoundingShape(new BoundingBox(vec3(0, 0, 30), vec3(1, 0, 0), 30, 8, 30));
@@ -163,7 +163,6 @@ int main(int argc, char **argv) {
 			//server has taken too long to process the update!
 			//std::cerr << "SERVER TOOK TOO LONG TO UPDATE!" << endl;
 		}
-	
 		gameEngine.synchronizeGameState();
 	}
 }

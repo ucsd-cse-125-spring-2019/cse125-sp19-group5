@@ -1,10 +1,14 @@
 #include "PowerUpItem.h"
+#include "Wall.h"
 
 GAMEOBJECT_TYPES PowerUpItem::getGameObjectType() const {
 	return POWERUP_ITEM_TYPE;
 }
 
 void PowerUpItem::updateOnServerTick() {
+	if (!grounded) {
+		move(vec3(0, -0.5, 0));
+	}
 }
 
 bool PowerUpItem::deleteOnServerTick() {
@@ -27,4 +31,10 @@ void PowerUpItem::onCollision(Player * player) {
 }
 
 void PowerUpItem::onCollision(Wall * wall) {
+	setPosition(vec3(
+		getPosition().x,
+		wall->getPosition().y + wall->getBoundingBox()->height + getBoundingSphere()->getRadius(),
+		getPosition().z
+	));
+	grounded = true;
 }

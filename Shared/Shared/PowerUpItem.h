@@ -19,5 +19,6 @@ public:
 
 private:
 	bool pickedUp = false;
+	bool grounded = false;
 	POWERUP_TYPES powerUpType;
 };

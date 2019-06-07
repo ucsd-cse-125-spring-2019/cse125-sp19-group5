@@ -80,7 +80,7 @@ public:
 	int getNumBullets() const;
 
 	void setBulletType(BULLET_TYPES bulletType);
-	BULLET_TYPES getBulletType() const;
+	BULLET_TYPES getBulletType();
 
 private:
 	vec3 direction;

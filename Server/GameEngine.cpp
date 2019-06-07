@@ -51,6 +51,7 @@ void GameEngine::updateGameState(vector<PlayerInputs> & playerInputs) {
 	updateScore();
 	updateGameObjectsOnServerTick();
 	removeDeadObjects();
+	spawnItems();
 
 	ParticleEmitter::updateAll();
 
@@ -325,6 +326,30 @@ bool GameEngine::noCollisionMove(Player * player, vec3 movement) {
 	}
 
 	return true;
+}
+
+void GameEngine::spawnItems() {
+	if (itemTimer == 0) {
+		PowerUpItem * powerUpItem = addGameObject<PowerUpItem>();
+		powerUpItem->setPowerUpType(POWERUP_TYPES(rand() % NUM_POWERUPS));
+		powerUpItem->setBoundingShape(new BoundingSphere(vec3(0, 3, 0), 3.0f));
+		powerUpItem->setScale(vec3(3));
+		powerUpItem->setModel("Models/unit_sphere.obj");
+		powerUpItem->setMaterial("Materials/grass.json");
+
+		tuple<float, float> xRange = std::make_tuple(-50.0f, 50.0f);
+		tuple<float, float> yRange = std::make_tuple(70.0f, 80.0f);
+		tuple<float, float> zRange = std::make_tuple(-50.0f, 50.0f);
+		float xPos = (rand() / (float)RAND_MAX * (std::get<1>(xRange) - std::get<0>(xRange))) + std::get<0>(xRange);
+		float yPos = (rand() / (float)RAND_MAX * (std::get<1>(yRange) - std::get<0>(yRange))) + std::get<0>(yRange);
+		float zPos = (rand() / (float)RAND_MAX * (std::get<1>(zRange) - std::get<0>(zRange))) + std::get<0>(zRange);
+
+		powerUpItem->setPosition(vec3(xPos, yPos, zPos));
+		itemTimer = 900;
+	}
+	else {
+		itemTimer--;
+	}
 }
 
 const std::array<GameObject*, MAX_GAME_OBJS> &GameEngine::getGameObjects() const {

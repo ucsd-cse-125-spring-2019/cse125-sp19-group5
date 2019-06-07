@@ -22,6 +22,7 @@ void Player::doAction(PlayerCommands action) {
 			p->setPosition(paddlePosition);
 			p->setVelocity(paddleVelocity * 0.2f * strength);
 			p->setLifespan(paddleLifespan);
+			p->setOwner(this);
 
 			break;
 		}
@@ -33,8 +34,8 @@ void Player::doAction(PlayerCommands action) {
 			for (int i = 0; i < numBullets; i++) {
 				float angle = (i - numBullets / 2) * 5;
 				vec3 bulletDir = glm::normalize(vec3(getDirection().x, 0, getDirection().z));
-				bulletDir = glm::rotateY(bulletDir, glm::radians(angle));
-				vec3 bulletStart = getPosition() + (bulletDir * ((1.5f * getBoundingSphere()->getRadius()) + bulletRadius));
+				bulletDir = glm::normalize(glm::rotateY(bulletDir, glm::radians(angle)));
+				vec3 bulletStart = getPosition() + (bulletDir * (1.1f * getBoundingSphere()->getRadius() + bulletRadius));
 				vec3 bulletVelocity = glm::normalize(bulletDir) * 3.0f;
 
 				Bullet * b = nullptr;
@@ -109,6 +110,9 @@ void Player::processCommand(int inputs)
 			}
 			else if (command == currentAction) {
 				actionCharge++;
+				if (actionCharge >= 20) {
+					actionCharge = 20;
+				}
 			}
 		}
 		else {

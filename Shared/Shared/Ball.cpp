@@ -96,7 +96,7 @@ void Ball::onCollision(Ball * ball) {
 
 void Ball::onCollision(Bullet * bullet) {
 	// std::cout << bullet->to_string() << std::endl;
-	setVelocity(getVelocity() + bullet->getVelocity() * 0.1f);
+	setVelocity(getVelocity() + bullet->getVelocity() * 0.3f);
 }
 
 void Ball::onCollision(Goal * goal) {
