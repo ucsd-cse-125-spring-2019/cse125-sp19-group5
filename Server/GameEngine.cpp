@@ -194,7 +194,9 @@ void GameEngine::updateTeamReady(unordered_map<int, int> p_t, int teamR, int tea
 	ready.write<bool>(t_ready);
 	Network::broadcast(ready);
 	if (t_ready) {
-		teamsReady = true;
+		setTimer("start", 3, [&] {
+			teamsReady = true;
+		});
 	}
 }
 
