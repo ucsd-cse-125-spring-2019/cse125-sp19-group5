@@ -357,3 +357,15 @@ void Player::setBulletType(BULLET_TYPES bulletType) {
 BULLET_TYPES Player::getBulletType() {
 	return this->bulletType;
 }
+
+void Player::setGoalsScored(int goals) {
+	this->goalsScored = goals;
+}
+
+int Player::getGoalsScored() {
+	return this->goalsScored;
+}
+
+int Player::getTeam() const {
+	return this->team;
+}

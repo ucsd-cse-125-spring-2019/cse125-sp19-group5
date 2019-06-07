@@ -40,6 +40,9 @@ public:
 	void serialize(NetBuffer &buffer) const override;
 	void deserialize(NetBuffer &buffer) override;
 
+	void setGoalsScored(int goals);
+	int getGoalsScored();
+
 	// collision interactions below
 	void onCollision(GameObject * gameObject);
 	void onCollision(Ball * ball);
@@ -82,6 +85,8 @@ public:
 	void setBulletType(BULLET_TYPES bulletType);
 	BULLET_TYPES getBulletType();
 
+	int getTeam() const;
+
 private:
 	vec3 direction;
 	int actionCharge;
@@ -102,6 +107,7 @@ private:
 	bool isJumpKeyUp = false;
 	float maxBoxHeight = 0.0f;
 	int numLandings = 0;
+	int goalsScored = 0;
 	vec3 collisionVelocityComponent = vec3(0);
 
 	float moveSpeed = PhysicsEngine::getPlayerDefaultMoveSpeed();

@@ -25,4 +25,5 @@ private:
 	std::set<Ball *> currentBallCollisions;
 	int ticksSinceGrounded = 0;
 	bool isGrounded = false;
+	Player * lastHitBy = nullptr;
 };
