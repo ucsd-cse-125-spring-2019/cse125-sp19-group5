@@ -554,10 +554,11 @@ Player *GameEngine::createPlayer(Connection *c) {
 	player->setCooldown(SHOOT, std::make_tuple(0, 60));
 	addGameObject(player);
 
-	player->setModel("Models/unit_sphere.obj");
+	player->setModel("Models/AntiDeformBear.fbx");
 	player->setDirection(vec3(0, 0, -1));
-	player->setMaterial("Materials/brick.json");
-	player->setScale(vec3(2));
+	player->setMaterial("Materials/brown_bear.json");
+	player->setScale(vec3(.2));
+	player->setAnimation(0);
 
 	return player;
 }
