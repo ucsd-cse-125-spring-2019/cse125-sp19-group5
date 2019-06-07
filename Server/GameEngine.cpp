@@ -53,7 +53,7 @@ void GameEngine::init() {
 	gameState.in_progress = false;
 	gameState.score = std::make_tuple(0, 0);
 	gameState.timeLeft = 0;
-
+	teamsReady = false;
 	setGameText("Waiting for players...");
 }
 
@@ -61,16 +61,8 @@ bool GameEngine::shouldGameStart() {
 	if (roundState != RoundState::READY) {
 		return false;
 	}
-#ifdef _DEBUG
-	if (gameState.players.size() == 0) {
-		return false;
-	}
-#else
-	if (readyPlayers.size() != 4) {
-		return false;
-	}
-#endif
-	return true;
+	
+	return teamsReady;
 }
 
 void GameEngine::prepRound() {
@@ -99,6 +91,9 @@ void GameEngine::prepRound() {
 
 void GameEngine::startGame() {
 	std::cout << "Starting a new game..." << std::endl;
+	NetBuffer start(NetMessage::START);
+	start.write<bool>(true);
+	Network::broadcast(start);
 	prepRound();
 	gameState.score = std::make_tuple(0, 0);
 	gameState.timeLeft = 1000 * 5; // 5 minutes in ms
@@ -192,12 +187,9 @@ void GameEngine::updateTeamReady(unordered_map<int, int> p_t, int teamR, int tea
 
 	ready.write<bool>(t_ready);
 	Network::broadcast(ready);
-	NetBuffer start(NetMessage::START);
-	setTimer("start", 10, [&] {
-		if (shouldGameStart()) {
-			start.write<bool>(true);
-			Network::broadcast(start);
-		}
+
+	setTimer("start", 5, [&] {
+		teamsReady = true;
 	});
 }
 
