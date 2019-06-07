@@ -1,3 +1,4 @@
 {
-  "diffuse": "Textures/brown_bear.png"
+  "diffuse": "Textures/brown_bear.png",
+  "specular": "Textures/black.png"
 }
