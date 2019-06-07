@@ -7,6 +7,8 @@
 #include <Shared/Util/CurTime.h>
 #include "MapLoader.h"
 
+#include "Game/Powerups/BombPowerup.h"
+
 constexpr auto COUNTDOWN_TIME = 3;
 constexpr auto ROUND_SCORE_TIME = 3;
 constexpr auto SCORE_SHOW_TIME = 10;
@@ -600,6 +602,8 @@ Player *GameEngine::createPlayer(Connection *c) {
 	player->setMaterial("Materials/brown_bear.json");
 	player->setScale(vec3(.2));
 	player->setAnimation(0);
+
+	player->addPowerup<BombPowerup>();
 
 	return player;
 }

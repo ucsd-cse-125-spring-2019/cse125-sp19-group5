@@ -19,6 +19,14 @@ bool Bullet::deleteOnServerTick() {
 	return this->hit || lifespan == 0;
 }
 
+void Bullet::setOwner(Player * p) {
+	this->owner = p;
+}
+
+Player * Bullet::getOwner() {
+	return this->owner;
+}
+
 void Bullet::onCollision(GameObject * gameObject) {
 	gameObject->onCollision(this);
 }

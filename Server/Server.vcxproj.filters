@@ -72,6 +72,15 @@
     <ClCompile Include="Game\Powerups\StunDebuff.cpp">
       <Filter>Source Files\Game\Powerups</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Powerups\LowerCooldowns.cpp">
+      <Filter>Source Files\Game\Powerups</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Powerups\BombPowerup.cpp">
+      <Filter>Source Files\Game\Powerups</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectMiscCollisions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -101,6 +110,12 @@
     </ClInclude>
     <ClInclude Include="Game\Powerups\StunDebuff.h">
       <Filter>Header Files\Game\Powerups</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Powerups\LowerCooldowns.h">
+      <Filter>Header Files\Game\Powerups</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Powerups\BombPowerup.h">
+      <Filter>Header Files\Game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

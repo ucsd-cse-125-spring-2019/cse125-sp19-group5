@@ -13,10 +13,9 @@ public:
 	// collision interactions below
 	void onCollision(GameObject * gameObject);
 	void onCollision(Ball * ball);
+	void onCollision(Bomb * bomb);
 	void onCollision(Bullet * bullet);
 	void onCollision(Paddle * paddle);
-	void onCollision(Player * player);
-	void onCollision(Wall * wall);
 	void onCreated() override;
 
 private:
