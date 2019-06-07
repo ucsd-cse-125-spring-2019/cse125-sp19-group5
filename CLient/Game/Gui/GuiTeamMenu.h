@@ -46,4 +46,5 @@ public:
 	void updateTeamGui(Connection *c, NetBuffer &menuMsg);
 	void setReady(Connection *c, NetBuffer &readyMsg);
 	void startGame(Connection *c, NetBuffer &readyMsg);
+	void setPlayerTeam(unordered_map<int, int> &p_t);
 };
