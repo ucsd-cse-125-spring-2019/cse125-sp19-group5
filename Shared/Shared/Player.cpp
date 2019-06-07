@@ -109,6 +109,7 @@ void Player::updateOnServerTick() {
 	}
 
 	prevIsGrounded = isGrounded;
+	updateAnimations();
 }
 
 vec3 Player::getDirection() {

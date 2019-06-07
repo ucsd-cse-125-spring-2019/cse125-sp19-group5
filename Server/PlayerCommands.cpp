@@ -30,6 +30,14 @@ void Player::doAction(PlayerCommands action) {
 		case SHOOT: {
 			if (std::get<0>(getCooldown(SHOOT)) > 0) { break; }
 			useCooldown(SHOOT);
+			
+			currentlySwinging = true;
+			setAnimation(2);
+			gGameEngine->setTimer(std::to_string(getId()) + "_swing", 0.1f,
+				[&]() {
+					currentlySwinging = false;
+				}
+			);
 
 			if (hasPowerup(POWERUP_BOMBS)) {
 				float bombRadius = 1.0f;
@@ -138,6 +146,22 @@ void Player::processCommand(int inputs)
 				doAction(command);
 				actionCharge = 0;
 			}
+		}
+	}
+}
+
+void Player::updateAnimations() {
+	if (!currentlySwinging) {
+		if (this->isGrounded) {
+			if (glm::length(getVelocity()) == 0) {
+				setAnimation(3, false);
+			}
+			else {
+				setAnimation(0, false);
+			}
+		}
+		else {
+			setAnimation(1, false);
 		}
 	}
 }
