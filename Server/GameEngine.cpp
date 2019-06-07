@@ -327,7 +327,7 @@ void GameEngine::incrementalMoveBall(Ball * ball, float dist) {
 	float distCopy = dist;
 	float diameter = 0.2f;
 
-	while (dist > 0.0f && !ball->getGoalScored() && glm::length(ball->getVelocity() > 0)) {
+	while (dist > 0.0f && !ball->getGoalScored() && glm::length(ball->getVelocity()) > 0) {
 		if (glm::length(ball->getVelocity()) == 0) {
 			break;
 		}

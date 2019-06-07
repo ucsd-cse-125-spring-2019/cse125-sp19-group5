@@ -5,11 +5,12 @@
 const POWERUP_TYPES StunDebuff::TYPE = POWERUP_STUN_DEBUFF;
 
 float StunDebuff::getDuration() const {
-	return -1.0f;
+	return 1.0f;
 }
 
 void StunDebuff::onActivate() {
 	player.setMoveSpeed(0);
+	// player.playSound();
 }
 
 void StunDebuff::onDeactivate() {
