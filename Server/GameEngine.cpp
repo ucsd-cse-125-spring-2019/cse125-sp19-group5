@@ -15,7 +15,7 @@ constexpr auto SCORE_SHOW_TIME = 10;
 
 #define _DEBUG
 
-static const int PLAYER_NUM = 2;
+static const int PLAYER_NUM = 1;
 
 template<class T, class V>
 void inline safeRemoveFromVec(std::vector<T> &v, V &val) {
@@ -324,9 +324,13 @@ void GameEngine::movePlayers(vector<PlayerInputs> & playerInputs) {
 
 void GameEngine::incrementalMoveBall(Ball * ball, float dist) {
 	//float diameter = ball->getBoundingSphere()->getRadius() * 2.0f;
+	float distCopy = dist;
 	float diameter = 0.2f;
 
-	while (dist > 0.0f && !ball->getGoalScored()) {
+	while (dist > 0.0f && !ball->getGoalScored() && glm::length(ball->getVelocity() > 0)) {
+		if (glm::length(ball->getVelocity()) == 0) {
+			break;
+		}
 		if (dist > diameter) {
 			ball->move(glm::normalize(ball->getVelocity()) * diameter);
 			dist -= diameter;
