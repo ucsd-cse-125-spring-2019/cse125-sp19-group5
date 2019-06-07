@@ -5,7 +5,8 @@
 GuiConnectMenu::GuiConnectMenu() {
 	using std::placeholders::_1;
 
-	setColor(vec4(0.2f, 0.2f, 0.2f, 1.0f));
+	//setColor(vec4(0.2f, 0.2f, 0.2f, 1.0f));
+	setImage("image1.png");
 	setPosition(vec2(0.0f, 0.0f));
 	setSize(vec2(1.0f, 1.0f));
 

@@ -1,12 +1,13 @@
 #pragma once
 
+#include <GL/glew.h>
 #include "../Renderer/Gui/Gui.h"
-#include "../Renderer/Gui/GuiRect.h"
+#include "../Renderer/Gui/GuiImage.h"
 #include "../Renderer/Gui/GuiText.h"
 #include "../Renderer/Gui/GuiTextbox.h"
 #include "../Renderer/Gui/GuiButton.h"
 
-class GuiConnectMenu : public GuiRect {
+class GuiConnectMenu : public GuiImage {
 	private:
 	GuiText *label;
 	GuiText *message;
