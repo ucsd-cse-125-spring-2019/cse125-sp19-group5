@@ -122,14 +122,14 @@ void GuiTeamMenu::setPlayerId(int id) {
 }
 
 void GuiTeamMenu::updateTeamGui(Connection *c, NetBuffer &buffer) {
-	int size = buffer.read<int>();
+	int size = buffer.read<size_t>();
 	int t;
 	int p;
 	float t1_pos = 0.125f;
 	float t2_pos = 0.125f;
 
 	id_name = game->getIdName();
-	for (int i = 0; i < size; i++) {
+	for (size_t i = 0; i < size; i++) {
 		auto id = buffer.read<int>();
 		auto team = buffer.read<int>();
 		player_team[id] = team;

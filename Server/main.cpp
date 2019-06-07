@@ -113,7 +113,7 @@ int main(int argc, char **argv) {
 		// Send Client the connection/player ID 
 		NetBuffer buffer(NetMessage::CONNECTION_ID);
 		buffer.write<int>(c->getId());
-		buffer.write<int>(gameEngine.id_name.size());
+		buffer.write<size_t>(gameEngine.id_name.size());
 		for (auto it = gameEngine.id_name.begin(); it != gameEngine.id_name.end(); it++) {
 			buffer.write<int>(it->first);
 			buffer.write<std::string>(it->second);

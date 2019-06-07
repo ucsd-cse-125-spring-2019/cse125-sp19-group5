@@ -134,8 +134,9 @@ void GameEngine::endGame() {
 		readyP = 0;
 		NetBuffer resetbuf(NetMessage::RESET);
 		Network::broadcast(resetbuf);
+
 		NetBuffer teambuf(NetMessage::TEAM);
-		teambuf.write<int>(0);
+		teambuf.write<size_t>((size_t)0);
 		Network::broadcast(teambuf);
 	});
 }
@@ -199,7 +200,7 @@ void GameEngine::updateTeamReady() {
 	NetBuffer ready(NetMessage::READY);
 	NetBuffer team(NetMessage::TEAM);
 
-	team.write<int>(player_team.size());
+	team.write<size_t>(player_team.size());
 	for (auto it = player_team.begin(); it != player_team.end(); it++) {
 		team.write(it->first);
 		team.write(it->second);
