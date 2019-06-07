@@ -154,7 +154,8 @@ void GameEngine::movePlayers(vector<PlayerInputs> & playerInputs) {
 }
 
 void GameEngine::incrementalMoveBall(Ball * ball, float dist) {
-	float diameter = ball->getBoundingSphere()->getRadius() * 2.0f;
+	//float diameter = ball->getBoundingSphere()->getRadius() * 2.0f;
+	float diameter = 0.2f;
 
 	while (dist > 0.0f && !ball->getGoalScored()) {
 		if (dist > diameter) {
@@ -178,6 +179,15 @@ void GameEngine::incrementalMoveBall(Ball * ball, float dist) {
 			if (ball->collidesWith(wall)) {
 				ball->onCollision(wall);
 				wall->onCollision(ball);
+			}
+		}
+
+		for (Player * player : gameState.players) {
+			for (Wall * wall : gameState.walls) {
+				if (player->collidesWith(wall)) {
+					player->onCollision(wall);
+					wall->onCollision(player);
+				}
 			}
 		}
 	}
@@ -274,7 +284,9 @@ void GameEngine::updateGameObjectsOnServerTick() {
 
 bool GameEngine::noCollisionMove(Player * player, vec3 movement) {
 	vec3 currPosition = player->getPosition();
-	float diameter = player->getBoundingSphere()->getRadius() * 2;
+	// float diameter = player->getBoundingSphere()->getRadius() * 2;
+	float diameter = 0.2f;
+
 	vec3 move = player->getMoveDestination(movement) - player->getPosition();
 	float dist = glm::length(move);
 
@@ -292,6 +304,13 @@ bool GameEngine::noCollisionMove(Player * player, vec3 movement) {
 			if (player->collidesWith(p)) {
 				player->setPosition(currPosition);
 				return false;
+			}
+		}
+
+		for (Ball * ball : gameState.balls) {
+			if (player->collidesWith(ball)) {
+				player->onCollision(ball);
+				ball->onCollision(player);
 			}
 		}
 

@@ -1,5 +1,6 @@
 #pragma once
 #include <map>
+#include <set>
 #include "SphereGameObject.h"
 #include "CommonStructs.h"
 #include "PhysicsEngine.h"
@@ -24,6 +25,7 @@ public:
 	void updateOnServerTick();
 	vec3 getMoveDestination(vec3 movement);
 	vec3 getDirection();
+	void setPositionNoUpdate(vec3 pos);
 
 	tuple<int, int> & getCooldown(PlayerCommands command);
 	void setCooldown(PlayerCommands command, tuple<int, int> cd);
@@ -87,6 +89,7 @@ private:
 	PlayerCommands currentAction;
 	vector<Wall *> walls;
 	std::unordered_map<POWERUP_TYPES, Powerup*> powerups;
+	std::set<Ball *> currentBallCollisions;
 
 	// get<0> = current cooldown, get<1> = total cooldown
 	std::map<PlayerCommands, tuple<int, int>> cooldowns;

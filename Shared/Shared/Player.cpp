@@ -58,9 +58,7 @@ void Player::updateOnServerTick() {
 	}
 	if (!isGrounded && numLandings > 0) {
 		// dont change previous position
-		// vec3 prev = getPrevPosition();
-		setPosition(vec3(getPosition().x, maxBoxHeight, getPosition().z));
-		// this->prevPosition = prev;
+		setPositionNoUpdate(vec3(getPosition().x, maxBoxHeight, getPosition().z));
 
 		isGrounded = true;
 		maxBoxHeight = 0.0f;
@@ -78,10 +76,25 @@ void Player::updateOnServerTick() {
 			it++;
 		}
 	}
+
+	for (auto it = currentBallCollisions.begin(); it != currentBallCollisions.end(); ) {
+		if (!this->collidesWith(*it)) {
+			it = currentBallCollisions.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
 }
 
 vec3 Player::getDirection() {
 	return glm::normalize(this->direction);
+}
+
+void Player::setPositionNoUpdate(vec3 pos) {
+	vec3 prev = getPrevPosition();
+	setPosition(pos);
+	this->prevPosition = prev;
 }
 
 vec3 Player::getMoveDestination(vec3 movement) {
@@ -231,13 +244,16 @@ void Player::onCollision(Ball * ball) {
 	vec3 moveDirection = getPosition() - ball->getPosition();
 	moveDirection.y = 0;
 	moveDirection = glm::normalize(moveDirection);
-	this->collisionVelocityComponent += moveDirection * (targetDist - currDist) * glm::length(ball->getVelocity());
-	this->collisionVelocityComponent += vec3(0, 1, 0) * glm::length(ball->getVelocity());
+	
+	if (this->currentBallCollisions.find(ball) == currentBallCollisions.end()) {
+		this->collisionVelocityComponent += moveDirection * (targetDist - currDist) * glm::length(ball->getVelocity());
+		this->collisionVelocityComponent += vec3(0, 1, 0) * glm::length(ball->getVelocity());
+		this->currentBallCollisions.insert(ball);
+	}
 
 	float horizDist = sqrt(pow(getBoundingSphere()->getRadius() + ball->getBoundingSphere()->getRadius(), 2) - pow(getPosition().y - ball->getPosition().y, 2));
 	vec3 startPosition = vec3(ball->getPosition().x, getPosition().y, ball->getPosition().z);
-	setPosition(startPosition + moveDirection * horizDist);
-	std::cout << glm::length(getPosition() - getPrevPosition()) << std::endl;
+	setPositionNoUpdate(startPosition + moveDirection * horizDist);
 }
 
 void Player::onCollision(Bullet * bullet) {
@@ -274,7 +290,7 @@ void Player::onCollision(Wall * wall) {
 			this->numLandings += 1;
 			this->maxBoxHeight = std::max(maxBoxHeight,
 				wall->getPosition().y + wall->getBoundingBox()->height + getBoundingSphere()->getRadius());
-			setPosition(vec3(
+			setPositionNoUpdate(vec3(
 				getPosition().x,
 				wall->getPosition().y + wall->getBoundingBox()->height + getBoundingSphere()->getRadius(),
 				getPosition().z)
@@ -287,7 +303,7 @@ void Player::onCollision(Wall * wall) {
 			float angleBetweenPosition = glm::angle(glm::normalize(getPosition() - getPrevPosition()), planeNormal);
 			if ((angleBetweenVelocity > glm::half_pi<float>()) || (angleBetweenPosition > glm::half_pi<float>())) {
 				float planeDistance = abs(p->pointDistance(getPosition()) - (1.01f * getBoundingSphere()->getRadius()));
-				setPosition(getPosition() + planeNormal * planeDistance);
+				setPositionNoUpdate(getPosition() + planeNormal * planeDistance);
 			}
 		}
 	}
