@@ -141,6 +141,34 @@
       "model": "Models/unit_cube.obj",
       "material": "Materials/crowd_wide.json",
       "orientation": [ 55, 0, 0 ]
+    },
+    {
+      "name": "goal1back",
+      "position": [ 0, 0, 270 ],
+      "direction": [ 1, 0, 0 ],
+      "dimensions": [ 60, 20, 10 ],
+      "scale": [ 60, 20, 10 ],
+      "model": "Models/unit_cube.obj",
+      "material": "",
+      "orientation": null,
+      "team": 0,
+      "xRange": [ -50, 50 ],
+      "yRange": [ 70, 80 ],
+      "zRange": [ -50, 50 ]
+    },
+    {
+      "name": "goal2back",
+      "position": [ 0, 0, -270 ],
+      "direction": [ 1, 0, 0 ],
+      "dimensions": [ 60, 20, 10 ],
+      "scale": [ 60, 20, 10 ],
+      "model": "Models/unit_cube.obj",
+      "material": "",
+      "orientation": null,
+      "team": 1,
+      "xRange": [ -50, 50 ],
+      "yRange": [ 70, 80 ],
+      "zRange": [ -50, 50 ]
     }
   ],
   "balls": [
