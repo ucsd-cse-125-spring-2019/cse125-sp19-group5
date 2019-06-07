@@ -516,8 +516,37 @@ void GameEngine::spawnItems() {
 		powerUpItem->setPowerUpType(POWERUP_TYPES(rand() % NUM_POWERUPS));
 		powerUpItem->setBoundingShape(new BoundingSphere(vec3(0, 3, 0), 3.0f));
 		powerUpItem->setScale(vec3(3));
-		powerUpItem->setModel("Models/unit_sphere.obj");
-		powerUpItem->setMaterial("Materials/grass.json");
+		powerUpItem->setModel("Models/QuestionBlock.obj");
+
+		switch (powerUpItem->getPowerUpType()) {
+		case POWERUP_SPEEDBOOST: {
+			powerUpItem->setMaterial("Materials/box_speed.json");
+			break;
+		}
+		case POWERUP_POWERBOOST: {
+			powerUpItem->setMaterial("Materials/box_strenth.json");
+			break;
+		}
+		case POWERUP_BULLET_SPRAY: {
+			powerUpItem->setMaterial("Materials/box_multishot.json");
+			break;
+		}
+		case POWERUP_STUNGUN: {
+			powerUpItem->setMaterial("Materials/box_beehive.json");
+			break;
+		}
+		case POWERUP_LOWER_COOLDOWNS: {
+			powerUpItem->setMaterial("Materials/box_cooldown.json");
+			break;
+		}
+		case POWERUP_BOMBS: {
+			powerUpItem->setModel("box_bomb.json");
+			break;
+		}
+		default: {
+			break;
+		}
+		}
 
 		tuple<float, float> xRange = std::make_tuple(-50.0f, 50.0f);
 		tuple<float, float> yRange = std::make_tuple(70.0f, 80.0f);
