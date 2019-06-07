@@ -1,3 +1,4 @@
+#include <Shared/Bomb.h>
 #include <Shared/Paddle.h>
 #include <Shared/Player.h>
 #include <Shared/StunBullet.h>
@@ -30,16 +31,31 @@ void Player::doAction(PlayerCommands action) {
 			if (std::get<0>(getCooldown(SHOOT)) > 0) { break; }
 			useCooldown(SHOOT);
 
-			float bulletRadius = 0.5f * (actionCharge * 0.2f);
-			for (int i = 0; i < numBullets; i++) {
-				float angle = (i - numBullets / 2) * 5;
-				vec3 bulletDir = glm::normalize(vec3(getDirection().x, 0, getDirection().z));
-				bulletDir = glm::normalize(glm::rotateY(bulletDir, glm::radians(angle)));
-				vec3 bulletStart = getPosition() + (bulletDir * (1.1f * getBoundingSphere()->getRadius() + bulletRadius));
-				vec3 bulletVelocity = glm::normalize(bulletDir) * 3.0f;
+			if (hasPowerup(POWERUP_BOMBS)) {
+				float bombRadius = 1.0f;
+				vec3 bombVelocity = getDirection() * (float)(actionCharge) * 0.3f * strength;
+				vec3 bombStart = getPosition() + getDirection() * (1.1f * getBoundingSphere()->getRadius() + bombRadius);
+				
+				Bomb * bomb = gGameEngine->addGameObject<Bomb>();
+				bomb->setBoundingShape(new BoundingSphere(bombStart, bombRadius));
+				bomb->setPosition(bombStart);
+				bomb->setVelocity(bombVelocity);
+				bomb->setModel("Models/unit_sphere.obj");
+				bomb->setMaterial("");
+				bomb->setScale(vec3(bombRadius));
+				bomb->setOwner(this);
+			}
+			else {
+				float bulletRadius = 0.5f * (actionCharge * 0.2f);
+				for (int i = 0; i < numBullets; i++) {
+					float angle = (i - numBullets / 2) * 5;
+					vec3 bulletDir = glm::normalize(vec3(getDirection().x, 0, getDirection().z));
+					bulletDir = glm::normalize(glm::rotateY(bulletDir, glm::radians(angle)));
+					vec3 bulletStart = getPosition() + (bulletDir * (1.1f * getBoundingSphere()->getRadius() + bulletRadius));
+					vec3 bulletVelocity = glm::normalize(bulletDir) * 3.0f;
 
-				Bullet * b = nullptr;
-				switch (getBulletType()) {
+					Bullet * b = nullptr;
+					switch (getBulletType()) {
 					case BULLET_STUN: {
 						b = gGameEngine->addGameObject<StunBullet>();
 						break;
@@ -48,14 +64,16 @@ void Player::doAction(PlayerCommands action) {
 						b = gGameEngine->addGameObject<Bullet>();
 						break;
 					}
+					}
+					b->setBoundingShape(new BoundingSphere(vec3(0.0f), bulletRadius));
+					b->setModel("Models/unit_sphere.obj");
+					b->setMaterial("Materials/brick.json");
+					b->setPosition(bulletStart);
+					b->setVelocity(bulletVelocity);
+					b->setScale(vec3(bulletRadius));
+					b->setOwner(this);
 				}
-				b->setBoundingShape(new BoundingSphere(vec3(0.0f), bulletRadius));
-				b->setModel("Models/unit_sphere.obj");
-				b->setMaterial("Materials/brick.json");
-				b->setPosition(bulletStart);
-				b->setVelocity(bulletVelocity);
-				b->setScale(vec3(bulletRadius));
-			}		
+			}
 
 			break;
 		}

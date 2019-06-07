@@ -29,6 +29,7 @@
     </ClCompile>
     <ClCompile Include="Shared\PowerUpItem.cpp" />
     <ClCompile Include="Shared\StunBullet.cpp" />
+    <ClCompile Include="Shared\Bomb.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shared\Ball.h" />
@@ -66,6 +67,7 @@
     </ClInclude>
     <ClInclude Include="Shared\PowerUpItem.h" />
     <ClInclude Include="Shared\StunBullet.h" />
+    <ClInclude Include="Shared\Bomb.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Util">

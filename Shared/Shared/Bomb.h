@@ -1,15 +1,15 @@
 #pragma once
 #include "SphereGameObject.h"
 
-class Bullet : public SphereGameObject {
+class Bomb : public SphereGameObject {
 public:
 	using SphereGameObject::SphereGameObject;
 
-	Bullet(vec3 position, vec3 velocity, float radius);
 	GAMEOBJECT_TYPES getGameObjectType() const;
 	void updateOnServerTick();
 	bool deleteOnServerTick();
 
+	bool getHit();
 	void setOwner(Player * p);
 	Player * getOwner();
 
@@ -21,6 +21,6 @@ public:
 
 private:
 	bool hit = false;
-	int lifespan = 100;
+	int lifespan = 120;
 	Player * owner;
 };

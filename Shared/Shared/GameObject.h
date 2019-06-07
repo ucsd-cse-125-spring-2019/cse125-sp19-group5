@@ -7,6 +7,7 @@
 using glm::quat;
 
 class Ball;
+class Bomb;
 class Bullet;
 class Goal;
 class Paddle;
@@ -24,7 +25,8 @@ enum GAMEOBJECT_TYPES {
 	PADDLE_TYPE,
 	GOAL_TYPE,
 	POWERUP_ITEM_TYPE,
-	STUN_BULLET_TYPE
+	STUN_BULLET_TYPE,
+	BOMB_TYPE
 };
 
 enum POWERUP_TYPES {
@@ -33,6 +35,8 @@ enum POWERUP_TYPES {
 	POWERUP_BULLET_SPRAY,
 	POWERUP_STUNGUN,
 	POWERUP_STUN_DEBUFF,
+	POWERUP_LOWER_COOLDOWNS,
+	POWERUP_BOMBS,
 	NUM_POWERUPS
 };
 
@@ -65,6 +69,7 @@ public:
 	bool collidesWith(GameObject * gameObject);
 	virtual void onCollision(GameObject * gameObject);
 	virtual void onCollision(Ball * ball);
+	virtual void onCollision(Bomb * bomb);
 	virtual void onCollision(Bullet * bullet);
 	virtual void onCollision(Goal * goal);
 	virtual void onCollision(Paddle * paddle);

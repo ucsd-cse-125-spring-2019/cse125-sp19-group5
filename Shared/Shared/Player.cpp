@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "BoundingSphere.h"
 #include "Ball.h"
+#include "Bomb.h"
 #include "Bullet.h"
 #include "Goal.h"
 #include "Paddle.h"
@@ -187,7 +188,7 @@ vec3 Player::getMoveDestination(vec3 movement) {
 	}
 	vec3 newVelocity = getVelocity();
 	if (isGrounded) {
-		newVelocity.y = PhysicsEngine::applyGravity(vec3(0.0f), PhysicsEngine::getGravity()).y; // Reset gravity
+		newVelocity.y = PhysicsEngine::applyGravity(vec3(0.0f), PhysicsEngine::getGravity() * 0.7f).y; // Reset gravity
 		if (wishJump && !hasPowerup(POWERUP_STUN_DEBUFF)) {
 			newVelocity = PhysicsEngine::movePlayerOnGround(accelDir, newVelocity, moveSpeed);
 			newVelocity = PhysicsEngine::jumpPlayer(newVelocity);
@@ -201,7 +202,7 @@ vec3 Player::getMoveDestination(vec3 movement) {
 	}
 	else {
 		newVelocity = PhysicsEngine::movePlayerInAir(accelDir, newVelocity, moveSpeed);
-		newVelocity = PhysicsEngine::applyGravity(newVelocity, PhysicsEngine::getGravity());
+		newVelocity = PhysicsEngine::applyGravity(newVelocity, PhysicsEngine::getGravity() * 0.7f);
 	}
 	setVelocity(newVelocity);
 
@@ -296,10 +297,20 @@ void Player::onCollision(Ball * ball) {
 	}
 }
 
+void Player::onCollision(Bomb * bomb) {
+	if (bomb->getHit()) {
+		float bombStrength = std::max((float)(getBoundingSphere()->getRadius() - distanceFrom(bomb)), 0.5f);
+		std::cout << bombStrength << std::endl;
+		vec3 impactDirection = glm::normalize(getPosition() - bomb->getPosition());
+		this->collisionVelocityComponent += impactDirection * bombStrength * 0.3f;
+		this->collisionVelocityComponent += vec3(0, 1, 0) * bombStrength * 0.3f;
+		isGrounded = false;
+	}
+}
+
 void Player::onCollision(Bullet * bullet) {
 	this->collisionVelocityComponent += bullet->getVelocity();
 	this->collisionVelocityComponent += vec3(0, 0.5, 0);
-	isGrounded = false;
 }
 
 void Player::onCollision(Goal * goal) {

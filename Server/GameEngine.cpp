@@ -7,6 +7,8 @@
 #include <Shared/Util/CurTime.h>
 #include "MapLoader.h"
 
+#include "Game/Powerups/BombPowerup.h"
+
 constexpr auto COUNTDOWN_TIME = 3;
 constexpr auto ROUND_SCORE_TIME = 3;
 constexpr auto SCORE_SHOW_TIME = 10;
@@ -604,8 +606,9 @@ Player *GameEngine::createPlayer(Connection *c) {
 	constexpr vec3 origin(0.0f);
 
 	auto player = new Player(vec3(0, 2, 0), origin, origin, c->getId(), 2, 0);
-	player->setCooldown(SWING, std::make_tuple(0, 60));
-	player->setCooldown(SHOOT, std::make_tuple(0, 60));
+	player->setCooldown(SWING, std::make_tuple(0, 30));
+	player->setCooldown(SHOOT, std::make_tuple(0, 30));
+	player->setCooldown(WALL, std::make_tuple(0, 120));
 	addGameObject(player);
 
 	player->setModel("Models/AntiDeformBear.fbx");
