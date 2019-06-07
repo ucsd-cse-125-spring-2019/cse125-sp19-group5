@@ -137,12 +137,13 @@ void Ball::onCollision(Paddle * paddle) {
 		this->isGrounded = false;
 
 		this->lastHitBy = paddle->getOwner();
-    
-	  if (soundHitTimer <= 0.0f) {
-		  string soundToPlay = soundHit[getRandIndex(soundHit.size())];
-		  this->playSound(soundToPlay, 1.0f, false);
-		  soundHitTimer = SOUND_HIT_CD;
-	  }
+
+		if (soundHitTimer <= 0.0f) {
+			string soundToPlay = soundHit[getRandIndex(soundHit.size())];
+			this->playSound(soundToPlay, 1.0f, false);
+			soundHitTimer = SOUND_HIT_CD;
+		}
+	}
 }
 
 

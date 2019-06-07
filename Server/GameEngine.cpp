@@ -97,7 +97,7 @@ void GameEngine::startGame() {
 	std::cout << "Starting a new game..." << std::endl;
 	prepRound();
 	gameState.score = std::make_tuple(0, 0);
-	gameState.timeLeft = 1000 * 10; // 5 minutes in ms
+	gameState.timeLeft = 100000 * 10; // 5 minutes in ms
 	NetBuffer start(NetMessage::START);
 	start.write<bool>(true);
 	Network::broadcast(start);

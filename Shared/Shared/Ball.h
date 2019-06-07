@@ -2,7 +2,7 @@
 #include <set>
 #include "SphereGameObject.h"
 
-#define GROUNDED_TICKS_THRESHOLD 10
+#define GROUNDED_TICKS_THRESHOLD 30
 
 class Ball : public SphereGameObject {
 public:

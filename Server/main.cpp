@@ -27,8 +27,13 @@ int main(int argc, char **argv) {
 	vector<PlayerInputs> playerInputs;
   
 	MapLoader mapLoader(&gameEngine);
-	mapLoader.loadMap("Maps/basic_map.json");
-	
+	mapLoader.loadMap("Maps/map_with_goals.json");
+
+	unordered_map<int, int> player_team;
+	unordered_map<int, std::string> id_name;
+	int teamR = 0;
+	int teamB = 0;
+
 	/*auto jumpableBox = gameEngine.addGameObject<Wall>();
 	mapLoader.loadMap("Maps/map_with_goals.json");
 
