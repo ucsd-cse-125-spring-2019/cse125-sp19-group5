@@ -104,7 +104,9 @@ void Ball::onCollision(Ball * ball) {
 			setVelocity(newVelocity);
 			ball->setVelocity(ballNewVelocity);
 
-			this->lastHitBy = ball->lastHitBy;
+			if (ball->lastHitBy) {
+				this->lastHitBy = ball->lastHitBy;
+			}
 		}
 	}
 }

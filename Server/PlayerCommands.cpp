@@ -16,7 +16,7 @@ void Player::doAction(PlayerCommands action) {
 			vec3 paddlePosition = getPosition() + getDirection() * vec3(2.05f * getBoundingSphere()->getRadius());
 			float y = glm::max(getDirection().y * 0.5f, 0.0f);
 			vec3 paddleVelocity = vec3(getDirection().x, y, getDirection().z) * (float)(actionCharge);
-			int paddleLifespan = 30;
+			int paddleLifespan = 10;
 
 			auto p = gGameEngine->addGameObject<Paddle>();
 			p->setBoundingShape(new BoundingSphere(paddlePosition, 5.0f));
@@ -25,7 +25,7 @@ void Player::doAction(PlayerCommands action) {
 			p->setLifespan(paddleLifespan);
 			p->setOwner(this);
 			p->setModel("Models/static_paddle.obj");
-			p->setScale(vec3(2.0f));
+			p->setScale(vec3(1.5f));
 			if (gGameEngine->player_team[getId()] == 0) {
 				p->setMaterial("Materials/paddle_red.json");
 			}
