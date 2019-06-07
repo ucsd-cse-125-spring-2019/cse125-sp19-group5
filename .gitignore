@@ -8,7 +8,6 @@ Assets/Config.ini
 
 # Game assets - using Dropbox w/ symlinks instead
 Assets/Models
-Assets/Textures
 
 # User-specific files
 *.suo
