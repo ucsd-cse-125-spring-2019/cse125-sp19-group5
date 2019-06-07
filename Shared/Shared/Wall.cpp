@@ -4,6 +4,15 @@ GAMEOBJECT_TYPES Wall::getGameObjectType() const {
 	return WALL_TYPE;
 }
 
+void Wall::updateOnServerTick() {
+	if (destroyable && (getPosition().y < 0)) {
+		move(vec3(0, 0.1, 0));
+	}
+	if (destroyable && getPosition().y > 0) {
+		setPosition(vec3(getPosition().x, 0, getPosition().z));
+	}
+}
+
 bool Wall::deleteOnServerTick() {
 	return this->health <= 0;
 }

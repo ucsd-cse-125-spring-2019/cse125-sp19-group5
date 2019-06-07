@@ -1,9 +1,6 @@
 #pragma once
 #include <set>
 #include "SphereGameObject.h"
-#include "Ball.h"
-#include "Player.h"
-#include "Wall.h"
 
 class Paddle : public SphereGameObject {
 public:
@@ -25,9 +22,13 @@ public:
 	void setLifespan(int newLifespan);
 	int getLifespan() const;
 
+	void setOwner(Player * owner);
+	Player * getOwner();
+
 	void onCreated() override;
 
 private:
 	int lifespan;
 	std::set<GameObject *> objectsHit;
+	Player * owner = nullptr;
 };

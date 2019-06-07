@@ -28,6 +28,7 @@ namespace Input {
 	bool isKeyDown(int key);
 	bool wasKeyPressed(int key);
 	bool wasKeyReleased(int key);
+	bool isMouseClicked(int button);
 
 	double getMouseX();
 	double getMouseY();

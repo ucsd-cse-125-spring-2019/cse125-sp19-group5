@@ -27,6 +27,8 @@
     <ClCompile Include="Shared\Game\Powerup.cpp">
       <Filter>Game</Filter>
     </ClCompile>
+    <ClCompile Include="Shared\PowerUpItem.cpp" />
+    <ClCompile Include="Shared\StunBullet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shared\Ball.h" />
@@ -62,6 +64,8 @@
     <ClInclude Include="Shared\Game\Powerup.h">
       <Filter>Game</Filter>
     </ClInclude>
+    <ClInclude Include="Shared\PowerUpItem.h" />
+    <ClInclude Include="Shared\StunBullet.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Util">

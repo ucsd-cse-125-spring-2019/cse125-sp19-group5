@@ -1,15 +1,11 @@
 #pragma once
 #include "BoxGameObject.h"
-#include "Ball.h"
-#include "Bullet.h"
-#include "Paddle.h"
-#include "Player.h"
-
 
 class Wall : public BoxGameObject {
 public:
 	using BoxGameObject::BoxGameObject;
 	GAMEOBJECT_TYPES getGameObjectType() const;
+	void updateOnServerTick();
 	bool deleteOnServerTick();
 	void setDestroyable(bool destroyable);
 	void setHealth(int health);

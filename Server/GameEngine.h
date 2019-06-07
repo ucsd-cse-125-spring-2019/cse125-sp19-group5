@@ -7,6 +7,7 @@
 #include <Shared/Bullet.h>
 #include <Shared/Wall.h>
 #include <Shared/Goal.h>
+#include <Shared/PowerUpItem.h>
 #include <Shared/GameState.h>
 #include <Shared/Networking/Connection.h>
 #include <unordered_set>
@@ -72,6 +73,7 @@ public:
 	void updateGameObjectsOnServerTick();
 	bool noCollisionMove(Player * player, vec3 movement);
 
+	void spawnItems();
 	const std::array<GameObject*, MAX_GAME_OBJS> &getGameObjects() const;
 
 	void onPlayerReady(Connection *c, NetBuffer &buffer);
@@ -111,6 +113,8 @@ private:
 	void prepRound();
 
 	void updateTimers();
+  
+  int itemTimer = 0;
 };
 
 extern GameEngine *gGameEngine;

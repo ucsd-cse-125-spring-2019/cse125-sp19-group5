@@ -8,7 +8,7 @@ class Powerup {
 	float deactivateTime;
 
 	public:
-	static const string TYPE;
+	static const POWERUP_TYPES TYPE;
 
 	Powerup(Player &player);
 
