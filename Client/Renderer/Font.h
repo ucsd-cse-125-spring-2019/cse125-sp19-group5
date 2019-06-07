@@ -7,6 +7,11 @@
 
 #include "Shader.h"
 
+struct FontInfo {
+	unsigned int size = 48u;
+	string path = "Fonts/Arial.ttf";
+};
+
 struct Character {
 	GLuint TextureID;	// ID handle of the glyph texture
 	glm::ivec2 Size;	// Size of glyph
@@ -17,7 +22,7 @@ struct Character {
 class Font {
 public:
 	Font();
-	Font(const std::string &filepath);
+	Font(const FontInfo &info);
 	~Font();
 
 	void renderText(Shader &shader, const std::string &text, GLfloat x, GLfloat y, GLfloat scale, const glm::vec3 &color);

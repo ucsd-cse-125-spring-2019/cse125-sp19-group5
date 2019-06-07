@@ -17,6 +17,10 @@
 #include "Renderer/ParticleSystem.h"
 #include "Assets.h"
 #include "Game/ParticleEmitters.h"
+#include "Game/Gui/GuiScoreboard.h"
+
+// Define this if you just want to go right to the game.
+#define _DEBUG_SP
 
 GuiGameText *gameText = nullptr;
 
@@ -129,18 +133,23 @@ Game::Game() : gameObjects({ nullptr }) {
 	Draw::init();
 	ParticleEmitters::init(&gameState);
 
+#ifndef _DEBUG_SP
 	Gui::create<GuiConnectMenu>();
+#else
+	int port = 1234;
+	ConfigSettings::get().getValue("Port", port);
+	Network::init("127.0.0.1", port);
+#endif
+
 	gSound->setMasterVolume(1.0f);
 	ConnectMenuBackground = gSound->loadFlatSound("Sounds/ConnectMenuMusic.wav", 0.1f);
 	ConnectMenuBackground->play(true);
-
-	hud = Gui::create<GuiHUD>();
 	
 	lightShader = new Shader("Shaders/light");
 	camera = new Camera(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f), 70, 1.0f);
 	shadowMap = new ShadowMap(camera);
 	sun = new DirectionalLight(0);
-	sun->setDirection(vec3(0.009395, -0.500647, -0.713446));
+	sun->setDirection(vec3(0.009395, -0.800647, -0.713446));
 	sun->setAmbient(vec3(0.04f, 0.05f, 0.13f));
 	sun->setColor(vec3(0.8f, 0.7f, 0.55f));
 
@@ -152,7 +161,7 @@ Game::Game() : gameObjects({ nullptr }) {
 
 	gTextRenderer->loadFont(
 		TextRenderer::DEFAULT_FONT_NAME,
-		TextRenderer::DEFAULT_FONT_FILEPATH
+		{ 48, TextRenderer::DEFAULT_FONT_FILEPATH }
 	);
 	fpsText = gTextRenderer->addText(TextRenderer::DEFAULT_FONT_NAME, "fps", 0.02f, 0.02f, 0.4f, glm::vec3(1.0f, 1.0f, 0.0f));
 
@@ -222,6 +231,28 @@ Game::Game() : gameObjects({ nullptr }) {
 	);
 
 	Network::on(NetMessage::GAME_TEXT, setGameText);
+	Network::on(
+		NetMessage::SCOREBOARD_SHOW,
+		[&](Connection *c, NetBuffer &buffer) {
+			if (hud) {
+				hud->remove();
+				hud = nullptr;
+			}
+			Gui::create<GuiScoreboard>();
+		}
+	);
+	Network::on(
+		NetMessage::HUD_VISIBLE,
+		[&](Connection *c, NetBuffer &buffer) {
+			auto isVisible = buffer.read<bool>();
+			if (isVisible && !hud) {
+				hud = Gui::create<GuiHUD>();
+			} else if (!isVisible && hud) {
+				hud->remove();
+				hud = nullptr;
+			}
+		}
+	);
 }
 
 Game::~Game() {
@@ -333,14 +364,22 @@ void Game::update(float dt) {
 
 	ParticleEmitters::update(dt, camera);
 
-	hud->setTime(gameState.timeLeft);
-	hud->setLeftTeamScore(std::get<0>(gameState.score));
-	hud->setRightTeamScore(std::get<1>(gameState.score));
+	if (hud) {
+		hud->setTime(gameState.timeLeft);
+		hud->setLeftTeamScore(std::get<0>(gameState.score));
+		hud->setRightTeamScore(std::get<1>(gameState.score));
+	}
 }
 
 void Game::drawScene(Shader &shader, DrawPass pass) const {
 	for (auto gameObject : gameObjects) {
 		if (!gameObject) { continue; }
+		if (
+			pass == DrawPass::SHADOW &&
+			!gameObject->getGameObject()->shouldCastShadow()
+		) {
+			continue;
+		}
 		gameObject->draw(shader, camera, pass);
 	}
 }
