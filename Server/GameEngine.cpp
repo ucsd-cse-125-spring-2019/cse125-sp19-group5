@@ -13,9 +13,7 @@ constexpr auto COUNTDOWN_TIME = 3;
 constexpr auto ROUND_SCORE_TIME = 3;
 constexpr auto SCORE_SHOW_TIME = 10;
 
-#define _DEBUG
-
-static const int PLAYER_NUM = 1;
+static const int PLAYER_NUM = 2;
 
 static int playerScores[4] = { 0 };
 
