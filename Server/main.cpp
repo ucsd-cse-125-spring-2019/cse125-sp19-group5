@@ -29,10 +29,11 @@ int main(int argc, char **argv) {
 	MapLoader mapLoader(&gameEngine);
 	mapLoader.loadMap("Maps/map_with_goals.json");
 
+	/*
 	unordered_map<int, int> player_team;
 	unordered_map<int, std::string> id_name;
 	int teamR = 0;
-	int teamB = 0;
+	int teamB = 0;*/
 
 	/*auto jumpableBox = gameEngine.addGameObject<Wall>();
 	mapLoader.loadMap("Maps/map_with_goals.json");
@@ -72,31 +73,31 @@ int main(int argc, char **argv) {
 
 	auto handleTeamSelection = [&](Connection*c, NetBuffer &buffer) {
 		
-		if (player_team.at(c->getId()) == 0) teamR -= 1;
-		else teamB -= 1;
+		if (gameEngine.player_team.at(c->getId()) == 0) gameEngine.teamR -= 1;
+		else gameEngine.teamB -= 1;
 
-		player_team[c->getId()] = buffer.read<int>();
+		gameEngine.player_team[c->getId()] = buffer.read<int>();
 
-		if (player_team.at(c->getId()) == 0) teamR += 1;
-		else teamB += 1;
+		if (gameEngine.player_team.at(c->getId()) == 0) gameEngine.teamR += 1;
+		else gameEngine.teamB += 1;
 
-		gameEngine.updateTeamReady(player_team, teamR, teamB);
+		gameEngine.updateTeamReady();
 	};
 
 	auto addPlayerName = [&](Connection*c, NetBuffer &buffer) {
 
 		std::string name = buffer.read<std::string>();
-		id_name[c->getId()] = name;
+		gameEngine.id_name[c->getId()] = name;
 		NetBuffer id_name(NetMessage::NAME);
 		id_name.write(c->getId());
 		id_name.write(name);
 		Network::broadcast(id_name);
 
-		player_team[c->getId()] = (player_team.size() + 1) % 2;
-		if (player_team.at(c->getId()) == 0) teamR += 1;
-		else teamB += 1;
+		gameEngine.player_team[c->getId()] = (gameEngine.player_team.size() + 1) % 2;
+		if (gameEngine.player_team.at(c->getId()) == 0) gameEngine.teamR += 1;
+		else gameEngine.teamB += 1;
 
-		gameEngine.updateTeamReady(player_team, teamR, teamB);
+		gameEngine.updateTeamReady();
 	};
 
 	Network::onClientConnected([&](Connection *c) {
@@ -112,8 +113,8 @@ int main(int argc, char **argv) {
 		// Send Client the connection/player ID 
 		NetBuffer buffer(NetMessage::CONNECTION_ID);
 		buffer.write<int>(c->getId());
-		buffer.write<int>(id_name.size());
-		for (auto it = id_name.begin(); it != id_name.end(); it++) {
+		buffer.write<int>(gameEngine.id_name.size());
+		for (auto it = gameEngine.id_name.begin(); it != gameEngine.id_name.end(); it++) {
 			buffer.write<int>(it->first);
 			buffer.write<std::string>(it->second);
 		}

@@ -1,6 +1,7 @@
 #include "GuiTeamMenu.h"
 
 static GuiTeamMenu *teamMenu = nullptr;
+static bool firstTime = true;
 
 GuiTeamMenu::GuiTeamMenu()
 {
@@ -104,27 +105,30 @@ GuiTeamMenu::GuiTeamMenu()
 	//team2->setText("");
 	//team2->setFont("Arial");
 
-	Network::on(
-		NetMessage::TEAM,
-		[&](Connection *c, NetBuffer &buffer) {
+	if (firstTime) {
+		firstTime = false;
+		Network::on(
+			NetMessage::TEAM,
+			[&](Connection *c, NetBuffer &buffer) {
 			if (!teamMenu) { return; }
 			teamMenu->updateTeamGui(c, buffer);
 		}
-	);
-	Network::on(
-		NetMessage::READY,
-		[&](Connection *c, NetBuffer &buffer) {
+		);
+		Network::on(
+			NetMessage::READY,
+			[&](Connection *c, NetBuffer &buffer) {
 			if (!teamMenu) { return; }
 			teamMenu->setReady(c, buffer);
 		}
-	);
-	Network::on(
-		NetMessage::START,
-		[&](Connection *c, NetBuffer &buffer) {
+		);
+		Network::on(
+			NetMessage::START,
+			[&](Connection *c, NetBuffer &buffer) {
 			if (!teamMenu) { return; }
 			teamMenu->startGame(c, buffer);
 		}
-	);
+		);
+	}
 }
 
 void GuiTeamMenu::setPlayerId(int id) {
@@ -222,6 +226,8 @@ void GuiTeamMenu::setReady(Connection *c, NetBuffer &readyMsg) {
 void GuiTeamMenu::startGame(Connection *c, NetBuffer &startMsg) {
 	bool start = startMsg.read<bool>();
 	if (start) {
+		game->setPlayerTeam(player_team);
+		firstTime = false;
 		remove();
 		teamMenu = nullptr;
 	}
@@ -233,4 +239,8 @@ bool GuiTeamMenu::getSelectionComplete() {
 
 void GuiTeamMenu::setGame(Game *game) {
 	this->game = game;
+}
+
+void GuiTeamMenu::setPlayerTeam(unordered_map<int, int> &p_t) {
+	player_team = p_t;
 }

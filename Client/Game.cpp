@@ -218,6 +218,7 @@ Game::Game() : gameObjects({ nullptr }) {
 		ConnectMenuBackground->stop();
 		MainMenuBackground->play(true);
 		GuiTeamMenu *teamMenu = Gui::create<GuiTeamMenu>();
+		teamMenu->setPlayerTeam(player_team);
 		teamMenu->setPlayerId(playerId);
 		teamMenu->setGame(this);
 	});
@@ -434,6 +435,9 @@ void Game::draw(float dt) const {
 	glEnable(GL_DEPTH_TEST);
 }
 
+void Game::setPlayerTeam(unordered_map<int, int> &p_t) {
+	player_team = p_t;
+}
 
 unordered_map<int, std::string> Game::getIdName() {
 	return id_name;
