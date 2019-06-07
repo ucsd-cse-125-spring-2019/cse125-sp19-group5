@@ -27,6 +27,8 @@ public:
 	vec3 getDirection();
 	void setPositionNoUpdate(vec3 pos);
 
+	void updateAnimations();
+
 	tuple<int, int> & getCooldown(PlayerCommands command);
 	void setCooldown(PlayerCommands command, tuple<int, int> cd);
 	void useCooldown(PlayerCommands command);
@@ -136,4 +138,6 @@ private:
 	string soundSuperSpeedBoost = "Sounds/speed_boost_meme.mp3";
 
 	string soundBuilding = "Sounds/building.wav";
+
+	bool currentlySwinging;
 };

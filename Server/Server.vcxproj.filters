@@ -115,7 +115,7 @@
       <Filter>Header Files\Game\Powerups</Filter>
     </ClInclude>
     <ClInclude Include="Game\Powerups\BombPowerup.h">
-      <Filter>Header Files\Game</Filter>
+      <Filter>Header Files\Game\Powerups</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
