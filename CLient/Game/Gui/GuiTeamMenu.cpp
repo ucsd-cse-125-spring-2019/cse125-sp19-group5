@@ -55,6 +55,7 @@ GuiTeamMenu::GuiTeamMenu()
 	container_t2->setPosition(vec2(0.45f, 0.25f));
 	container_t2->setSize(vec2(0.25f / 0.8f, 0.3f / 0.8f));
 
+	/* Only switch button
 	swtch = Gui::create<GuiButton>(mainContainer);
 	swtch->setBgColor(vec4(167.0f / 255.0f, 136.0f / 255.0f, 99.0f / 255.0f, 1.0f));
 	swtch->setPosition(vec2(0.25f, 0.1f));
@@ -65,6 +66,29 @@ GuiTeamMenu::GuiTeamMenu()
 	swtch->setColor(vec4(43.0f / 255.0f, 27.0f / 255.0f, 42.0f / 255.0f, 1.0f));
 	auto onClick = std::bind(&GuiTeamMenu::handleSwitch, this);
 	swtch->addCallback(onClick);
+	*/
+
+	swtch = Gui::create<GuiButton>(mainContainer);
+	swtch->setBgColor(vec4(167.0f / 255.0f, 136.0f / 255.0f, 99.0f / 255.0f, 1.0f));
+	swtch->setPosition(vec2(0.1f, 0.1f));
+	swtch->setFont("BearPongSmall");
+	swtch->setSize(vec2(0.25f / 0.8f, 0.1f / 0.8f));
+	swtch->setText("switch teams");
+	swtch->setAlignment(TextAlign::CENTER);
+	swtch->setColor(vec4(43.0f / 255.0f, 27.0f / 255.0f, 42.0f / 255.0f, 1.0f));
+	auto onClickSwtch = std::bind(&GuiTeamMenu::handleSwitch, this);
+	swtch->addCallback(onClickSwtch);
+
+	ready = Gui::create<GuiButton>(mainContainer);
+	ready->setBgColor(vec4(167.0f / 255.0f, 136.0f / 255.0f, 99.0f / 255.0f, 1.0f));
+	ready->setPosition(vec2(0.45f, 0.1f));
+	ready->setFont("BearPongSmall");
+	ready->setSize(vec2(0.25f / 0.8f, 0.1f / 0.8f));
+	ready->setText("ready here");
+	ready->setAlignment(TextAlign::CENTER);
+	ready->setColor(vec4(43.0f / 255.0f, 27.0f / 255.0f, 42.0f / 255.0f, 1.0f));
+	auto onClickRdy = std::bind(&GuiTeamMenu::handleReady, this);
+	ready->addCallback(onClickRdy);
 
 	//team1 = Gui::create<GuiText>(container_t1);
 	//team1->setPosition(vec2(-0.1f, 0.1f));
@@ -167,6 +191,21 @@ void GuiTeamMenu::handleSwitch() {
 	NetBuffer playerTeamSelection(NetMessage::TEAM);
 	playerTeamSelection.write<int>(player_team.at(playerId));
 	Network::send(playerTeamSelection);
+}
+
+void GuiTeamMenu::handleReady() {
+	if (isReady) {
+		ready->setBgColor(vec4(167.0f / 255.0f, 136.0f / 255.0f, 99.0f / 255.0f, 1.0f));
+		ready->setColor(vec4(43.0f / 255.0f, 27.0f / 255.0f, 42.0f / 255.0f, 1.0f));
+		ready->setText("ready here");
+	}
+	else {
+		ready->setBgColor(vec4(43.0f / 255.0f, 27.0f / 255.0f, 42.0f / 255.0f, 1.0f));
+		ready->setColor(vec4(167.0f / 255.0f, 136.0f / 255.0f, 99.0f / 255.0f, 1.0f));
+		ready->setText("you are ready");
+	}
+
+	isReady = !isReady;
 }
 
 void GuiTeamMenu::setReady(Connection *c, NetBuffer &readyMsg) {

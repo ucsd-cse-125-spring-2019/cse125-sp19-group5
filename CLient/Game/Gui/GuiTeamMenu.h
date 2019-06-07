@@ -15,9 +15,11 @@
 class GuiTeamMenu : public GuiImage {
 private:
 	bool selectionComplete;
+	bool isReady = false;
 	int playerId;
 
 	void handleSwitch();
+	void handleReady();
 
 	GuiText *label;
 	GuiText *label_t1;
@@ -26,6 +28,7 @@ private:
 	//GuiText *team2;
 	GuiText *message;
 	GuiButton *swtch;
+	GuiButton *ready;
 	GuiRect *container_t1;
 	GuiRect *container_t2;
 
