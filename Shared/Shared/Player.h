@@ -89,7 +89,9 @@ private:
 	PlayerCommands currentAction;
 	vector<Wall *> walls;
 	std::unordered_map<POWERUP_TYPES, Powerup*> powerups;
-	std::set<Ball *> currentBallCollisions;
+
+	// ticks until ball can apply velocity to player again
+	std::unordered_map<Ball *, int> currentBallCollisions;
 
 	// get<0> = current cooldown, get<1> = total cooldown
 	std::map<PlayerCommands, tuple<int, int>> cooldowns;

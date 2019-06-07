@@ -77,12 +77,14 @@ void Player::updateOnServerTick() {
 		}
 	}
 
-	for (auto it = currentBallCollisions.begin(); it != currentBallCollisions.end(); ) {
-		if (!this->collidesWith(*it)) {
-			it = currentBallCollisions.erase(it);
+	auto iter = currentBallCollisions.begin();
+	while (iter != currentBallCollisions.end()) {
+		if (iter->second == 0) {
+			iter = currentBallCollisions.erase(iter);
 		}
 		else {
-			++it;
+			iter->second--;
+			iter++;
 		}
 	}
 }
@@ -245,15 +247,17 @@ void Player::onCollision(Ball * ball) {
 	moveDirection.y = 0;
 	moveDirection = glm::normalize(moveDirection);
 	
-	if (this->currentBallCollisions.find(ball) == currentBallCollisions.end()) {
-		this->collisionVelocityComponent += moveDirection * (targetDist - currDist) * glm::length(ball->getVelocity());
-		this->collisionVelocityComponent += vec3(0, 1, 0) * glm::length(ball->getVelocity());
-		this->currentBallCollisions.insert(ball);
+	if (this->currentBallCollisions.find(ball) == currentBallCollisions.end() && (glm::length(ball->getVelocity()) > 0.1f)) {
+		this->collisionVelocityComponent += moveDirection * (targetDist - currDist) * glm::length(ball->getVelocity()) * 0.8f;
+		this->collisionVelocityComponent += vec3(0, 1, 0) * glm::length(ball->getVelocity()) * 0.5f;
+		this->currentBallCollisions[ball] = 0;
+		isGrounded = false;
 	}
-
-	float horizDist = sqrt(pow(getBoundingSphere()->getRadius() + ball->getBoundingSphere()->getRadius(), 2) - pow(getPosition().y - ball->getPosition().y, 2));
-	vec3 startPosition = vec3(ball->getPosition().x, getPosition().y, ball->getPosition().z);
-	setPositionNoUpdate(startPosition + moveDirection * horizDist);
+	else {
+		float horizDist = sqrt(pow(getBoundingSphere()->getRadius() + ball->getBoundingSphere()->getRadius(), 2) - pow(getPosition().y - ball->getPosition().y, 2));
+		vec3 startPosition = vec3(ball->getPosition().x, getPosition().y, ball->getPosition().z);
+		setPositionNoUpdate(startPosition + moveDirection * horizDist);
+	}
 }
 
 void Player::onCollision(Bullet * bullet) {
