@@ -101,6 +101,7 @@ private:
 	GameState gameState;
 	RoundState roundState = RoundState::READY;
 	string curGameText = "";
+	bool teamsReady;
 
 	void addGenericGameObject(GameObject *player);
 	bool shouldGameStart();
