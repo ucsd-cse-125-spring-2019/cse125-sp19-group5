@@ -80,7 +80,6 @@ void GuiTeamMenu::setPlayerId(int id) {
 
 void GuiTeamMenu::updateTeamGui(Connection *c, NetBuffer &buffer) {
 	int size = buffer.read<int>();
-	tuple<int, int> temp;
 	int t;
 	int p;
 	float t1_pos = 0.1f;
@@ -88,8 +87,9 @@ void GuiTeamMenu::updateTeamGui(Connection *c, NetBuffer &buffer) {
 
 	id_name = game->getIdName();
 	for (int i = 0; i < size; i++) {
-		temp = buffer.read<tuple<int, int>>();
-		player_team[std::get<0>(temp)] = std::get<1>(temp);
+		auto id = buffer.read<int>();
+		auto team = buffer.read<int>();
+		player_team[id] = team;
 	}
 	
 	GuiText* label;
@@ -136,7 +136,7 @@ void GuiTeamMenu::handleSwitch() {
 
 	NetBuffer playerTeamSelection(NetMessage::TEAM);
 	playerTeamSelection.write<int>(player_team.at(playerId));
-	Network::connection->send(playerTeamSelection);
+	Network::send(playerTeamSelection);
 }
 
 void GuiTeamMenu::setReady(Connection *c, NetBuffer &readyMsg) {

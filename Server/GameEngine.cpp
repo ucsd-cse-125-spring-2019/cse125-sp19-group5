@@ -10,7 +10,6 @@
 constexpr auto COUNTDOWN_TIME = 3;
 constexpr auto ROUND_SCORE_TIME = 3;
 constexpr auto SCORE_SHOW_TIME = 10;
-constexpr auto GAME_TIME = 30;
 
 #define _DEBUG
 
@@ -59,7 +58,7 @@ void GameEngine::init() {
 	gameState.in_progress = false;
 	gameState.score = std::make_tuple(0, 0);
 	gameState.timeLeft = 0;
-	teamsReady = false;
+
 	setGameText("Waiting for players...");
 }
 
@@ -67,7 +66,6 @@ bool GameEngine::shouldGameStart() {
 	if (roundState != RoundState::READY) {
 		return false;
 	}
-	
 	return teamsReady;
 }
 
@@ -97,12 +95,9 @@ void GameEngine::prepRound() {
 
 void GameEngine::startGame() {
 	std::cout << "Starting a new game..." << std::endl;
-	NetBuffer start(NetMessage::START);
-	start.write<bool>(true);
-	Network::broadcast(start);
 	prepRound();
 	gameState.score = std::make_tuple(0, 0);
-	gameState.timeLeft = 1000 * GAME_TIME; // Convert to ms
+	gameState.timeLeft = 1000 * 10; // 5 minutes in ms
 }
 
 void GameEngine::endGame() {
@@ -180,7 +175,8 @@ void GameEngine::updateTeamReady(unordered_map<int, int> p_t, int teamR, int tea
 	NetBuffer team(NetMessage::TEAM);
 	team.write<int>(p_t.size());
 	for (auto it = p_t.begin(); it != p_t.end(); it++) {
-		team.write<tuple<int, int>>(std::make_tuple(it->first, it->second));
+		team.write(it->first);
+		team.write(it->second);
 	}
 
 	Network::broadcast(team);
@@ -194,12 +190,6 @@ void GameEngine::updateTeamReady(unordered_map<int, int> p_t, int teamR, int tea
 
 	ready.write<bool>(t_ready);
 	Network::broadcast(ready);
-
-	if (t_ready) {
-		setTimer("start", 5, [&] {
-			teamsReady = true;
-		});
-	}
 }
 
 void GameEngine::synchronizeGameState() {
