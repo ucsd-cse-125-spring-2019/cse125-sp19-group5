@@ -1,4 +1,5 @@
 #include "Ball.h"
+#include "Bomb.h"
 #include "CollisionDetection.h"
 #include <iostream>
 #include <math.h>
@@ -11,6 +12,7 @@
 #include "Player.h"
 #include "Wall.h"
 #include "PhysicsEngine.h"
+#include <algorithm>
 
 
 GAMEOBJECT_TYPES Ball::getGameObjectType() const {
@@ -115,6 +117,21 @@ void Ball::onCollision(Bullet * bullet) {
 		string soundToPlay = soundHit[getRandIndex(soundHit.size())];
 		this->playSound(soundToPlay, 1.0f, false);
 		soundHitTimer = SOUND_HIT_CD;
+
+		this->lastHitBy = bullet->getOwner();
+	}
+}
+
+void Ball::onCollision(Bomb * bomb) {
+	if (bomb->getHit()) {
+		float bombStrength = std::max((float)(getBoundingSphere()->getRadius() - distanceFrom(bomb)), 0.5f);
+		std::cout << bombStrength << std::endl;
+		vec3 impactDirection = glm::normalize(getPosition() - bomb->getPosition());
+		setVelocity(getVelocity() +  (impactDirection * bombStrength * 0.15f));
+		setVelocity(getVelocity() + (vec3(0, 1, 0) * bombStrength * 0.15f));
+		isGrounded = false;
+
+		this->lastHitBy = bomb->getOwner();
 	}
 }
 

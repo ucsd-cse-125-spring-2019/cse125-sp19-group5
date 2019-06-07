@@ -18,3 +18,6 @@ void GameObject::stopSound(const string &sound) { DO_NOT_CALL; }
 #include <Shared/Player.h>
 void Player::onCollision(PowerUpItem * item) { }
 void Player::onCollision(StunBullet * bullet) { }
+
+#include <Shared/Bomb.h>
+void Bomb::updateOnServerTick() { }

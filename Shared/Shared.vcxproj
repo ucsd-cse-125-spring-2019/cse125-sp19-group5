@@ -116,6 +116,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Shared\Ball.h" />
+    <ClInclude Include="Shared\Bomb.h" />
     <ClInclude Include="Shared\BoundingBox.h" />
     <ClInclude Include="Shared\BoundingShape.h" />
     <ClInclude Include="Shared\BoundingSphere.h" />
@@ -147,6 +148,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Shared\Ball.cpp" />
+    <ClCompile Include="Shared\Bomb.cpp" />
     <ClCompile Include="Shared\BoundingBox.cpp" />
     <ClCompile Include="Shared\BoundingShape.cpp" />
     <ClCompile Include="Shared\BoundingSphere.cpp" />
