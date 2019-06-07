@@ -569,7 +569,15 @@ void GameEngine::spawnPlayers() {
 		auto position = spawnInfo.second;
 		// TODO: team checks
 		if (playerIt != gameState.players.end()) {
-			(*playerIt)->setPosition(position);
+			auto player = *playerIt;
+			auto playerTeam = player_team[player->getId()];
+			player->setPosition(position);
+
+			auto shirt = playerTeam == 0
+				? "Materials/red_shirt_bear.json"
+				: "Materials/blue_shirt_bear.json";
+			player->setMaterial(shirt);
+
 			playerIt++;
 		}
 	}
@@ -613,7 +621,7 @@ void GameEngine::setHUDVisible(bool isVisible) {
 Player *GameEngine::createPlayer(Connection *c) {
 	constexpr vec3 origin(0.0f);
 
-	auto player = new Player(vec3(0, 2, 0), origin, origin, c->getId(), 2, 0);
+	auto player = new Player(vec3(0, 2, 0), origin, origin, c->getId(), 2.0f, 0);
 	player->setCooldown(SWING, std::make_tuple(0, 30));
 	player->setCooldown(SHOOT, std::make_tuple(0, 30));
 	player->setCooldown(WALL, std::make_tuple(0, 120));
@@ -622,7 +630,7 @@ Player *GameEngine::createPlayer(Connection *c) {
 	player->setModel("Models/AntiDeformBear.fbx");
 	player->setDirection(vec3(0, 0, -1));
 	player->setMaterial("Materials/brown_bear.json");
-	player->setScale(vec3(.2));
+	player->setScale(vec3(.25));
 	player->setAnimation(0);
 
 	return player;

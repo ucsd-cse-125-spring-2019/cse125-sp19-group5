@@ -139,7 +139,7 @@ Game::Game() : gameObjects({ nullptr }) {
 	//Network::init("127.0.0.1", port);
 
 	gSound->setMasterVolume(1.0f);
-	ConnectMenuBackground = gSound->loadFlatSound("Sounds/ConnectMenuMusic.wav", 0.1f);
+	ConnectMenuBackground = gSound->loadFlatSound("Sounds/ConnectMenuMusic.wav", 0.3f);
 	ConnectMenuBackground->play(true);
 	
 	lightShader = new Shader("Shaders/light");
@@ -251,6 +251,9 @@ Game::Game() : gameObjects({ nullptr }) {
 			auto isVisible = buffer.read<bool>();
 			if (isVisible && !hud) {
 				hud = Gui::create<GuiHUD>();
+				if (MainMenuBackground) {
+					MainMenuBackground->setVolume(0.05f);
+				}
 			} else if (!isVisible && hud) {
 				hud->remove();
 				hud = nullptr;
