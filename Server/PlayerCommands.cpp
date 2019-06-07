@@ -16,7 +16,7 @@ void Player::doAction(PlayerCommands action) {
 			vec3 paddlePosition = getPosition() + getDirection() * vec3(2.05f * getBoundingSphere()->getRadius());
 			float y = glm::max(getDirection().y * 0.5f, 0.0f);
 			vec3 paddleVelocity = vec3(getDirection().x, y, getDirection().z) * (float)(actionCharge);
-			int paddleLifespan = 10;
+			int paddleLifespan = 30;
 
 			auto p = gGameEngine->addGameObject<Paddle>();
 			p->setBoundingShape(new BoundingSphere(paddlePosition, 5.0f));
@@ -24,6 +24,22 @@ void Player::doAction(PlayerCommands action) {
 			p->setVelocity(paddleVelocity * 0.2f * strength);
 			p->setLifespan(paddleLifespan);
 			p->setOwner(this);
+			p->setModel("Models/static_paddle.obj");
+			p->setScale(vec3(2.0f));
+			if (gGameEngine->player_team[getId()] == 0) {
+				p->setMaterial("Materials/paddle_red.json");
+			}
+			else {
+				p->setMaterial("Materials/paddle_blue.json");
+			}
+
+			vec3 direction = getDirection();
+			direction.y = 0;
+			direction = glm::normalize(glm::cross(direction, vec3(0, 1, 0)));
+			float yaw = glm::orientedAngle(vec2(direction.x, direction.z), vec2(1, 0));
+			quat orientation = glm::eulerAngleY(yaw);
+			p->setOrientation(orientation);
+
 
 			break;
 		}
@@ -66,16 +82,18 @@ void Player::doAction(PlayerCommands action) {
 					switch (getBulletType()) {
 					case BULLET_STUN: {
 						b = gGameEngine->addGameObject<StunBullet>();
+						b->setModel("Models/beehive.obj");
+						b->setMaterial("Materials/beehive_yellow.json");
 						break;
 					}
 					default: {
 						b = gGameEngine->addGameObject<Bullet>();
+						b->setModel("Models/unit_sphere.obj");
+						b->setMaterial("Materials/brick.json");
 						break;
 					}
 					}
 					b->setBoundingShape(new BoundingSphere(vec3(0.0f), bulletRadius));
-					b->setModel("Models/unit_sphere.obj");
-					b->setMaterial("Materials/brick.json");
 					b->setPosition(bulletStart);
 					b->setVelocity(bulletVelocity);
 					b->setScale(vec3(bulletRadius));
