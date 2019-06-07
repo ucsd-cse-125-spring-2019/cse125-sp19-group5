@@ -56,6 +56,7 @@ public:
 	void addGameObject(Goal * goal);
 	void addGameObject(GameObject *obj);
 	void removeGameObjectById(int id);
+	void removeGameObject(GameObject *obj);
 
 	vec3 movementInputToVector(int movementInput);
 	void movePlayers(vector<PlayerInputs> & playerInputs);
@@ -88,7 +89,11 @@ public:
 	void showScoreboard();
 	void hideScoreboard();
 
+	void cleanMap();
+
 	void setHUDVisible(bool isVisible);
+
+	Player *GameEngine::createPlayer(Connection *c);
 
 private:
 	std::unordered_map<string, Timer*> timers;

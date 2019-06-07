@@ -5,6 +5,7 @@
 #include <Shared/CollisionDetection.h>
 #include <Shared/Game/ParticleEmitter.h>
 #include <Shared/Util/CurTime.h>
+#include "MapLoader.h"
 
 constexpr auto COUNTDOWN_TIME = 3;
 constexpr auto ROUND_SCORE_TIME = 3;
@@ -48,6 +49,10 @@ void GameEngine::removeGameObjectById(int id) {
 		buffer.write(id);
 		Network::broadcast(buffer);
 	}
+}
+
+void GameEngine::removeGameObject(GameObject *obj) {
+	removeGameObjectById(obj->getId());
 }
 
 void GameEngine::init() {
@@ -113,6 +118,7 @@ void GameEngine::endGame() {
 	showScoreboard();
 
 	setTimer("scores", SCORE_SHOW_TIME, [&]() {
+		cleanMap();
 		std::cout << "Game over, back to lobby" << std::endl;
 		hideScoreboard();
 		// TODO: move this later to when teams are finalized
@@ -539,6 +545,41 @@ void GameEngine::setHUDVisible(bool isVisible) {
 	NetBuffer buffer(NetMessage::HUD_VISIBLE);
 	buffer.write(isVisible);
 	Network::broadcast(buffer);
+}
+
+Player *GameEngine::createPlayer(Connection *c) {
+	constexpr vec3 origin(0.0f);
+
+	auto player = new Player(vec3(0, 2, 0), origin, origin, c->getId(), 2, 0);
+	player->setCooldown(SWING, std::make_tuple(0, 60));
+	player->setCooldown(SHOOT, std::make_tuple(0, 60));
+	addGameObject(player);
+
+	player->setModel("Models/unit_sphere.obj");
+	player->setDirection(vec3(0, 0, -1));
+	player->setMaterial("Materials/brick.json");
+	player->setScale(vec3(2));
+
+	return player;
+}
+
+void GameEngine::cleanMap() {
+	for (auto gameObject : gameState.gameObjects) {
+		if (gameObject) {
+			removeGameObject(gameObject);
+		}
+	}
+	ParticleEmitter::deleteAll();
+
+	MapLoader mapLoader(this);
+	// TODO: change this to some variable - potentially for map votes
+	mapLoader.loadMap("Maps/map_with_goals.json");
+
+	for (auto conn : Network::connections) {
+		if (conn) {
+			createPlayer(conn);
+		}
+	}
 }
 
 GameEngine *gGameEngine = new GameEngine();

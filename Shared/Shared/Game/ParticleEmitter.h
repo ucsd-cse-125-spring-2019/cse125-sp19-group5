@@ -61,4 +61,7 @@ class ParticleEmitter : public Serializable {
 
 	// Calls update() on all existing ParticleEmitters.
 	static void updateAll();
+
+	// Deletes all particle emitters.
+	static void deleteAll();
 };

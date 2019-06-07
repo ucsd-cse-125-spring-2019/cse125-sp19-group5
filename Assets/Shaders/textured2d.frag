@@ -9,5 +9,6 @@ uniform sampler2D text;
 
 void main()
 {    
-    fragColor = color * vec4(vec3(texture(text, TexCoords).r), 1.0f);
+    vec2 fixedTexCords = vec2(TexCoords.x, 1.0 - TexCoords.y);
+    fragColor = color * texture(text, fixedTexCords);
 }  
