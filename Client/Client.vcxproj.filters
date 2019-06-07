@@ -186,6 +186,9 @@
     <ClCompile Include="Sound\RandomSound.cpp">
       <Filter>Source Files\Sound</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Gui\GuiScoreboard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -334,6 +337,9 @@
     </ClInclude>
     <ClInclude Include="Sound\RandomSound.h">
       <Filter>Header Files\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Gui\GuiScoreboard.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
