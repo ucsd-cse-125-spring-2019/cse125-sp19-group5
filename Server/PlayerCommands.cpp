@@ -6,6 +6,7 @@
 #include <glm/gtx/euler_angles.hpp>
 #include <glm/gtx/vector_angle.hpp>
 #include <glm/gtx/rotate_vector.hpp>
+#include <Shared/Game/ParticleEmitter.h>
 
 void Player::doAction(PlayerCommands action) {
 	switch (action) {
@@ -24,6 +25,22 @@ void Player::doAction(PlayerCommands action) {
 			p->setVelocity(paddleVelocity * 0.2f * strength);
 			p->setLifespan(paddleLifespan);
 			p->setOwner(this);
+			p->setModel("Models/static_paddle.obj");
+			p->setScale(vec3(1.5f));
+			if (gGameEngine->player_team[getId()] == 0) {
+				p->setMaterial("Materials/paddle_red.json");
+			}
+			else {
+				p->setMaterial("Materials/paddle_blue.json");
+			}
+
+			vec3 direction = getDirection();
+			direction.y = 0;
+			direction = glm::normalize(glm::cross(direction, vec3(0, 1, 0)));
+			float yaw = glm::orientedAngle(vec2(direction.x, direction.z), vec2(1, 0));
+			quat orientation = glm::eulerAngleY(yaw);
+			p->setOrientation(orientation);
+
 
 			break;
 		}
@@ -66,16 +83,18 @@ void Player::doAction(PlayerCommands action) {
 					switch (getBulletType()) {
 					case BULLET_STUN: {
 						b = gGameEngine->addGameObject<StunBullet>();
+						b->setModel("Models/beehive.obj");
+						b->setMaterial("Materials/beehive_yellow.json");
 						break;
 					}
 					default: {
 						b = gGameEngine->addGameObject<Bullet>();
+						b->setModel("Models/unit_sphere.obj");
+						b->setMaterial("Materials/brick.json");
 						break;
 					}
 					}
 					b->setBoundingShape(new BoundingSphere(vec3(0.0f), bulletRadius));
-					b->setModel("Models/unit_sphere.obj");
-					b->setMaterial("Materials/brick.json");
 					b->setPosition(bulletStart);
 					b->setVelocity(bulletVelocity);
 					b->setScale(vec3(bulletRadius));
@@ -114,6 +133,11 @@ void Player::doAction(PlayerCommands action) {
 	}
 }
 
+static std::vector<vec4> chargeColors[2] = {
+	std::vector<vec4>{ vec4(1.0f, 0.0f, 1.0f, 1.0f), vec4(1.0f, 0.25f, 1.0f, 0.0f) },
+	std::vector<vec4>{ vec4(1.0f, 1.0f, 0.0f, 1.0f), vec4(1.0f, 1.0f, 0.2f, 0.0f) }
+};
+
 /*
 	Takes the byte of player inputs for this player
 	Handles only the non-movement commands (charging)
@@ -135,6 +159,25 @@ void Player::processCommand(int inputs)
 				actionCharge = 1;
 			}
 			else if (command == currentAction) {
+				if (currentAction == SWING || currentAction == SHOOT) {
+					auto ps = new ParticleEmitter();
+					ps->setGravity(0.0f);
+					ps->setCreationTime(0.1f);
+					ps->setInitialLife(0.5f);
+					ps->setInitialLifeVariance(0.075f);
+					ps->setCreationSpeed(5 + actionCharge);
+					ps->setInitialVel(vec3(0, 50, 0));
+					ps->setInitialVelVariance(vec3(30.0f, 20.0f, 30.0f));
+					ps->setTexture("Textures/glow.png");
+					if (currentAction == SWING) {
+						ps->setParticleColor(chargeColors[0]);
+					}
+					else {
+						ps->setParticleColor(chargeColors[1]);
+					}
+					ps->setParent(this);
+					ps->setLifeTime(0.2f);
+				}
 				actionCharge++;
 				if (actionCharge >= 20) {
 					actionCharge = 20;

@@ -45,7 +45,8 @@ void ParticleEmitter::update() {
 }
 
 void ParticleEmitter::updateAll() {
-	for (auto emitter : emitters) {
+	auto oldEmitters = emitters;
+	for (auto emitter : oldEmitters) {
 		emitter->update();
 	}
 }

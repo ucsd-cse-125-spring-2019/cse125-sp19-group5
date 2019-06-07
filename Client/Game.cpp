@@ -20,7 +20,7 @@
 #include "Game/Gui/GuiScoreboard.h"
 
 // Define this if you just want to go right to the game.
-#define _DEBUG_SP
+// #define _DEBUG_SP
 
 GuiGameText *gameText = nullptr;
 
@@ -132,17 +132,20 @@ int Game::getScreenHeight() const {
 Game::Game() : gameObjects({ nullptr }) {
 	Draw::init();
 	ParticleEmitters::init(&gameState);
-
 	auto connectMenu = Gui::create<GuiConnectMenu>();
 	connectMenu->setGame(this);
-
 	int port = 1234;
 	ConfigSettings::get().getValue("Port", port);
-	//Network::init("127.0.0.1", port);
 
-	gSound->setMasterVolume(1.0f);
+#ifdef _DEBUG_SP
+	Network::init("127.0.0.1", port);
+#else
+	Gui::create<GuiConnectMenu>();
 	ConnectMenuBackground = gSound->loadFlatSound("Sounds/ConnectMenuMusic.wav", 0.3f);
 	ConnectMenuBackground->play(true);
+#endif
+
+	gSound->setMasterVolume(1.0f);
 	
 	lightShader = new Shader("Shaders/light");
 	camera = new Camera(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f), 70, 1.0f);
