@@ -5,10 +5,10 @@ GAMEOBJECT_TYPES Wall::getGameObjectType() const {
 }
 
 void Wall::updateOnServerTick() {
-	if (destroyable) {
+	if (destroyable && (getPosition().y < 0)) {
 		move(vec3(0, 0.1, 0));
 	}
-	if (getPosition().y > 0) {
+	if (destroyable && getPosition().y > 0) {
 		setPosition(vec3(getPosition().x, 0, getPosition().z));
 	}
 }
