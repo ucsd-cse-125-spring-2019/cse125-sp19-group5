@@ -7,6 +7,8 @@ void Bomb::updateOnServerTick() {
 		setMaterial("Materials/ball.json");
 		setScale(vec3(getBoundingSphere()->getRadius()));
 		lifespan -= 5;
+		//sound of the grendae exploding
+		this->playSound("Sounds/grenade_boom.wav", 1.0f, false);
 	}
 	else {
 		move(getVelocity());
