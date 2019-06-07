@@ -26,4 +26,5 @@ enum NetMessage {
 	SCOREBOARD_SHOW,
 	HUD_VISIBLE,
 	DEBUG_MAP,
+	numValues, // MAKE SURE THIS IS LAST!!
 };
