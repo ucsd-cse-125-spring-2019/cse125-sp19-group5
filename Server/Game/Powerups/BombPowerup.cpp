@@ -3,7 +3,7 @@
 const POWERUP_TYPES BombPowerup::TYPE = POWERUP_BOMBS;
 
 float BombPowerup::getDuration() const {
-	return -1.0f;
+	return 20.0f;
 }
 
 void BombPowerup::onActivate() {
