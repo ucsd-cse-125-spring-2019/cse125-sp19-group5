@@ -1,4 +1,5 @@
 #include "Goal.h"
+#include "Ball.h"
 
 GAMEOBJECT_TYPES Goal::getGameObjectType() const {
 	return GOAL_TYPE;
@@ -36,4 +37,5 @@ void Goal::onCollision(GameObject * gameObject) {
 
 void Goal::onCollision(Ball * ball) {
 	this->goalsScored += 1;
+	this->scorer = ball->lastHitBy;
 }

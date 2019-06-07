@@ -17,6 +17,8 @@ constexpr auto SCORE_SHOW_TIME = 10;
 
 static const int PLAYER_NUM = 1;
 
+static int playerScores[4] = { 0 };
+
 template<class T, class V>
 void inline safeRemoveFromVec(std::vector<T> &v, V &val) {
 	auto it = std::find(v.begin(), v.end(), val);
@@ -109,7 +111,7 @@ void GameEngine::startGame() {
 #ifdef _DEBUG_SP
 	gameState.timeLeft = 100000 * 10; // a long time
 #else
-	gameState.timeLeft = 1000 * 60 * 5; // 5 minutes in ms
+	gameState.timeLeft = 1000 * 60 * 3; // 5 minutes in ms
 #endif
 
 	NetBuffer start(NetMessage::START);
@@ -147,7 +149,8 @@ void GameEngine::onGoalScored(int team) {
 	gameState.in_progress = false;
 	roundState = RoundState::TEAM_SCORED;
 
-	auto text = "Team " + std::to_string(team + 1) + " has scored!";
+	auto teamName = team == 0 ? "Red team" : "Blue team";
+	auto text = teamName + std::string(" has scored!");
 	std::cout << text << std::endl;
 	setGameText(text);
 	
@@ -577,7 +580,7 @@ void GameEngine::spawnPlayers() {
 				? "Materials/red_shirt_bear.json"
 				: "Materials/blue_shirt_bear.json";
 			player->setMaterial(shirt);
-
+			player->team = playerTeam;
 			playerIt++;
 		}
 	}
@@ -604,7 +607,35 @@ void GameEngine::showScoreboard() {
 	NetBuffer showBuf(NetMessage::SCOREBOARD_SHOW);
 	Network::broadcast(showBuf);
 
+	auto team0Score = 0;
+	auto team1Score = 0;
+
 	// TODO: show scores
+	for (auto player : gameState.players) {
+		auto teamId = player_team[player->getId()];
+		auto score = player->getGoalsScored();
+		NetBuffer scoreBuf(NetMessage::SCOREBOARD_SCORE);
+		scoreBuf.write(teamId);
+		scoreBuf.write(id_name[player->getId()]);
+		scoreBuf.write(score);
+		Network::broadcast(scoreBuf);
+
+		if (teamId == 0) {
+			team0Score += score;
+		} else {
+			team1Score += score;
+		}
+	}
+
+	NetBuffer titleBuf(NetMessage::SCOREBOARD_TITLE);
+	std::string text = "Red team has won the game!";
+	if (team1Score > team0Score) {
+		text = "Blue team has won the game!";
+	} else if (team1Score == team0Score) {
+		text = "Y'all tied. Good job?";
+	}
+	titleBuf.write(text);
+	Network::broadcast(titleBuf);
 }
 
 void GameEngine::hideScoreboard() {
