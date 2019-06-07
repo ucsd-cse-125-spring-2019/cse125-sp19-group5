@@ -77,6 +77,12 @@ void MapLoader::loadGameObjectDefaults(json11::Json gameObjJson, GameObject * ga
 	if (!gameObjJson["scale"].is_null()) {
 		gameObject->setScale(toVec3(gameObjJson, "scale"));
 	}
+	if (!gameObjJson["orientation"].is_null()) {
+		auto angles = toVec3(gameObjJson, "orientation");
+		auto radians = glm::radians(angles);
+		auto quat = glm::quat(radians);
+		gameObject->setOrientation(quat);
+	}
 	if (!gameObjJson["model"].is_null() && gameObjJson["model"].is_string()) {
 		gameObject->setModel(gameObjJson["model"].string_value());
 	}

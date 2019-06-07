@@ -157,6 +157,13 @@ int main(int argc, char **argv) {
 			std::cout << "Player " << c->getId() << " has disconnected."
 				<< std::endl;
 		});
+
+		c->on(
+			NetMessage::DEBUG_MAP,
+			[&](Connection *c, NetBuffer &buf) {
+				gameEngine.cleanMap();
+			}
+		);
 	});
 
 	//This is the total amount of time allowed for the server to update the game state

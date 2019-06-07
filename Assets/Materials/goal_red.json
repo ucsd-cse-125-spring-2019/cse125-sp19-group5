@@ -1,0 +1,5 @@
+{
+    "diffuse": "Textures/black.png",
+    "emission": "Textures/red.png",
+    "specular": "Textures/black.png"
+}

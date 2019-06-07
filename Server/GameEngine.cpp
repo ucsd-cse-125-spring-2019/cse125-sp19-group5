@@ -63,6 +63,10 @@ void GameEngine::init() {
 }
 
 bool GameEngine::shouldGameStart() {
+	if (roundState != RoundState::READY) { return false; }
+#ifdef _DEBUG_SP
+	return gameState.players.size() > 0;
+#endif
 	if (roundState != RoundState::READY) {
 		return false;
 	}
@@ -97,7 +101,7 @@ void GameEngine::startGame() {
 	std::cout << "Starting a new game..." << std::endl;
 	prepRound();
 	gameState.score = std::make_tuple(0, 0);
-	gameState.timeLeft = 1000 * 10; // 5 minutes in ms
+	gameState.timeLeft = 1000 * 60 * 5; // 5 minutes in ms
 	NetBuffer start(NetMessage::START);
 	start.write<bool>(true);
 	Network::broadcast(start);

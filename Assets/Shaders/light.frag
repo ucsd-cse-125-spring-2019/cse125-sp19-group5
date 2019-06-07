@@ -25,7 +25,7 @@ struct DirectionalLight {
 struct Material {
 	int hasNormalMap;
 	float shininess;
-	float texScale;
+	vec2 texScale;
 	sampler2D diffuseTex;
 	sampler2D normalTex;
 	sampler2D specularTex;

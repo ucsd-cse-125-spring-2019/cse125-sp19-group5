@@ -1,0 +1,5 @@
+{
+  "diffuse": "Textures/crowd.png",
+  "specular": "Textures/black.png",
+  "texScale": [ 22, 7 ]
+}
